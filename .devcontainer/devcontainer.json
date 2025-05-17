@@ -1,0 +1,65 @@
+{
+    "name": "TypeScript",
+    // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+
+    "service": "ts_dev",
+    "workspaceFolder": "/workspaces",
+    "dockerComposeFile": "./docker-compose.yml",
+
+    // Use 'mounts' to make the cargo cache persistent in a Docker Volume.
+    // "mounts": [
+    // 	{
+    // 		"source": "devcontainer-cargo-cache-${devcontainerId}",
+    // 		"target": "/usr/local/cargo",
+    // 		"type": "volume"
+    // 	}
+    // ]
+
+    // Features to add to the dev container. More info: https://containers.dev/features.
+    // "features": {},
+
+    // Use 'forwardPorts' to make a list of ports inside the container available locally.
+    // "forwardPorts": [],
+
+    // Use 'postCreateCommand' to run commands after the container is created.
+    // NOTE: 動作安定しないのでシェルスクリプトを手動で実行するように変更
+    //     : 具体的には,gitconfigの項目がsigningkeyのみになる(厳密にはcredential.helperというのがdevcontainerの自動生成で追加される)
+    // "postCreateCommand": "git config --global user.signingkey /home/vscode/.ssh/gh_wsl_commit.pub",
+    "postCreateCommand": "chmod 755 ./set_cfg_signing_key.sh",
+
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                // ts
+
+                // markdown
+                "davidanson.vscode-markdownlint",
+                // "corschenzi.mermaid-graphical-editor",
+                // "bierner.markdown-mermaid",
+                // "shd101wyy.markdown-preview-enhanced",
+                // "yzane.markdown-pdf",
+                // "yzhang.markdown-all-in-one",
+
+                // others
+                "ms-azuretools.vscode-docker",
+                "mosapride.zenkaku",
+                "redhat.vscode-yaml",
+                "shardulm94.trailing-spaces",
+                "gruntfuggly.todo-tree",
+                "mtxr.sqltools",
+                "esbenp.prettier-vscode",
+                "asuka.insertnumbers",
+                "github.vscode-github-actions",
+                "donjayamanne.githistory",
+                "mhutchie.git-graph",
+                "wmaurer.change-case",
+                "streetsidesoftware.code-spell-checker"
+            ]
+        }
+    }
+
+    // Configure tool-specific properties.
+
+    // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+    // "remoteUser": "root"
+}
