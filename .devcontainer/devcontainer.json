@@ -11,6 +11,8 @@
                 // 新しく拡張機能を加える際に注意が必要
                 "extensions.verifySignature": false
             },
+            // https://github.com/microsoft/vscode-remote-release/issues/8169#issuecomment-1543987445
+            // 上の手順を一部行う(`select extensions then install by pressing "ok" or enter`以外)と拡張機能がキャッシュされるようになった気がする
             "extensions": [
                 // ts/css
                 "dbaeumer.vscode-eslint",
