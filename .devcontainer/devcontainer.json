@@ -6,8 +6,19 @@
 
     "customizations": {
         "vscode": {
+            "settings": {
+                // https://github.com/microsoft/vscode/issues/179827
+                // 新しく拡張機能を加える際に注意が必要
+                "extensions.verifySignature": false
+            },
             "extensions": [
-                // ts
+                // ts/css
+                "dbaeumer.vscode-eslint",
+                "zignd.html-css-class-completion",
+                "wallabyjs.quokka-vscode",
+                "christian-kohler.npm-intellisense",
+                "kisstkondoros.vscode-gutter-preview",
+                "ecmel.vscode-html-css",
 
                 // markdown
                 "davidanson.vscode-markdownlint",
@@ -16,6 +27,13 @@
                 // "shd101wyy.markdown-preview-enhanced",
                 // "yzane.markdown-pdf",
                 // "yzhang.markdown-all-in-one",
+
+                // git/github
+                "mhutchie.git-graph",
+                "donjayamanne.githistory",
+                "github.vscode-github-actions",
+                "github.copilot",
+                "eamodio.gitlens",
 
                 // others
                 "ms-azuretools.vscode-docker",
@@ -26,11 +44,11 @@
                 "mtxr.sqltools",
                 "esbenp.prettier-vscode",
                 "asuka.insertnumbers",
-                "github.vscode-github-actions",
-                "donjayamanne.githistory",
-                "mhutchie.git-graph",
                 "wmaurer.change-case",
-                "streetsidesoftware.code-spell-checker"
+                "streetsidesoftware.code-spell-checker",
+                "editorconfig.editorconfig",
+                "ritwickdey.liveserver",
+                "christian-kohler.path-intellisense",
             ]
         }
     }
