@@ -9,10 +9,7 @@
         },
         "type": {
             "type": "string",
-            "enum": [
-                "full",
-                "part"
-            ],
+            "enum": ["full", "part"],
             "description": "The type of the music piece"
         },
         "id": {
@@ -39,13 +36,7 @@
             "description": "The start time of the music piece"
         }
     },
-    "required": [
-        "title",
-        "type",
-        "id",
-        "artists",
-        "length"
-    ],
+    "required": ["title", "type", "id", "artists", "length"],
     "if": {
         "properties": {
             "type": {
@@ -53,16 +44,12 @@
             }
         },
         "then": {
-            "required": [
-                "startTime"
-            ]
+            "required": ["startTime"]
         }
     },
     "else": {
         "not": {
-            "required": [
-                "startTime"
-            ]
+            "required": ["startTime"]
         }
     }
 }
