@@ -30,6 +30,7 @@
 ## 技術選定
 
 - フロントエンド: TypeScript + React + Vite
+- デザイン: Tailwind css + scss
 - CDN: S3
 - エンドポイント: CloudFront + Route53
 - Github ActionsでS3へ自動デプロイ
