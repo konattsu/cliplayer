@@ -2,25 +2,5 @@
   "tabWidth": 2,
   "useTabs": false,
   "endOfLine": "lf",
-  "semi": true,
-  "overrides": [
-    {
-      "files": ".vscode/**/*.json",
-      "options": {
-        "tabWidth": 4
-      }
-    },
-    {
-      "files": ".devcontainer/**/*.json",
-      "options": {
-        "tabWidth": 4
-      }
-    },
-    {
-      "files": "src/**/*.json",
-      "options": {
-        "tabWidth": 4
-      }
-    }
-  ]
+  "semi": true
 }

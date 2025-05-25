@@ -1,8 +1,13 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
 import path from "path";
+import { fileURLToPath } from "url";
+
+import react from "@vitejs/plugin-react-swc";
 // @ts-expect-error 型定義エラーを無視
 import eslint from "vite-plugin-eslint";
+import { defineConfig } from "vitest/config";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export default defineConfig({
   plugins: [
@@ -22,5 +27,10 @@ export default defineConfig({
     outDir: "dist",
     sourcemap: true,
     target: "esnext",
+  },
+  test: {
+    environment: "jsdom",
+    setupFiles: "./src/setupTests.ts",
+    globals: true,
   },
 });
