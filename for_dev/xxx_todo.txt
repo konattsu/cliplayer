@@ -3,3 +3,5 @@ ci作る
   2. jsx, unit test
 repo ruleset
 branch protection
+
+全部できたかの確認
