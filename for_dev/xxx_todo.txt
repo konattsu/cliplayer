@@ -5,3 +5,4 @@ repo ruleset
 branch protection
 
 全部できたかの確認
+できてなかったのでbypassなんとかを有効にした
