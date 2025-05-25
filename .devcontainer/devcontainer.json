@@ -1,57 +1,57 @@
 {
-    "name": "TypeScript",
-    "service": "ts_react_dev",
-    "workspaceFolder": "/workspaces",
-    "dockerComposeFile": "./docker-compose.yml",
+  "name": "TypeScript",
+  "service": "ts_react_dev",
+  "workspaceFolder": "/workspaces",
+  "dockerComposeFile": "./docker-compose.yml",
 
-    "customizations": {
-        "vscode": {
-            "settings": {
-                // https://github.com/microsoft/vscode/issues/179827
-                // 新しく拡張機能を加える際に注意が必要
-                "extensions.verifySignature": false
-            },
-            // https://github.com/microsoft/vscode-remote-release/issues/8169#issuecomment-1543987445
-            // 上の手順を一部行う(`select extensions then install by pressing "ok" or enter`以外)と拡張機能がキャッシュされるようになった気がする
-            "extensions": [
-                // ts/css
-                "dbaeumer.vscode-eslint",
-                "zignd.html-css-class-completion",
-                "wallabyjs.quokka-vscode",
-                "christian-kohler.npm-intellisense",
-                "kisstkondoros.vscode-gutter-preview",
-                "ecmel.vscode-html-css",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        // https://github.com/microsoft/vscode/issues/179827
+        // 新しく拡張機能を加える際に注意が必要
+        "extensions.verifySignature": false
+      },
+      // https://github.com/microsoft/vscode-remote-release/issues/8169#issuecomment-1543987445
+      // 上の手順を一部行う(`select extensions then install by pressing "ok" or enter`以外)と拡張機能がキャッシュされるようになった気がする
+      "extensions": [
+        // ts/css
+        "dbaeumer.vscode-eslint",
+        "zignd.html-css-class-completion",
+        "wallabyjs.quokka-vscode",
+        "christian-kohler.npm-intellisense",
+        "kisstkondoros.vscode-gutter-preview",
+        "ecmel.vscode-html-css",
 
-                // markdown
-                "davidanson.vscode-markdownlint",
-                // "corschenzi.mermaid-graphical-editor",
-                // "bierner.markdown-mermaid",
-                // "shd101wyy.markdown-preview-enhanced",
-                // "yzane.markdown-pdf",
-                // "yzhang.markdown-all-in-one",
+        // markdown
+        "davidanson.vscode-markdownlint",
+        // "corschenzi.mermaid-graphical-editor",
+        // "bierner.markdown-mermaid",
+        // "shd101wyy.markdown-preview-enhanced",
+        // "yzane.markdown-pdf",
+        // "yzhang.markdown-all-in-one",
 
-                // git/github
-                "mhutchie.git-graph",
-                "donjayamanne.githistory",
-                "github.vscode-github-actions",
-                "github.copilot",
-                "eamodio.gitlens",
+        // git/github
+        "mhutchie.git-graph",
+        "donjayamanne.githistory",
+        "github.vscode-github-actions",
+        "github.copilot",
+        "eamodio.gitlens",
 
-                // others
-                "ms-azuretools.vscode-docker",
-                "mosapride.zenkaku",
-                "redhat.vscode-yaml",
-                "shardulm94.trailing-spaces",
-                "gruntfuggly.todo-tree",
-                "mtxr.sqltools",
-                "esbenp.prettier-vscode",
-                "asuka.insertnumbers",
-                "wmaurer.change-case",
-                "streetsidesoftware.code-spell-checker",
-                "editorconfig.editorconfig",
-                "ritwickdey.liveserver",
-                "christian-kohler.path-intellisense"
-            ]
-        }
+        // others
+        "ms-azuretools.vscode-docker",
+        "mosapride.zenkaku",
+        "redhat.vscode-yaml",
+        "shardulm94.trailing-spaces",
+        "gruntfuggly.todo-tree",
+        "mtxr.sqltools",
+        "esbenp.prettier-vscode",
+        "asuka.insertnumbers",
+        "wmaurer.change-case",
+        "streetsidesoftware.code-spell-checker",
+        "editorconfig.editorconfig",
+        "ritwickdey.liveserver",
+        "christian-kohler.path-intellisense"
+      ]
     }
+  }
 }
