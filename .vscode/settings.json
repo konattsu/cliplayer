@@ -16,5 +16,12 @@
     "typescriptreact"
   ],
 
+  "json.schemas": [
+    {
+      "fileMatch": ["/public/music/**/*.json"],
+      "url": "/tools/music.schema.json"
+    }
+  ],
+
   "cSpell.words": ["cliplayer", "vitest"]
 }
