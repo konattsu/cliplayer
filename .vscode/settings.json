@@ -23,5 +23,6 @@
     }
   ],
 
-  "cSpell.words": ["cliplayer", "vitest"]
+  "cSpell.words": ["cliplayer", "vitest"],
+  "typescript.tsdk": "node_modules/typescript/lib"
 }
