@@ -1,8 +1,8 @@
 import path from "path";
 import { fileURLToPath } from "url";
 
+import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react-swc";
-// @ts-expect-error 型定義エラーを無視
 import eslint from "vite-plugin-eslint";
 import { defineConfig } from "vitest/config";
 
@@ -17,6 +17,7 @@ export default defineConfig({
       emitWarning: true,
       emitError: true,
     }),
+    tailwindcss(),
   ],
   resolve: {
     alias: {

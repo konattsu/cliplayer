@@ -1,11 +1,11 @@
-import { useState, type JSX } from "react";
+import React, { useState } from "react";
 
 import reactLogo from "./assets/react.svg";
 
-import "./App.css";
 import viteLogo from "/vite.svg";
+// import "./App.css";
 
-function App(): JSX.Element {
+function App(): React.JSX.Element {
   const [count, setCount] = useState(0);
 
   return (
@@ -18,7 +18,9 @@ function App(): JSX.Element {
           <img src={reactLogo} className="logo react" alt="React logo" />
         </a>
       </div>
-      <h1>Vite + React</h1>
+      <h1 className="z-10 gap-y-0 rounded-2xl bg-amber-700 p-4 text-3xl font-bold text-cyan-800 underline">
+        Vite + React
+      </h1>
       <div className="card">
         <button onClick={() => setCount((count) => count + 1)}>
           count is {count}

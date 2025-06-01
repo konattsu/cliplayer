@@ -7,11 +7,6 @@
       "type": "string",
       "description": "The title of the music piece"
     },
-    "type": {
-      "type": "string",
-      "enum": ["full", "part"],
-      "description": "The type of the music piece"
-    },
     "id": {
       "type": "string",
       "pattern": "^[a-zA-Z0-9-_]{11}$",
@@ -21,35 +16,21 @@
       "type": "array",
       "items": {
         "type": "string",
-        "description": "The name of the artist"
+        "description": "The name of the artist",
+        "pattern": "^.*$"
       },
       "description": "A list of artists associated with the music piece"
     },
-    "length": {
-      "type": "integer",
-      "minimum": 0,
-      "description": "The length of the music piece in seconds"
-    },
     "startTime": {
       "type": "string",
-      "pattern": "^([01]\\d|2[0-3]):([0-5]\\d):([0-5]\\d)$",
+      "pattern": "^PT(?:(\\d+H)?(\\d+M)?(\\d+S)?)$",
       "description": "The start time of the music piece"
-    }
-  },
-  "required": ["title", "type", "id", "artists", "length"],
-  "if": {
-    "properties": {
-      "type": {
-        "const": "part"
-      }
     },
-    "then": {
-      "required": ["startTime"]
+    "endTime": {
+      "type": "string",
+      "pattern": "^PT(?:(\\d+H)?(\\d+M)?(\\d+S)?)$",
+      "description": "The end of the music piece"
     }
   },
-  "else": {
-    "not": {
-      "required": ["startTime"]
-    }
-  }
+  "required": ["title", "id", "artists"]
 }
