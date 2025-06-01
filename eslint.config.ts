@@ -71,11 +71,33 @@ export default [
         { "ts-expect-error": false },
       ],
       "@typescript-eslint/no-floating-promises": "error",
-      "@typescript-eslint/strict-boolean-expressions": "error",
+      "@typescript-eslint/strict-boolean-expressions": [
+        "warn",
+        {
+          allowString: false,
+          allowNumber: false,
+          allowNullableObject: false,
+          allowNullableBoolean: false,
+          allowNullableString: false,
+          allowNullableNumber: false,
+        },
+      ],
       "@typescript-eslint/consistent-type-imports": [
         "error",
         { prefer: "type-imports" },
       ],
+      "@typescript-eslint/restrict-plus-operands": [
+        "error",
+        {
+          allowBoolean: false,
+          allowNullish: false,
+          allowNumberAndString: false,
+          allowRegExp: false,
+          allowAny: false,
+        },
+      ],
+      "@typescript-eslint/switch-exhaustiveness-check": "error",
+      "@typescript-eslint/method-signature-style": "error",
 
       // React
       "react/jsx-uses-react": "off",
@@ -121,8 +143,11 @@ export default [
         },
       ],
       "unused-imports/no-unused-imports": "error",
-
       "prettier/prettier": "error",
+
+      // others
+      "no-implicit-coercion": "error",
+      "prefer-template": "error",
     },
   },
 ];
