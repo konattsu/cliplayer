@@ -11,46 +11,44 @@
         // 新しく拡張機能を加える際に注意が必要
         "extensions.verifySignature": false
       },
-      // https://github.com/microsoft/vscode-remote-release/issues/8169#issuecomment-1543987445
-      // 上の手順を一部行う(`select extensions then install by pressing "ok" or enter`以外)と拡張機能がキャッシュされるようになった気がする
       "extensions": [
         // ts/css
-        "dbaeumer.vscode-eslint",
-        "zignd.html-css-class-completion",
-        "wallabyjs.quokka-vscode",
         "christian-kohler.npm-intellisense",
-        "kisstkondoros.vscode-gutter-preview",
+        "dbaeumer.vscode-eslint",
         "ecmel.vscode-html-css",
+        "kisstkondoros.vscode-gutter-preview",
+        "wallabyjs.quokka-vscode",
+        "zignd.html-css-class-completion",
 
         // markdown
         "davidanson.vscode-markdownlint",
-        // "corschenzi.mermaid-graphical-editor",
         // "bierner.markdown-mermaid",
+        // "corschenzi.mermaid-graphical-editor",
         // "shd101wyy.markdown-preview-enhanced",
         // "yzane.markdown-pdf",
         // "yzhang.markdown-all-in-one",
 
         // git/github
-        "mhutchie.git-graph",
         "donjayamanne.githistory",
-        "github.vscode-github-actions",
-        "github.copilot",
         "eamodio.gitlens",
+        "github.copilot",
+        "github.vscode-github-actions",
+        "mhutchie.git-graph",
 
         // others
-        "ms-azuretools.vscode-docker",
-        "mosapride.zenkaku",
-        "redhat.vscode-yaml",
-        "shardulm94.trailing-spaces",
-        "gruntfuggly.todo-tree",
-        "mtxr.sqltools",
-        "esbenp.prettier-vscode",
         "asuka.insertnumbers",
-        "wmaurer.change-case",
-        "streetsidesoftware.code-spell-checker",
+        "christian-kohler.path-intellisense",
         "editorconfig.editorconfig",
+        "esbenp.prettier-vscode",
+        "gruntfuggly.todo-tree",
+        "mosapride.zenkaku",
+        "ms-azuretools.vscode-docker",
+        "mtxr.sqltools",
+        "redhat.vscode-yaml",
         "ritwickdey.liveserver",
-        "christian-kohler.path-intellisense"
+        "shardulm94.trailing-spaces",
+        "streetsidesoftware.code-spell-checker",
+        "wmaurer.change-case"
       ]
     }
   }
