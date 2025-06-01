@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "title": "Music database schema",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "The title of the music piece"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9-_]{11}$",
+      "description": "A youtube video ID"
+    },
+    "artists": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "description": "The name of the artist",
+        "pattern": "^.*$"
+      },
+      "description": "A list of artists associated with the music piece"
+    },
+    "startTime": {
+      "type": "string",
+      "pattern": "^PT(?:(\\d+H)?(\\d+M)?(\\d+S)?)$",
+      "description": "The start time of the music piece"
+    },
+    "endTime": {
+      "type": "string",
+      "pattern": "^PT(?:(\\d+H)?(\\d+M)?(\\d+S)?)$",
+      "description": "The end of the music piece"
+    }
+  },
+  "required": ["title", "id", "artists"]
+}
