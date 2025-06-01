@@ -16,11 +16,11 @@
       "extensions": [
         // ts/css
         "dbaeumer.vscode-eslint",
-        "zignd.html-css-class-completion",
-        "wallabyjs.quokka-vscode",
+        // "zignd.html-css-class-completion", // tailwindcssのクラス補完を邪魔しているかもしれないため
         "christian-kohler.npm-intellisense",
         "kisstkondoros.vscode-gutter-preview",
         "ecmel.vscode-html-css",
+        "bradlc.vscode-tailwindcss",
 
         // markdown
         "davidanson.vscode-markdownlint",
@@ -43,7 +43,6 @@
         "redhat.vscode-yaml",
         "shardulm94.trailing-spaces",
         "gruntfuggly.todo-tree",
-        "mtxr.sqltools",
         "esbenp.prettier-vscode",
         "asuka.insertnumbers",
         "wmaurer.change-case",

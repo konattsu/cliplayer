@@ -1,4 +1,3 @@
-import js from "@eslint/js";
 import tseslintPlugin from "@typescript-eslint/eslint-plugin";
 import tseslintParser from "@typescript-eslint/parser";
 import prettierConfig from "eslint-config-prettier";
@@ -9,9 +8,16 @@ import react from "eslint-plugin-react";
 import reactHooks from "eslint-plugin-react-hooks";
 import unusedImports from "eslint-plugin-unused-imports";
 
+// ref: https://eslint.org/docs/latest/use/configure/ignore#including-gitignore-files
+import js from "@eslint/js";
+import { includeIgnoreFile } from "@eslint/compat";
+import { fileURLToPath } from "url";
+
+const gitignorePath = fileURLToPath(new URL("./.gitignore", import.meta.url));
+
 export default [
+  includeIgnoreFile(gitignorePath),
   {
-    ignores: ["node_modules", "dist", "build", "coverage", "*.config.*"],
     languageOptions: {
       globals: {
         window: "readonly",

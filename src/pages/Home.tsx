@@ -12,7 +12,7 @@ const Home: React.FC = () => {
         <HeaderIcon />
       </div>
 
-      <div className="flex flex-1 p-4">
+      <div className="flex flex-1 p-4 bg-red-500">
         <div className="flex-1 mr-4">
           <VideoPlayer />
           <VideoInfo />

@@ -2,7 +2,7 @@
   // Prettier
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "prettier.requireConfig": true,
-  // To run Prettier in environments where ESLint doesn't run, such as JSON files
+  //   To run Prettier in environments where ESLint doesn't run, such as JSON files
   "editor.formatOnSave": true,
 
   // ESLint
@@ -16,6 +16,7 @@
     "typescriptreact"
   ],
 
+  // json schema
   "json.schemas": [
     {
       "fileMatch": ["/public/music/**/*.json"],
@@ -23,6 +24,26 @@
     }
   ],
 
-  "cSpell.words": ["cliplayer", "vitest"],
-  "typescript.tsdk": "node_modules/typescript/lib"
+  // tailwindcss
+  //   ref: https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+  "editor.quickSuggestions": {
+    "strings": true
+  },
+  "tailwindCSS.includeLanguages": {
+    "typescript": "typescriptreact",
+    "typescriptreact": "typescriptreact",
+    "javascript": "javascriptreact",
+    "javascriptreact": "javascriptreact"
+  },
+  "tailwindCSS.emmetCompletions": true,
+  "tailwindCSS.experimental.classRegex": [
+    "class(?:Name)?=\\\"([^\\\"]*)\\\"",
+    "class(?:Name)?=\\'([^\\']*)\\'"
+  ],
+
+  // "typescript.tsdk": "node_modules/typescript/lib",
+  "cSpell.words": ["cliplayer", "vitest"]
 }

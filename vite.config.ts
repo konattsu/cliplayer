@@ -2,7 +2,6 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 import react from "@vitejs/plugin-react-swc";
-// @ts-expect-error 型定義エラーを無視
 import eslint from "vite-plugin-eslint";
 import { defineConfig } from "vitest/config";
 
