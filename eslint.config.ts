@@ -1,4 +1,3 @@
-import js from "@eslint/js";
 import tseslintPlugin from "@typescript-eslint/eslint-plugin";
 import tseslintParser from "@typescript-eslint/parser";
 import prettierConfig from "eslint-config-prettier";
@@ -9,9 +8,16 @@ import react from "eslint-plugin-react";
 import reactHooks from "eslint-plugin-react-hooks";
 import unusedImports from "eslint-plugin-unused-imports";
 
+// ref: https://eslint.org/docs/latest/use/configure/ignore#including-gitignore-files
+import js from "@eslint/js";
+import { includeIgnoreFile } from "@eslint/compat";
+import { fileURLToPath } from "url";
+
+const gitignorePath = fileURLToPath(new URL("./.gitignore", import.meta.url));
+
 export default [
+  includeIgnoreFile(gitignorePath),
   {
-    ignores: ["node_modules", "dist", "build", "coverage", "*.config.*"],
     languageOptions: {
       globals: {
         window: "readonly",
@@ -65,11 +71,33 @@ export default [
         { "ts-expect-error": false },
       ],
       "@typescript-eslint/no-floating-promises": "error",
-      "@typescript-eslint/strict-boolean-expressions": "error",
+      "@typescript-eslint/strict-boolean-expressions": [
+        "warn",
+        {
+          allowString: false,
+          allowNumber: false,
+          allowNullableObject: false,
+          allowNullableBoolean: false,
+          allowNullableString: false,
+          allowNullableNumber: false,
+        },
+      ],
       "@typescript-eslint/consistent-type-imports": [
         "error",
         { prefer: "type-imports" },
       ],
+      "@typescript-eslint/restrict-plus-operands": [
+        "error",
+        {
+          allowBoolean: false,
+          allowNullish: false,
+          allowNumberAndString: false,
+          allowRegExp: false,
+          allowAny: false,
+        },
+      ],
+      "@typescript-eslint/switch-exhaustiveness-check": "error",
+      "@typescript-eslint/method-signature-style": "error",
 
       // React
       "react/jsx-uses-react": "off",
@@ -115,8 +143,11 @@ export default [
         },
       ],
       "unused-imports/no-unused-imports": "error",
-
       "prettier/prettier": "error",
+
+      // others
+      "no-implicit-coercion": "error",
+      "prefer-template": "error",
     },
   },
 ];
