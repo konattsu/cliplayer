@@ -24,5 +24,11 @@
     "strings": true
   },
 
+  // Rust
+  "rust-analyzer.linkedProjects": ["rust_music_data/Cargo.toml"],
+  "[rust]": {
+    "editor.defaultFormatter": "rust-lang.rust-analyzer"
+  },
+
   "cSpell.words": ["cliplayer", "vitest"]
 }

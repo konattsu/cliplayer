@@ -1,0 +1,18 @@
+[package]
+name = "music_data"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+
+[profile.test]
+debug = 2
+
+[profile.dev]
+debug = 2
+
+[profile.release]
+debug = 1
+
+[profile.bench]
+debug = 1
