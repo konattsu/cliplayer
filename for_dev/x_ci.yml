@@ -1,0 +1,162 @@
+# ! 二次生成については一旦stay
+# 今のactionsのコードについてはあんまりあてにしないこと
+# ファイルの下の方から参考にして
+
+# 新規データ追加の(input.json)PR飛んでくると
+# 1. github actionsが発火し, rustで書いたやつ(youtube api)で一次生成を行い, 既存のデータ(output.json)に追加
+# 2. この変更が自動的にoutput.jsonにコミット
+# 3. input.jsonも自動的に削除
+# 4. これをマージしたり拒否したりする
+
+# 動画の公開状況など定期的に監視するものに関してはchronで回す予定
+
+# 新規データの追加(input.jsonへの変更)のPR飛んできたとき
+name: generate-output-and-remove-input
+
+on:
+  pull_request:
+    paths:
+      - "input.json"
+
+jobs:
+  generate_and_cleanup:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Generate output.json from input.json
+        run: |
+          python generate.py input.json output.json
+
+      - name: Remove input.json
+        run: |
+          rm -f input.json
+
+      - name: Commit and push changes (output.json added/updated, input.json deleted)
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add output.json
+          git rm -f input.json || true
+          git commit -m "Auto-generate output.json and remove input.json" || echo "Nothing to commit"
+          git push origin HEAD:${{ github.head_ref }}
+
+# 既存の動画に対する変更(クリップの追加/タグの変更)のPR飛んできたとき
+# 特定のフォルダ(foo_folder)に対する変更のファイルを検出し, またその具体的なファイル名を抽出
+# これらを内部で実行するプログラムの引数として渡す
+# そのプログラムたちが変更が適している/いないを判断する
+# e.g. クリップ追加したが動画時間より長い部分を指定, 不正な内部/外部アーティスト -> Err
+# e.g. 正常なクリップ追加, タグ追加/変更, 正常な内部/外部アーティスト -> Ok
+
+foo_name: Process changed files in foo_folder
+
+foo_on:
+  pull_request:
+    paths:
+      - "foo_folder/**"
+  push:
+    paths:
+      - "foo_folder/**"
+
+foo_jobs:
+  process-changed-files:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Get changed files in foo_folder
+        id: changed-files
+        run: |
+          # PRの場合はbaseとheadで差分を取る
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            git fetch origin ${{ github.base_ref }}
+            git diff --name-only origin/${{ github.base_ref }}...${{ github.head_ref }} | grep '^foo_folder/' || true
+          else
+            git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '^foo_folder/' || true
+          fi > changed_files.txt
+          echo "Changed files:"
+          cat changed_files.txt
+
+      - name: Run generate.py for each changed file
+        if: success()
+        run: |
+          while read file; do
+            if [ -n "$file" ]; then
+              echo "Processing $file"
+              python generate.py "$file"
+            fi
+          done < changed_files.txt
+
+# ラベルを使用してPR作成時にactionsが動かないようにできる
+# 不適切なPRで同PRに複数回actionsが走ることを少なくできる
+# 複数回actions動くとコミット履歴が乙るので運用で回避する
+bar_name: Generate output.json when labeled
+
+bar_on:
+  pull_request:
+    types: [labeled]
+
+bar_jobs:
+  generate_output:
+    if: contains(github.event.pull_request.labels.*.name, 'auto-generate')
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run generate.py
+        run: |
+          python generate.py input.json output.json
+          rm -f input.json
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add output.json
+          git rm -f input.json || true
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git commit -m "auto: generate output.json and remove input.json"
+          git push origin HEAD:${{ github.head_ref }}
+
+      - name: Remove auto-generate label
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.removeLabel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              name: 'auto-generate'
+            })
+
+# 新規追加と変更を分離できたのでそれぞれに対してrust側でcliで実行できるようにする
+# ! 一次生成と二次生成は同じコミットにする, 巻き戻したり色々しやすい
+# 一次生成に対する変更も同じ
