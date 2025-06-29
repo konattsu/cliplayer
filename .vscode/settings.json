@@ -36,5 +36,15 @@
     "editor.formatOnSave": true
   },
 
-  "cSpell.words": ["cliplayer", "vitest"]
+  "cSpell.words": [
+    "appender",
+    "chrono",
+    "cliplayer",
+    "Deque",
+    "reqwest",
+    "rustls",
+    "serde",
+    "thiserror",
+    "vitest"
+  ]
 }
