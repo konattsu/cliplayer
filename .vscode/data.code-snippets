@@ -1,0 +1,19 @@
+// for artists_data.json
+{
+  "artist": {
+    "scope": "json",
+    "prefix": "artist",
+    "body": [
+      "\"${1:artistId}\": {",
+      "  \"ja\": \"${2:jp}\",",
+      "  \"jah\": \"${3:jph}\",",
+      "  \"en\": \"${4:en}\",",
+      "  \"aliases\": [ ${5:aliases} ],",
+      "  \"channelId\": \"${6:channelId}\",",
+      "  \"color\": \"${7:color}\"",
+      "},",
+      "",
+    ],
+    "description": "Artist data structure",
+  },
+}

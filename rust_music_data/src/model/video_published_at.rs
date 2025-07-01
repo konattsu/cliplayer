@@ -18,20 +18,24 @@ impl VideoPublishedAt {
         &self.0
     }
 
-    pub fn into_chrono_duration(self) -> chrono::DateTime<chrono::Utc> {
-        self.0
-    }
-
+    /// 動画のアップロード時間を加算
+    ///
+    /// - Error: 加算した結果が符号なし48ビットのタイムスタンプの範囲外の場合
+    ///   - i.e. `0..2^48-1` millisの範囲外
     pub fn try_add(
         &self,
         other: &VideoPublishedAt,
     ) -> Result<VideoPublishedAt, &'static str> {
+        // 最大で,48bit + 48bit = 49bitなので`chrono::Duration`を一時的に使用する
+        // `chrono::Duration`側では符号なしだと63bitまで扱えるので問題ない
         let new_upload_at =
             self.0 + chrono::Duration::milliseconds(other.0.timestamp_millis());
+        // 最大が49bitなので, 再度48bitの範囲内であることを確認
         Self::validate_unsigned_48bit_timestamp(new_upload_at)?;
         Ok(VideoPublishedAt(new_upload_at))
     }
 
+    /// 符号なし48ビットのタイムスタンプの範囲内であることを検証
     fn validate_unsigned_48bit_timestamp(
         dt: chrono::DateTime<chrono::Utc>,
     ) -> Result<(), &'static str> {
@@ -49,7 +53,8 @@ impl serde::Serialize for VideoPublishedAt {
     where
         S: serde::Serializer,
     {
-        serializer.serialize_str(&self.0.to_rfc3339())
+        serializer
+            .serialize_str(&self.0.to_rfc3339_opts(chrono::SecondsFormat::Secs, true))
     }
 }
 
@@ -86,9 +91,49 @@ impl<'de> serde::Deserialize<'de> for VideoPublishedAt {
 }
 
 #[cfg(test)]
+impl VideoPublishedAt {
+    /// returns `2024-01-01T01:01:01Z`
+    pub fn self_1() -> Self {
+        use chrono::TimeZone;
+        let dt =
+            chrono::Utc::with_ymd_and_hms(&chrono::Utc, 2024, 1, 1, 1, 1, 1).unwrap();
+        VideoPublishedAt::new(dt).unwrap()
+    }
+    /// returns `2024-02-02T02:02:02Z`
+    pub fn self_2() -> Self {
+        use chrono::TimeZone;
+        let dt =
+            chrono::Utc::with_ymd_and_hms(&chrono::Utc, 2024, 2, 2, 2, 2, 2).unwrap();
+        VideoPublishedAt::new(dt).unwrap()
+    }
+    /// returns `2024-03-03T03:03:03Z`
+    pub fn self_3() -> Self {
+        use chrono::TimeZone;
+        let dt =
+            chrono::Utc::with_ymd_and_hms(&chrono::Utc, 2024, 3, 3, 3, 3, 3).unwrap();
+        VideoPublishedAt::new(dt).unwrap()
+    }
+}
+
+#[cfg(test)]
 mod tests {
     use super::*;
     use chrono::{TimeZone, Utc};
+
+    #[test]
+    fn test_video_published_at_test() {
+        use chrono::TimeZone;
+        let v1 = VideoPublishedAt::self_1();
+        let v2 = VideoPublishedAt::self_2();
+        let v3 = VideoPublishedAt::self_3();
+        let expect_v1 = Utc.with_ymd_and_hms(2024, 1, 1, 1, 1, 1).unwrap();
+        let expect_v2 = Utc.with_ymd_and_hms(2024, 2, 2, 2, 2, 2).unwrap();
+        let expect_v3 = Utc.with_ymd_and_hms(2024, 3, 3, 3, 3, 3).unwrap();
+
+        assert_eq!(v1.as_chrono_datetime(), &expect_v1);
+        assert_eq!(v2.as_chrono_datetime(), &expect_v2);
+        assert_eq!(v3.as_chrono_datetime(), &expect_v3);
+    }
 
     #[test]
     fn test_video_published_at_new_valid_timestamp() {

@@ -1,7 +1,7 @@
 // ref: https://datatracker.ietf.org/doc/html/rfc9562#name-uuid-version-7
 
-static UUID7_VER: u8 = 0b0111;
-static UUID_VAR: u8 = 0b10;
+const UUID7_VER: u8 = 0b0111;
+const UUID_VAR: u8 = 0b10;
 
 static RE_UUID7: once_cell::sync::Lazy<regex::Regex> = once_cell::sync::Lazy::new(
     || {
@@ -25,13 +25,13 @@ pub struct UuidVer7 {
 // MARK: External traits impl
 
 impl std::str::FromStr for UuidVer7 {
-    type Err = String;
+    type Err = &'static str;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         if s.len() != 36 {
-            return Err("UUIDv7 must be 36 characters long".to_string());
+            return Err("UUIDv7 must be 36 characters long");
         } else if !s.is_ascii() {
-            return Err("UUIDv7 must be ASCII".to_string());
+            return Err("UUIDv7 must be ASCII");
         }
 
         let caps = RE_UUID7.captures(s).ok_or("invalid UUIDv7 format")?;
@@ -123,20 +123,24 @@ impl serde::Serialize for UuidVer7 {
 // MARK: Methods
 
 impl UuidVer7 {
-    pub fn from_bytes(bytes: [u8; 16]) -> Result<Self, String> {
+    /// UUIDv7のバイト列から新規作成
+    ///
+    /// - Error: `bytes`がUUIDv7の形式でないとき
+    /// - i.e. バージョンビットが0b0111でない || バリアントビットが0b10でない
+    pub fn from_bytes(bytes: [u8; 16]) -> Result<Self, &'static str> {
         if !Self::is_uuid_ver7(&bytes) {
-            return Err("invalid UUIDv7 format".to_string());
+            return Err("invalid UUIDv7 format");
         }
         Ok(UuidVer7 { bytes })
     }
 
-    /// 日付を基にUUID V7を作成
+    /// 日付を基にUUIDv7を新規作成
     pub fn generate(datetime: &crate::model::VideoPublishedAt) -> Self {
         let (rand_a, rand_b) = Self::generate_rand();
         Self::generate_with_rand(datetime, rand_a, rand_b)
     }
 
-    /// 日付を基にUUID V7を作成
+    /// 日付と乱数を基にUUIDv7を作成
     ///
     /// - Error: `datetime`をタイムスタンプに変換すると, 48bit符号なし整数で表現できないとき
     ///   - i.e. 1970年1月1日 - 約10895年でないとき
@@ -172,7 +176,7 @@ impl UuidVer7 {
         UuidVer7 { bytes }
     }
 
-    /// `rand_a`: 12bit, `rand_b`: 62bitの値をランダムに生成
+    /// `rand_a`(12bit) かつ `rand_b`(62bit) の値をランダムに生成
     fn generate_rand() -> (u16, u64) {
         use rand::Rng;
 
@@ -182,6 +186,7 @@ impl UuidVer7 {
         (rand_12bit, rand_62bit)
     }
 
+    /// UUIDv7のバイト列がUUIDv7の形式であるかどうか
     fn is_uuid_ver7(bytes: &[u8; 16]) -> bool {
         // 上位4bitが0b0111
         let is_version7 = (bytes[6] >> 4) == UUID7_VER;
@@ -191,6 +196,10 @@ impl UuidVer7 {
         is_version7 && is_variant
     }
 
+    /// バイト列をUUIDv7の文字列に変換
+    ///
+    /// - 間に適切にハイフンを挿入する
+    ///   - e.g. `0197c644-22af-7824-bc9e-24107fdd397b`
     fn bytes_to_uuid_string(bytes: &[u8; 16]) -> String {
         let mut s = String::with_capacity(36);
         for (i, byte) in bytes.iter().enumerate() {
@@ -202,6 +211,7 @@ impl UuidVer7 {
         s
     }
 
+    /// UUIDv7の値から内部に含まれるタイムスタンプを取得
     pub fn get_datetime(&self) -> chrono::DateTime<chrono::Utc> {
         use chrono::TimeZone;
 
@@ -223,7 +233,8 @@ impl UuidVer7 {
 
 #[cfg(test)]
 impl UuidVer7 {
-    pub fn test_uuid_1() -> Self {
+    /// `0193bac8-a560-7000-8000-000000000000`
+    pub fn self_1() -> Self {
         use chrono::TimeZone;
         let datetime = crate::model::VideoPublishedAt::new(
             chrono::Utc::with_ymd_and_hms(&chrono::Utc, 2024, 12, 12, 12, 12, 12)
@@ -234,7 +245,8 @@ impl UuidVer7 {
         Self::generate_with_rand(&datetime, 0x0, 0x0)
     }
 
-    pub fn test_uuid_2() -> Self {
+    /// `01920ef6-46d0-70f0-8000-000f0f0f0f0f`
+    pub fn self_2() -> Self {
         use chrono::TimeZone;
         let datetime = crate::model::VideoPublishedAt::new(
             chrono::Utc::with_ymd_and_hms(&chrono::Utc, 2024, 9, 20, 10, 24, 34)
@@ -246,7 +258,8 @@ impl UuidVer7 {
     }
 
     // ref: https://datatracker.ietf.org/doc/html/rfc9562#name-example-of-a-uuidv7-value
-    pub fn test_uuid_3() -> Self {
+    /// `017f22e2-79b0-7cc3-98c4-dc0c0c07398f`
+    pub fn self_3() -> Self {
         use chrono::TimeZone;
         let datetime = crate::model::VideoPublishedAt::new(
             chrono::Utc::with_ymd_and_hms(&chrono::Utc, 2022, 2, 22, 19, 22, 22)
@@ -264,7 +277,7 @@ mod tests {
 
     #[test]
     fn test_uuid_ver7_generate_1() {
-        let uuid = UuidVer7::test_uuid_1();
+        let uuid = UuidVer7::self_1();
 
         #[rustfmt::skip]
         assert_eq!(
@@ -282,11 +295,13 @@ mod tests {
                 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
             ]
         );
+
+        assert_eq!(uuid.to_string(), "0193bac8-a560-7000-8000-000000000000");
     }
 
     #[test]
     fn test_uuid_ver7_generate_2() {
-        let uuid = UuidVer7::test_uuid_2();
+        let uuid = UuidVer7::self_2();
 
         #[rustfmt::skip]
         assert_eq!(
@@ -304,11 +319,13 @@ mod tests {
                 0x00, 0x00, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F,
             ]
         );
+
+        assert_eq!(uuid.to_string(), "01920ef6-46d0-70f0-8000-000f0f0f0f0f");
     }
 
     #[test]
     fn test_uuid_ver7_generate_3() {
-        let uuid = UuidVer7::test_uuid_3();
+        let uuid = UuidVer7::self_3();
 
         // ref: https://datatracker.ietf.org/doc/html/rfc9562#name-example-of-a-uuidv7-value
         #[rustfmt::skip]
@@ -319,26 +336,28 @@ mod tests {
                 0x98, 0xC4, 0xDC, 0x0C, 0x0C, 0x07, 0x39, 0x8F,
             ]
         );
+
+        assert_eq!(uuid.to_string(), "017f22e2-79b0-7cc3-98c4-dc0c0c07398f");
     }
 
     #[test]
     fn test_uuid_ver7_is_uuid_ver7_valid() {
-        let uuid = UuidVer7::test_uuid_1();
+        let uuid = UuidVer7::self_1();
         assert!(UuidVer7::is_uuid_ver7(&uuid.bytes));
 
-        let uuid = UuidVer7::test_uuid_2();
+        let uuid = UuidVer7::self_2();
         assert!(UuidVer7::is_uuid_ver7(&uuid.bytes));
     }
 
     #[test]
     fn test_uuid_ver7_is_uuid_ver7_invalid() {
         // バージョンビットが違う
-        let mut bytes = UuidVer7::test_uuid_1().bytes;
+        let mut bytes = UuidVer7::self_1().bytes;
         bytes[6] = 0x50; // 上位4bitが0b0101 (ver5)
         assert!(!UuidVer7::is_uuid_ver7(&bytes));
 
         // バリアントビットが違う
-        let mut bytes = UuidVer7::test_uuid_1().bytes;
+        let mut bytes = UuidVer7::self_1().bytes;
         bytes[8] = 0x00; // 上位2bitが0b00
         assert!(!UuidVer7::is_uuid_ver7(&bytes));
     }
@@ -347,69 +366,62 @@ mod tests {
     fn test_uuid_ver7_get_datetime() {
         use chrono::TimeZone;
 
-        let uuid_1 = UuidVer7::test_uuid_1();
+        let uuid_1 = UuidVer7::self_1();
         let datetime_1 = chrono::Utc
             .with_ymd_and_hms(2024, 12, 12, 12, 12, 12)
             .unwrap();
         assert_eq!(uuid_1.get_datetime(), datetime_1);
 
-        let uuid_2 = UuidVer7::test_uuid_2();
+        let uuid_2 = UuidVer7::self_2();
         let datetime_2 = chrono::Utc
             .with_ymd_and_hms(2024, 9, 20, 10, 24, 34)
             .unwrap();
         assert_eq!(uuid_2.get_datetime(), datetime_2);
 
-        let uuid_3 = UuidVer7::test_uuid_3();
+        let uuid_3 = UuidVer7::self_3();
         let datetime_3 = chrono::Utc
             .with_ymd_and_hms(2022, 2, 22, 19, 22, 22)
             .unwrap();
         assert_eq!(uuid_3.get_datetime(), datetime_3);
     }
 
-    #[derive(serde::Deserialize)]
-    struct UuidVer7ForTest {
-        inner: UuidVer7,
-    }
-
     #[test]
     fn test_uuid_ver7_deserialization_valid() {
-        // UuidVer7::uuid_1() の bytes を使って、正しいデシリアライズができることを確認
-        let uuid = UuidVer7::test_uuid_1();
-        let json = format!(r#"{{"inner":"{}"}}"#, uuid);
-        let result: Result<UuidVer7ForTest, _> = serde_json::from_str(&json);
-        assert!(result.is_ok());
-        assert_eq!(result.unwrap().inner, uuid);
-    }
+        let uuid = UuidVer7::self_1();
 
+        // lower case
+        let json = "\"0193bac8-a560-7000-8000-000000000000\"";
+        let result: Result<UuidVer7, _> = serde_json::from_str(json);
+        assert_eq!(result.unwrap(), uuid);
+
+        // upper case
+        let json = "\"0193BAC8-A560-7000-8000-000000000000\"";
+        let result: Result<UuidVer7, _> = serde_json::from_str(json);
+        assert_eq!(result.unwrap(), uuid);
+    }
     #[test]
     fn test_uuid_ver7_deserialization_invalid() {
         // バージョンビットが違う
-        let mut bytes = UuidVer7::test_uuid_1().bytes;
+        let mut bytes = UuidVer7::self_1().bytes;
         bytes[6] = 0x50;
-        let json = format!(
-            r#"{{"inner":"{}"}}"#,
-            UuidVer7::bytes_to_uuid_string(&bytes)
-        );
-        let result: Result<UuidVer7ForTest, _> = serde_json::from_str(&json);
+        let json = format!("\"{}\"", UuidVer7::bytes_to_uuid_string(&bytes));
+        let result: Result<UuidVer7, _> = serde_json::from_str(&json);
         assert!(result.is_err());
 
         // バリアントビットが違う
-        let mut bytes = UuidVer7::test_uuid_1().bytes;
+        let mut bytes = UuidVer7::self_1().bytes;
         bytes[8] = 0x00;
-        let json = format!(
-            r#"{{"inner":"{}"}}"#,
-            UuidVer7::bytes_to_uuid_string(&bytes)
-        );
-        let result: Result<UuidVer7ForTest, _> = serde_json::from_str(&json);
+        let json = format!("\"{}\"", UuidVer7::bytes_to_uuid_string(&bytes));
+        let result: Result<UuidVer7, _> = serde_json::from_str(&json);
         assert!(result.is_err());
     }
 
     #[test]
     fn test_uuid_ver7_display() {
-        let uuid = UuidVer7::test_uuid_1();
+        let uuid = UuidVer7::self_1();
         let expected = "0193bac8-a560-7000-8000-000000000000";
         assert_eq!(uuid.to_string(), expected);
-        let uuid = UuidVer7::test_uuid_2();
+        let uuid = UuidVer7::self_2();
         let expected = "01920ef6-46d0-70f0-8000-000f0f0f0f0f";
         assert_eq!(uuid.to_string(), expected);
     }

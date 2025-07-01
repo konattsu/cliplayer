@@ -20,7 +20,7 @@ fn validate_start_end_times(
 }
 
 /// クリップ
-#[derive(serde::Serialize, Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(serde::Serialize, Debug, Clone, PartialEq, Eq)]
 pub enum Clip {
     /// 識別済みのクリップ
     Identified(IdentifiedClip),
@@ -54,16 +54,16 @@ impl<'de> serde::Deserialize<'de> for Clip {
 // MARK: IdentifiedClip
 
 /// 識別済みのクリップ情報
-#[derive(serde::Serialize, Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(serde::Serialize, Debug, Clone, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 #[serde(deny_unknown_fields)]
 pub struct IdentifiedClip {
     /// 曲名
     song_title: String,
     /// 内部アーティストの一覧
-    artists: Vec<crate::model::InternalArtist>,
+    artists: crate::model::InternalArtists,
     /// 外部アーティストの一覧
-    external_artists: Option<Vec<crate::model::ExternalArtist>>,
+    external_artists: Option<crate::model::ExternalArtists>,
     /// 切り抜いた動画が投稿されているか
     is_clipped: bool,
     /// 曲が始まる時間
@@ -83,9 +83,9 @@ pub struct IdentifiedClipInitializer {
     /// 曲名
     pub song_title: String,
     /// 内部アーティストの一覧
-    pub artists: Vec<crate::model::InternalArtist>,
+    pub artists: crate::model::InternalArtists,
     /// 外部アーティストの一覧
-    pub external_artists: Option<Vec<crate::model::ExternalArtist>>,
+    pub external_artists: Option<crate::model::ExternalArtists>,
     /// 切り抜いた動画が投稿されているか
     pub is_clipped: bool,
     /// 曲が始まる時間
@@ -122,6 +122,9 @@ impl IdentifiedClipInitializer {
     }
 }
 
+// TODO 他にもつけたほうがいい制約を熟考する
+//   Self::is_exists的なものに全て統合してもいい
+
 // デシリアライズ時に `start_time` < `end_time` のバリデーションを行うため
 // 独自にDeserializeトレイトを実装している
 impl<'de> serde::Deserialize<'de> for IdentifiedClip {
@@ -132,8 +135,8 @@ impl<'de> serde::Deserialize<'de> for IdentifiedClip {
         #[derive(serde::Deserialize)]
         struct RawIdentifiedClip {
             song_title: String,
-            artists: Vec<crate::model::InternalArtist>,
-            external_artists: Option<Vec<crate::model::ExternalArtist>>,
+            artists: crate::model::InternalArtists,
+            external_artists: Option<crate::model::ExternalArtists>,
             is_clipped: bool,
             start_time: crate::model::Duration,
             end_time: crate::model::Duration,
@@ -167,11 +170,11 @@ impl IdentifiedClip {
     pub fn get_song_title(&self) -> &str {
         &self.song_title
     }
-    pub fn get_artists(&self) -> &[crate::model::InternalArtist] {
+    pub fn get_artists(&self) -> &crate::model::InternalArtists {
         &self.artists
     }
-    pub fn get_external_artists(&self) -> Option<&[crate::model::ExternalArtist]> {
-        self.external_artists.as_deref()
+    pub fn get_external_artists(&self) -> Option<&crate::model::ExternalArtists> {
+        self.external_artists.as_ref()
     }
     pub fn is_clipped(&self) -> bool {
         self.is_clipped
@@ -197,49 +200,19 @@ impl IdentifiedClip {
     }
 }
 
-#[cfg(test)]
-impl IdentifiedClip {
-    pub fn self_1() -> Self {
-        Self {
-            song_title: "test identified clip 1".to_string(),
-            artists: vec![crate::model::InternalArtist::test_name1()],
-            external_artists: None,
-            is_clipped: false,
-            start_time: crate::model::Duration::from_secs(0),
-            end_time: crate::model::Duration::from_secs(10),
-            tags: None,
-            uuid: crate::model::UuidVer7::test_uuid_1(),
-            volume_percent: Some(crate::model::VolumePercent::new(50).unwrap()),
-        }
-    }
-    pub fn self_2() -> Self {
-        Self {
-            song_title: "test identified clip 2".to_string(),
-            artists: vec![crate::model::InternalArtist::test_name2()],
-            external_artists: None,
-            is_clipped: true,
-            start_time: crate::model::Duration::from_secs(5),
-            end_time: crate::model::Duration::from_secs(15),
-            tags: Some(crate::model::TagList::from_vec_str(vec!["tag1", "tag2"])),
-            uuid: crate::model::UuidVer7::test_uuid_2(),
-            volume_percent: None,
-        }
-    }
-}
-
 // MARK: UnidentifiedClip
 
 /// 識別されていないクリップ情報
-#[derive(serde::Serialize, Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(serde::Serialize, Debug, Clone, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 #[serde(deny_unknown_fields)]
 pub struct UnidentifiedClip {
     /// 曲名
     song_title: String,
     /// 内部アーティストの一覧
-    artists: Vec<crate::model::InternalArtist>,
+    artists: crate::model::InternalArtists,
     /// 外部アーティストの一覧
-    external_artists: Option<Vec<crate::model::ExternalArtist>>,
+    external_artists: Option<crate::model::ExternalArtists>,
     /// 切り抜いた動画が投稿されているか
     is_clipped: bool,
     /// 曲が始まる時間
@@ -255,9 +228,9 @@ pub struct UnidentifiedClipInitializer {
     /// 曲名
     pub song_title: String,
     /// 内部アーティストの一覧
-    pub artists: Vec<crate::model::InternalArtist>,
+    pub artists: crate::model::InternalArtists,
     /// 外部アーティストの一覧
-    pub external_artists: Option<Vec<crate::model::ExternalArtist>>,
+    pub external_artists: Option<crate::model::ExternalArtists>,
     /// 切り抜いた動画が投稿されているか
     pub is_clipped: bool,
     /// 曲が始まる時間
@@ -298,8 +271,8 @@ impl<'de> serde::Deserialize<'de> for UnidentifiedClip {
         #[derive(serde::Deserialize)]
         struct RawUnidentifiedClip {
             song_title: String,
-            artists: Vec<crate::model::InternalArtist>,
-            external_artists: Option<Vec<crate::model::ExternalArtist>>,
+            artists: crate::model::InternalArtists,
+            external_artists: Option<crate::model::ExternalArtists>,
             is_clipped: bool,
             start_time: crate::model::Duration,
             end_time: crate::model::Duration,
@@ -329,11 +302,11 @@ impl UnidentifiedClip {
     pub fn get_song_title(&self) -> &str {
         &self.song_title
     }
-    pub fn get_artists(&self) -> &[crate::model::InternalArtist] {
+    pub fn get_artists(&self) -> &crate::model::InternalArtists {
         &self.artists
     }
-    pub fn get_external_artists(&self) -> Option<&[crate::model::ExternalArtist]> {
-        self.external_artists.as_deref()
+    pub fn get_external_artists(&self) -> Option<&crate::model::ExternalArtists> {
+        self.external_artists.as_ref()
     }
     pub fn is_clipped(&self) -> bool {
         self.is_clipped
@@ -354,7 +327,10 @@ impl UnidentifiedClip {
 
     /// 与えられた`datetime`と`start_time`を基にUUIDを生成
     ///
-    /// 引数の`video_upload_date`は日付のみを使用し, 時刻の情報は無視される
+    /// - 引数の`video_upload_date`は日付のみを使用し, 時刻の情報は無視される
+    /// - 時刻の情報は`start_time`に基づいて生成される
+    ///   - e.g. `2024-01-01T12:12:12Z`と`start_time`: 5秒: `2024-01-01T00:00:05Z`となる
+    ///
     ///
     /// - panic: `datetime`をタイムスタンプに変換すると, 48bit符号なし整数で表現できないとき
     ///   - i.e. 1970年1月1日 - 約10895年でないとき
@@ -369,6 +345,7 @@ impl UnidentifiedClip {
         let date = chrono::Utc
             .with_ymd_and_hms(date.year(), date.month(), date.day(), 0, 0, 0)
             .unwrap();
+        // 日付に`start_time`の時間を加える
         let chrono_datetime = date + *self.start_time.as_chrono_duration();
 
         let dt = crate::model::VideoPublishedAt::new(chrono_datetime).unwrap();
@@ -396,32 +373,6 @@ impl UnidentifiedClip {
         // UnidentifiedClipでも `start_time` < `end_time` は保証されているため
         // unwrap()でpanicにならない
         .unwrap()
-    }
-}
-
-#[cfg(test)]
-impl UnidentifiedClip {
-    pub fn self_1() -> Self {
-        Self {
-            song_title: "test unidentified clip 1".to_string(),
-            artists: vec![crate::model::InternalArtist::test_name1()],
-            external_artists: None,
-            is_clipped: false,
-            start_time: crate::model::Duration::from_secs(0),
-            end_time: crate::model::Duration::from_secs(10),
-            tags: None,
-        }
-    }
-    pub fn self_2() -> Self {
-        Self {
-            song_title: "test unidentified clip 2".to_string(),
-            artists: vec![crate::model::InternalArtist::test_name2()],
-            external_artists: None,
-            is_clipped: true,
-            start_time: crate::model::Duration::from_secs(5),
-            end_time: crate::model::Duration::from_secs(15),
-            tags: Some(crate::model::TagList::from_vec_str(vec!["tag1", "tag2"])),
-        }
     }
 }
 
@@ -493,7 +444,7 @@ mod tests {
         );
         assert_eq!(
             clip.get_tags().unwrap(),
-            &crate::model::TagList::from_vec_str(vec!["tag1", "tag2"])
+            &crate::model::TagList::test_tag_list_1()
         );
         assert_eq!(
             clip.get_uuid(),
@@ -574,7 +525,7 @@ mod tests {
     ) -> UnidentifiedClip {
         UnidentifiedClip {
             song_title: "Test Clip".to_string(),
-            artists: vec![crate::model::InternalArtist::test_name1()],
+            artists: crate::model::InternalArtists::test_name_1(),
             external_artists: None,
             is_clipped: true,
             start_time: start_time.clone(),

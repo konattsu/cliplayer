@@ -35,15 +35,15 @@ impl ChannelId {
 
 #[cfg(test)]
 impl ChannelId {
-    /// return `UC111111111111111111111111`
+    /// return `UC111111111111111111111111` (26chars)
     pub fn test_id_1() -> Self {
         ChannelId::new("UC111111111111111111111111".to_string()).unwrap()
     }
-    /// return `UC222222222222222222222222`
+    /// return `UC222222222222222222222222` (26chars)
     pub fn test_id_2() -> Self {
         ChannelId::new("UC222222222222222222222222".to_string()).unwrap()
     }
-    /// return `UC333333333333333333333333`
+    /// return `UC333333333333333333333333` (26chars)
     pub fn test_id_3() -> Self {
         ChannelId::new("UC333333333333333333333333".to_string()).unwrap()
     }
@@ -79,9 +79,9 @@ mod tests {
     #[test]
     fn test_channel_id_invalid_format() {
         // missing prefix
-        assert!(ChannelId::new("Ucbcdefghijklmno12345678".to_string()).is_err());
+        assert!(ChannelId::new("Uabcdefghijklmno12345678".to_string()).is_err());
         // invalid characters
-        assert!(ChannelId::new("UCabcdefghijklmno1234567!".to_string()).is_err());
-        assert!(ChannelId::new("UCabcdefghijklmno123456 4".to_string()).is_err());
+        assert!(ChannelId::new("UCabcdefghijklmno123456!".to_string()).is_err());
+        assert!(ChannelId::new("UCabcdefghijklmno12345 4".to_string()).is_err());
     }
 }

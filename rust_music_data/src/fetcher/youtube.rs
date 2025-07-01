@@ -5,26 +5,13 @@ mod yt_api_const {
     pub const MAX_RESULTS: u8 = 50;
 }
 
-#[derive(Debug, Clone)]
-/// YouTube APIから動画情報を取得した結果
-pub enum FetchResult {
-    /// Clipのfinalizeに失敗
-    FinalizationError(crate::model::VideoFinalizationError),
-    /// 動画が存在しなかった
-    NotExistVideo(crate::model::VideoId),
-    /// 動画情報の取得に成功
-    Ok(crate::model::FinalizedVideo),
-}
-
 /// YouTube APIを利用するための構造体
 #[derive(Debug)]
 pub struct YouTubeApi {
     /// api key
     api_key: crate::model::YouTubeApiKey,
-    /// fetch待ちの動画ID
-    pending_ids: Vec<crate::model::VideoId>,
-    /// クリップ付き動画情報とfetchした動画情報のペア
-    drafts_with_fetch: Vec<DraftVideoWithFetch>,
+    /// 現在の状態
+    state: super::state::ApiState,
 }
 
 impl YouTubeApi {
@@ -32,50 +19,26 @@ impl YouTubeApi {
     pub fn new(api_key: crate::model::YouTubeApiKey) -> Self {
         Self {
             api_key,
-            pending_ids: Vec::new(),
-            drafts_with_fetch: Vec::new(),
+            state: super::state::ApiState::Init,
         }
-    }
-
-    /// 取得してきた動画情報を最終的な結果に変換
-    ///
-    /// - Error: まだ動画情報を取得していない動画IDが存在する場合
-    /// - Ok: すべての動画情報を取得している場合
-    fn finalize_results(self) -> anyhow::Result<Vec<FetchResult>> {
-        if !self.pending_ids.is_empty() {
-            tracing::error!(pending_ids = ?self.pending_ids, "There are still pending video IDs");
-            return Err(anyhow::anyhow!(format!(
-                "There are still pending video IDs: {:?}",
-                self.pending_ids
-            )));
-        }
-
-        let mut res: Vec<FetchResult> =
-            Vec::with_capacity(self.drafts_with_fetch.len());
-
-        self.drafts_with_fetch
-            .into_iter()
-            .for_each(|draft_with_fetch| {
-                res.push(draft_with_fetch.finalize_result());
-            });
-        Ok(res)
     }
 
     /// 次の動画idのバッチを取得
     ///
-    /// 動画idのバッチは最大で `yt_api::MAX_RESULTS`
+    /// 動画idのバッチは最大で `yt_api_const::MAX_RESULTS`
     #[tracing::instrument(level = tracing::Level::TRACE, skip(self), ret)]
-    async fn next_video_id_batch(&mut self) -> Vec<crate::model::VideoId> {
-        let mut batch = Vec::new();
+    fn drain_next_video_id_batch(
+        &mut self,
+    ) -> Result<Vec<crate::model::VideoId>, super::state::ApiStateError> {
+        // `state`がFetching状態でないことはないのでunwrapで落とす
+        // anyhow::Context使いたがったがselfの可変参照渡してしまっているので無理
+        let state_fetching = self.state.expect_fetching_mut()?;
 
-        let batch_size = yt_api_const::MAX_RESULTS;
-        for _ in 0..batch_size {
-            if self.pending_ids.is_empty() {
-                break;
-            }
-            batch.push(self.pending_ids.remove(0));
-        }
-        batch
+        let max_batch_size = yt_api_const::MAX_RESULTS as usize;
+        Ok(state_fetching
+            .pending_ids
+            .drain(0..max_batch_size.min(state_fetching.pending_ids.len()))
+            .collect())
     }
 
     /// 動画情報を取得するためのurlを生成
@@ -85,10 +48,10 @@ impl YouTubeApi {
     /// - Some: まだ動画情報を取得してない動画が存在するとき
     /// - None: 取得する動画が存在しないとき
     #[tracing::instrument(level = tracing::Level::TRACE, skip(self))]
-    async fn generate_url(&mut self) -> Option<String> {
-        let batch_video_ids = self.next_video_id_batch().await;
+    fn generate_url(&mut self) -> Result<Option<String>, super::state::ApiStateError> {
+        let batch_video_ids = self.drain_next_video_id_batch()?;
         let batch_video_ids_str = if batch_video_ids.is_empty() {
-            return None;
+            return Ok(None);
         } else {
             batch_video_ids
                 .iter()
@@ -97,32 +60,41 @@ impl YouTubeApi {
                 .join(",")
         };
 
-        Some(format!(
+        Ok(Some(format!(
             "{}?part={}&maxResults={}&id={}&key={}",
             yt_api_const::ENDPOINT,
             yt_api_const::PARTS,
             yt_api_const::MAX_RESULTS,
             batch_video_ids_str,
             self.api_key.as_str()
-        ))
+        )))
     }
 
     /// 取得してきた動画情報をdraftと紐づける
     ///
     /// draftで存在しない動画idを指定していれば, そのidには何も紐づけられない
-    async fn map_fetched_to_draft(
+    async fn assign_fetched_to_drafts(
         &mut self,
-        response: super::youtube_api_response::YouTubeApiResponse,
-    ) {
+        response: super::response::YouTubeApiResponse,
+    ) -> Result<(), super::state::ApiStateError> {
+        // ここのループは最大で`MAX_RESULTS`回
         for item in response.items {
-            if let Some(draft) = self
-                .drafts_with_fetch
+            let draft = self
+                .state
+                .expect_fetching_mut()?
+                .draft_video_with_fetched
                 .iter_mut()
-                .find(|df| df.draft.get_video_id() == &item.id)
-            {
-                draft.fetched = Some(item);
+                // この探索時間はO(n)で, 一度に大量の動画をfetchすることはないので
+                // hashmapを使った最適化などは考えない
+                .find(|df| df.draft.get_video_id() == &item.id);
+            match draft {
+                Some(d) => d.fetched = Some(item),
+                None => {
+                    tracing::trace!("Draft not found for video ID: {}", item.id);
+                }
             }
         }
+        Ok(())
     }
 
     /// YouTube APIにリクエストを投げる
@@ -141,32 +113,32 @@ impl YouTubeApi {
     /// YouTube APIのレスポンスをパースする
     async fn parse_response(
         res: reqwest::Response,
-    ) -> Result<
-        super::youtube_api_response::YouTubeApiResponse,
-        crate::fetcher::YouTubeApiError,
-    > {
-        res.json::<super::youtube_api_response::YouTubeApiResponse>()
+    ) -> Result<super::response::YouTubeApiResponse, crate::fetcher::YouTubeApiError>
+    {
+        res.json::<super::response::YouTubeApiResponse>()
             .await
             .map_err(|e| {
-                let e = e.to_string();
-                tracing::error!("Failed to parse YouTube API response: {}", e);
-                crate::fetcher::YouTubeApiError::ResponseParseError(e)
+                crate::fetcher::YouTubeApiError::ResponseParseError(e.to_string())
             })
     }
 
     /// 与えられたurlからapiを呼び出して動画情報を取得する
     #[tracing::instrument(level = tracing::Level::TRACE, skip(self, url), ret)]
-    async fn fetch_and_parse(
+    async fn fetch_and_update_drafts(
         &mut self,
         url: &str,
-    ) -> Result<(), crate::fetcher::YouTubeApiError> {
+    ) -> Result<Result<(), crate::fetcher::YouTubeApiError>, super::state::ApiStateError>
+    {
         use crate::fetcher::YouTubeApiError;
 
-        let res = Self::send_request(url).await?;
+        let res = match Self::send_request(url).await {
+            Ok(r) => r,
+            Err(e) => return Ok(Err(e)),
+        };
         // - 存在しない動画idを指定しても200が返ってくる
         // - 複数指定の場合は, その存在しない動画idはitemsに含まれない
 
-        // 最大でMAX_RESULTSまでの動画idしか含んでいないため,
+        // 最大でMAX_RESULTSまでの動画idしかurlに含んでいないため,
         // next_page_tokenを使用して再度リクエストを送信する必要はない
 
         match res.status() {
@@ -174,14 +146,12 @@ impl YouTubeApi {
                 let response = match Self::parse_response(res).await {
                     Ok(resp) => resp,
                     Err(e) => {
-                        let e = e.to_string();
-                        // ここでparseできないことは無いと思っているのでerror出す
-                        tracing::error!("Failed to parse YouTube API response: {}", e);
-                        return Err(YouTubeApiError::ResponseParseError(e));
+                        tracing::warn!("Failed to parse YouTube API response");
+                        return Ok(Err(e));
                     }
                 };
-                self.map_fetched_to_draft(response).await;
-                Ok(())
+                self.assign_fetched_to_drafts(response).await?;
+                Ok(Ok(()))
             }
             reqwest::StatusCode::FORBIDDEN => {
                 let error_message = res
@@ -189,7 +159,7 @@ impl YouTubeApi {
                     .await
                     .unwrap_or_else(|_| "(No error message)".to_string());
                 tracing::warn!("YouTube API returned Forbidden: {}", error_message);
-                Err(YouTubeApiError::Forbidden(error_message))
+                Ok(Err(YouTubeApiError::Forbidden(error_message)))
             }
             _ => {
                 let status = res.status();
@@ -198,16 +168,20 @@ impl YouTubeApi {
                     .await
                     .unwrap_or_else(|_| "(No error message)".to_string());
                 tracing::warn!("YouTube API error: {} - {}", status, error_message);
-                Err(YouTubeApiError::OtherApiError {
+                Ok(Err(YouTubeApiError::OtherApiError {
                     status,
                     message: error_message,
-                })
+                }))
             }
         }
     }
 
-    async fn fetch_process(&mut self) -> Result<(), crate::fetcher::YouTubeApiError> {
+    async fn fetch_process(
+        &mut self,
+    ) -> Result<Result<(), crate::fetcher::YouTubeApiError>, super::state::ApiStateError>
+    {
         const MAX_RETRY: u8 = 3;
+        // 8req/s まで抑える
         const REQUEST_DELAY: tokio::time::Duration =
             tokio::time::Duration::from_millis(125);
         const REQUEST_DELAY_RETRY: tokio::time::Duration =
@@ -215,7 +189,7 @@ impl YouTubeApi {
 
         // urlを作れなくなるまでループ
         loop {
-            let url = match self.generate_url().await {
+            let url = match self.generate_url()? {
                 Some(url) => url,
                 None => {
                     tracing::info!("no more video IDs to fetch");
@@ -226,15 +200,15 @@ impl YouTubeApi {
             let mut retry_count = 0;
             // リトライ用のループ, 正常なときはループせず抜ける
             loop {
-                match self.fetch_and_parse(&url).await {
-                    Ok(_) => {
+                match self.fetch_and_update_drafts(&url).await? {
+                    Ok(..) => {
                         break;
                     }
                     Err(e) => {
                         retry_count += 1;
                         if retry_count >= MAX_RETRY {
                             tracing::error!(error = ?e, "YouTube API fetch error after retries");
-                            return Err(e);
+                            return Ok(Err(e));
                         }
                         tracing::warn!(
                             error = ?e,
@@ -249,73 +223,53 @@ impl YouTubeApi {
             // for rate limiting
             tokio::time::sleep(REQUEST_DELAY).await;
         }
-
-        Ok(())
+        Ok(Ok(()))
     }
 
+    /// YouTube Apiを呼び出して動画情報を取得する
+    ///
+    /// # Arguments:
+    /// - `drafts`動画情報を取得したい動画のリスト
+    ///
+    /// # Returns:
+    /// - `Ok(Ok(...))`: api呼び出しが全て成功し, 期待している形式の動画情報を取得できたとき
+    /// - `Ok(Err(...))`: なんらかの原因により, 途中でYouTube Api呼び出しをあきらめたとき
+    /// - `Err(...)`: 内部的な状態遷移に失敗したとき
     pub async fn run(
         mut self,
         drafts: Vec<crate::model::DraftVideo>,
-    ) -> Result<Vec<FetchResult>, crate::fetcher::YouTubeApiError> {
-        self.pending_ids = drafts.iter().map(|d| d.get_video_id().clone()).collect();
-        self.drafts_with_fetch =
-            drafts.into_iter().map(DraftVideoWithFetch::new).collect();
+    ) -> anyhow::Result<
+        Result<Vec<crate::fetcher::FetchResult>, crate::fetcher::YouTubeApiError>,
+    > {
+        use anyhow::Context;
 
-        match self.fetch_process().await {
-            Ok(_) => {
+        self.state = self
+            .state
+            .transition_to_fetching(drafts)
+            .context("transition_to_fetching failed")?;
+
+        match self.fetch_process().await.context("fetch_process failed")? {
+            Ok(..) => {
+                // api呼び出し, parse, draftへの紐づけが全て成功したとき
                 tracing::info!("Successfully fetched video details.");
             }
             Err(e) => {
+                // 途中でapi呼び出しをあきらめたとき
                 tracing::error!(error = ?e, "Failed to fetch video details.");
-                return Err(e);
+                return Ok(Err(e));
             }
         };
 
-        // TODO ネットワークエラーとかで全ての動画に対してfetch出来ていないときがある
-        // 全ての動画に対してfetchしているのでunwrapする
-        Ok(self.finalize_results().unwrap())
-    }
-}
+        // `state`を`Fetched`に遷移させる
+        self.state = self
+            .state
+            .transition_to_fetched()
+            .context("transition_to_fetched failed")?;
 
-/// クリップ付き動画情報とfetchした動画情報のペア
-#[derive(Debug, Clone)]
-struct DraftVideoWithFetch {
-    draft: crate::model::DraftVideo,
-    fetched: Option<super::youtube_api_response::YouTubeApiItem>,
-}
-
-impl DraftVideoWithFetch {
-    fn new(draft: crate::model::DraftVideo) -> Self {
-        Self {
-            draft,
-            fetched: None,
-        }
-    }
-
-    /// 最終的な結果にfinalizeする
-    fn finalize_result(self) -> FetchResult {
-        let fetched = match self.fetched {
-            Some(f) => f,
-            None => {
-                tracing::error!(
-                    "video_id = %self.draft.get_video_id(), video not found",
-                );
-                return FetchResult::NotExistVideo(self.draft.into_video_id());
-            }
-        };
-
-        let video_details =
-            fetched.into_video_details(Some(self.draft.get_tags().clone()));
-
-        match crate::model::FinalizedVideo::finalize_from_unidentified_clips(
-            video_details,
-            self.draft.into_unidentified(),
-        ) {
-            Ok(f) => FetchResult::Ok(f),
-            Err(e) => {
-                tracing::error!("failed to finalize video: {}", e);
-                FetchResult::FinalizationError(e)
-            }
-        }
+        // `state`を`Finalized`に遷移させる
+        Ok(Ok(self
+            .state
+            .into_finalized()
+            .context(" transition_to_finalized failed")?))
     }
 }
