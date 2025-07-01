@@ -1,7 +1,5 @@
 /// 動画の公開状況
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, Copy, PartialEq, Eq, Hash,
-)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone, Copy)]
 #[serde(rename_all = "camelCase")]
 pub enum PrivacyStatus {
     /// 公開

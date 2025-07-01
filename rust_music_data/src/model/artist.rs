@@ -1,10 +1,5 @@
-/// 内部アーティスト
-///
-/// 事前に定義したアーティストIDのうちのどれかであることを保証
-#[derive(Debug, serde::Deserialize, serde::Serialize, Clone, PartialEq, Eq, Hash)]
-pub struct InternalArtist(String);
-
 // TODO アーティストのjsonファイルの構造を確認する
+// TODO 単品(`InternalArtist`や`ExternalArtist`)非公開でもいい
 
 // テストでは静的に値を定義
 // rust-analyzerがこれ(本番用)をinactiveにするが無視していい
@@ -32,27 +27,78 @@ static ARTIST_SET: once_cell::sync::Lazy<std::collections::HashSet<String>> =
         .into()
     });
 
+// MARK: Internal
+
+/// 内部アーティスト
+///
+/// 事前に定義したアーティストIDのうちのどれかであることを保証
+#[derive(Debug, serde::Serialize, Clone, PartialEq, Eq)]
+pub struct InternalArtist(String);
+
+/// 内部アーティストのリスト
+///
+/// `artists` フィールドに `InternalArtist` のリストを保持
+///
+/// - `artists` は空でないことを保証
+#[derive(Debug, serde::Serialize, Clone, PartialEq, Eq)]
+pub struct InternalArtists(Vec<InternalArtist>);
+
 impl InternalArtist {
-    pub fn new<'a, T: Into<std::borrow::Cow<'a, str>>>(id: T) -> Result<Self, String> {
+    fn new<'a, T: Into<std::borrow::Cow<'a, str>>>(id: T) -> Result<Self, String> {
         let id = id.into();
         if !Self::is_valid_internal_artist(&id) {
-            Err(format!("invalid artist ID: {}", id))
+            Err(format!("invalid artist : {}", id))
         } else {
             Ok(InternalArtist(id.into_owned()))
         }
     }
 
     /// 有効な内部アーティストIDかどうか
-    pub fn is_valid_internal_artist(id: &str) -> bool {
+    fn is_valid_internal_artist(id: &str) -> bool {
         ARTIST_SET.contains(id)
     }
 }
 
-impl std::str::FromStr for InternalArtist {
-    type Err = String;
+// デシリアライズ時にも`Self`の存在条件を確認するためのカスタムデシリアライザ
+impl<'de> serde::Deserialize<'de> for InternalArtist {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let id: String = serde::Deserialize::deserialize(deserializer)?;
+        Self::new(id).map_err(serde::de::Error::custom)
+    }
+}
 
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Self::new(s)
+impl InternalArtists {
+    fn new(artists: Vec<InternalArtist>) -> Result<Self, &'static str> {
+        if artists.is_empty() {
+            Err("artists list cannot be empty")
+        } else {
+            Ok(InternalArtists(artists))
+        }
+    }
+
+    pub fn len(&self) -> usize {
+        self.0.len()
+    }
+}
+
+// artistsが空でないことを保証するためのカスタムデシリアライザ
+impl<'de> serde::Deserialize<'de> for InternalArtists {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        #[derive(serde::Deserialize)]
+        struct RawInternalArtists(Vec<InternalArtist>);
+
+        let raw = RawInternalArtists::deserialize(deserializer)?;
+        if raw.0.is_empty() {
+            Err(serde::de::Error::custom("artists list cannot be empty"))
+        } else {
+            Ok(InternalArtists(raw.0))
+        }
     }
 }
 
@@ -60,31 +106,49 @@ impl std::str::FromStr for InternalArtist {
 impl InternalArtist {
     /// Aimer Test
     pub fn test_name1() -> Self {
-        Self("Aimer Test".to_string())
+        Self::new("Aimer Test").unwrap()
     }
     /// Eir Aoi Test
     pub fn test_name2() -> Self {
-        Self("Eir Aoi Test".to_string())
+        Self::new("Eir Aoi Test").unwrap()
     }
     /// Lisa Test
     pub fn test_name3() -> Self {
-        Self("Lisa Test".to_string())
+        Self::new("Lisa Test").unwrap()
     }
 }
+
+#[cfg(test)]
+impl InternalArtists {
+    pub fn test_name_1() -> Self {
+        Self::new(vec![InternalArtist::test_name1()]).unwrap()
+    }
+    pub fn test_name_2() -> Self {
+        Self::new(vec![InternalArtist::test_name2()]).unwrap()
+    }
+    pub fn test_name_3() -> Self {
+        Self::new(vec![InternalArtist::test_name3()]).unwrap()
+    }
+}
+
+// MARK: External
 
 /// 外部アーティスト
 ///
 /// 以下を保証
 /// - 内部アーティストIDと重複しないこと
 /// - 空文字列でないこと
-#[derive(Debug, serde::Deserialize, serde::Serialize, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, serde::Serialize, Clone, PartialEq, Eq)]
 pub struct ExternalArtist(String);
+
+#[derive(Debug, serde::Serialize, Clone, PartialEq, Eq)]
+pub struct ExternalArtists(Vec<ExternalArtist>);
 
 impl ExternalArtist {
     /// 新しい外部アーティストを生成
     /// - 内部アーティストIDと重複しないこと
     /// - 空文字列でないこと
-    pub fn new<'a, T: Into<std::borrow::Cow<'a, str>>>(id: T) -> Result<Self, String> {
+    fn new<'a, T: Into<std::borrow::Cow<'a, str>>>(id: T) -> Result<Self, String> {
         let id = id.into();
         // 内部アーティストIDと重複しない、かつ空文字列でないこと
         if Self::is_valid_external_artist(&id) {
@@ -97,8 +161,47 @@ impl ExternalArtist {
     /// 有効な外部アーティストIDかどうか
     /// - 内部アーティストIDと重複しないこと
     /// - 空文字列でないこと
-    pub fn is_valid_external_artist(id: &str) -> bool {
+    fn is_valid_external_artist(id: &str) -> bool {
         !InternalArtist::is_valid_internal_artist(id) && !id.is_empty()
+    }
+}
+
+// デシリアライズ時にも`Self`の存在条件を確認するためのカスタムデシリアライザ
+impl<'de> serde::Deserialize<'de> for ExternalArtist {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let id: String = serde::Deserialize::deserialize(deserializer)?;
+        Self::new(id).map_err(serde::de::Error::custom)
+    }
+}
+
+impl ExternalArtists {
+    fn new(artists: Vec<ExternalArtist>) -> Result<Self, &'static str> {
+        if artists.is_empty() {
+            Err("artists list cannot be empty")
+        } else {
+            Ok(ExternalArtists(artists))
+        }
+    }
+}
+
+// artistsが空でないことを保証するためのカスタムデシリアライザ
+impl<'de> serde::Deserialize<'de> for ExternalArtists {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        #[derive(serde::Deserialize)]
+        struct RawExternalArtists(Vec<ExternalArtist>);
+
+        let raw = RawExternalArtists::deserialize(deserializer)?;
+        if raw.0.is_empty() {
+            Err(serde::de::Error::custom("artists list cannot be empty"))
+        } else {
+            Ok(ExternalArtists(raw.0))
+        }
     }
 }
 
@@ -106,21 +209,47 @@ impl ExternalArtist {
 impl ExternalArtist {
     /// Apple Mike
     pub fn test_name1() -> Self {
-        Self("Apple Mike".to_string())
+        Self::new("Apple Mike").unwrap()
     }
     /// Milk Mike
     pub fn test_name2() -> Self {
-        Self("Milk Mike".to_string())
+        Self::new("Milk Mike").unwrap()
     }
     /// Banana Mike
     pub fn test_name3() -> Self {
-        Self("Banana Mike".to_string())
+        Self::new("Banana Mike").unwrap()
     }
 }
 
 #[cfg(test)]
+impl ExternalArtists {
+    pub fn test_name1() -> Self {
+        Self::new(vec![ExternalArtist::test_name1()]).unwrap()
+    }
+    pub fn test_name2() -> Self {
+        Self::new(vec![ExternalArtist::test_name2()]).unwrap()
+    }
+    pub fn test_name3() -> Self {
+        Self::new(vec![ExternalArtist::test_name3()]).unwrap()
+    }
+}
+
+// MARK: Tests
+
+#[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_artist_function_for_test_works() {
+        assert_eq!(InternalArtist::test_name1().0, "Aimer Test");
+        assert_eq!(InternalArtist::test_name2().0, "Eir Aoi Test");
+        assert_eq!(InternalArtist::test_name3().0, "Lisa Test");
+
+        assert_eq!(ExternalArtist::test_name1().0, "Apple Mike");
+        assert_eq!(ExternalArtist::test_name2().0, "Milk Mike");
+        assert_eq!(ExternalArtist::test_name3().0, "Banana Mike");
+    }
 
     #[test]
     fn test_artist_new_valid() {
@@ -147,5 +276,88 @@ mod tests {
         assert!(ExternalArtist::new("Eir Aoi Test").is_err());
         assert!(ExternalArtist::new("Lisa Test").is_err());
         assert!(ExternalArtist::new("").is_err());
+    }
+
+    #[test]
+    fn test_internal_artist_deserialize_valid() {
+        let json = r#""Aimer Test""#;
+        let artist: InternalArtist =
+            serde_json::from_str(json).expect("Failed to deserialize internal artist");
+        assert_eq!(artist.0, "Aimer Test");
+        let json = r#""Eir Aoi Test""#;
+        let artist: InternalArtist =
+            serde_json::from_str(json).expect("Failed to deserialize internal artist");
+        assert_eq!(artist.0, "Eir Aoi Test");
+    }
+
+    #[test]
+    fn test_internal_artist_deserialize_invalid() {
+        // 無効なアーティストID
+        let json = r#""Invalid Artist""#;
+        let result: Result<InternalArtist, _> = serde_json::from_str(json);
+        assert!(
+            result.is_err(),
+            "Expected error for invalid internal artist"
+        );
+        // 空文字列
+        let json = r#""""#;
+        let result: Result<InternalArtist, _> = serde_json::from_str(json);
+        assert!(result.is_err(), "Expected error for empty internal artist");
+    }
+
+    #[test]
+    fn test_external_artist_deserialize_valid() {
+        let json = r#""External Artist""#;
+        let artist: ExternalArtist =
+            serde_json::from_str(json).expect("Failed to deserialize external artist");
+        assert_eq!(artist.0, "External Artist");
+
+        let json = r#""Another Artist""#;
+        let artist: ExternalArtist =
+            serde_json::from_str(json).expect("Failed to deserialize external artist");
+        assert_eq!(artist.0, "Another Artist");
+    }
+
+    #[test]
+    fn test_external_artist_deserialize_invalid() {
+        // 内部アーティストIDと重複する
+        let json = r#""Aimer Test""#;
+        let result: Result<ExternalArtist, _> = serde_json::from_str(json);
+        assert!(
+            result.is_err(),
+            "Expected error for external artist with internal ID"
+        );
+        // 空文字列
+        let json = r#""""#;
+        let result: Result<ExternalArtist, _> = serde_json::from_str(json);
+        assert!(result.is_err(), "Expected error for empty external artist");
+    }
+
+    #[test]
+    fn test_internal_artists_deserialize_valid() {
+        let json = r#"["Aimer Test", "Eir Aoi Test", "Lisa Test"]"#;
+        let _artists: InternalArtists =
+            serde_json::from_str(json).expect("Failed to deserialize internal artists");
+    }
+
+    #[test]
+    fn test_internal_artists_deserialize_invalid() {
+        let json = r#"[]"#; // 空の配列は許容されない
+        let result: Result<InternalArtists, _> = serde_json::from_str(json);
+        assert!(result.is_err(), "Expected error for empty artists list");
+    }
+
+    #[test]
+    fn test_external_artists_deserialize_valid() {
+        let json = r#"["External Artist 1", "External Artist 2"]"#;
+        let _artists: ExternalArtists =
+            serde_json::from_str(json).expect("Failed to deserialize external artists");
+    }
+
+    #[test]
+    fn test_external_artists_deserialize_invalid() {
+        let json = r#"[]"#; // 空の配列は許容されない
+        let result: Result<ExternalArtists, _> = serde_json::from_str(json);
+        assert!(result.is_err(), "Expected error for empty artists list");
     }
 }

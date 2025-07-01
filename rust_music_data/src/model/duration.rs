@@ -1,7 +1,7 @@
 /// ISO 8601 Duration型
 ///
 /// - 0..100時間まで
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Duration {
     inner: chrono::Duration,
 }
@@ -164,9 +164,39 @@ impl<'de> serde::Deserialize<'de> for Duration {
 }
 
 #[cfg(test)]
+impl Duration {
+    /// returns `PT10S`
+    pub fn self_1() -> Self {
+        use std::str::FromStr;
+        Self::from_str("PT10S").unwrap()
+    }
+    /// returns `PT20M`
+    pub fn self_2() -> Self {
+        use std::str::FromStr;
+        Self::from_str("PT20M").unwrap()
+    }
+    /// returns `PT1H`
+    pub fn self_3() -> Self {
+        use std::str::FromStr;
+        Self::from_str("PT1H").unwrap()
+    }
+}
+
+#[cfg(test)]
 mod tests {
     use super::*;
     use std::str::FromStr;
+
+    #[test]
+    fn test_duration_test() {
+        let duration_1 = Duration::self_1();
+        let duration_2 = Duration::self_2();
+        let duration_3 = Duration::self_3();
+
+        assert_eq!(duration_1.to_string(), "PT10S");
+        assert_eq!(duration_2.to_string(), "PT20M");
+        assert_eq!(duration_3.to_string(), "PT1H");
+    }
 
     #[test]
     fn test_duration_from_str_valid() {
