@@ -42,14 +42,13 @@ impl YouTubeApiItem {
     pub(super) fn into_video_details(
         self,
         tags: Option<crate::model::TagList>,
-    ) -> crate::model::VideoDetails {
-        crate::model::VideoDetailsInitializer {
+    ) -> crate::model::VideoDetail {
+        crate::model::VideoDetailInitializer {
             video_id: self.id,
             title: self.snippet.title,
             channel_id: self.snippet.channel_id,
             channel_name: self.snippet.channel_title,
             published_at: self.snippet.published_at,
-            // TODO 適しているか確認
             modified_at: chrono::Utc::now(),
             duration: self.content_details.duration,
             privacy_status: self.status.privacy_status,

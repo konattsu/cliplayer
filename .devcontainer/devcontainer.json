@@ -1,3 +1,10 @@
+// wslからの起動が安定しない問題の解決方法
+// wsl> `code .`
+// vscodeが立ち上がるので, その上でrebuild and reopen in container
+// wsl> `sudo systemctl restart docker`
+// vscode側で接続が切れた旨の通知, reload windowsを促されるので従う
+// vscodeで`rebuild`, 直る
+
 {
   "name": "TypeScript",
   "service": "ts_react_dev",

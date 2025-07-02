@@ -1,17 +1,20 @@
 /// 動画のアップロード時間
 ///
-/// タイムスタンプに直したとき, 符号なし48bitで表現できる範囲内であることを保証
+/// - ミリ秒以下は切り捨て
+/// - タイムスタンプに直したとき, 符号なし48bitで表現できる範囲内であることを保証
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct VideoPublishedAt(chrono::DateTime<chrono::Utc>);
 
 impl VideoPublishedAt {
     /// 動画のアップデート時間を生成
     ///
+    /// ミリ秒以下は切り捨てられる
+    ///
     /// - Error: `upload_at`が符号なし48ビットのタイムスタンプの範囲外の場合
     ///   - i.e. `0..2^48-1` millisの範囲外
     pub fn new(upload_at: chrono::DateTime<chrono::Utc>) -> Result<Self, &'static str> {
         Self::validate_unsigned_48bit_timestamp(upload_at)?;
-        Ok(VideoPublishedAt(upload_at))
+        Ok(VideoPublishedAt(Self::truncate_millis(upload_at)))
     }
 
     pub fn as_chrono_datetime(&self) -> &chrono::DateTime<chrono::Utc> {
@@ -46,15 +49,34 @@ impl VideoPublishedAt {
         }
         Ok(())
     }
+
+    /// ミリ秒以下を切り捨て
+    fn truncate_millis(
+        dt: chrono::DateTime<chrono::Utc>,
+    ) -> chrono::DateTime<chrono::Utc> {
+        use chrono::TimeZone;
+        let secs = dt.timestamp();
+        chrono::Utc.timestamp_opt(secs, 0).unwrap()
+    }
 }
 
+impl std::fmt::Display for VideoPublishedAt {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            self.0.to_rfc3339_opts(chrono::SecondsFormat::Secs, true)
+        )
+    }
+}
+
+// Display側に委譲
 impl serde::Serialize for VideoPublishedAt {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: serde::Serializer,
     {
-        serializer
-            .serialize_str(&self.0.to_rfc3339_opts(chrono::SecondsFormat::Secs, true))
+        serializer.serialize_str(self.to_string().as_str())
     }
 }
 
@@ -95,22 +117,19 @@ impl VideoPublishedAt {
     /// returns `2024-01-01T01:01:01Z`
     pub fn self_1() -> Self {
         use chrono::TimeZone;
-        let dt =
-            chrono::Utc::with_ymd_and_hms(&chrono::Utc, 2024, 1, 1, 1, 1, 1).unwrap();
+        let dt = chrono::Utc.with_ymd_and_hms(2024, 1, 1, 1, 1, 1).unwrap();
         VideoPublishedAt::new(dt).unwrap()
     }
     /// returns `2024-02-02T02:02:02Z`
     pub fn self_2() -> Self {
         use chrono::TimeZone;
-        let dt =
-            chrono::Utc::with_ymd_and_hms(&chrono::Utc, 2024, 2, 2, 2, 2, 2).unwrap();
+        let dt = chrono::Utc.with_ymd_and_hms(2024, 2, 2, 2, 2, 2).unwrap();
         VideoPublishedAt::new(dt).unwrap()
     }
     /// returns `2024-03-03T03:03:03Z`
     pub fn self_3() -> Self {
         use chrono::TimeZone;
-        let dt =
-            chrono::Utc::with_ymd_and_hms(&chrono::Utc, 2024, 3, 3, 3, 3, 3).unwrap();
+        let dt = chrono::Utc.with_ymd_and_hms(2024, 3, 3, 3, 3, 3).unwrap();
         VideoPublishedAt::new(dt).unwrap()
     }
 }

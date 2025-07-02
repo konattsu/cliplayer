@@ -1,6 +1,6 @@
 /// ISO 8601 Duration型
 ///
-/// - 0..100時間まで
+/// - 0..24時間まで
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Duration {
     inner: chrono::Duration,
@@ -10,14 +10,14 @@ impl Duration {
     pub fn from_chrono_duration(
         duration: chrono::Duration,
     ) -> Result<Duration, &'static str> {
-        Self::validate_within_100_hours(duration)
+        Self::validate_within_24_hours(duration)
     }
 
     pub fn from_secs(secs: u16) -> Self {
         // - 100 hours = 360000 seconds
         // - u16 max: 65535
-        // 絶対に0..100時間の範囲内の値になる
-        Self::validate_within_100_hours(chrono::Duration::seconds(secs as i64)).unwrap()
+        // 絶対に0..24時間の範囲内の値になる
+        Self::validate_within_24_hours(chrono::Duration::seconds(secs as i64)).unwrap()
     }
 
     pub fn into_chrono_duration(self) -> chrono::Duration {
@@ -28,12 +28,21 @@ impl Duration {
         &self.inner
     }
 
-    pub fn try_add(&self, other: &Duration) -> Result<Duration, &'static str> {
-        let new_duration = self.inner + other.inner;
-        Self::validate_within_100_hours(new_duration)
+    pub fn as_chrono_time(&self) -> chrono::NaiveTime {
+        chrono::NaiveTime::from_num_seconds_from_midnight_opt(
+            self.inner.num_seconds() as u32,
+            0,
+        )
+        // 内部の値は24時間を超えないのでunwrap
+        .expect("Duration exceeds 24 hours")
     }
 
-    fn validate_within_100_hours(
+    pub fn try_add(&self, other: &Duration) -> Result<Duration, &'static str> {
+        let new_duration = self.inner + other.inner;
+        Self::validate_within_24_hours(new_duration)
+    }
+
+    fn validate_within_24_hours(
         duration: chrono::Duration,
     ) -> Result<Self, &'static str> {
         // 100 hours = 360,000 seconds
@@ -52,7 +61,7 @@ impl std::str::FromStr for Duration {
     /// - `^PT(?:(\\d+H)?(\\d+M)?(\\d+S)?)$` のみ
     ///   - `PT`などのアルファベットはcase-sensitive, uppercaseのみ
     /// - `各値(\d+)`の有効範囲`0..2^16`
-    ///   - `Duration`の最大値は100時間も適用されることに注意
+    ///   - `Duration`の最大値は24時間も適用されることに注意
     ///
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         // 敢えてregex使わない
@@ -87,7 +96,7 @@ impl std::str::FromStr for Duration {
         let total_secs = ((hours * 3600) as i64) + ((mins * 60) as i64) + (secs as i64);
 
         let chrono_duration = chrono::Duration::seconds(total_secs);
-        Self::validate_within_100_hours(chrono_duration)
+        Self::validate_within_24_hours(chrono_duration)
     }
 }
 
@@ -238,7 +247,7 @@ mod tests {
         assert!(result.is_err());
     }
 
-    /// 入力値が100時間を超えないように注意, 超えるとpanic
+    /// 入力値が24時間を超えないように注意, 超えるとpanic
     fn duration_from_hms(hours: u16, mins: u16, secs: u16) -> Duration {
         Duration::from_chrono_duration(chrono::Duration::seconds(
             (hours as i64 * 3600) + (mins as i64 * 60) + (secs as i64),
@@ -249,7 +258,7 @@ mod tests {
     #[test]
     fn test_duration_display_valid() {
         let cases: Vec<(Duration, &str)> = vec![
-            (duration_from_hms(99, 2, 3), "PT99H2M3S"),
+            (duration_from_hms(23, 2, 3), "PT23H2M3S"),
             (duration_from_hms(1, 2, 0), "PT1H2M"),
             (duration_from_hms(1, 0, 3), "PT1H3S"),
             (duration_from_hms(0, 2, 3), "PT2M3S"),
