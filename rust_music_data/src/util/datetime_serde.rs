@@ -8,7 +8,8 @@ where
     S: serde::Serializer,
 {
     // ISO 8601形式 (例: "2023-12-10T12:00:00Z")
-    serializer.serialize_str(&datetime.to_rfc3339())
+    serializer
+        .serialize_str(&datetime.to_rfc3339_opts(chrono::SecondsFormat::Secs, true))
 }
 
 pub fn deserialize<'de, D>(
@@ -54,7 +55,7 @@ mod tests {
             .with_timezone(&chrono::Utc);
         let s = TestStruct { datetime: dt };
         let json = serde_json::to_string(&s).unwrap();
-        assert_eq!(json, "{\"datetime\":\"2023-12-10T12:00:00+00:00\"}");
+        assert_eq!(json, "{\"datetime\":\"2023-12-10T12:00:00Z\"}");
         let de: TestStruct = serde_json::from_str(&json).unwrap();
         assert_eq!(de, s);
     }

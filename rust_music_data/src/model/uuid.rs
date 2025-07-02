@@ -234,10 +234,13 @@ impl UuidVer7 {
 #[cfg(test)]
 impl UuidVer7 {
     /// `0193bac8-a560-7000-8000-000000000000`
+    ///
+    /// `2024-12-12T12:12:12Z`
     pub fn self_1() -> Self {
         use chrono::TimeZone;
         let datetime = crate::model::VideoPublishedAt::new(
-            chrono::Utc::with_ymd_and_hms(&chrono::Utc, 2024, 12, 12, 12, 12, 12)
+            chrono::Utc
+                .with_ymd_and_hms(2024, 12, 12, 12, 12, 12)
                 .unwrap(),
         )
         .unwrap();
@@ -246,10 +249,13 @@ impl UuidVer7 {
     }
 
     /// `01920ef6-46d0-70f0-8000-000f0f0f0f0f`
+    ///
+    /// `2024-09-20T10:24:34Z`
     pub fn self_2() -> Self {
         use chrono::TimeZone;
         let datetime = crate::model::VideoPublishedAt::new(
-            chrono::Utc::with_ymd_and_hms(&chrono::Utc, 2024, 9, 20, 10, 24, 34)
+            chrono::Utc
+                .with_ymd_and_hms(2024, 9, 20, 10, 24, 34)
                 .unwrap(),
         )
         .unwrap();
@@ -259,15 +265,33 @@ impl UuidVer7 {
 
     // ref: https://datatracker.ietf.org/doc/html/rfc9562#name-example-of-a-uuidv7-value
     /// `017f22e2-79b0-7cc3-98c4-dc0c0c07398f`
+    ///
+    /// `2022-02-22T19:22:22Z`
     pub fn self_3() -> Self {
         use chrono::TimeZone;
         let datetime = crate::model::VideoPublishedAt::new(
-            chrono::Utc::with_ymd_and_hms(&chrono::Utc, 2022, 2, 22, 19, 22, 22)
+            chrono::Utc
+                .with_ymd_and_hms(2022, 2, 22, 19, 22, 22)
                 .unwrap(),
         )
         .unwrap();
         // 2022-02-22T19:22:22Z
         Self::generate_with_rand(&datetime, 0xCC3, 0x18C4DC0C0C07398F)
+    }
+
+    /// `0193b63c-5eb0-70f0-8000-000f0f0f0f0f`
+    ///
+    /// `2024-12-12T00:00:30Z`
+    pub fn self_4() -> Self {
+        use chrono::TimeZone;
+        let datetime = crate::model::VideoPublishedAt::new(
+            chrono::Utc
+                .with_ymd_and_hms(2024, 12, 12, 0, 0, 30)
+                .unwrap(),
+        )
+        .unwrap();
+        // 2024-12-12T00:00:30Z
+        Self::generate_with_rand(&datetime, 0xF0, 0x0F0F0F0F0F)
     }
 }
 
@@ -338,6 +362,32 @@ mod tests {
         );
 
         assert_eq!(uuid.to_string(), "017f22e2-79b0-7cc3-98c4-dc0c0c07398f");
+    }
+
+    #[test]
+    fn test_uuid_ver7_generate_4() {
+        let uuid = UuidVer7::self_4();
+
+        println!("uuid: {:02x?}", uuid);
+
+        #[rustfmt::skip]
+        assert_eq!(
+            uuid.bytes,
+            [
+                // [0..6] timestamp (2024-12-12T00:00:30Z)
+                0x01, 0x93, 0xB8, 0x2A, 0xC1, 0x30,
+                // [6] version (0x7) | rand_a
+                0x70,
+                // [7] rand_a
+                0xF0,
+                // [8] variant (0b10) | rand_b
+                0b1000_0000,
+                // [9..16] rand_b
+                0x00, 0x00, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F,
+            ]
+        );
+
+        assert_eq!(uuid.to_string(), "0193b82a-c130-70f0-8000-000f0f0f0f0f");
     }
 
     #[test]

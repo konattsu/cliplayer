@@ -1,4 +1,4 @@
-// TODO アーティストのjsonファイルの構造を確認する
+// TODO アーティストのjsonファイルの構造を確認する, テスト用も本番用もパース処理を統一
 // TODO 単品(`InternalArtist`や`ExternalArtist`)非公開でもいい
 
 // テストでは静的に値を定義
@@ -104,15 +104,15 @@ impl<'de> serde::Deserialize<'de> for InternalArtists {
 
 #[cfg(test)]
 impl InternalArtist {
-    /// Aimer Test
+    /// `Aimer Test`
     pub fn test_name1() -> Self {
         Self::new("Aimer Test").unwrap()
     }
-    /// Eir Aoi Test
+    /// `Eir Aoi Test`
     pub fn test_name2() -> Self {
         Self::new("Eir Aoi Test").unwrap()
     }
-    /// Lisa Test
+    /// `Lisa Test`
     pub fn test_name3() -> Self {
         Self::new("Lisa Test").unwrap()
     }
@@ -120,12 +120,15 @@ impl InternalArtist {
 
 #[cfg(test)]
 impl InternalArtists {
+    /// Vec `Aimer Test`
     pub fn test_name_1() -> Self {
         Self::new(vec![InternalArtist::test_name1()]).unwrap()
     }
+    /// Vec `Eir Aoi Test`
     pub fn test_name_2() -> Self {
         Self::new(vec![InternalArtist::test_name2()]).unwrap()
     }
+    /// Vec `Lisa Test`
     pub fn test_name_3() -> Self {
         Self::new(vec![InternalArtist::test_name3()]).unwrap()
     }
@@ -207,15 +210,15 @@ impl<'de> serde::Deserialize<'de> for ExternalArtists {
 
 #[cfg(test)]
 impl ExternalArtist {
-    /// Apple Mike
+    /// `Apple Mike`
     pub fn test_name1() -> Self {
         Self::new("Apple Mike").unwrap()
     }
-    /// Milk Mike
+    /// `Milk Mike`
     pub fn test_name2() -> Self {
         Self::new("Milk Mike").unwrap()
     }
-    /// Banana Mike
+    /// `Banana Mike`
     pub fn test_name3() -> Self {
         Self::new("Banana Mike").unwrap()
     }
@@ -223,13 +226,16 @@ impl ExternalArtist {
 
 #[cfg(test)]
 impl ExternalArtists {
-    pub fn test_name1() -> Self {
+    /// Vec `Apple Mike`
+    pub fn test_name_1() -> Self {
         Self::new(vec![ExternalArtist::test_name1()]).unwrap()
     }
-    pub fn test_name2() -> Self {
+    /// Vec `Milk Mike`
+    pub fn test_name_2() -> Self {
         Self::new(vec![ExternalArtist::test_name2()]).unwrap()
     }
-    pub fn test_name3() -> Self {
+    /// Vec `Banana Mike`
+    pub fn test_name_3() -> Self {
         Self::new(vec![ExternalArtist::test_name3()]).unwrap()
     }
 }

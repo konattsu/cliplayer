@@ -36,10 +36,13 @@ pub(super) enum ApiStateError {
 
 #[derive(Debug, Clone)]
 pub(super) struct StateFetching {
-    /// 取得する動画IDのリスト
+    /// まだ取得していない動画IDのリスト
     pub(super) pending_ids: Vec<crate::model::VideoId>,
-    /// 取得している動画情報とdraftのペア
-    pub(super) draft_video_with_fetched: Vec<super::draft::DraftVideoWithFetched>,
+    /// 動画IDと取得した動画情報のペア
+    pub(super) draft_video_with_fetched: std::collections::HashMap<
+        crate::model::VideoId,
+        Option<super::response::YouTubeApiItem>,
+    >,
 }
 
 impl ApiState {
