@@ -10,63 +10,49 @@ mod yt_api_const {
 #[derive(Debug)]
 pub struct YouTubeApi {
     api_key: crate::fetcher::YouTubeApiKey,
-    requests: Vec<crate::fetcher::VideoDetailFetchRequest>,
-    pending_ids: Vec<crate::model::VideoId>,
-    detail_result: crate::fetcher::VideoDetailFetchResult,
 }
 
-// TODO tagsは受け取らない, VideoDetailWithoutTags的な構造体用意(fetcher/)してこれを返却
-// 返却時は今と一緒のHashMapでいい
-// ~WithoutTagsにinto_video_detail(tags)で目的の値を作成できるように
-
 impl YouTubeApi {
-    pub fn new(
-        api_key: crate::fetcher::YouTubeApiKey,
-        requests: Vec<crate::fetcher::VideoDetailFetchRequest>,
-    ) -> Self {
-        let pending_ids = requests
-            .iter()
-            .map(|req| req.get_video_id())
-            .cloned()
-            .collect();
-        let detail_result: crate::fetcher::VideoDetailFetchResult = requests
-            .iter()
-            .map(|req| (req.get_video_id().clone(), None))
-            .collect();
-        Self {
-            api_key,
-            requests,
-            pending_ids,
-            detail_result,
-        }
+    pub fn new(api_key: crate::fetcher::YouTubeApiKey) -> Self {
+        Self { api_key }
     }
 
     pub async fn run(
-        mut self,
+        self,
+        video_ids: Vec<crate::model::VideoId>,
     ) -> Result<crate::fetcher::VideoDetailFetchResult, crate::fetcher::YouTubeApiError>
     {
-        match self.fetch_process().await {
-            Ok(_a) => {
+        let mut detail_result: crate::fetcher::VideoDetailFetchResult =
+            video_ids.into_iter().map(|id| (id, None)).collect();
+
+        match self.fetch_process(&mut detail_result).await {
+            Ok(..) => {
                 tracing::info!("YouTube API fetch completed successfully");
-                Ok(self.detail_result)
+                Ok(detail_result)
             }
             Err(e) => {
                 tracing::error!(error = ?e, "YouTube API fetch failed");
-                return Err(e);
+                Err(e)
             }
         }
     }
 
-    async fn fetch_process(&mut self) -> Result<(), crate::fetcher::YouTubeApiError> {
+    async fn fetch_process(
+        &self,
+        detail_result: &mut crate::fetcher::VideoDetailFetchResult,
+    ) -> Result<(), crate::fetcher::YouTubeApiError> {
         const MAX_RETRY: u8 = 3;
         const REQUEST_DELAY: tokio::time::Duration =
             tokio::time::Duration::from_millis(125);
         const REQUEST_DELAY_RETRY: tokio::time::Duration =
             tokio::time::Duration::from_millis(500);
 
+        let mut pending_ids: Vec<crate::model::VideoId> =
+            detail_result.0.keys().cloned().collect();
+
         // urlを作れなくなるまでループ
         loop {
-            let url = match self.generate_url() {
+            let url = match self.generate_url(&mut pending_ids) {
                 Some(url) => url,
                 None => {
                     tracing::info!("no more video IDs to fetch");
@@ -78,7 +64,19 @@ impl YouTubeApi {
             // リトライ用のループ, 正常なときはループせず抜ける
             loop {
                 match self.fetch_and_parse(&url).await {
-                    Ok(_a) => {
+                    Ok(resp) => {
+                        // とってきたレスポンスをdetail_resultのvideo_idと対応するように格納
+                        resp.items.into_iter().for_each(|item| {
+                            let video_id = &item.id;
+                            if let Some(slot) = detail_result.0.get_mut(video_id) {
+                                *slot = Some(item.into_video_detail_without_tags());
+                            } else {
+                                tracing::warn!(
+                                    "Received video ID {} not found in pending IDs",
+                                    video_id
+                                );
+                            }
+                        });
                         break;
                     }
                     Err(e) => {
@@ -103,8 +101,12 @@ impl YouTubeApi {
         Ok(())
     }
 
-    fn generate_url(&mut self) -> Option<String> {
-        let batch_ids = self.next_video_id_batch();
+    /// YouTubeApiのurlを生成
+    fn generate_url(
+        &self,
+        pending_ids: &mut Vec<crate::model::VideoId>,
+    ) -> Option<String> {
+        let batch_ids = self.next_video_id_batch(pending_ids);
         let batch_ids_str = if batch_ids.is_empty() {
             return None;
         } else {
@@ -127,17 +129,21 @@ impl YouTubeApi {
 
     /// 次の動画idのバッチを取得
     ///
-    /// 動画idのバッチは最大で `yt_api::MAX_RESULTS`
-    fn next_video_id_batch(&mut self) -> Vec<crate::model::VideoId> {
+    /// - pending_idsから動画idを取り出す
+    /// - 動画idのバッチは最大で `yt_api::MAX_RESULTS`
+    fn next_video_id_batch(
+        &self,
+        pending_ids: &mut Vec<crate::model::VideoId>,
+    ) -> Vec<crate::model::VideoId> {
         let mut batch = Vec::new();
-        self.pending_ids
-            .drain(0..(yt_api_const::MAX_RESULTS as usize).min(self.pending_ids.len()))
-            .for_each(|id| batch.push(id));
+        let drain_range =
+            0..(yt_api_const::MAX_RESULTS as usize).min(pending_ids.len());
+        pending_ids.drain(drain_range).for_each(|id| batch.push(id));
         batch
     }
 
     async fn fetch_and_parse(
-        &mut self,
+        &self,
         url: &str,
     ) -> Result<super::response::YouTubeApiResponse, crate::fetcher::YouTubeApiError>
     {
@@ -183,6 +189,7 @@ impl YouTubeApi {
             .map_err(|e| crate::fetcher::YouTubeApiError::NetworkError(e.to_string()))
     }
 
+    // YouTubeApiのレスポンスをパース
     async fn parse_response(
         resp: reqwest::Response,
     ) -> Result<super::response::YouTubeApiResponse, crate::fetcher::YouTubeApiError>
@@ -193,19 +200,62 @@ impl YouTubeApi {
                 crate::fetcher::YouTubeApiError::ResponseParseError(e.to_string())
             })
     }
+}
 
-    fn map_response_to_detail_result(
-        &mut self,
-        response: super::response::YouTubeApiResponse,
-    ) -> Result<(), crate::fetcher::YouTubeApiError> {
-        for item in response.items {
-            let video_id = item.id;
-            if let Some(slot) = self.detail_result.0.get_mut(&video_id) {
-                // let video_detail = item.into_video_details()
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-                *slot = Some(video_detail);
-            }
+    #[tokio::test]
+    async fn test_generate_url_batch() {
+        let api_key = crate::fetcher::YouTubeApiKey::dummy_api_key();
+        let api = YouTubeApi::new(api_key);
+        let mut ids = vec![
+            crate::model::VideoId::test_id_1(),
+            crate::model::VideoId::test_id_2(),
+            crate::model::VideoId::test_id_3(),
+        ];
+        let url = api.generate_url(&mut ids).unwrap();
+        assert!(url.contains("11111111111"));
+        assert!(url.contains("22222222222"));
+        assert!(url.contains("33333333333"));
+        assert!(url.contains("key=dummy_api_key"));
+    }
+
+    #[test]
+    fn test_next_video_id_batch() {
+        let api_key = crate::fetcher::YouTubeApiKey::dummy_api_key();
+        let api = YouTubeApi::new(api_key);
+        let mut ids = vec![
+            crate::model::VideoId::test_id_1(),
+            crate::model::VideoId::test_id_2(),
+            crate::model::VideoId::test_id_3(),
+        ];
+        let batch = api.next_video_id_batch(&mut ids);
+        assert_eq!(batch.len(), 3);
+        assert_eq!(ids.len(), 0);
+    }
+
+    #[test]
+    fn test_next_video_id_batch_empty() {
+        let api_key = crate::fetcher::YouTubeApiKey::dummy_api_key();
+        let api = YouTubeApi::new(api_key);
+        let mut ids: Vec<crate::model::VideoId> = Vec::new();
+        let batch = api.next_video_id_batch(&mut ids);
+        assert!(batch.is_empty());
+        assert!(ids.is_empty());
+    }
+
+    #[test]
+    fn test_next_video_id_batch_more_than_max_results() {
+        let api_key = crate::fetcher::YouTubeApiKey::dummy_api_key();
+        let api = YouTubeApi::new(api_key);
+        let mut ids = Vec::new();
+        for _ in 0..60 {
+            ids.push(crate::model::VideoId::test_id_1());
         }
-        Ok(())
+        let batch = api.next_video_id_batch(&mut ids);
+        assert_eq!(batch.len(), 50);
+        assert_eq!(ids.len(), 10); // 60 - 50 = 10
     }
 }

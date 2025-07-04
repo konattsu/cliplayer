@@ -15,7 +15,7 @@
 
 名前の表記ゆれ防止のため[公式タレント一覧ページ](https://www.nijisanji.jp/talents)要参照
 
-tomlにするかも
+ぎばさんのチャンネルは削除されているのでapiでfetchしたときのデータと整合性を取る処理などは要注意
 
 ```json
 // artists_data.json
@@ -59,11 +59,11 @@ tomlにするかも
   { "key": "栞葉るり", "artistId": "ruri-shioriha" },
   { "key": "しおりはるり", "artistId": "ruri-shioriha" },
   { "key": "Shioriha Ruri", "artistId": "ruri-shioriha" },
-  { "key": "るりじょう", "artistId": "ruri-shioriha" },
   { "key": "倉持めると", "artistId": "meruto-kuramochi" },
   { "key": "くらもちめると", "artistId": "meruto-kuramochi" },
   { "key": "Kuramochi Meruto", "artistId": "meruto-kuramochi" },
-  { "key": "めるち", "artistId": "meruto-kuramochi" }
+  // aliasは表示の優先度を下げたいので, aliasかどうかを判断できるようにしておく
+  { "key": "めるち", "artistId": "meruto-kuramochi" , "isAlias": true }
 ]
 ```
 

@@ -1,9 +1,19 @@
+/// YouTubeApiKey
+///
+/// - 空文字列でないことを保証
 #[derive(Clone)]
 pub struct YouTubeApiKey(String);
 
 impl YouTubeApiKey {
-    pub fn new(key: String) -> Self {
-        Self(key)
+    /// YouTubeApiKeyを作成
+    ///
+    /// - Error: 空文字列のとき
+    pub fn new(key: &str) -> Result<Self, &'static str> {
+        if key.is_empty() {
+            Err("YouTube API key cannot be empty")
+        } else {
+            Ok(Self(key.to_string()))
+        }
     }
 
     pub fn as_str(&self) -> &str {
