@@ -64,3 +64,12 @@ impl VideoDetailInitializer {
         }
     }
 }
+
+impl VideoDetail {
+    pub fn get_published_at(&self) -> &crate::model::VideoPublishedAt {
+        &self.published_at
+    }
+    pub fn get_duration(&self) -> &crate::model::Duration {
+        &self.duration
+    }
+}

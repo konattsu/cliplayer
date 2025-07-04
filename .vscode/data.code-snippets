@@ -8,7 +8,7 @@
       "  \"ja\": \"${2:jp}\",",
       "  \"jah\": \"${3:jph}\",",
       "  \"en\": \"${4:en}\",",
-      "  \"aliases\": [ ${5:aliases} ],",
+      "  \"aliases\": [ ${5:} ],",
       "  \"channelId\": \"${6:channelId}\",",
       "  \"color\": \"${7:color}\"",
       "},",

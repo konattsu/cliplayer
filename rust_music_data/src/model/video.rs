@@ -1,3 +1,6 @@
-mod video_detail;
+mod anonymous;
+mod detail;
+mod unverified;
+mod verified;
 
-pub use video_detail::{VideoDetail, VideoDetailInitializer};
+pub use detail::{VideoDetail, VideoDetailInitializer};

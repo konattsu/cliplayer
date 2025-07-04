@@ -39,11 +39,10 @@ pub(super) struct YouTubeApiStatus {
 }
 
 impl YouTubeApiItem {
-    pub(super) fn into_video_details(
+    pub(super) fn into_video_detail_without_tags(
         self,
-        tags: Option<crate::model::TagList>,
-    ) -> crate::model::VideoDetail {
-        crate::model::VideoDetailInitializer {
+    ) -> crate::fetcher::VideoDetailWithoutTags {
+        crate::fetcher::VideoDetailWithoutTagsInitializer {
             video_id: self.id,
             title: self.snippet.title,
             channel_id: self.snippet.channel_id,
@@ -53,7 +52,6 @@ impl YouTubeApiItem {
             duration: self.content_details.duration,
             privacy_status: self.status.privacy_status,
             embeddable: self.status.embeddable,
-            tags: tags.unwrap_or_default(),
         }
         .init()
     }
