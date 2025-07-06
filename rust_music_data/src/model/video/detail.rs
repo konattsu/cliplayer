@@ -1,3 +1,4 @@
+/// 動画の詳細情報
 #[derive(serde::Deserialize, serde::Serialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 #[serde(deny_unknown_fields)]
@@ -8,8 +9,9 @@ pub struct VideoDetail {
     title: String,
     /// チャンネルID
     channel_id: crate::model::ChannelId,
-    /// チャンネル名
-    channel_name: crate::model::ChannelName,
+    /// チャンネル名, 箱外で行われた配信/動画の時に付与
+    #[serde(skip_serializing_if = "Option::is_none")]
+    uploader_name: Option<crate::model::UploaderName>,
     /// 動画の公開日時
     published_at: crate::model::VideoPublishedAt,
     /// この情報を取得した日時
@@ -22,7 +24,7 @@ pub struct VideoDetail {
     /// 動画が埋め込み可能かどうか
     embeddable: bool,
     /// 動画のタグ
-    tags: crate::model::TagList,
+    video_tags: crate::model::VideoTags,
 }
 
 pub struct VideoDetailInitializer {
@@ -32,8 +34,8 @@ pub struct VideoDetailInitializer {
     pub title: String,
     /// チャンネルID
     pub channel_id: crate::model::ChannelId,
-    /// チャンネル名
-    pub channel_name: crate::model::ChannelName,
+    /// チャンネル名, 箱外で行われた配信/動画の時に付与
+    pub uploader_name: Option<crate::model::UploaderName>,
     /// 動画の公開日時
     pub published_at: crate::model::VideoPublishedAt,
     /// この情報を取得した日時
@@ -45,7 +47,7 @@ pub struct VideoDetailInitializer {
     /// 動画が埋め込み可能かどうか
     pub embeddable: bool,
     /// 動画のタグ
-    pub tags: crate::model::TagList,
+    pub video_tags: crate::model::VideoTags,
 }
 
 impl VideoDetailInitializer {
@@ -54,13 +56,13 @@ impl VideoDetailInitializer {
             video_id: self.video_id,
             title: self.title,
             channel_id: self.channel_id,
-            channel_name: self.channel_name,
+            uploader_name: self.uploader_name,
             published_at: self.published_at,
             modified_at: self.modified_at,
             duration: self.duration,
             privacy_status: self.privacy_status,
             embeddable: self.embeddable,
-            tags: self.tags,
+            video_tags: self.video_tags,
         }
     }
 }

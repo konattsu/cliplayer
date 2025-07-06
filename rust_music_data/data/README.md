@@ -34,6 +34,7 @@
     "channelId": "UC7_MFM9b8hp5kuTSpa8WyOQ",
     // モチーフカラー. 公式ページか非公式wiki参照
     "color": "2887FF"
+    // "isGraduated": false  // 卒業済みかどうか, falseは記述しなくていい
   },
   "meruto-kuramochi": {
     "ja": "倉持めると",
@@ -53,7 +54,7 @@
 `artists_data.json`にある, `ja`, `jah`, `en`, `aliases`全ての値をキーにし, アーティストidを値にした配列. アーティスト名からアーティストidをO(n)で抽出できるため. アーティストidがあればそれを基にした`clip`検索などを行える.
 
 ```json
-// artists_search_index.json
+// artists_search_index.min.json
 // 自動生成, public以下に配置, 実際はmin化
 [
   { "key": "栞葉るり", "artistId": "ruri-shioriha" },
@@ -74,7 +75,7 @@
 `artists_data.json`の一部を抜粋して, フロントエンドでの表示に必要な情報のみを含む.
 
 ```json
-// artists.json
+// artists.min.json
 // 自動生成, public以下に配置, 実際はmin化
 {
   "ruri-shioriha": {
@@ -82,6 +83,7 @@
     "jah": "しおりはるり",
     "en": "Shioriha Ruri",
     "color": "2887FF"
+    // "isGraduated": false  // 卒業済みかどうか, falseは記述しなくていい
   },
   "meruto-kuramochi": {
     "ja": "倉持めると",
@@ -89,6 +91,7 @@
     "en": "Kuramochi Meruto",
     "color": "EB4682"
   }
+  //
 }
 ```
 
@@ -99,7 +102,7 @@ YouTubeチャンネルIDからアーティストidの対応リスト
 O(1)で引くため, 辞書形式を使用.
 
 ```json
-// channels.json
+// channels.min.json
 // 自動生成, public以下に配置, 実際はmin化
 {
   "UC7_MFM9b8hp5kuTSpa8WyOQ": "ruri-shioriha",

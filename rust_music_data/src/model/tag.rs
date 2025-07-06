@@ -1,8 +1,55 @@
-/// 楽曲, もしくは動画に適用するタグ
+// VideoTags, ClipTagsは存在できる制約は同じだが混同しないように型を分離
+
+/// 動画に適用するタグ
 ///
 /// タグは空文字列を許容しない
+#[derive(serde::Deserialize, serde::Serialize, Debug, Clone, PartialEq, Eq)]
+pub struct VideoTags(Tags);
+
+impl VideoTags {
+    /// 動画タグを新規作成する
+    ///
+    /// - Error: タグが空文字列のとき
+    /// - Ok: 空文字列でないとき, ベクタが空の時も許容
+    pub fn new(tags: Vec<String>) -> Result<Self, &'static str> {
+        Tags::new(tags).map(VideoTags)
+    }
+}
+
+/// クリップに適用するタグ
+///
+/// タグは空文字列を許容しない
+#[derive(serde::Deserialize, serde::Serialize, Debug, Clone, PartialEq, Eq)]
+pub struct ClipTags(Tags);
+
+impl ClipTags {
+    /// クリップタグを新規作成する
+    ///
+    /// - Error: タグが空文字列のとき
+    /// - Ok: 空文字列でないとき, ベクタが空の時も許容
+    pub fn new(tags: Vec<String>) -> Result<Self, &'static str> {
+        Tags::new(tags).map(ClipTags)
+    }
+}
+
+/// タグたち
+#[derive(serde::Deserialize, serde::Serialize, Debug, Clone, PartialEq, Eq)]
+struct Tags(Vec<Tag>);
+
+impl Tags {
+    /// - Error: タグが空文字列のとき
+    /// - Ok: 空文字列でないとき, ベクタが空の時も許容
+    pub fn new(tags: Vec<String>) -> Result<Self, &'static str> {
+        tags.into_iter()
+            .map(|tag| Tag::new(tag))
+            .collect::<Result<Vec<Tag>, &'static str>>()
+            .map(Tags)
+    }
+}
+
+/// タグ
 #[derive(serde::Serialize, Debug, Clone, PartialEq, Eq)]
-pub struct Tag(String);
+struct Tag(String);
 
 // tagが空文字列でないことを検証するためのカスタムシリアライザ
 impl<'de> serde::Deserialize<'de> for Tag {
@@ -19,67 +66,49 @@ impl Tag {
     /// タグを新規作成する
     ///
     /// - Error: タグが空文字列のとき
-    pub fn new(tag: String) -> Result<Self, &'static str> {
+    fn new(tag: String) -> Result<Self, &'static str> {
         if tag.is_empty() {
             Err("Tag cannot be an empty string")
         } else {
             Ok(Tag(tag))
         }
     }
-
-    pub fn as_str(&self) -> &str {
-        &self.0
-    }
 }
 
 #[cfg(test)]
-impl Tag {
-    /// return `tag1`
+impl VideoTags {
+    /// returns `Test Video Tag1`
     pub fn self_1() -> Self {
-        Tag::new("tag1".to_string()).unwrap()
+        VideoTags(Tags(vec![Tag::new("Test Video Tag1".to_string()).unwrap()]))
     }
-    /// return `tag2`
+    /// returns `Test Video Tag2`
     pub fn self_2() -> Self {
-        Tag::new("tag2".to_string()).unwrap()
+        VideoTags(Tags(vec![Tag::new("Test Video Tag2".to_string()).unwrap()]))
     }
-    /// return `tag3`
+    /// returns `Test Video Tag3`, `Test Video Tag4`
     pub fn self_3() -> Self {
-        Tag::new("tag3".to_string()).unwrap()
-    }
-}
-
-/// 楽曲, もしくは動画に適用するタグのリスト
-#[derive(
-    serde::Deserialize, serde::Serialize, Debug, Clone, PartialEq, Eq, Default,
-)]
-pub struct TagList(Vec<Tag>);
-
-#[cfg(test)]
-impl TagList {
-    /// return `["tag1", "tag2"]`
-    pub fn test_tag_list_1() -> Self {
-        TagList(vec![Tag::self_1(), Tag::self_2()])
-    }
-    /// return `["tag2", "tag3"]`
-    pub fn test_tag_list_2() -> Self {
-        TagList(vec![Tag::self_2(), Tag::self_3()])
+        VideoTags(Tags(vec![
+            Tag::new("Test Video Tag3".to_string()).unwrap(),
+            Tag::new("Test Video Tag4".to_string()).unwrap(),
+        ]))
     }
 }
 
 #[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_tag_new() {
-        assert!(Tag::new("tag1".to_string()).is_ok());
-        assert!(Tag::new("".to_string()).is_err());
+impl ClipTags {
+    /// returns `Test Clip Tag1`
+    pub fn self_1() -> Self {
+        ClipTags(Tags(vec![Tag::new("Test Clip Tag1".to_string()).unwrap()]))
     }
-
-    #[test]
-    fn test_tag_test_tag() {
-        assert_eq!(Tag::self_1().as_str(), "tag1");
-        assert_eq!(Tag::self_2().as_str(), "tag2");
-        assert_eq!(Tag::self_3().as_str(), "tag3");
+    /// returns `Test Clip Tag2`
+    pub fn self_2() -> Self {
+        ClipTags(Tags(vec![Tag::new("Test Clip Tag2".to_string()).unwrap()]))
+    }
+    /// returns `Test Clip Tag3`, `Test Clip Tag4`
+    pub fn self_3() -> Self {
+        ClipTags(Tags(vec![
+            Tag::new("Test Clip Tag3".to_string()).unwrap(),
+            Tag::new("Test Clip Tag4".to_string()).unwrap(),
+        ]))
     }
 }

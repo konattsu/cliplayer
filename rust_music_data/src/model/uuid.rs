@@ -13,7 +13,7 @@ static RE_UUID7: once_cell::sync::Lazy<regex::Regex> = once_cell::sync::Lazy::ne
 );
 
 /// UUIDv7 (RFC 9562)
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct UuidVer7 {
     /// `数字`を格納
     bytes: [u8; 16],
@@ -476,3 +476,5 @@ mod tests {
         assert_eq!(uuid.to_string(), expected);
     }
 }
+
+// TODO partial_eqのテストかく

@@ -17,6 +17,7 @@ impl<'de> serde::Deserialize<'de> for VerifiedVideo {
     {
         #[derive(serde::Deserialize)]
         struct RawVerifiedVideo {
+            #[serde(flatten)]
             video_detail: crate::model::VideoDetail,
             clips: Vec<crate::model::UnverifiedClip>,
         }
@@ -44,17 +45,16 @@ mod tests {
 
     const VERIFIED_VIDEO_JSON: &str = r#"
     {
-        "videoDetail": {
-            "id": "11111111111",
-            "title": "Test Title",
-            "channelId": "UC1111111111111111111111",
-            "channelName": "Test Channel",
-            "publishedAt": "2023-10-01T12:00:00Z"
-            "modifiedAt": "2023-10-01T12:00:00Z",
-            "duration": 3600,
-            "embeddable": true
-            "tags": [ "tag1", "tag2" ],
-        },
+        "videoId": "11111111111",
+        "title": "Test Title",
+        "channelId": "UC1111111111111111111111",
+        "channelName": "Test Channel",
+        "publishedAt": "2024-12-12T12:00:00Z",
+        "modifiedAt": "2024-12-12T12:00:00Z",
+        "duration": "PT20H1M5S",
+        "privacyStatus": "public",
+        "embeddable": true,
+        "videoTags": ["Test Video Tag1"],
         "clips": [
             {
                 "songTitle": "Test Song 1",
@@ -64,7 +64,7 @@ mod tests {
                 "isClipped": false,
                 "startTime": "PT12H12M12S",
                 "endTime": "PT12H12M20S",
-                "tags": ["tag1", "tag2"],
+                "clipTags": ["tag1", "tag2"],
                 "uuid": "0193bac8-a560-7000-8000-000000000000"
             }
         ]

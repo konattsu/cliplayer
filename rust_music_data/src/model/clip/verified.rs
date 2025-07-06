@@ -8,6 +8,7 @@ pub struct VerifiedClip {
     /// 内部アーティストの一覧
     artists: crate::model::InternalArtists,
     /// 外部アーティストの一覧
+    #[serde(skip_serializing_if = "Option::is_none")]
     external_artists: Option<crate::model::ExternalArtists>,
     /// 切り抜いた動画が投稿されているか
     is_clipped: bool,
@@ -16,10 +17,12 @@ pub struct VerifiedClip {
     /// 曲が終わる時間
     end_time: crate::model::Duration,
     /// タグ
-    tags: Option<crate::model::TagList>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    clip_tags: Option<crate::model::ClipTags>,
     /// uuid
     uuid: crate::model::UuidVer7,
     /// 音量の正規化時に設定すべき音量
+    #[serde(skip_serializing_if = "Option::is_none")]
     volume_percent: Option<crate::model::VolumePercent>,
 }
 
@@ -57,6 +60,29 @@ pub enum VerifiedClipError {
     },
 }
 
+pub struct VerifiedClipInner {
+    /// 曲名
+    pub song_title: String,
+    /// 曲名の平仮名表記
+    pub song_title_jah: String,
+    /// 内部アーティストの一覧
+    pub artists: crate::model::InternalArtists,
+    /// 外部アーティストの一覧
+    pub external_artists: Option<crate::model::ExternalArtists>,
+    /// 切り抜いた動画が投稿されているか
+    pub is_clipped: bool,
+    /// 曲が始まる時間
+    pub start_time: crate::model::Duration,
+    /// 曲が終わる時間
+    pub end_time: crate::model::Duration,
+    /// タグ
+    pub clip_tags: Option<crate::model::ClipTags>,
+    /// uuid
+    pub uuid: crate::model::UuidVer7,
+    /// 音量の正規化時に設定すべき音量
+    pub volume_percent: Option<crate::model::VolumePercent>,
+}
+
 pub struct VerifiedClipInitializer {
     /// 曲名
     pub song_title: String,
@@ -73,7 +99,7 @@ pub struct VerifiedClipInitializer {
     /// 曲が終わる時間
     pub end_time: crate::model::Duration,
     /// タグ
-    pub tags: Option<crate::model::TagList>,
+    pub clip_tags: Option<crate::model::ClipTags>,
     /// uuid
     pub uuid: crate::model::UuidVer7,
     /// 音量の正規化時に設定すべき音量
@@ -103,7 +129,7 @@ impl VerifiedClipInitializer {
             is_clipped: self.is_clipped,
             start_time: self.start_time,
             end_time: self.end_time,
-            tags: self.tags,
+            clip_tags: self.clip_tags,
             uuid: self.uuid,
             volume_percent: self.volume_percent,
         })
@@ -178,7 +204,24 @@ impl VerifiedClipInitializer {
 // ∵ 単品で`Verified`かどうかを確認できないため
 
 impl VerifiedClip {
-    // 適宜ね
+    pub fn get_uuid(&self) -> &crate::model::UuidVer7 {
+        &self.uuid
+    }
+
+    pub fn into_inner(self) -> VerifiedClipInner {
+        VerifiedClipInner {
+            song_title: self.song_title,
+            song_title_jah: self.song_title_jah,
+            artists: self.artists,
+            external_artists: self.external_artists,
+            is_clipped: self.is_clipped,
+            start_time: self.start_time,
+            end_time: self.end_time,
+            clip_tags: self.clip_tags,
+            uuid: self.uuid,
+            volume_percent: self.volume_percent,
+        }
+    }
 }
 
 // MARK: Tests
@@ -198,7 +241,7 @@ mod tests {
             is_clipped: false,
             start_time: crate::model::Duration::from_secs(30),
             end_time: crate::model::Duration::from_secs(40),
-            tags: None,
+            clip_tags: None,
             uuid: crate::model::UuidVer7::self_4(),
             volume_percent: None,
         };
@@ -216,7 +259,7 @@ mod tests {
             // この値が`uuid`の時間が一致しない
             start_time: crate::model::Duration::from_secs(40),
             end_time: crate::model::Duration::from_secs(50),
-            tags: None,
+            clip_tags: None,
             uuid: crate::model::UuidVer7::self_4(),
             volume_percent: None,
         };
@@ -237,7 +280,7 @@ mod tests {
             is_clipped: false,
             start_time: crate::model::Duration::from_secs(30),
             end_time: crate::model::Duration::from_secs(40),
-            tags: None,
+            clip_tags: None,
             uuid: crate::model::UuidVer7::self_4(),
             volume_percent: None,
         };
@@ -261,7 +304,7 @@ mod tests {
             is_clipped: false,
             start_time: crate::model::Duration::from_secs(30),
             end_time: crate::model::Duration::from_secs(40),
-            tags: None,
+            clip_tags: None,
             uuid: crate::model::UuidVer7::self_4(),
             volume_percent: None,
         };
@@ -285,7 +328,7 @@ mod tests {
             is_clipped: false,
             start_time: crate::model::Duration::from_secs(30),
             end_time: crate::model::Duration::from_secs(40),
-            tags: None,
+            clip_tags: None,
             uuid: crate::model::UuidVer7::self_4(),
             volume_percent: None,
         };
@@ -302,7 +345,7 @@ mod tests {
             is_clipped: false,
             start_time: crate::model::Duration::from_secs(30),
             end_time: crate::model::Duration::from_secs(50),
-            tags: None,
+            clip_tags: None,
             uuid: crate::model::UuidVer7::self_4(),
             volume_percent: None,
         };
