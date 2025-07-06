@@ -3,10 +3,9 @@
 #[serde(rename_all = "camelCase")]
 #[serde(deny_unknown_fields)]
 pub struct AnonymousVideo {
-    /// 動画id
-    video_id: crate::model::VideoId,
-    /// 動画のタグ
-    tags: crate::model::TagList,
+    /// 動画の情報
+    #[serde(flatten)]
+    video_brief: crate::model::VideoBrief,
     /// クリップ
     clips: Vec<crate::model::AnonymousClip>,
 }

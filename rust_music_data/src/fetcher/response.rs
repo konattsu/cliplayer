@@ -22,7 +22,6 @@ pub(super) struct YouTubeApiSnippet {
     pub published_at: crate::model::VideoPublishedAt,
     pub channel_id: crate::model::ChannelId,
     pub title: String,
-    pub channel_title: crate::model::ChannelName,
 }
 
 #[derive(Debug, serde::Deserialize, Clone)]
@@ -39,14 +38,13 @@ pub(super) struct YouTubeApiStatus {
 }
 
 impl YouTubeApiItem {
-    pub(super) fn into_video_detail_without_tags(
+    pub(super) fn into_fetched_video_detail(
         self,
-    ) -> crate::fetcher::VideoDetailWithoutTags {
-        crate::fetcher::VideoDetailWithoutTagsInitializer {
+    ) -> crate::fetcher::FetchedVideoDetail {
+        crate::fetcher::FetchedVideoDetailInitializer {
             video_id: self.id,
             title: self.snippet.title,
             channel_id: self.snippet.channel_id,
-            channel_name: self.snippet.channel_title,
             published_at: self.snippet.published_at,
             modified_at: chrono::Utc::now(),
             duration: self.content_details.duration,
@@ -69,7 +67,6 @@ mod tests {
             "snippet": {
                 "publishedAt": "2025-06-02T17:11:06Z",
                 "channelId": "UC1111111111111111111111",
-                "channelTitle": "Channel Name 1",
                 "title": "Title 1"
             },
             "contentDetails": {
@@ -91,7 +88,6 @@ mod tests {
             "snippet": {
                 "publishedAt": "2025-06-28T17:02:38Z",
                 "channelId": "UC2222222222222222222222",
-                "channelTitle": "Channel Name 2",
                 "title": "Title 2"
             },
             "contentDetails": {

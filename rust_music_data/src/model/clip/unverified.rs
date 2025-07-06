@@ -22,7 +22,7 @@ pub struct UnverifiedClip {
     /// 曲が終わる時間
     end_time: crate::model::Duration,
     /// タグ
-    tags: Option<crate::model::TagList>,
+    clip_tags: Option<crate::model::ClipTags>,
     /// uuid
     uuid: crate::model::UuidVer7,
     /// 音量の正規化時に設定すべき音量
@@ -64,7 +64,7 @@ pub struct UnverifiedClipInitializer {
     /// 曲が終わる時間
     pub end_time: crate::model::Duration,
     /// タグ
-    pub tags: Option<crate::model::TagList>,
+    pub clip_tags: Option<crate::model::ClipTags>,
     /// uuid
     pub uuid: crate::model::UuidVer7,
     /// 音量の正規化時に設定すべき音量
@@ -91,7 +91,7 @@ impl UnverifiedClipInitializer {
             is_clipped: self.is_clipped,
             start_time: self.start_time,
             end_time: self.end_time,
-            tags: self.tags,
+            clip_tags: self.clip_tags,
             uuid: self.uuid,
             volume_percent: self.volume_percent,
         })
@@ -106,6 +106,7 @@ impl<'de> serde::Deserialize<'de> for UnverifiedClip {
     {
         #[derive(serde::Deserialize)]
         #[serde(rename_all = "camelCase")]
+        #[serde(deny_unknown_fields)]
         struct RawUnverifiedClip {
             song_title: String,
             song_title_jah: String,
@@ -114,7 +115,7 @@ impl<'de> serde::Deserialize<'de> for UnverifiedClip {
             is_clipped: bool,
             start_time: crate::model::Duration,
             end_time: crate::model::Duration,
-            tags: Option<crate::model::TagList>,
+            clip_tags: Option<crate::model::ClipTags>,
             uuid: crate::model::UuidVer7,
             volume_percent: Option<crate::model::VolumePercent>,
         }
@@ -134,7 +135,7 @@ impl<'de> serde::Deserialize<'de> for UnverifiedClip {
             is_clipped: raw.is_clipped,
             start_time: raw.start_time,
             end_time: raw.end_time,
-            tags: raw.tags,
+            clip_tags: raw.clip_tags,
             uuid: raw.uuid,
             volume_percent: raw.volume_percent,
         })
@@ -142,7 +143,7 @@ impl<'de> serde::Deserialize<'de> for UnverifiedClip {
 }
 
 impl UnverifiedClip {
-    /// 与えられた`datetime`と`start_time`を基に`VerifiedClip`を生成する
+    /// 与えられた`datetime`と`start_time`を基に`UnverifiedClip`から`VerifiedClip`を生成する
     ///
     /// - Error:
     ///   - `start_time` >= `end_time`のとき
@@ -162,7 +163,7 @@ impl UnverifiedClip {
             is_clipped: self.is_clipped,
             start_time: self.start_time,
             end_time: self.end_time,
-            tags: self.tags,
+            clip_tags: self.clip_tags,
             uuid: self.uuid,
             volume_percent: self.volume_percent,
         }
@@ -217,7 +218,7 @@ mod tests {
         "isClipped": false,
         "startTime": "PT12H12M12S",
         "endTime": "PT12H12M20S",
-        "tags": ["tag1", "tag2"],
+        "clipTags": ["Test Clip Tag1"],
         "uuid": "0193bac8-a560-7000-8000-000000000000"
     }"#;
 
@@ -231,7 +232,7 @@ mod tests {
         "isClipped": false,
         "startTime": "PT12H12M12S",
         "endTime": "PT12H12M5S",
-        "tags": ["tag1", "tag2"],
+        "clipTags": ["Test Clip Tag1"],
         "uuid": "0193bac8-a560-7000-8000-000000000000"
     }"#;
 
@@ -262,7 +263,7 @@ mod tests {
         assert!(!clip.is_clipped);
         assert_eq!(clip.start_time, dur_12h_12m_12s());
         assert_eq!(clip.end_time, dur_12h_12m_12s_plus(8));
-        assert_eq!(clip.tags, Some(crate::model::TagList::test_tag_list_1()));
+        assert_eq!(clip.clip_tags, Some(crate::model::ClipTags::self_1()));
         assert_eq!(
             clip.uuid.to_string(),
             "0193bac8-a560-7000-8000-000000000000"
@@ -325,7 +326,7 @@ mod tests {
             is_clipped: false,
             start_time: dur_12h_12m_12s(),
             end_time: dur_12h_12m_12s_plus(8),
-            tags: Some(crate::model::TagList::test_tag_list_1()),
+            clip_tags: Some(crate::model::ClipTags::self_1()),
             uuid: crate::model::UuidVer7::self_1(),
             volume_percent: None,
         };
@@ -339,7 +340,7 @@ mod tests {
             is_clipped: false,
             start_time: dur_12h_12m_12s(),
             end_time: dur_12h_12m_12s_plus(-5),
-            tags: Some(crate::model::TagList::test_tag_list_1()),
+            clip_tags: Some(crate::model::ClipTags::self_1()),
             uuid: crate::model::UuidVer7::self_1(),
             volume_percent: None,
         };
@@ -357,7 +358,7 @@ mod tests {
             is_clipped: false,
             start_time: dur_12h_12m_12s_plus(10),
             end_time: dur_12h_12m_12s_plus(20),
-            tags: Some(crate::model::TagList::test_tag_list_1()),
+            clip_tags: Some(crate::model::ClipTags::self_1()),
             uuid: crate::model::UuidVer7::self_1(),
             volume_percent: None,
         };

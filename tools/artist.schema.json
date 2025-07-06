@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Artists",
+  "type": "object",
+  "patternProperties": {
+    "^[a-z0-9-]+$": {
+      "type": "object",
+      "properties": {
+        "ja": { "type": "string" },
+        "jah": { "type": "string" },
+        "en": { "type": "string" },
+        "aliases": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "channelId": {
+          "type": "string",
+          "pattern": "^UC[a-zA-Z0-9_-]{22}$"
+        },
+        "color": {
+          "type": "string",
+          "pattern": "^[A-Fa-f0-9]{6}$"
+        },
+        "isGraduated": { "type": "boolean" }
+      },
+      "required": ["ja", "jah", "en", "aliases", "channelId", "color"],
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

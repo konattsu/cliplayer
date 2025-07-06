@@ -36,6 +36,17 @@
     "editor.formatOnSave": true
   },
 
+  // 楽曲データたちよう
+  "json.schemas": [
+    {
+      "fileMatch": ["/data/artists.json"],
+      "url": "./tools/artist.schema.json"
+    }
+  ],
+  "[json][**/*.min.json]": {
+    "editor.formatOnSave": false
+  },
+
   "cSpell.words": [
     "appender",
     "chrono",

@@ -92,8 +92,12 @@ impl std::str::FromStr for Duration {
             }
         }
 
-        // overflowは起きない (∵ 2^16 * 3600 < 2^(64-1))
-        let total_secs = ((hours * 3600) as i64) + ((mins * 60) as i64) + (secs as i64);
+        // 出力のi64ではoverflowは起きない (∵ 2^16 * 3600 < 2^(64-1))
+        // 計算時にu16だとオーバフローが起こるので事前にキャスト変換しておく
+        #[allow(clippy::unnecessary_cast)]
+        let total_secs = ((hours as i64 * 3600) as i64)
+            + ((mins as i64 * 60) as i64)
+            + (secs as i64);
 
         let chrono_duration = chrono::Duration::seconds(total_secs);
         Self::validate_within_24_hours(chrono_duration)
@@ -217,6 +221,10 @@ mod tests {
             ("PT1H", chrono::Duration::seconds(3600)),
             ("PT120M", chrono::Duration::seconds(7200)),
             ("PT2S", chrono::Duration::seconds(2)),
+            ("PT24H", chrono::Duration::seconds(86400)),
+            ("PT0S", chrono::Duration::seconds(0)),
+            ("PT0H0M0S", chrono::Duration::seconds(0)),
+            ("PT23H59M59S", chrono::Duration::seconds(86399)),
         ];
 
         for (input, expected) in cases {

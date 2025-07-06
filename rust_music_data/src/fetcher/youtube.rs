@@ -69,7 +69,7 @@ impl YouTubeApi {
                         resp.items.into_iter().for_each(|item| {
                             let video_id = &item.id;
                             if let Some(slot) = detail_result.0.get_mut(video_id) {
-                                *slot = Some(item.into_video_detail_without_tags());
+                                *slot = Some(item.into_fetched_video_detail());
                             } else {
                                 tracing::warn!(
                                     "Received video ID {} not found in pending IDs",

@@ -21,7 +21,7 @@ pub struct AnonymousClip {
     /// 曲が終わる時間
     end_time: crate::model::Duration,
     /// タグ
-    tags: Option<crate::model::TagList>,
+    clip_tags: Option<crate::model::ClipTags>,
 }
 
 pub struct AnonymousClipInitializer {
@@ -40,7 +40,7 @@ pub struct AnonymousClipInitializer {
     /// 曲が終わる時間
     pub end_time: crate::model::Duration,
     /// タグ
-    pub tags: Option<crate::model::TagList>,
+    pub clip_tags: Option<crate::model::ClipTags>,
 }
 
 impl AnonymousClipInitializer {
@@ -59,7 +59,7 @@ impl AnonymousClipInitializer {
             is_clipped: self.is_clipped,
             start_time: self.start_time,
             end_time: self.end_time,
-            tags: self.tags,
+            clip_tags: self.clip_tags,
         })
     }
 }
@@ -72,6 +72,7 @@ impl<'de> serde::Deserialize<'de> for AnonymousClip {
     {
         #[derive(serde::Deserialize)]
         #[serde(rename_all = "camelCase")]
+        #[serde(deny_unknown_fields)]
         struct RawAnonymousClip {
             song_title: String,
             song_title_jah: String,
@@ -80,7 +81,7 @@ impl<'de> serde::Deserialize<'de> for AnonymousClip {
             is_clipped: bool,
             start_time: crate::model::Duration,
             end_time: crate::model::Duration,
-            tags: Option<crate::model::TagList>,
+            clip_tags: Option<crate::model::ClipTags>,
         }
 
         let raw: RawAnonymousClip = serde::Deserialize::deserialize(deserializer)
@@ -97,7 +98,7 @@ impl<'de> serde::Deserialize<'de> for AnonymousClip {
             is_clipped: raw.is_clipped,
             start_time: raw.start_time,
             end_time: raw.end_time,
-            tags: raw.tags,
+            clip_tags: raw.clip_tags,
         })
     }
 }
@@ -140,7 +141,7 @@ impl AnonymousClip {
             is_clipped: self.is_clipped,
             start_time: self.start_time,
             end_time: self.end_time,
-            tags: self.tags,
+            clip_tags: self.clip_tags,
             uuid,
             // データを保持していないのでNone
             volume_percent: None,
@@ -164,7 +165,7 @@ mod tests {
         "isClipped": false,
         "startTime": "PT5S",
         "endTime": "PT10S",
-        "tags": ["tag1", "tag2"]
+        "clipTags": ["Test Clip Tag1"]
     }"#;
 
     // `startTime` >= `endTime`
@@ -177,7 +178,7 @@ mod tests {
         "isClipped": false,
         "startTime": "PT10S",
         "endTime": "PT5S",
-        "tags": ["tag1", "tag2"]
+        "ClipTags": ["Test Clip Tag1"]
     }"#;
 
     #[test]
@@ -195,7 +196,7 @@ mod tests {
         assert!(!clip.is_clipped);
         assert_eq!(clip.start_time, crate::model::Duration::from_secs(5));
         assert_eq!(clip.end_time, crate::model::Duration::from_secs(10));
-        assert_eq!(clip.tags, Some(crate::model::TagList::test_tag_list_1()));
+        assert_eq!(clip.clip_tags, Some(crate::model::ClipTags::self_1()));
 
         // 異常なデシリアライズ
         let result: Result<AnonymousClip, _> =
@@ -213,7 +214,7 @@ mod tests {
             is_clipped: true,
             start_time: crate::model::Duration::from_secs(15),
             end_time: crate::model::Duration::from_secs(20),
-            tags: Some(crate::model::TagList::test_tag_list_1()),
+            clip_tags: Some(crate::model::ClipTags::self_1()),
         };
         let result = valid_initializer.init();
         assert!(result.is_ok());
@@ -227,7 +228,7 @@ mod tests {
             start_time: crate::model::Duration::from_secs(25),
             // start >= end
             end_time: crate::model::Duration::from_secs(20),
-            tags: Some(crate::model::TagList::test_tag_list_1()),
+            clip_tags: Some(crate::model::ClipTags::self_1()),
         };
         let result = invalid_initializer.init();
         assert!(result.is_err());
@@ -246,7 +247,7 @@ mod tests {
             // この値が重要, UUIDv7の生成に使用される
             start_time: crate::model::Duration::from_secs(30),
             end_time: crate::model::Duration::from_secs(35),
-            tags: Some(crate::model::TagList::test_tag_list_1()),
+            clip_tags: Some(crate::model::ClipTags::self_1()),
         }
         .init()
         .unwrap();
