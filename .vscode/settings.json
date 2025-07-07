@@ -53,6 +53,7 @@
     "chrono",
     "cliplayer",
     "Deque",
+    "musictl",
     "reqwest",
     "rustls",
     "serde",
