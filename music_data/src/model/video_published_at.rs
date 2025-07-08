@@ -2,7 +2,7 @@
 ///
 /// - ミリ秒以下は切り捨て
 /// - タイムスタンプに直したとき, 符号なし48bitで表現できる範囲内であることを保証
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct VideoPublishedAt(chrono::DateTime<chrono::Utc>);
 
 impl VideoPublishedAt {
@@ -19,6 +19,11 @@ impl VideoPublishedAt {
 
     pub fn as_chrono_datetime(&self) -> &chrono::DateTime<chrono::Utc> {
         &self.0
+    }
+
+    pub fn as_secs(&self) -> u64 {
+        u64::try_from(self.0.timestamp())
+            .expect("VideoPublishedAt::as_secs() is overflow")
     }
 
     /// 動画のアップロード時間を加算

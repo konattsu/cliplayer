@@ -25,7 +25,7 @@
   },
 
   // Rust
-  "rust-analyzer.linkedProjects": ["rust_music_data/Cargo.toml"],
+  "rust-analyzer.linkedProjects": ["music_data/Cargo.toml"],
   "[rust]": {
     "editor.defaultFormatter": "rust-lang.rust-analyzer"
   },
@@ -58,6 +58,7 @@
     "rustls",
     "serde",
     "thiserror",
-    "vitest"
+    "vitest",
+    "walkdir"
   ]
 }

@@ -43,14 +43,16 @@ static ARTIST_SET: once_cell::sync::Lazy<std::collections::HashSet<String>> =
 /// 内部アーティスト
 ///
 /// 事前に定義したアーティストIDのうちのどれかであることを保証
-#[derive(Debug, serde::Serialize, Clone, PartialEq, Eq)]
+#[derive(Debug, serde::Serialize, Clone, PartialEq, Eq, PartialOrd, Ord)]
 struct InternalArtist(String);
 
 /// 内部アーティストのリスト
 ///
-/// `artists` フィールドに `InternalArtist` のリストを保持
+/// 内部に `InternalArtist` のリストを保持
 ///
-/// - `artists` は空でないことを保証
+/// 以下を保証
+/// - `artists` は空でないこと
+/// - `artists` の要素は `InternalArtist` の順序でソートされていること
 #[derive(Debug, serde::Serialize, Clone, PartialEq, Eq)]
 pub struct InternalArtists(Vec<InternalArtist>);
 
@@ -81,18 +83,14 @@ impl<'de> serde::Deserialize<'de> for InternalArtist {
     }
 }
 
-#[cfg(test)]
 impl InternalArtists {
-    fn new_for_test(artists: Vec<InternalArtist>) -> Result<Self, &'static str> {
-        if artists.is_empty() {
-            Err("artists list cannot be empty")
-        } else {
-            Ok(InternalArtists(artists))
-        }
+    fn sort_artists(artists: &mut [InternalArtist]) {
+        artists.sort();
     }
 }
 
-// artistsが空でないことを保証するためのカスタムデシリアライザ
+// artistsが空でないことを保証するため
+// artistsをソートするため
 impl<'de> serde::Deserialize<'de> for InternalArtists {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
@@ -101,10 +99,11 @@ impl<'de> serde::Deserialize<'de> for InternalArtists {
         #[derive(serde::Deserialize)]
         struct RawInternalArtists(Vec<InternalArtist>);
 
-        let raw = RawInternalArtists::deserialize(deserializer)?;
+        let mut raw = RawInternalArtists::deserialize(deserializer)?;
         if raw.0.is_empty() {
             Err(serde::de::Error::custom("artists list cannot be empty"))
         } else {
+            Self::sort_artists(&mut raw.0);
             Ok(InternalArtists(raw.0))
         }
     }
@@ -128,6 +127,15 @@ impl InternalArtist {
 
 #[cfg(test)]
 impl InternalArtists {
+    fn new_for_test(mut artists: Vec<InternalArtist>) -> Result<Self, &'static str> {
+        if artists.is_empty() {
+            Err("artists list cannot be empty")
+        } else {
+            Self::sort_artists(&mut artists);
+            Ok(InternalArtists(artists))
+        }
+    }
+
     /// Vec `Aimer Test`
     pub fn test_name_1() -> Self {
         Self::new_for_test(vec![InternalArtist::test_name1()]).unwrap()
@@ -149,9 +157,16 @@ impl InternalArtists {
 /// 以下を保証
 /// - 内部アーティストIDと重複しないこと
 /// - 空文字列でないこと
-#[derive(Debug, serde::Serialize, Clone, PartialEq, Eq)]
+#[derive(Debug, serde::Serialize, Clone, PartialEq, Eq, PartialOrd, Ord)]
 struct ExternalArtist(String);
 
+/// 外部アーティストのリスト
+///
+/// 内部に `ExternalArtist` のリストを保持
+///
+/// 以下を保証
+/// - `artists` は空でないこと
+/// - `artists` の要素は `ExternalArtist` の順序でソートされていること
 #[derive(Debug, serde::Serialize, Clone, PartialEq, Eq)]
 pub struct ExternalArtists(Vec<ExternalArtist>);
 
@@ -188,14 +203,10 @@ impl<'de> serde::Deserialize<'de> for ExternalArtist {
     }
 }
 
-#[cfg(test)]
 impl ExternalArtists {
-    fn new_for_test(artists: Vec<ExternalArtist>) -> Result<Self, &'static str> {
-        if artists.is_empty() {
-            Err("artists list cannot be empty")
-        } else {
-            Ok(ExternalArtists(artists))
-        }
+    /// 外部アーティストのリストをソート
+    fn sort_artists(artists: &mut [ExternalArtist]) {
+        artists.sort();
     }
 }
 
@@ -208,10 +219,11 @@ impl<'de> serde::Deserialize<'de> for ExternalArtists {
         #[derive(serde::Deserialize)]
         struct RawExternalArtists(Vec<ExternalArtist>);
 
-        let raw = RawExternalArtists::deserialize(deserializer)?;
+        let mut raw = RawExternalArtists::deserialize(deserializer)?;
         if raw.0.is_empty() {
             Err(serde::de::Error::custom("artists list cannot be empty"))
         } else {
+            Self::sort_artists(&mut raw.0);
             Ok(ExternalArtists(raw.0))
         }
     }
@@ -235,6 +247,15 @@ impl ExternalArtist {
 
 #[cfg(test)]
 impl ExternalArtists {
+    fn new_for_test(mut artists: Vec<ExternalArtist>) -> Result<Self, &'static str> {
+        if artists.is_empty() {
+            Err("artists list cannot be empty")
+        } else {
+            Self::sort_artists(&mut artists);
+            Ok(ExternalArtists(artists))
+        }
+    }
+
     /// Vec `Apple Mike`
     pub fn test_name_1() -> Self {
         Self::new_for_test(vec![ExternalArtist::test_name1()]).unwrap()
@@ -350,9 +371,13 @@ mod tests {
 
     #[test]
     fn test_internal_artists_deserialize_valid() {
-        let json = r#"["Aimer Test", "Eir Aoi Test", "Lisa Test"]"#;
-        let _artists: InternalArtists =
+        let json = r#"["Eir Aoi Test", "Lisa Test", "Aimer Test"]"#;
+        let artists: InternalArtists =
             serde_json::from_str(json).expect("Failed to deserialize internal artists");
+        // ソートできているか
+        assert_eq!(artists.0[0].0, "Aimer Test");
+        assert_eq!(artists.0[1].0, "Eir Aoi Test");
+        assert_eq!(artists.0[2].0, "Lisa Test");
     }
 
     #[test]
@@ -364,9 +389,13 @@ mod tests {
 
     #[test]
     fn test_external_artists_deserialize_valid() {
-        let json = r#"["External Artist 1", "External Artist 2"]"#;
-        let _artists: ExternalArtists =
+        let json = r#"["External Artist 1", "External Artist 2", "Apple"]"#;
+        let artists: ExternalArtists =
             serde_json::from_str(json).expect("Failed to deserialize external artists");
+        // ソートできているか
+        assert_eq!(artists.0[0].0, "Apple");
+        assert_eq!(artists.0[1].0, "External Artist 1");
+        assert_eq!(artists.0[2].0, "External Artist 2");
     }
 
     #[test]

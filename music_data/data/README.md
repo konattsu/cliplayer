@@ -14,7 +14,7 @@
 
 新規動画(楽曲)データを追加する
 
-初回追加時は入力ファイル(input.json)を作成し, プルリク出してマージされると一次生成に追加され, 自動的に(input.json)は消える
+初回追加時は入力ファイル(input.json)を作成し, プルリク出してactionsが動作すると一次生成に追加され, 自動的に入力ファイル(input.json)は消える. その後マージする.
 
 ```json
 [
@@ -54,7 +54,7 @@
   - e.g. ["karaoke", "3d", "sitr-nagoya"]
   - 命名規則
     - lower kebab-case
-    - タグ名が A ⊂ B (それぞれ粒度)であれば A のみ付与
+    - より具体的なタグを記述
       - e.g. Sing'ing the Rainbowであれば `sitr`, `sitr-nagoya`の二つを付与せずに `sitr-nagoya`のみを付与
     - 以下のものは付与しない:
       - "2d"
@@ -67,9 +67,9 @@
   - `artists`: 楽曲の歌唱者のアーティストID(箱内)の配列
   - `externalArtists`: 楽曲の外部アーティスト名(箱外)の配列
   - `isClipped`: このクリップが公式で切り抜かれているか
-    - e.g. [この配信](https://youtu.be/6gKIA3_ihCY?t=1h4m20s)で最後から2番目に歌れている曲は, ご本人さんのチャンネルに[動画](https://youtu.be/NNVQm3qtkOY)として投稿されているので `true`
-  - `startTime`: クリップの開始時間. 音が流れる3秒前を指定
-  - `endTime`: クリップの終了時間. 音が流れ終って3秒後を指定
+    - e.g. [この配信](https://youtu.be/6gKIA3_ihCY?t=1h4m20s)で最後から2番目に歌われている曲は, ご本人さんのチャンネルに[動画](https://youtu.be/NNVQm3qtkOY)として投稿されているので `true`
+  - `startTime`: クリップの開始時間. 音が流れる3秒前を指定. 声の出だしではない
+  - `endTime`: クリップの終了時間. 同上
     - e.g. `PT1M10S`は1分10秒, `PT4M21S`は4分21秒
   - `clipTags`: クリップのタグ. 現在のところ未使用
 
@@ -168,11 +168,13 @@ TODO 上の内容を現段階では保証できてない
 
 アーティスト情報を一元管理
 
-ぎばさんのチャンネルは削除されているのでapiでfetchしたときのデータと整合性を取る処理などは要注意
+非公式wikiの左側の順番で記述, セグメント分離されている場合は空行を挟む.
+
+[スキーマ](/tools/artist.schema.json)を[設定](/.vscode/settings.json)済み
+
+一旦jpのみ
 
 ```json
-// artists_data.json
-// 手動で入力
 {
   "ruri-shioriha": {
     // 日本語での名前
@@ -181,7 +183,7 @@ TODO 上の内容を現段階では保証できてない
     "jah": "しおりはるり",
     // 英語(ローマ字)での表記
     "en": "Shioriha Ruri",
-    // 表記ゆれ, 呼称を許容するため
+    // 表記ゆれ, 呼称を許容するため. 平仮名のみ
     "aliases": [],
     // YouTubeチャンネルID. ハンドルネームではない
     "channelId": "UC7_MFM9b8hp5kuTSpa8WyOQ",
@@ -200,15 +202,13 @@ TODO 上の内容を現段階では保証できてない
 }
 ```
 
-### `artist_search_index.json`
+### `artist_search_index.min.json`
 
 アーティスト名の検索インデックス
 
 `artist_data.json`にある, `ja`, `jah`, `en`, `aliases`全ての値をキーにし, アーティストidを値にした配列. アーティスト名からアーティストidをO(n)で抽出できる
 
 ```json
-// artist_search_index.min.json
-// 自動生成, public以下に配置, 実際はmin化
 [
   { "key": "栞葉るり", "artistId": "ruri-shioriha" },
   { "key": "しおりはるり", "artistId": "ruri-shioriha" },
@@ -221,15 +221,13 @@ TODO 上の内容を現段階では保証できてない
 ]
 ```
 
-### `artists.json`
+### `artists.min.json`
 
 アーティストの一部の情報をまとめたもの
 
 `artists_data.json`の一部を抜粋して, フロントエンドでの表示に必要な情報のみを含む.
 
 ```json
-// artists.min.json
-// 自動生成, public以下に配置, 実際はmin化
 {
   "ruri-shioriha": {
     "ja": "栞葉るり",
@@ -247,15 +245,13 @@ TODO 上の内容を現段階では保証できてない
 }
 ```
 
-### `channels.json`
+### `channels.min.json`
 
 YouTubeチャンネルIDとアーティストidの対応リスト
 
 O(1)で引くため, 辞書形式を使用.
 
 ```json
-// channels.min.json
-// 自動生成, public以下に配置, 実際はmin化
 {
   "UC7_MFM9b8hp5kuTSpa8WyOQ": "ruri-shioriha",
   "UCiA-trSZfB0i92V_-dyDqBw": "meruto-kuramochi"

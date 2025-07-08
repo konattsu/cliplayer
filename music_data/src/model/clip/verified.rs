@@ -207,6 +207,9 @@ impl VerifiedClip {
     pub fn get_uuid(&self) -> &crate::model::UuidVer7 {
         &self.uuid
     }
+    pub fn get_start_time(&self) -> &crate::model::Duration {
+        &self.start_time
+    }
 
     pub fn into_inner(self) -> VerifiedClipInner {
         VerifiedClipInner {

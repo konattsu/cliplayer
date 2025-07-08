@@ -19,6 +19,7 @@ tokio = { version = "1.46.1", features = ["macros", "rt-multi-thread", "process"
 tracing = "0.1.41"
 tracing-appender = "0.2.3"
 tracing-subscriber = { version = "0.3.19", features = ["env-filter", "json"] }
+walkdir = "2.5.0"
 
 [profile.test]
 debug = 2

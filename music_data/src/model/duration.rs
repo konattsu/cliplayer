@@ -1,6 +1,7 @@
 /// ISO 8601 Duration型
 ///
 /// - 0..24時間まで
+/// - 秒未満を保持しない
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Duration {
     inner: chrono::Duration,
@@ -10,22 +11,27 @@ impl Duration {
     pub fn from_chrono_duration(
         duration: chrono::Duration,
     ) -> Result<Duration, &'static str> {
-        Self::validate_within_24_hours(duration)
+        Self::validate_within_24_hours(&duration)?;
+        let chrono_duration = Self::truncate_millis(duration);
+        Ok(Duration {
+            inner: chrono_duration,
+        })
     }
 
     pub fn from_secs(secs: u16) -> Self {
-        // - 100 hours = 360000 seconds
+        // - 24 hours = 86400 seconds
         // - u16 max: 65535
         // 絶対に0..24時間の範囲内の値になる
-        Self::validate_within_24_hours(chrono::Duration::seconds(secs as i64)).unwrap()
-    }
-
-    pub fn into_chrono_duration(self) -> chrono::Duration {
-        self.inner
+        Self::from_chrono_duration(chrono::Duration::seconds(secs as i64))
+            .expect("Duration.from_secs() should not fail")
     }
 
     pub fn as_chrono_duration(&self) -> &chrono::Duration {
         &self.inner
+    }
+
+    pub fn as_secs(&self) -> u32 {
+        u32::try_from(self.inner.num_seconds()).expect("Duration.as_secs() overflowed")
     }
 
     pub fn as_chrono_time(&self) -> chrono::NaiveTime {
@@ -39,17 +45,25 @@ impl Duration {
 
     pub fn try_add(&self, other: &Duration) -> Result<Duration, &'static str> {
         let new_duration = self.inner + other.inner;
-        Self::validate_within_24_hours(new_duration)
+        Self::validate_within_24_hours(&new_duration)?;
+        Ok(Self {
+            inner: Self::truncate_millis(new_duration),
+        })
     }
 
     fn validate_within_24_hours(
-        duration: chrono::Duration,
-    ) -> Result<Self, &'static str> {
-        // 100 hours = 360,000 seconds
-        if !(0..360000).contains(&duration.num_seconds()) {
-            return Err("Duration must be between 0 and 100 hours");
+        duration: &chrono::Duration,
+    ) -> Result<(), &'static str> {
+        // 24 hours = 86,400 seconds
+        if !(0..86400).contains(&duration.num_seconds()) {
+            return Err("Duration must be between 0 and 24 hours");
         }
-        Ok(Duration { inner: duration })
+        Ok(())
+    }
+
+    /// ミリ秒以下を切り捨てる
+    fn truncate_millis(duration: chrono::Duration) -> chrono::Duration {
+        chrono::Duration::seconds(duration.num_seconds())
     }
 }
 
@@ -100,7 +114,7 @@ impl std::str::FromStr for Duration {
             + (secs as i64);
 
         let chrono_duration = chrono::Duration::seconds(total_secs);
-        Self::validate_within_24_hours(chrono_duration)
+        Self::from_chrono_duration(chrono_duration)
     }
 }
 
@@ -221,7 +235,6 @@ mod tests {
             ("PT1H", chrono::Duration::seconds(3600)),
             ("PT120M", chrono::Duration::seconds(7200)),
             ("PT2S", chrono::Duration::seconds(2)),
-            ("PT24H", chrono::Duration::seconds(86400)),
             ("PT0S", chrono::Duration::seconds(0)),
             ("PT0H0M0S", chrono::Duration::seconds(0)),
             ("PT23H59M59S", chrono::Duration::seconds(86399)),

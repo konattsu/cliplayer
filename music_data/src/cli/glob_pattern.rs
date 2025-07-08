@@ -10,14 +10,26 @@ pub enum GlobPatternError {
 }
 
 impl GlobPattern {
-    pub fn matched_files(&self) -> Result<Vec<String>, GlobPatternError> {
+    /// GlobPattern にマッチしたファイルを返却
+    ///
+    /// Error:
+    /// - `InvalidPattern`: globパターンが無効
+    /// - `AccessError`: globパターンにマッチしたファイルへのアクセスに失敗
+    pub fn matched_files(&self) -> Result<Vec<std::path::PathBuf>, GlobPatternError> {
         let mut files = Vec::new();
         for entry in glob::glob(&self.0)
             .map_err(|e| GlobPatternError::InvalidPattern(e.to_string()))?
         {
             match entry {
-                Ok(path) => files.push(path.to_string_lossy().to_string()),
-                Err(e) => eprintln!("Error: {}", e),
+                Ok(path) => files.push(path),
+                Err(e) => {
+                    tracing::error!(
+                        "Failed to access file: {}, given patten: {}",
+                        e,
+                        self.0
+                    );
+                    return Err(GlobPatternError::AccessError(e.to_string()));
+                }
             }
         }
         Ok(files)
