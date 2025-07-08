@@ -14,6 +14,10 @@ impl VideoIds {
     pub fn into_ids(self) -> Vec<crate::model::VideoId> {
         self.0
     }
+
+    pub fn as_ids(&self) -> &[crate::model::VideoId] {
+        &self.0
+    }
 }
 
 impl std::fmt::Display for VideoIds {

@@ -3,8 +3,6 @@ pub struct Channels(
     std::collections::HashMap<crate::model::ChannelId, crate::artist::model::ArtistId>,
 );
 
-// TODO serialize時に順番を保証するか検討
-
 impl Channels {
     pub fn new(artists: &crate::artist::model::Artists) -> Self {
         let mut channels = std::collections::HashMap::with_capacity(artists.0.len());

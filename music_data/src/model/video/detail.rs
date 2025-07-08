@@ -74,4 +74,7 @@ impl VideoDetail {
     pub fn get_duration(&self) -> &crate::model::Duration {
         &self.duration
     }
+    pub fn get_video_id(&self) -> &crate::model::VideoId {
+        &self.video_id
+    }
 }

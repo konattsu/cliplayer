@@ -476,5 +476,3 @@ mod tests {
         assert_eq!(uuid.to_string(), expected);
     }
 }
-
-// TODO partial_eqのテストかく
