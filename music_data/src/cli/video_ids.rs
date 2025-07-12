@@ -1,14 +1,14 @@
 /// 主にコマンドライン引数からvideo id読み取るための型
 #[derive(Debug, Clone)]
-pub struct VideoIds(Vec<crate::model::VideoId>);
+pub struct VideoIdsFromCli(Vec<crate::model::VideoId>);
 
-impl VideoIds {
+impl VideoIdsFromCli {
     /// - Error: ids.is_empty()
     fn new(ids: Vec<crate::model::VideoId>) -> Result<Self, &'static str> {
         if ids.is_empty() {
             return Err("VideoIds cannot be empty");
         }
-        Ok(VideoIds(ids))
+        Ok(VideoIdsFromCli(ids))
     }
 
     pub fn into_ids(self) -> Vec<crate::model::VideoId> {
@@ -20,7 +20,7 @@ impl VideoIds {
     }
 }
 
-impl std::fmt::Display for VideoIds {
+impl std::fmt::Display for VideoIdsFromCli {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let ids_str = self
             .0
@@ -28,11 +28,11 @@ impl std::fmt::Display for VideoIds {
             .map(|id| id.to_string())
             .collect::<Vec<_>>()
             .join(", ");
-        write!(f, "{}", ids_str)
+        write!(f, "{ids_str}")
     }
 }
 
-impl std::str::FromStr for VideoIds {
+impl std::str::FromStr for VideoIdsFromCli {
     type Err = &'static str;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -41,7 +41,7 @@ impl std::str::FromStr for VideoIds {
             .filter(|id| !id.is_empty())
             .map(|id| crate::model::VideoId::new(id.trim().to_string()))
             .collect::<Result<Vec<_>, _>>()?;
-        VideoIds::new(ids)
+        VideoIdsFromCli::new(ids)
     }
 }
 
@@ -52,7 +52,7 @@ mod tests {
     #[test]
     fn test_video_ids_from_str() {
         let input = "11111111111, 22222222222;;\n\n \r \r \r \r \t33333333333";
-        let video_ids: VideoIds = input.parse().unwrap();
+        let video_ids: VideoIdsFromCli = input.parse().unwrap();
         assert_eq!(video_ids.clone().into_ids().len(), 3);
         assert_eq!(
             video_ids.to_string(),

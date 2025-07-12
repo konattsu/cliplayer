@@ -8,8 +8,6 @@
 pub struct AnonymousClip {
     /// 曲名
     song_title: String,
-    /// 曲名の平仮名表記
-    song_title_jah: String,
     /// 内部アーティストの一覧
     artists: crate::model::InternalArtists,
     /// 外部アーティストの一覧
@@ -27,8 +25,6 @@ pub struct AnonymousClip {
 pub struct AnonymousClipInitializer {
     /// 曲名
     pub song_title: String,
-    /// 曲名の平仮名表記
-    pub song_title_jah: String,
     /// 内部アーティストの一覧
     pub artists: crate::model::InternalArtists,
     /// 外部アーティストの一覧
@@ -53,7 +49,6 @@ impl AnonymousClipInitializer {
 
         Ok(AnonymousClip {
             song_title: self.song_title,
-            song_title_jah: self.song_title_jah,
             artists: self.artists,
             external_artists: self.external_artists,
             is_clipped: self.is_clipped,
@@ -75,7 +70,6 @@ impl<'de> serde::Deserialize<'de> for AnonymousClip {
         #[serde(deny_unknown_fields)]
         struct RawAnonymousClip {
             song_title: String,
-            song_title_jah: String,
             artists: crate::model::InternalArtists,
             external_artists: Option<crate::model::ExternalArtists>,
             is_clipped: bool,
@@ -92,7 +86,6 @@ impl<'de> serde::Deserialize<'de> for AnonymousClip {
 
         Ok(AnonymousClip {
             song_title: raw.song_title,
-            song_title_jah: raw.song_title_jah,
             artists: raw.artists,
             external_artists: raw.external_artists,
             is_clipped: raw.is_clipped,
@@ -135,7 +128,6 @@ impl AnonymousClip {
         let uuid = self.generate_uuid(video_published_at);
         super::VerifiedClipInitializer {
             song_title: self.song_title,
-            song_title_jah: self.song_title_jah,
             artists: self.artists,
             external_artists: self.external_artists,
             is_clipped: self.is_clipped,
@@ -159,7 +151,6 @@ mod tests {
     const ANONYMOUS_CLIP_JSON_VALID: &str = r#"
     {
         "songTitle": "Test Song 1",
-        "songTitleJah": "てすとそんぐいち",
         "artists": ["Aimer Test"],
         "externalArtists": ["Apple Mike"],
         "isClipped": false,
@@ -172,7 +163,6 @@ mod tests {
     const ANONYMOUS_CLIP_JSON_INVALID: &str = r#"
     {
         "songTitle": "Test Song 2",
-        "songTitleJah": "てすとそんぐに",
         "artists": ["Aimer Test"],
         "externalArtists": ["Apple Mike"],
         "isClipped": false,
@@ -187,7 +177,6 @@ mod tests {
         let clip: AnonymousClip =
             serde_json::from_str(ANONYMOUS_CLIP_JSON_VALID).unwrap();
         assert_eq!(clip.song_title, "Test Song 1");
-        assert_eq!(clip.song_title_jah, "てすとそんぐいち");
         assert_eq!(clip.artists, crate::model::InternalArtists::test_name_1());
         assert_eq!(
             clip.external_artists,
@@ -208,7 +197,6 @@ mod tests {
     fn test_anonymous_clip_initializer_init() {
         let valid_initializer = AnonymousClipInitializer {
             song_title: "Test Song 3".to_string(),
-            song_title_jah: "てすとそんぐさん".to_string(),
             artists: crate::model::InternalArtists::test_name_1(),
             external_artists: Some(crate::model::ExternalArtists::test_name_1()),
             is_clipped: true,
@@ -221,7 +209,6 @@ mod tests {
 
         let invalid_initializer = AnonymousClipInitializer {
             song_title: "Test Song 4".to_string(),
-            song_title_jah: "てすとそんぐよん".to_string(),
             artists: crate::model::InternalArtists::test_name_1(),
             external_artists: Some(crate::model::ExternalArtists::test_name_1()),
             is_clipped: false,
@@ -240,7 +227,6 @@ mod tests {
 
         let clip = AnonymousClipInitializer {
             song_title: "Test Song 5".to_string(),
-            song_title_jah: "てすとそんぐご".to_string(),
             artists: crate::model::InternalArtists::test_name_1(),
             external_artists: Some(crate::model::ExternalArtists::test_name_1()),
             is_clipped: false,

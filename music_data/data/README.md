@@ -6,7 +6,7 @@
   - `input.json`: 動画の情報を一時的に記述
 - 一次生成
   - `(年)/(月).json`: 年月ごとに動画の情報をまとめたもの
-- 二次生成
+- 二次生成, 頻繁に変更されるのでpublic/に配置
   - `videos.min.json`: 一次生成を全てまとめたもの
   - `flat_clips.min.json`: 一次生成のclipsをflattenして, 検索/フィルタetc.に使えそうなもののみ抽出したもの
 
@@ -25,7 +25,6 @@
     "clips": [
       {
         "songTitle": "おねがいダーリン",
-        "songTitleJah": "おねがいだーりん",
         "artists": ["ruri-shioriha"],
         "externalArtists": ["(例示用)"],
         "isClipped": false,
@@ -35,7 +34,6 @@
       },
       {
         "songTitle": "命に嫌われている。",
-        "songTitleJah": "いのちにきらわれている",
         "artists": ["ruri-shioriha"],
         "isClipped": false,
         "startTime": "PT7M12S",
@@ -51,26 +49,25 @@
 - `video_id`: YouTubeの動画ID
 - `uploaderName`: 動画のアップロード者名. 箱外のチャンネルのときのみ任意の適切な名称を付与する. 空文字列は絶対にno
 - `videoTags`: 動画のタグ
-  - e.g. ["karaoke", "3d", "sitr-nagoya"]
+  - e.g. "karaoke", "3d", "sitr-nagoya"
   - 命名規則
     - lower kebab-case
-    - より具体的なタグを記述
-      - e.g. Sing'ing the Rainbowであれば `sitr`, `sitr-nagoya`の二つを付与せずに `sitr-nagoya`のみを付与
+    - 子要素が親要素のタグを含む場合は親要素のタグも付与
+      - e.g. Sing'in the Rainbow 名古屋公演 であれば `sitr`, `sitr-nagoya`の二つを付与
     - 以下のものは付与しない:
       - "2d"
 
 - `clips`: 動画のクリップ情報の配列
   - `songTitle`: 楽曲のタイトル
     - e.g. "おねがいダーリン", "命に嫌われている。"
-  - `songTitleJah`: 楽曲のタイトルの平仮名表記. 読まない記号などは省略
-    - e.g. "おねがいだーりん", "いのちにきらわれている"
   - `artists`: 楽曲の歌唱者のアーティストID(箱内)の配列
   - `externalArtists`: 楽曲の外部アーティスト名(箱外)の配列
   - `isClipped`: このクリップが公式で切り抜かれているか
     - e.g. [この配信](https://youtu.be/6gKIA3_ihCY?t=1h4m20s)で最後から2番目に歌われている曲は, ご本人さんのチャンネルに[動画](https://youtu.be/NNVQm3qtkOY)として投稿されているので `true`
-  - `startTime`: クリップの開始時間. 音が流れる3秒前を指定. 声の出だしではない
+  - `startTime`: クリップの開始時間. 音(イントロ||声)が流れた時間を指定
+    - e.g. 1分30.4秒など中途半端であれば0.4秒早めて`PT1M30S`を指定.
   - `endTime`: クリップの終了時間. 同上
-    - e.g. `PT1M10S`は1分10秒, `PT4M21S`は4分21秒
+    - e.g. 3分24.7秒であれば0.3秒遅くして`PT3M25S`を指定
   - `clipTags`: クリップのタグ. 現在のところ未使用
 
 ### `(年)/(月).json`
@@ -97,7 +94,6 @@ TODO 上の内容を現段階では保証できてない
     "clips": [
       {
         "songTitle": "おねがいダーリン",
-        "songTitleJah": "おねがいだーりん",
         "artists": ["ruri-shioriha"],
         "externalArtists": ["(例示用)"],
         "isClipped": false,
@@ -111,7 +107,6 @@ TODO 上の内容を現段階では保証できてない
       },
       {
         "songTitle": "命に嫌われている。",
-        "songTitleJah": "いのちにきらわれている",
         "artists": ["ruri-shioriha"],
         "isClipped": false,
         "startTime": "PT7M12S",
@@ -136,7 +131,6 @@ TODO 上の内容を現段階では保証できてない
   {
     "uuid": "0197bbd1-039e-77f6-9112-519561b61f9e",
     "songTitle": "おねがいダーリン",
-    "songTitleJah": "おねがいだーりん",
     "artists": ["ruri-shioriha"],
     "externalArtists": ["(例示用)"],
     "clipTags": ["(例示用)"],
@@ -147,7 +141,6 @@ TODO 上の内容を現段階では保証できてない
   {
     "uuid": "0197bbd1-039e-7b67-8c92-6f557c60f187",
     "songTitle": "命に嫌われている。",
-    "songTitleJah": "いのちにきらわれている",
     "artists": ["ruri-shioriha"],
     "startTime": "PT7M12S",
     "endTime": "PT11M34S"
@@ -159,7 +152,7 @@ TODO 上の内容を現段階では保証できてない
 
 - 手動で記述
   - `artists_data.json`: アーティストの全ての情報
-- 自動で生成(public/以下に配置, min化)
+- 自動で生成, 変更頻度が低いのでsrc/に配置
   - `artist_search_index.json`: アーティスト名の検索インデックス
   - `artists.json`: アーティストの一部の情報をflattenしてまとめたもの
   - `channels.json`: チャンネルidからアーティストidの対応

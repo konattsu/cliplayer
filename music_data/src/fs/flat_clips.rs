@@ -10,7 +10,6 @@ pub struct FlatClips {
 struct FlatClip {
     uuid: crate::model::UuidVer7,
     song_title: String,
-    song_title_jah: String,
     artists: crate::model::InternalArtists,
     #[serde(skip_serializing_if = "Option::is_none")]
     external_artists: Option<crate::model::ExternalArtists>,
@@ -64,7 +63,6 @@ impl FlatClip {
         Self {
             uuid: clip.uuid,
             song_title: clip.song_title,
-            song_title_jah: clip.song_title_jah,
             artists: clip.artists,
             external_artists: clip.external_artists,
             clips_tags: clip.clip_tags,

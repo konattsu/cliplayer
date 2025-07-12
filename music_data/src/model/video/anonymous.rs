@@ -9,3 +9,9 @@ pub struct AnonymousVideo {
     /// クリップ
     clips: Vec<crate::model::AnonymousClip>,
 }
+
+impl AnonymousVideo {
+    pub fn get_video_brief(&self) -> &crate::model::VideoBrief {
+        &self.video_brief
+    }
+}

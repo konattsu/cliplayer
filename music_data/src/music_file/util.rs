@@ -24,21 +24,42 @@ pub struct FileVideo {
     pub videos: crate::model::VerifiedVideos,
 }
 
+impl ValidateError {
+    pub fn display_prettier(&self) -> String {
+        match self {
+            Self::DeserializeError(de) => {
+                let mut msg = String::new();
+                de.iter().for_each(|e| msg.push_str(&e.display_prettier()));
+                msg
+            }
+            Self::FileOpenError(e) => e.display_prettier(),
+        }
+    }
+}
+
+impl ValidateErrorFileOpen {
+    pub fn display_prettier(&self) -> String {
+        format!("failed to open file ({}): {}\n", self.file, self.reason)
+    }
+}
+
+impl ValidateErrorDeserialize {
+    pub fn display_prettier(&self) -> String {
+        format!("failed to deserialize @ {}: {}\n", self.file, self.reason)
+    }
+}
+
 /// 既存の楽曲情報の一覧を取得
 ///
-/// Arguments
-/// - `music_dir`: 既存の楽曲情報が含まれているディレクトリ
-///   このディレクトリ配下の`**/*.json`を対象とする
-pub fn get_videos_list_from_exist_music_files(
-    music_dir: crate::util::DirPath,
+/// Argument
+/// - `music_root`: 既存の楽曲情報が含まれているディレクトリ
+pub fn get_videos_list_from_music_root(
+    music_root: &crate::music_file::MusicRoot,
 ) -> Result<Vec<FileVideo>, ValidateError> {
-    const FIND_EXT: &str = "json";
-    // 形式が正しくないファイルパスを集める
     let mut invalid_files: Vec<ValidateErrorDeserialize> = Vec::new();
     let mut videos: Vec<FileVideo> = Vec::new();
 
-    let files = crate::util::fs::find_files_by_extension(&music_dir, FIND_EXT);
-    for file in files {
+    for file in music_root.get_file_paths() {
         match deserialize_from_file::<crate::model::VerifiedVideos>(&file) {
             Ok(verified_videos) => {
                 videos.push(FileVideo {

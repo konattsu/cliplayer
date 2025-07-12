@@ -19,57 +19,54 @@ pub enum Commands {
 pub enum ApplyCommands {
     /// Apply new music data from input files
     New {
-        /// Glob pattern for the input file(s) containing new music data to apply
-        #[arg(short, long, value_name = "GLOB")]
-        input: crate::cli::GlobPattern,
-        #[clap(flatten)]
-        common_opts: CommonOpts,
+        /// Comma-separated file(s) containing new music data to apply
+        #[arg(short, long, value_name = "FILES")]
+        input: crate::cli::FilePathsFromCli,
+        /// The key of YouTube Data v3 api to fetch data
+        #[arg(short, long, env = "YOUTUBE_API_KEY")]
+        api_key: crate::fetcher::YouTubeApiKey,
         /// Directory where the results will be written
-        #[arg(long, value_name = "DIR", default_value_t = output_dir_default())]
-        output_dir: String,
+        #[arg(long, value_name = "DIR", default_value_t = crate::cli::MusicRootFromCli::default())]
+        music_root: crate::cli::MusicRootFromCli,
         /// Path to the output file for minimized JSON data
-        #[arg(
-            long,
-            value_name = "FILE",
-            default_value_t = output_min_file_default(),
-        )]
-        output_min_file: String,
+        #[arg(long, value_name = "FILE", default_value_t = crate::cli::OutputMinPathFromCli::default())]
+        output_min_file: crate::cli::OutputMinPathFromCli,
+
+        #[clap(flatten)]
+        common_opts: TraceLevel,
     },
     /// Update existing music data from input files
     Update {
-        /// Glob pattern for the input file(s) containing existing music data to update
-        #[arg(short, long, value_name = "GLOB")]
-        input: crate::cli::GlobPattern,
-        #[clap(flatten)]
-        common_opts: CommonOpts,
+        /// Comma-separated file(s) containing existing music data to update
+        #[arg(short, long, value_name = "FILES")]
+        input: crate::cli::FilePathsFromCli,
+        /// The key of YouTube Data v3 api to fetch data
+        #[arg(short, long, env = "YOUTUBE_API_KEY")]
+        api_key: crate::fetcher::YouTubeApiKey,
         /// Directory where the results will be written
-        #[arg(long, value_name = "DIR", default_value_t = output_dir_default())]
-        output_dir: String,
+        #[arg(long, value_name = "DIR", default_value_t = crate::cli::MusicRootFromCli::default())]
+        music_root: crate::cli::MusicRootFromCli,
         /// Path to the output file for minimized JSON data
-        #[arg(
-            long,
-            value_name = "FILE",
-            default_value_t = output_min_file_default(),
-        )]
-        output_min_file: String,
+        #[arg(long, value_name = "FILE", default_value_t = crate::cli::OutputMinPathFromCli::default())]
+        output_min_file: crate::cli::OutputMinPathFromCli,
+
+        #[clap(flatten)]
+        common_opts: TraceLevel,
     },
     /// Synchronize music data with the existing music directory using the Web API
     Sync {
-        /// Glob pattern for the input file(s) to synchronize
-        #[arg(short, long, value_name = "GLOB")]
-        input: crate::cli::GlobPattern,
-        #[clap(flatten)]
-        common_opts: CommonOpts,
+        /// The key of YouTube Data v3 api to fetch data
+        #[arg(short, long, env = "YOUTUBE_API_KEY")]
+        api_key: crate::fetcher::YouTubeApiKey,
         /// Directory of the music data to synchronize with
-        #[arg(long, value_name = "DIR", default_value_t = output_dir_default())]
-        music_dir: String,
+        #[arg(long, value_name = "DIR", default_value_t = crate::cli::MusicRootFromCli::default())]
+        music_root: crate::cli::MusicRootFromCli,
         /// Path to the output file for minimized JSON data
-        #[arg(
-            long,
-            value_name = "FILE",
-            default_value_t = output_min_file_default(),
-        )]
-        output_min_file: String,
+        #[arg( long, value_name = "FILE", default_value_t = crate::cli::OutputMinPathFromCli::default())]
+        output_min_file: crate::cli::OutputMinPathFromCli,
+
+        #[clap(flatten)]
+        level: TraceLevel,
     },
 }
 
@@ -79,44 +76,42 @@ pub enum ApplyCommands {
 pub enum ValidateCommands {
     /// Validate new music data input files
     NewInput {
-        /// Glob pattern for the input file(s) containing new music data to validate
-        #[arg(short, long, value_name = "GLOB")]
-        input: crate::cli::GlobPattern,
+        /// Comma-separated file(s) containing new music data to validate
+        #[arg(short, long, value_name = "FILES")]
+        input: crate::cli::FilePathsFromCli,
+
         #[clap(flatten)]
-        common_opts: CommonOpts,
+        common_opts: TraceLevel,
     },
     /// Validate existing music data input files
     UpdateInput {
-        /// Glob pattern for the input file(s) containing existing music data to validate
-        #[arg(short, long, value_name = "GLOB")]
-        input: crate::cli::GlobPattern,
+        /// Comma-separated file(s) containing existing music data to validate
+        #[arg(short, long, value_name = "FILES")]
+        input: crate::cli::FilePathsFromCli,
+
         #[clap(flatten)]
-        common_opts: CommonOpts,
+        common_opts: TraceLevel,
     },
     /// Check for duplicate video IDs in the input
     Duplicate {
         /// Comma-separated video IDs to check for duplicates
         #[arg(short, long, value_name = "String")]
-        input: crate::cli::VideoIds,
+        input: crate::cli::VideoIdsFromCli,
+        /// Directory of the music data to use for duplicate checking
+        #[arg(long, value_name = "DIR", default_value_t = crate::cli::MusicRootFromCli::default())]
+        music_root: crate::cli::MusicRootFromCli,
+
         #[clap(flatten)]
-        common_opts: CommonOpts,
+        trace_level: TraceLevel,
     },
 }
 
 #[derive(Debug, clap::Args)]
-pub struct CommonOpts {
+pub struct TraceLevel {
     /// Tracing level for file operations
     #[arg(long, value_name = "LEVEL")]
     pub file_tracing_level: Option<crate::cli::TracingLevel>,
     /// Tracing level for stdout output
     #[arg(long, value_name = "LEVEL")]
     pub stdout_tracing_level: Option<crate::cli::TracingLevel>,
-}
-
-fn output_min_file_default() -> String {
-    "../public/music_data/music.min.json".to_string()
-}
-
-fn output_dir_default() -> String {
-    "./data/music/".to_string()
 }

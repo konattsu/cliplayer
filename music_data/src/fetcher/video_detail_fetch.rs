@@ -17,6 +17,26 @@ impl FromIterator<(crate::model::VideoId, Option<FetchedVideoDetail>)>
     }
 }
 
+impl VideoDetailFetchResult {
+    pub fn get_non_exists_video_ids(&self) -> Vec<crate::model::VideoId> {
+        self.0
+            .iter()
+            .filter_map(|(video_id, detail)| {
+                if detail.is_none() {
+                    Some(video_id.clone())
+                } else {
+                    None
+                }
+            })
+            .collect()
+    }
+
+    // TODO flattenするなら上のget_non_exists_video_ids消してこのメソッドがResult<(今のやつ), Vec<VideoId>>とか
+    pub fn into_fetched_video_detail(self) -> Vec<FetchedVideoDetail> {
+        self.0.into_values().flatten().collect()
+    }
+}
+
 /// VideoDetailのうちfetchできる情報を集めたもの
 #[derive(Debug, Clone)]
 pub struct FetchedVideoDetail {
@@ -72,6 +92,8 @@ impl FetchedVideoDetailInitializer {
     }
 }
 
+// TODO video_id違う可能性
+// どっちともVec, Vec受け取って綺麗にconcatとか
 impl FetchedVideoDetail {
     pub fn into_video_detail(
         self,

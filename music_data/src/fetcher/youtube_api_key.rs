@@ -21,6 +21,19 @@ impl YouTubeApiKey {
     }
 }
 
+impl std::str::FromStr for YouTubeApiKey {
+    type Err = &'static str;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Self::new(s)
+    }
+}
+
+impl std::fmt::Display for YouTubeApiKey {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
 impl std::fmt::Debug for YouTubeApiKey {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "YouTubeApiKey(****)")

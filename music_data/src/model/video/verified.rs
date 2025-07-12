@@ -110,7 +110,6 @@ mod tests {
         "clips": [
             {
                 "songTitle": "Test Song 1",
-                "songTitleJah": "てすとそんぐいち",
                 "artists": ["Aimer Test"],
                 "externalArtists": ["Apple Mike"],
                 "isClipped": false,
