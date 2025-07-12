@@ -5,14 +5,17 @@
 pub struct DirPath(std::path::PathBuf);
 
 impl DirPath {
-    pub fn new(path: &str) -> Result<Self, String> {
-        let path_buf = std::path::PathBuf::from(path);
-        Self::is_dir(&path_buf)?;
-        Ok(DirPath(path_buf))
+    pub fn new(path: &std::path::Path) -> Result<Self, String> {
+        Self::is_dir(path)?;
+        Ok(DirPath(path.to_owned()))
     }
 
     pub fn into_path_buf(self) -> std::path::PathBuf {
         self.0
+    }
+
+    pub fn as_path(&self) -> &std::path::Path {
+        &self.0
     }
 
     fn is_dir(path: &std::path::Path) -> Result<(), String> {
@@ -33,7 +36,7 @@ impl std::str::FromStr for DirPath {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        DirPath::new(s)
+        DirPath::new(std::path::Path::new(s))
     }
 }
 

@@ -1,7 +1,8 @@
 pub mod datetime_serde;
+pub mod fs;
+
 mod dir_path;
 mod file_path;
-pub mod fs;
 mod tracing;
 
 pub use dir_path::DirPath;

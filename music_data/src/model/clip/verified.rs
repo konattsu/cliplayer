@@ -3,8 +3,6 @@
 pub struct VerifiedClip {
     /// 曲名
     song_title: String,
-    /// 曲名の平仮名表記
-    song_title_jah: String,
     /// 内部アーティストの一覧
     artists: crate::model::InternalArtists,
     /// 外部アーティストの一覧
@@ -63,8 +61,6 @@ pub enum VerifiedClipError {
 pub struct VerifiedClipInner {
     /// 曲名
     pub song_title: String,
-    /// 曲名の平仮名表記
-    pub song_title_jah: String,
     /// 内部アーティストの一覧
     pub artists: crate::model::InternalArtists,
     /// 外部アーティストの一覧
@@ -86,8 +82,6 @@ pub struct VerifiedClipInner {
 pub struct VerifiedClipInitializer {
     /// 曲名
     pub song_title: String,
-    /// 曲名の平仮名表記
-    pub song_title_jah: String,
     /// 内部アーティストの一覧
     pub artists: crate::model::InternalArtists,
     /// 外部アーティストの一覧
@@ -123,7 +117,6 @@ impl VerifiedClipInitializer {
 
         Ok(VerifiedClip {
             song_title: self.song_title,
-            song_title_jah: self.song_title_jah,
             artists: self.artists,
             external_artists: self.external_artists,
             is_clipped: self.is_clipped,
@@ -214,7 +207,6 @@ impl VerifiedClip {
     pub fn into_inner(self) -> VerifiedClipInner {
         VerifiedClipInner {
             song_title: self.song_title,
-            song_title_jah: self.song_title_jah,
             artists: self.artists,
             external_artists: self.external_artists,
             is_clipped: self.is_clipped,
@@ -238,7 +230,6 @@ mod tests {
         // 正常
         let verified_initializer = VerifiedClipInitializer {
             song_title: "Test Song".to_string(),
-            song_title_jah: "てすとそんぐ".to_string(),
             artists: crate::model::InternalArtists::test_name_1(),
             external_artists: None,
             is_clipped: false,
@@ -255,7 +246,6 @@ mod tests {
         // 異常, `start_time`と`uuid`の時間が一致しない
         let verified_initializer = VerifiedClipInitializer {
             song_title: "Test Song".to_string(),
-            song_title_jah: "てすとそんぐ".to_string(),
             artists: crate::model::InternalArtists::test_name_1(),
             external_artists: None,
             is_clipped: false,
@@ -277,7 +267,6 @@ mod tests {
         // 正常
         let verified_initializer = VerifiedClipInitializer {
             song_title: "Test Song".to_string(),
-            song_title_jah: "てすとそんぐ".to_string(),
             artists: crate::model::InternalArtists::test_name_1(),
             external_artists: None,
             is_clipped: false,
@@ -301,7 +290,6 @@ mod tests {
         // 異常, `uuid`の日付と動画の公開日が一致しない
         let verified_initializer = VerifiedClipInitializer {
             song_title: "Test Song".to_string(),
-            song_title_jah: "てすとそんぐ".to_string(),
             artists: crate::model::InternalArtists::test_name_1(),
             external_artists: None,
             is_clipped: false,
@@ -325,7 +313,6 @@ mod tests {
         // 正常
         let verified_initializer = VerifiedClipInitializer {
             song_title: "Test Song".to_string(),
-            song_title_jah: "てすとそんぐ".to_string(),
             artists: crate::model::InternalArtists::test_name_1(),
             external_artists: None,
             is_clipped: false,
@@ -342,7 +329,6 @@ mod tests {
         // 異常, `start_time`か`end_time`動画の長さを超えている
         let verified_initializer = VerifiedClipInitializer {
             song_title: "Test Song".to_string(),
-            song_title_jah: "てすとそんぐ".to_string(),
             artists: crate::model::InternalArtists::test_name_1(),
             external_artists: None,
             is_clipped: false,

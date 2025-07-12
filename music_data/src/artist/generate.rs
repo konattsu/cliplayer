@@ -1,4 +1,5 @@
 // なぜか相対パスしか使えない
+// TODO public以外に配置することにした. また,シリアライズ時asc順でもいい
 const INPUT_ARTIST_DATA_FULL_PATH: &str = "data/artists.json";
 const ARTIST_OUTPUT_DIR: &str = "../public/music_data/";
 const ARTIST_SEARCH_INDEX_PATH: &str = "artist_search_index.min.json";
@@ -20,8 +21,7 @@ fn generate_artist_search_index(
 ) -> anyhow::Result<()> {
     let output_artists = crate::artist::output::ArtistSearchIndex::new(artist_data);
     output_artists.output_json(std::path::Path::new(&format!(
-        "{}{}",
-        ARTIST_OUTPUT_DIR, ARTIST_SEARCH_INDEX_PATH
+        "{ARTIST_OUTPUT_DIR}{ARTIST_SEARCH_INDEX_PATH}",
     )))?;
     Ok(())
 }
@@ -31,8 +31,7 @@ fn generate_channels(
 ) -> anyhow::Result<()> {
     let channels = crate::artist::output::Channels::new(artist_data);
     channels.output_json(std::path::Path::new(&format!(
-        "{}{}",
-        ARTIST_OUTPUT_DIR, CHANNELS_PATH
+        "{ARTIST_OUTPUT_DIR}{CHANNELS_PATH}",
     )))?;
     Ok(())
 }
@@ -40,8 +39,7 @@ fn generate_channels(
 fn generate_artists(artist_data: crate::artist::model::Artists) -> anyhow::Result<()> {
     let output_artists = crate::artist::output::OutputArtists::new(artist_data);
     output_artists.output_json(std::path::Path::new(&format!(
-        "{}{}",
-        ARTIST_OUTPUT_DIR, ARTISTS_PATH
+        "{ARTIST_OUTPUT_DIR}{ARTISTS_PATH}",
     )))?;
     Ok(())
 }

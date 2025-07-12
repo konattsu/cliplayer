@@ -11,17 +11,14 @@ impl std::str::FromStr for Color {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         if s.len() != 6 {
-            return Err(format!(
-                "Color string must be 6 characters long, got: {}",
-                s
-            ));
+            return Err(format!("Color string must be 6 characters long, got: {s}",));
         }
         let red = u8::from_str_radix(&s[0..2], 16)
-            .map_err(|_| format!("Invalid red component in color: {}", s))?;
+            .map_err(|_| format!("Invalid red component in color: {s}"))?;
         let green = u8::from_str_radix(&s[2..4], 16)
-            .map_err(|_| format!("Invalid green component in color: {}", s))?;
+            .map_err(|_| format!("Invalid green component in color: {s}"))?;
         let blue = u8::from_str_radix(&s[4..6], 16)
-            .map_err(|_| format!("Invalid blue component in color: {}", s))?;
+            .map_err(|_| format!("Invalid blue component in color: {s}"))?;
 
         Ok(Color { red, green, blue })
     }

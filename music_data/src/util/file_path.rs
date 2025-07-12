@@ -10,6 +10,11 @@ impl FilePath {
         Ok(FilePath(path.to_owned()))
     }
 
+    pub fn from_path_buf(path: std::path::PathBuf) -> Result<Self, String> {
+        Self::is_file(&path)?;
+        Ok(FilePath(path))
+    }
+
     pub fn as_path(&self) -> &std::path::Path {
         &self.0
     }

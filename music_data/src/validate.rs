@@ -6,19 +6,20 @@ pub struct FileVideoId {
 
 /// 既存の楽曲情報ファイルから, 指定された動画IDが重複しているかどうか確認
 ///
-/// Arguments
-/// - `music_dir`: 楽曲情報ファイルが存在するディレクトリ
-///   このディレクトリ以下の`.json`ファイルを再帰的に検索し対象とする
+/// Arguments:
+/// - `music_root`: 楽曲情報のルートフォルダ
 /// - `video_ids`: 重複を確認したい動画IDのリスト
+///
+/// Returns:
+/// - Ok(a): 重複していた動画idとそれが含まれるファイルたち
+/// - Err(e): 楽曲情報のファイルに関する何らかのエラー
 pub fn duplicate_video_ids(
-    music_dir: crate::util::DirPath,
+    music_root: &crate::music_file::MusicRoot,
     video_ids: &Vec<crate::model::VideoId>,
-) -> Result<Vec<FileVideoId>, crate::music_files::ValidateError> {
+) -> Result<Vec<FileVideoId>, crate::music_file::ValidateError> {
     let mut duplicates: Vec<FileVideoId> = Vec::new();
 
-    for file_video in
-        crate::music_files::get_videos_list_from_exist_music_files(music_dir)?
-    {
+    for file_video in crate::music_file::get_videos_list_from_music_root(music_root)? {
         for video_id in video_ids {
             if file_video.videos.has_video_id(video_id) {
                 duplicates.push(FileVideoId {
@@ -34,22 +35,21 @@ pub fn duplicate_video_ids(
 /// 新規の楽曲情報ファイルの形式を検証
 pub fn validate_new_input(
     files: &[crate::util::FilePath],
-) -> Result<(), crate::music_files::ValidateError> {
-    let mut invalid_files: Vec<crate::music_files::ValidateErrorDeserialize> =
+) -> Result<(), crate::music_file::ValidateError> {
+    let mut invalid_files: Vec<crate::music_file::ValidateErrorDeserialize> =
         Vec::new();
 
     for file in files {
-        let res = crate::music_files::deserialize_from_file::<
-            crate::model::AnonymousVideo,
-        >(file);
+        let res: Result<crate::model::AnonymousVideo, _> =
+            crate::music_file::deserialize_from_file(file);
 
         match res {
             Ok(..) => continue,
-            Err(crate::music_files::ValidateError::FileOpenError(inner)) => {
+            Err(crate::music_file::ValidateError::FileOpenError(inner)) => {
                 // 1つでもファイルが開けなかったらすぐにエラーを返す
-                return Err(crate::music_files::ValidateError::FileOpenError(inner));
+                return Err(crate::music_file::ValidateError::FileOpenError(inner));
             }
-            Err(crate::music_files::ValidateError::DeserializeError(inner)) => {
+            Err(crate::music_file::ValidateError::DeserializeError(inner)) => {
                 invalid_files.extend(inner);
             }
         }
@@ -58,7 +58,7 @@ pub fn validate_new_input(
     if invalid_files.is_empty() {
         Ok(())
     } else {
-        Err(crate::music_files::ValidateError::DeserializeError(
+        Err(crate::music_file::ValidateError::DeserializeError(
             invalid_files,
         ))
     }
@@ -67,22 +67,21 @@ pub fn validate_new_input(
 /// 既存の楽曲情報に対する変更を検証
 pub fn validate_update_input(
     files: &[crate::util::FilePath],
-) -> Result<(), crate::music_files::ValidateError> {
-    let mut invalid_files: Vec<crate::music_files::ValidateErrorDeserialize> =
+) -> Result<(), crate::music_file::ValidateError> {
+    let mut invalid_files: Vec<crate::music_file::ValidateErrorDeserialize> =
         Vec::new();
 
     for file in files {
-        let res = crate::music_files::deserialize_from_file::<
-            crate::model::VerifiedVideos,
-        >(file);
+        let res: Result<crate::model::VerifiedVideos, _> =
+            crate::music_file::deserialize_from_file(file);
 
         match res {
             Ok(..) => continue,
-            Err(crate::music_files::ValidateError::FileOpenError(inner)) => {
+            Err(crate::music_file::ValidateError::FileOpenError(inner)) => {
                 // 1つでもファイルが開けなかったらすぐにエラーを返す
-                return Err(crate::music_files::ValidateError::FileOpenError(inner));
+                return Err(crate::music_file::ValidateError::FileOpenError(inner));
             }
-            Err(crate::music_files::ValidateError::DeserializeError(inner)) => {
+            Err(crate::music_file::ValidateError::DeserializeError(inner)) => {
                 invalid_files.extend(inner);
             }
         }
@@ -91,7 +90,7 @@ pub fn validate_update_input(
     if invalid_files.is_empty() {
         Ok(())
     } else {
-        Err(crate::music_files::ValidateError::DeserializeError(
+        Err(crate::music_file::ValidateError::DeserializeError(
             invalid_files,
         ))
     }

@@ -5,6 +5,7 @@
 /// - `extension`: 探索するファイルの拡張子.
 ///   - 先頭のdot`.`は不問
 ///   - case-insensitive
+#[tracing::instrument(level = "debug", ret)]
 pub fn find_files_by_extension(
     dir: &crate::util::DirPath,
     extension: &str,

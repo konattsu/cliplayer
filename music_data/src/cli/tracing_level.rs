@@ -29,7 +29,7 @@ impl std::str::FromStr for TracingLevel {
             "info" => Ok(TracingLevel::Info),
             "debug" => Ok(TracingLevel::Debug),
             "trace" => Ok(TracingLevel::Trace),
-            _ => Err(format!("Invalid tracing level: {}", s)),
+            _ => Err(format!("Invalid tracing level: {s}")),
         }
     }
 }
@@ -43,6 +43,6 @@ impl std::fmt::Display for TracingLevel {
             TracingLevel::Debug => "debug",
             TracingLevel::Trace => "trace",
         };
-        write!(f, "{}", level_str)
+        write!(f, "{level_str}")
     }
 }
