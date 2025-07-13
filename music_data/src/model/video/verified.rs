@@ -1,4 +1,6 @@
 /// 内部のclipsの整合性が全て取れている動画
+///
+/// clipsの`start_time`順にソートされていることを保証
 #[derive(serde::Serialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 #[serde(deny_unknown_fields)]
@@ -20,8 +22,21 @@ pub struct VerifiedVideo {
 #[serde(deny_unknown_fields)]
 pub struct VerifiedVideos(Vec<VerifiedVideo>);
 
-// video_detailの情報を基にVerifiedClipを作成する必要があり
-// これをデシリアライズに行うためのカスタムデシリアライザ
+/// `VerifiedVideo`を作ろうとしたときのエラー
+#[derive(Debug, Clone)]
+pub enum VerifiedVideoError {
+    /// クリップの情報が不正
+    InvalidClip(Vec<crate::model::VerifiedClipError>),
+    /// 動画IDが一致しない
+    VideoIdMismatch {
+        brief: crate::model::VideoId,
+        fetched: crate::model::VideoId,
+    },
+}
+
+// 以下をデシリアライズ時に行うためのカスタムデシリアライザ
+// - video_detailの情報を基にVerifiedClipを作成する必要がある
+// - clipsをソート
 impl<'de> serde::Deserialize<'de> for VerifiedVideo {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
@@ -71,7 +86,89 @@ impl<'de> serde::Deserialize<'de> for VerifiedVideos {
     }
 }
 
+impl VerifiedVideo {
+    pub fn new(
+        video_detail: crate::model::VideoDetail,
+        mut clips: Vec<crate::model::VerifiedClip>,
+    ) -> Self {
+        clips.sort_by_key(|clip| clip.get_start_time().as_secs());
+        VerifiedVideo {
+            video_detail,
+            clips,
+        }
+    }
+
+    // pub fn from_unverified_video(
+    //     unverified_video: crate::model::UnverifiedVideo,
+    // ) -> Result<Self, VerifiedVideoError> {
+    //     let (video_detail, unverified_clips) = unverified_video.into_inner();
+
+    //     let (verified_clips, errors): (Vec<_>, Vec<_>) = unverified_clips
+    //         .into_iter()
+    //         .map(|clip| {
+    //             clip.try_into_verified_clip(
+    //                 video_detail.get_published_at(),
+    //                 video_detail.get_duration(),
+    //             )
+    //         })
+    //         .partition(Result::is_ok);
+    //     if !errors.is_empty() {
+    //         Err(super::VerifiedVideoError::InvalidClip(
+    //             errors.into_iter().map(Result::unwrap_err).collect(),
+    //         ))
+    //     } else {
+    //         Ok(crate::model::VerifiedVideo {
+    //             video_detail,
+    //             clips: verified_clips.into_iter().map(Result::unwrap).collect(),
+    //         })
+    //     }
+    // }
+
+    /// `AnonymousVideo`と`VideoDetail`から`VerifiedVideo`を作成
+    ///
+    /// Error:
+    /// - `video_detail`の動画IDと`anonymous_video`の動画IDが一致しないとき
+    /// - `anonymous_video`のクリップの情報が不正なとき
+    pub fn from_anonymous_video(
+        anonymous_video: crate::model::AnonymousVideo,
+        video_detail: crate::model::VideoDetail,
+    ) -> Result<Self, VerifiedVideoError> {
+        VerifiedVideoError::ensure_video_id_match(
+            anonymous_video.get_video_id(),
+            video_detail.get_video_id(),
+        )?;
+        let (_brief, clips) = anonymous_video.into_inner();
+
+        let (oks, errs): (Vec<_>, Vec<_>) = clips
+            .into_iter()
+            .map(|clip| {
+                clip.try_into_verified_clip(
+                    video_detail.get_published_at(),
+                    video_detail.get_duration(),
+                )
+            })
+            // ここでoks, errsに分割しているため後方の処理ではそれぞれunwrapを使用
+            .partition(Result::is_ok);
+
+        if !errs.is_empty() {
+            return Err(VerifiedVideoError::InvalidClip(
+                errs.into_iter().map(Result::unwrap_err).collect(),
+            ));
+        }
+
+        Ok(VerifiedVideo {
+            video_detail,
+            clips: oks.into_iter().map(Result::unwrap).collect(),
+        })
+    }
+}
+
 impl VerifiedVideos {
+    pub fn new(mut videos: Vec<VerifiedVideo>) -> Self {
+        videos.sort_by_key(|v| v.video_detail.get_published_at().as_secs());
+        VerifiedVideos(videos)
+    }
+
     pub fn has_video_id(&self, video_id: &crate::model::VideoId) -> bool {
         self.0
             .iter()
@@ -88,6 +185,46 @@ impl VerifiedVideos {
             }
         }
         duplicates
+    }
+}
+
+impl VerifiedVideoError {
+    fn ensure_video_id_match(
+        expected: &crate::model::VideoId,
+        actual: &crate::model::VideoId,
+    ) -> Result<(), Self> {
+        if expected == actual {
+            Ok(())
+        } else {
+            Err(VerifiedVideoError::VideoIdMismatch {
+                brief: expected.clone(),
+                fetched: actual.clone(),
+            })
+        }
+    }
+
+    /// 成形して表示する用の文字列をつくる
+    ///
+    /// 文字列の最後に`\n`が付与される
+    pub fn display_prettier(&self) -> String {
+        let mut msg = "Failed to create VerifiedVideo: ".to_string();
+        match self {
+            VerifiedVideoError::VideoIdMismatch { brief, fetched } => {
+                msg.push_str(&format!(
+                    "video_id mismatch: expected {brief}, got {fetched}\n",
+                ));
+            }
+            VerifiedVideoError::InvalidClip(errors) => {
+                let invalid_clip_err_msgs =
+                    errors.iter().map(|e| e.to_string()).collect::<Vec<_>>();
+                msg.push_str(&format!(
+                    "Invalid clips found ({}):\n\t{}\n",
+                    errors.len(),
+                    invalid_clip_err_msgs.join("\n\t")
+                ));
+            }
+        }
+        msg
     }
 }
 

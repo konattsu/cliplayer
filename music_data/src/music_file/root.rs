@@ -2,13 +2,14 @@
 #[derive(Debug, Clone)]
 pub struct MusicRoot {
     root: crate::util::DirPath,
-    files: Vec<MusicRootYear>,
+    files: Vec<MusicFilePath>,
 }
 
 #[derive(Debug, Clone)]
-pub struct MusicRootYear {
+pub struct MusicFilePath {
     year: usize,
-    monthly_files: Vec<crate::util::FilePath>,
+    month: usize,
+    file: crate::util::FilePath,
 }
 
 impl MusicRoot {
@@ -27,12 +28,22 @@ impl MusicRoot {
         })
     }
 
-    pub fn get_file_paths(&self) -> Vec<crate::util::FilePath> {
-        self.files
-            .iter()
-            .flat_map(|y| y.monthly_files.iter())
-            .cloned()
-            .collect()
+    pub fn get_file_paths(&self) -> &Vec<MusicFilePath> {
+        &self.files
+    }
+}
+
+impl MusicFilePath {
+    pub fn get_year(&self) -> usize {
+        self.year
+    }
+
+    pub fn get_month(&self) -> usize {
+        self.month
+    }
+
+    pub fn get_file_path(&self) -> &crate::util::FilePath {
+        &self.file
     }
 }
 
@@ -46,21 +57,20 @@ impl MusicRoot {
 /// - Vecが空の場合
 fn collect_and_validate_year_directories(
     entries: &[std::fs::DirEntry],
-) -> Result<Vec<MusicRootYear>, String> {
+) -> Result<Vec<MusicFilePath>, String> {
     if entries.is_empty() {
         return Err("No entries found in the music root directory".to_string());
     }
 
-    let mut years: Vec<MusicRootYear> = Vec::new();
+    let mut years: Vec<MusicFilePath> = Vec::new();
 
     for entry in entries {
         let year = validate_year_directory(entry)?;
         let inner_entries = read_dir(&entry.path())?;
         let monthly_files = collect_and_validate_month_files(&inner_entries)
             .map_err(|e| format!("Under the {}, {}", entry.path().display(), e))?;
-        years.push(MusicRootYear {
-            year,
-            monthly_files,
+        monthly_files.into_iter().for_each(|(file, month)| {
+            years.push(MusicFilePath { year, month, file });
         });
     }
 
@@ -111,14 +121,13 @@ fn validate_year_directory(entry: &std::fs::DirEntry) -> Result<usize, String> {
 /// - `entries`: 年単位のフォルダ直下のエントリ一覧
 ///
 /// # Returns:
-/// - `Ok(Vec<FilePath>)`: 正常な場合. 全ての月ファイルのパスが含まれる
+/// - `Ok(Vec<FilePath>, usize)`: 正常な場合. 月ファイルと対応した月の数字, の配列を返す
 /// - `Err(String)`: 無効なファイルが含まれている場合
 fn collect_and_validate_month_files(
     entries: &[std::fs::DirEntry],
-) -> Result<Vec<crate::util::FilePath>, String> {
+) -> Result<Vec<(crate::util::FilePath, usize)>, String> {
     const MONTH_FILE_EXT: &str = ".json";
-    let mut exists_month_num = [false; 12];
-    let mut monthly_files: Vec<crate::util::FilePath> = Vec::new();
+    let mut monthly_files: Vec<(crate::util::FilePath, usize)> = Vec::new();
 
     if entries.len() != 12 {
         return Err(format!(
@@ -142,26 +151,11 @@ fn collect_and_validate_month_files(
             .get(..2)
             .map(|s| s.parse::<usize>())
             .and_then(Result::ok)
-            .and_then(|s| exists_month_num.get_mut(s - 1))
             .ok_or_else(|| format!("{name} is invalid file name"))?;
 
-        if *num {
-            return Err(format!(
-                "Duplicate month file found: {}",
-                entry.path().display()
-            ));
-        } else {
-            *num = true;
-        }
-
-        monthly_files.push(
-            crate::util::FilePath::from_path_buf(entry.path())
-                .map_err(|e| format!("Failed to create FilePath: {e}"))?,
-        );
-    }
-
-    if !exists_month_num.iter().all(|&exists| exists) {
-        return Err("Not all month files are present".to_string());
+        let file_path = crate::util::FilePath::from_path_buf(entry.path())
+            .map_err(|e| format!("Failed to create FilePath: {e}"))?;
+        monthly_files.push((file_path, num));
     }
     Ok(monthly_files)
 }
@@ -274,12 +268,14 @@ mod tests {
             }
         }
         let entries = read_dir(dir.path()).unwrap();
-        let years = collect_and_validate_year_directories(&entries).unwrap();
-        assert_eq!(years.len(), 2);
-        assert!(years.iter().any(|y| y.year == 2021));
-        assert!(years.iter().any(|y| y.year == 2022));
-        for y in years {
-            assert_eq!(y.monthly_files.len(), 12);
+        let files = collect_and_validate_year_directories(&entries).unwrap();
+        // 2年 x 12ヶ月 = 24ファイル
+        assert_eq!(files.len(), 24);
+        // 各年・月の組み合わせがすべて含まれているか
+        for y in [2021, 2022] {
+            for m in 1..=12 {
+                assert!(files.iter().any(|f| f.year == y && f.month == m));
+            }
         }
     }
 

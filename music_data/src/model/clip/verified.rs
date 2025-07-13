@@ -1,3 +1,10 @@
+/// 検証されたクリップ情報
+///
+/// 以下を保証
+/// - `start_time` < `end_time`
+/// - `UUIDv7`のタイムスタンプの時間(h:m:s)と`start_time`の時間が一致
+/// - `UUIDv7`の日付(Y:M:D)と動画の公開日が一致
+/// - `start_time` or `end_time`の時間が動画の長さを超えない
 #[derive(serde::Serialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct VerifiedClip {
@@ -29,29 +36,41 @@ pub struct VerifiedClip {
 pub enum VerifiedClipError {
     /// `start_time` >= `end_time`のとき
     #[error(
-        "invalid clip time range: start({start_time}) must be less than to end({end_time})"
+        "(@song title: {song_title}), invalid clip time range: \
+        start({start_time}) must be less than to end({end_time})"
     )]
     InvalidClipTimeRange {
+        song_title: String,
         start_time: crate::model::Duration,
         end_time: crate::model::Duration,
     },
     /// UUIDv7にあるタイムスタンプの時間(h:m:s)と`start_time`の時間が一致しないとき
-    #[error("uuid time({uuid_time}) does not match start time({start_time})")]
+    #[error(
+        "(@song title: {song_title}), invalid uuid: \
+        time({uuid_time}) does not match start time({start_time})"
+    )]
     UuidTimeMismatch {
+        song_title: String,
         uuid_time: chrono::NaiveTime,
         start_time: crate::model::Duration,
     },
     /// UUIDv7の日付(Y:M:D)と, 与えられた動画情報にある動画の公開日が一致しないとき
-    #[error("uuid date({uuid_date}) does not match video date({video_date})")]
+    #[error(
+        "(@song title: {song_title}), invalid uuid \
+        date({uuid_date}) does not match video date({video_date})"
+    )]
     UuidDateMismatch {
+        song_title: String,
         uuid_date: chrono::NaiveDate,
         video_date: crate::model::VideoPublishedAt,
     },
     /// `start_time`or `end_time`の時間が, 与えられた動画情報にある動画の長さより長いとき
     #[error(
-        "time exceeds video duration: start({start_time}), end({end_time}), video duration({video_duration})"
+        "(@song title: {song_title}), time exceeds video duration: \
+        start({start_time}), end({end_time}), video duration({video_duration})"
     )]
     TimeExceedsVideoDuration {
+        song_title: String,
         start_time: crate::model::Duration,
         end_time: crate::model::Duration,
         video_duration: crate::model::Duration,
@@ -136,6 +155,7 @@ impl VerifiedClipInitializer {
     ) -> Result<(), VerifiedClipError> {
         super::validate_start_end_times(&self.start_time, &self.end_time).map_err(
             |_| VerifiedClipError::InvalidClipTimeRange {
+                song_title: self.song_title.clone(),
                 start_time: self.start_time.clone(),
                 end_time: self.end_time.clone(),
             },
@@ -153,6 +173,7 @@ impl VerifiedClipInitializer {
 
         if uuid_time != start_time {
             return Err(VerifiedClipError::UuidTimeMismatch {
+                song_title: self.song_title.clone(),
                 uuid_time,
                 start_time: self.start_time.clone(),
             });
@@ -170,6 +191,7 @@ impl VerifiedClipInitializer {
 
         if uuid_date != video_date {
             return Err(VerifiedClipError::UuidDateMismatch {
+                song_title: self.song_title.clone(),
                 uuid_date,
                 video_date: video_published_at.clone(),
             });
@@ -184,6 +206,7 @@ impl VerifiedClipInitializer {
     ) -> Result<(), VerifiedClipError> {
         if self.start_time >= *video_duration || self.end_time >= *video_duration {
             return Err(VerifiedClipError::TimeExceedsVideoDuration {
+                song_title: self.song_title.clone(),
                 start_time: self.start_time.clone(),
                 end_time: self.end_time.clone(),
                 video_duration: video_duration.clone(),

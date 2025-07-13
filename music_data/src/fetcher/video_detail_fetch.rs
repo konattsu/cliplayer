@@ -18,22 +18,47 @@ impl FromIterator<(crate::model::VideoId, Option<FetchedVideoDetail>)>
 }
 
 impl VideoDetailFetchResult {
-    pub fn get_non_exists_video_ids(&self) -> Vec<crate::model::VideoId> {
-        self.0
-            .iter()
-            .filter_map(|(video_id, detail)| {
-                if detail.is_none() {
-                    Some(video_id.clone())
-                } else {
-                    None
-                }
-            })
-            .collect()
-    }
+    /// 指定されたVideoBriefのリストに基づいてfetchしてきたデータからVideoDetailを取得する
+    pub fn try_into_video_detail(
+        mut self,
+        video_briefs: &[crate::model::VideoBrief],
+    ) -> Result<Vec<crate::model::VideoDetail>, Vec<crate::model::VideoId>> {
+        let mut details = Vec::new();
+        let mut non_exist_ids = Vec::new();
 
-    // TODO flattenするなら上のget_non_exists_video_ids消してこのメソッドがResult<(今のやつ), Vec<VideoId>>とか
-    pub fn into_fetched_video_detail(self) -> Vec<FetchedVideoDetail> {
-        self.0.into_values().flatten().collect()
+        for video_brief in video_briefs {
+            match self.0.remove(video_brief.get_video_id()) {
+                Some(detail) => match detail {
+                    // 存在するvideo_idを指定した場合
+                    Some(d) => {
+                        details.push(
+                            d.try_into_video_detail(video_brief).expect("Impl Err"),
+                        );
+                    }
+                    // 存在しないvideo_idを指定した場合
+                    None => non_exist_ids.push(video_brief.get_video_id().clone()),
+                },
+                // このvideo_idをfetchするように指定しなかった場合
+                // 設計,呼び出しが正しければunreachableなはずなのでwarnだしておく
+                None => {
+                    tracing::warn!(
+                        "VideoBrief (video_id: {}) was passed to `try_into_video_detail`, \
+                        but this video_id was not included in the fetch targets. \
+                        This should be unreachable if the design and call are correct.",
+                        video_brief.get_video_id()
+                    );
+                    // 呼び出し元は全てのVideoBrief(引数)に対応したVideoDetail(戻り値)を
+                    // 期待しているので, その戻り値を返せない=>存在しないidとして扱う
+                    non_exist_ids.push(video_brief.get_video_id().clone())
+                }
+            }
+        }
+
+        if non_exist_ids.is_empty() {
+            Ok(details)
+        } else {
+            Err(non_exist_ids)
+        }
     }
 }
 
@@ -92,14 +117,20 @@ impl FetchedVideoDetailInitializer {
     }
 }
 
-// TODO video_id違う可能性
-// どっちともVec, Vec受け取って綺麗にconcatとか
 impl FetchedVideoDetail {
-    pub fn into_video_detail(
+    pub fn try_into_video_detail(
         self,
         video_brief: &crate::model::VideoBrief,
-    ) -> crate::model::VideoDetail {
-        crate::model::VideoDetailInitializer {
+    ) -> Result<crate::model::VideoDetail, String> {
+        if video_brief.get_video_id() != &self.video_id {
+            return Err(format!(
+                "VideoBrief's video_id ({}) does not match FetchedVideoDetail's video_id ({})",
+                video_brief.get_video_id(),
+                self.video_id
+            ));
+        }
+
+        Ok(crate::model::VideoDetailInitializer {
             video_id: self.video_id,
             title: self.title,
             channel_id: self.channel_id,
@@ -111,6 +142,6 @@ impl FetchedVideoDetail {
             embeddable: self.embeddable,
             video_tags: video_brief.get_tags().clone(),
         }
-        .init()
+        .init())
     }
 }

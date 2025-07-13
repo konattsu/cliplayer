@@ -76,7 +76,7 @@ impl std::str::FromStr for UuidVer7 {
 impl std::fmt::Display for UuidVer7 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let uuid_str = Self::bytes_to_uuid_string(&self.bytes);
-        write!(f, "{}", uuid_str)
+        write!(f, "{uuid_str}")
     }
 }
 
@@ -206,7 +206,7 @@ impl UuidVer7 {
             if i == 4 || i == 6 || i == 8 || i == 10 {
                 s.push('-');
             }
-            s.push_str(&format!("{:02x}", byte));
+            s.push_str(&format!("{byte:02x}"));
         }
         s
     }
@@ -368,7 +368,7 @@ mod tests {
     fn test_uuid_ver7_generate_4() {
         let uuid = UuidVer7::self_4();
 
-        println!("uuid: {:02x?}", uuid);
+        println!("uuid: {uuid:02x?}");
 
         #[rustfmt::skip]
         assert_eq!(

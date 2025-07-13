@@ -32,15 +32,21 @@ pub struct UnverifiedClip {
 pub enum UnverifiedClipError {
     /// `start_time` >= `end_time`のとき
     #[error(
-        "invalid clip time range: start({start_time}) must be less than to end({end_time})"
+        "(@song_title: {song_title}), invalid clip time range: \
+        start({start_time}) must be less than to end({end_time})"
     )]
     InvalidClipTimeRange {
+        song_title: String,
         start_time: crate::model::Duration,
         end_time: crate::model::Duration,
     },
     /// UUIDv7にあるタイムスタンプの時間(h:m:s)と`start_time`の時間が一致しないとき
-    #[error("uuid time({uuid_time}) does not match start time({start_time})")]
+    #[error(
+        "(@song_title: {song_title}), uuid time({uuid_time}) \
+        does not match start time({start_time})"
+    )]
     UuidTimeMismatch {
+        song_title: String,
         uuid_time: chrono::NaiveTime,
         start_time: crate::model::Duration,
     },
@@ -74,6 +80,7 @@ impl UnverifiedClipInitializer {
     ///   - e.g. `start_time`: 5秒, `end_time`: 3秒
     pub fn init(self) -> Result<UnverifiedClip, UnverifiedClipError> {
         UnverifiedClip::validate_consistency(
+            &self.song_title,
             &self.uuid,
             &self.start_time,
             &self.end_time,
@@ -118,8 +125,13 @@ impl<'de> serde::Deserialize<'de> for UnverifiedClip {
             .map_err(serde::de::Error::custom)?;
 
         // `Self`の存在条件の検証
-        UnverifiedClip::validate_consistency(&raw.uuid, &raw.start_time, &raw.end_time)
-            .map_err(serde::de::Error::custom)?;
+        UnverifiedClip::validate_consistency(
+            &raw.song_title,
+            &raw.uuid,
+            &raw.start_time,
+            &raw.end_time,
+        )
+        .map_err(serde::de::Error::custom)?;
 
         Ok(UnverifiedClip {
             song_title: raw.song_title,
@@ -136,6 +148,10 @@ impl<'de> serde::Deserialize<'de> for UnverifiedClip {
 }
 
 impl UnverifiedClip {
+    pub fn get_start_time(&self) -> &crate::model::Duration {
+        &self.start_time
+    }
+
     /// 与えられた`datetime`と`start_time`を基に`UnverifiedClip`から`VerifiedClip`を生成する
     ///
     /// - Error:
@@ -168,6 +184,7 @@ impl UnverifiedClip {
     /// - `start_time` >= `end_time`のとき
     /// - `uuid`のタイムスタンプの時間(h:m:s)と`start_time`の時間が一致しないとき
     fn validate_consistency(
+        song_title: &str,
         uuid: &crate::model::UuidVer7,
         start_time: &crate::model::Duration,
         end_time: &crate::model::Duration,
@@ -175,6 +192,7 @@ impl UnverifiedClip {
         // `start_time` >= `end_time`の検証
         super::validate_start_end_times(start_time, end_time).map_err(|_| {
             UnverifiedClipError::InvalidClipTimeRange {
+                song_title: song_title.to_string(),
                 start_time: start_time.clone(),
                 end_time: end_time.clone(),
             }
@@ -185,6 +203,7 @@ impl UnverifiedClip {
         let start_time_chrono = start_time.as_chrono_time();
         if uuid_time != start_time_chrono {
             return Err(UnverifiedClipError::UuidTimeMismatch {
+                song_title: song_title.to_string(),
                 uuid_time,
                 start_time: start_time.clone(),
             });
@@ -271,7 +290,7 @@ mod tests {
         {
             let start_time = dur_12h_12m_12s();
             let end_time = dur_12h_12m_12s_plus(8);
-            UnverifiedClip::validate_consistency(&uuid, &start_time, &end_time)
+            UnverifiedClip::validate_consistency("test", &uuid, &start_time, &end_time)
                 .expect("Failed to validate consistency");
         }
         // 異常, start_time >= end_time
@@ -279,6 +298,7 @@ mod tests {
             let start_time = dur_12h_12m_12s();
             let end_time_invalid = dur_12h_12m_12s_plus(-5);
             let result = UnverifiedClip::validate_consistency(
+                "test",
                 &uuid,
                 &start_time,
                 &end_time_invalid,
@@ -293,6 +313,7 @@ mod tests {
             let start_time_invalid = dur_12h_12m_12s_plus(10);
             let end_time = dur_12h_12m_12s_plus(20);
             let result = UnverifiedClip::validate_consistency(
+                "test",
                 &uuid,
                 &start_time_invalid,
                 &end_time,
