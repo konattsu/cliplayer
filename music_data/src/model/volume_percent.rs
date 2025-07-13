@@ -17,8 +17,7 @@ impl VolumePercent {
             Ok(())
         } else {
             Err(format!(
-                "Invalid volume percent: {}. Must be in range (0, 100].",
-                value
+                "Invalid volume percent: {value}. Must be in range (0, 100].",
             ))
         }
     }
@@ -49,7 +48,7 @@ mod tests {
     fn volume_percent_new_valid() {
         for v in [1, 42, 50, 100] {
             let vp = VolumePercent::new(v);
-            assert!(vp.is_ok(), "{} should be valid", v);
+            assert!(vp.is_ok(), "{v} should be valid");
             assert_eq!(vp.unwrap().get(), v);
         }
     }
@@ -58,14 +57,14 @@ mod tests {
     fn volume_percent_new_invalid() {
         for v in [0, 101, 255] {
             let vp = VolumePercent::new(v);
-            assert!(vp.is_err(), "{} should be invalid", v);
+            assert!(vp.is_err(), "{v} should be invalid");
         }
     }
 
     #[test]
     fn volume_percent_deserialize_valid() {
         for v in [1u8, 42, 100] {
-            let json = format!("{}", v);
+            let json = format!("{v}");
             let vp: VolumePercent = serde_json::from_str(&json).unwrap();
             assert_eq!(vp.get(), v);
         }
@@ -74,9 +73,9 @@ mod tests {
     #[test]
     fn volume_percent_deserialize_invalid() {
         for v in [0u8, 101, 255] {
-            let json = format!("{}", v);
+            let json = format!("{v}");
             let vp: Result<VolumePercent, _> = serde_json::from_str(&json);
-            assert!(vp.is_err(), "{} should be invalid for deserialization", v);
+            assert!(vp.is_err(), "{v} should be invalid for deserialization");
         }
     }
 }

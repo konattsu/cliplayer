@@ -27,27 +27,59 @@ pub fn apply_sync() {
 }
 
 async fn foo(
-    anonymity: &mut [crate::model::AnonymousVideo],
+    mut anonymity: Vec<crate::model::AnonymousVideo>,
     api_key: crate::fetcher::YouTubeApiKey,
 ) -> Result<(), String> {
     let video_ids: Vec<crate::model::VideoId> = anonymity
         .iter()
-        .map(|a| a.get_video_brief().get_video_id())
+        .map(|a| a.get_video_id())
         .cloned()
         .collect();
     let res = crate::fetcher::YouTubeApi::new(api_key)
         .run(video_ids)
         .await
         .map_err(|e| format!("{e}\n"))?;
-    let non_exist_ids = res.get_non_exists_video_ids();
-    if !non_exist_ids.is_empty() {
-        return Err(format!(
-            "Non-exist video id(s) are specified: {}",
-            non_exist_ids
-                .iter()
-                .map(|id| id.to_string())
-                .collect::<Vec<_>>()
-                .join(", ")
+
+    let briefs = anonymity
+        .iter()
+        .map(|a| a.get_video_brief())
+        .cloned()
+        .collect::<Vec<_>>();
+
+    let details = match res.try_into_video_detail(&briefs) {
+        Ok(d) => d,
+        // 一旦適当
+        Err(non_exist_ids) => {
+            return Err(format!(
+                "Non-exist video id(s) are specified: {}",
+                non_exist_ids
+                    .iter()
+                    .map(|id| id.to_string())
+                    .collect::<Vec<_>>()
+                    .join(", ")
+            ));
+        }
+    };
+
+    let detail_map: std::collections::HashMap<_, _> = details
+        .into_iter()
+        .map(|d| (d.get_video_id().clone(), d))
+        .collect();
+
+    let mut anonymity_detail = Vec::new();
+    for an in anonymity {
+        if let Some(detail) = detail_map.get(an.get_video_id()) {
+            anonymity_detail.push((an, detail.clone()));
+        } else {
+            // なにか
+        }
+    }
+
+    let mut verified_videos = Vec::new();
+
+    for (an, detail) in anonymity_detail {
+        verified_videos.push(crate::model::VerifiedVideo::from_anonymous_video(
+            an, detail,
         ));
     }
 

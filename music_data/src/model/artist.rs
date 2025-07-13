@@ -60,7 +60,7 @@ impl InternalArtist {
     fn new<'a, T: Into<std::borrow::Cow<'a, str>>>(id: T) -> Result<Self, String> {
         let id = id.into();
         if !Self::is_valid_internal_artist(&id) {
-            Err(format!("invalid artist : {}", id))
+            Err(format!("invalid internal artist: {id}"))
         } else {
             Ok(InternalArtist(id.into_owned()))
         }
@@ -180,7 +180,7 @@ impl ExternalArtist {
         if Self::is_valid_external_artist(&id) {
             Ok(ExternalArtist(id.into_owned()))
         } else {
-            Err(format!("invalid external artist ID: {}", id))
+            Err(format!("invalid external artist id: {id}"))
         }
     }
 

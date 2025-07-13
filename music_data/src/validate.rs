@@ -23,7 +23,7 @@ pub fn duplicate_video_ids(
         for video_id in video_ids {
             if file_video.videos.has_video_id(video_id) {
                 duplicates.push(FileVideoId {
-                    file: file_video.file.clone(),
+                    file: file_video.file.get_file_path().clone(),
                     video_id: video_id.clone(),
                 });
             }

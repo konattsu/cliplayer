@@ -24,8 +24,8 @@ pub use tag::{ClipTags, VideoTags};
 pub use uploader_name::UploaderName;
 pub use uuid::UuidVer7;
 pub use video::{
-    AnonymousVideo, VerifiedVideo, VerifiedVideos, VideoBrief, VideoDetail,
-    VideoDetailInitializer,
+    AnonymousVideo, VerifiedVideo, VerifiedVideoError, VerifiedVideos, VideoBrief,
+    VideoDetail, VideoDetailInitializer,
 };
 pub use video_id::VideoId;
 pub use video_published_at::VideoPublishedAt;

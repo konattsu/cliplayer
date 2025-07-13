@@ -129,22 +129,22 @@ impl std::fmt::Display for Duration {
         let secs = total_secs % 60;
 
         let duration_without_prefix = if hours == 0 && mins == 0 {
-            format!("{}S", secs)
+            format!("{secs}S")
         } else if hours == 0 && secs == 0 {
-            format!("{}M", mins)
+            format!("{mins}M")
         } else if mins == 0 && secs == 0 {
-            format!("{}H", hours)
+            format!("{hours}H")
         } else if hours == 0 {
-            format!("{}M{}S", mins, secs)
+            format!("{mins}M{secs}S")
         } else if mins == 0 {
-            format!("{}H{}S", hours, secs)
+            format!("{hours}H{secs}S")
         } else if secs == 0 {
-            format!("{}H{}M", hours, mins)
+            format!("{hours}H{mins}M")
         } else {
-            format!("{}H{}M{}S", hours, mins, secs)
+            format!("{hours}H{mins}M{secs}S")
         };
 
-        write!(f, "PT{}", duration_without_prefix)
+        write!(f, "PT{duration_without_prefix}")
     }
 }
 

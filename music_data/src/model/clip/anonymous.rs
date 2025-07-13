@@ -97,6 +97,10 @@ impl<'de> serde::Deserialize<'de> for AnonymousClip {
 }
 
 impl AnonymousClip {
+    pub fn get_start_time(&self) -> &crate::model::Duration {
+        &self.start_time
+    }
+
     /// 与えられた`datetime`と`start_time`を基にUUIDを生成
     ///
     /// - 引数の`video_upload_date`は日付のみを使用し, 時刻の情報は無視される
@@ -120,6 +124,7 @@ impl AnonymousClip {
         crate::model::UuidVer7::generate(&dt)
     }
 
+    /// `AnonymousClip`を`VerifiedClip`に変換
     pub fn try_into_verified_clip(
         self,
         video_published_at: &crate::model::VideoPublishedAt,
@@ -139,6 +144,26 @@ impl AnonymousClip {
             volume_percent: None,
         }
         .init(video_published_at, video_duration)
+    }
+
+    pub fn try_into_unverified_clip(
+        self,
+        video_published_at: &crate::model::VideoPublishedAt,
+    ) -> Result<super::UnverifiedClip, super::UnverifiedClipError> {
+        let uuid = self.generate_uuid(video_published_at);
+        super::UnverifiedClipInitializer {
+            song_title: self.song_title,
+            artists: self.artists,
+            external_artists: self.external_artists,
+            is_clipped: self.is_clipped,
+            start_time: self.start_time,
+            end_time: self.end_time,
+            clip_tags: self.clip_tags,
+            uuid,
+            // データを保持していないのでNone
+            volume_percent: None,
+        }
+        .init()
     }
 }
 

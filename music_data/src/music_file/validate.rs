@@ -1,3 +1,4 @@
+/// 既存の楽曲情報の一覧を取得するときのエラー
 #[derive(Debug, Clone)]
 pub enum ValidateError {
     /// ファイルを開けない
@@ -6,25 +7,33 @@ pub enum ValidateError {
     DeserializeError(Vec<ValidateErrorDeserialize>),
 }
 
+/// ファイルを開けなかったときのエラー
 #[derive(Debug, Clone)]
 pub struct ValidateErrorFileOpen {
     pub file: crate::util::FilePath,
     pub reason: String,
 }
 
+/// デシリアライズに失敗したときのエラー
 #[derive(Debug, Clone)]
 pub struct ValidateErrorDeserialize {
     pub file: crate::util::FilePath,
     pub reason: String,
 }
 
+/// ファイルパスとその中に含まれる楽曲情報
 #[derive(Debug, Clone)]
 pub struct FileVideo {
-    pub file: crate::util::FilePath,
+    /// 音楽情報のファイルパス
+    pub file: crate::music_file::MusicFilePath,
+    /// 上のファイルに含まれる楽曲情報
     pub videos: crate::model::VerifiedVideos,
 }
 
 impl ValidateError {
+    /// 成形して表示する用の文字列をつくる
+    ///
+    /// 文字列の最後に`\n`が付与される
     pub fn display_prettier(&self) -> String {
         match self {
             Self::DeserializeError(de) => {
@@ -38,14 +47,23 @@ impl ValidateError {
 }
 
 impl ValidateErrorFileOpen {
+    /// 成形して表示する用の文字列をつくる
+    ///
+    /// 文字列の最後に`\n`が付与される
     pub fn display_prettier(&self) -> String {
         format!("failed to open file ({}): {}\n", self.file, self.reason)
     }
 }
 
 impl ValidateErrorDeserialize {
+    /// 成形して表示する用の文字列をつくる
+    ///
+    /// 文字列の最後に`\n`が付与される
     pub fn display_prettier(&self) -> String {
-        format!("failed to deserialize @ {}: {}\n", self.file, self.reason)
+        format!(
+            "failed to deserialize data in {}: {}\n",
+            self.file, self.reason
+        )
     }
 }
 
@@ -60,7 +78,9 @@ pub fn get_videos_list_from_music_root(
     let mut videos: Vec<FileVideo> = Vec::new();
 
     for file in music_root.get_file_paths() {
-        match deserialize_from_file::<crate::model::VerifiedVideos>(&file) {
+        match deserialize_from_file::<crate::model::VerifiedVideos>(
+            file.get_file_path(),
+        ) {
             Ok(verified_videos) => {
                 videos.push(FileVideo {
                     file: file.clone(),

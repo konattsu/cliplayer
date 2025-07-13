@@ -16,8 +16,7 @@ fn validate_start_end_times(
 ) -> Result<(), String> {
     if start_time >= end_time {
         return Err(format!(
-            "invalid clip time range: start({}) must be less than to end({})",
-            start_time, end_time
+            "invalid clip time range: start({start_time}) must be less than to end({end_time})",
         ));
     }
     Ok(())
