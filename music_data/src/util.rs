@@ -1,5 +1,4 @@
 pub mod datetime_serde;
-pub mod fs;
 
 mod dir_path;
 mod file_path;

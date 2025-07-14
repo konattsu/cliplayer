@@ -26,6 +26,16 @@ impl VideoPublishedAt {
             .expect("VideoPublishedAt::as_secs() is overflow")
     }
 
+    pub fn get_year(&self) -> usize {
+        use chrono::Datelike;
+        self.0.year() as usize
+    }
+
+    pub fn get_month(&self) -> usize {
+        use chrono::Datelike;
+        self.0.month() as usize
+    }
+
     /// 動画のアップロード時間を加算
     ///
     /// - Error: 加算した結果が符号なし48ビットのタイムスタンプの範囲外の場合

@@ -1,7 +1,7 @@
 #[derive(Debug, Clone)]
 pub struct FileVideoId {
-    pub file: crate::util::FilePath,
     pub video_id: crate::model::VideoId,
+    pub published_at: crate::model::VideoPublishedAt,
 }
 
 /// 既存の楽曲情報ファイルから, 指定された動画IDが重複しているかどうか確認
@@ -11,89 +11,58 @@ pub struct FileVideoId {
 /// - `video_ids`: 重複を確認したい動画IDのリスト
 ///
 /// Returns:
-/// - Ok(a): 重複していた動画idとそれが含まれるファイルたち
-/// - Err(e): 楽曲情報のファイルに関する何らかのエラー
+/// - Ok(a): 重複していた動画idとその動画が公開された日のリスト
+/// - Err(e): 何らかのエラー. 整形済みの文字列
 pub fn duplicate_video_ids(
     music_root: &crate::music_file::MusicRoot,
-    video_ids: &Vec<crate::model::VideoId>,
-) -> Result<Vec<FileVideoId>, crate::music_file::ValidateError> {
-    let mut duplicates: Vec<FileVideoId> = Vec::new();
+    video_ids: &[crate::model::VideoId],
+) -> Result<Vec<FileVideoId>, String> {
+    let videos = crate::music_file::MusicRootContent::load(music_root)
+        .map_err(|e| e.to_pretty_string())?
+        .into_flattened_files();
 
-    for file_video in crate::music_file::get_videos_list_from_music_root(music_root)? {
-        for video_id in video_ids {
-            if file_video.videos.has_video_id(video_id) {
-                duplicates.push(FileVideoId {
-                    file: file_video.file.get_file_path().clone(),
-                    video_id: video_id.clone(),
-                });
-            }
-        }
-    }
+    let video_ids_set = videos.into_vec();
+    let video_ids_set: std::collections::HashMap<_, _> = video_ids_set
+        .iter()
+        .map(|v| (v.get_video_id(), v.get_published_at()))
+        .collect();
+
+    let duplicates: Vec<FileVideoId> = video_ids
+        .iter()
+        .filter_map(|id| {
+            video_ids_set.get(id).copied().map(|p| FileVideoId {
+                video_id: id.clone(),
+                published_at: p.clone(),
+            })
+        })
+        .collect();
+
     Ok(duplicates)
 }
 
 /// 新規の楽曲情報ファイルの形式を検証
-pub fn validate_new_input(
-    files: &[crate::util::FilePath],
-) -> Result<(), crate::music_file::ValidateError> {
-    let mut invalid_files: Vec<crate::music_file::ValidateErrorDeserialize> =
-        Vec::new();
-
+pub fn validate_new_input(files: &[crate::util::FilePath]) -> Result<(), String> {
     for file in files {
-        let res: Result<crate::model::AnonymousVideo, _> =
-            crate::music_file::deserialize_from_file(file);
-
-        match res {
-            Ok(..) => continue,
-            Err(crate::music_file::ValidateError::FileOpenError(inner)) => {
-                // 1つでもファイルが開けなかったらすぐにエラーを返す
-                return Err(crate::music_file::ValidateError::FileOpenError(inner));
-            }
-            Err(crate::music_file::ValidateError::DeserializeError(inner)) => {
-                invalid_files.extend(inner);
-            }
-        }
+        //
     }
-
-    if invalid_files.is_empty() {
-        Ok(())
-    } else {
-        Err(crate::music_file::ValidateError::DeserializeError(
-            invalid_files,
-        ))
-    }
+    // applyと一部処理共通(anonymous作成)なのでそっち先作る
+    todo!()
 }
 
+// TODO 通常と同じパースを適用している. 専用で処理するか要件等
 /// 既存の楽曲情報に対する変更を検証
 pub fn validate_update_input(
-    files: &[crate::util::FilePath],
-) -> Result<(), crate::music_file::ValidateError> {
-    let mut invalid_files: Vec<crate::music_file::ValidateErrorDeserialize> =
-        Vec::new();
+    music_root: &crate::music_file::MusicRoot,
+) -> Result<(), String> {
+    let _video = crate::music_file::MusicRootContent::load(music_root)
+        .map_err(|e| e.to_pretty_string())?;
 
-    for file in files {
-        let res: Result<crate::model::VerifiedVideos, _> =
-            crate::music_file::deserialize_from_file(file);
-
-        match res {
-            Ok(..) => continue,
-            Err(crate::music_file::ValidateError::FileOpenError(inner)) => {
-                // 1つでもファイルが開けなかったらすぐにエラーを返す
-                return Err(crate::music_file::ValidateError::FileOpenError(inner));
-            }
-            Err(crate::music_file::ValidateError::DeserializeError(inner)) => {
-                invalid_files.extend(inner);
-            }
-        }
-    }
-
-    if invalid_files.is_empty() {
-        Ok(())
-    } else {
-        Err(crate::music_file::ValidateError::DeserializeError(
-            invalid_files,
-        ))
-    }
+    Ok(())
 }
 
-// なんやかんやこのファイル完成気味, まぁapplyの方が100倍大変なんですけどね
+fn deserialize_from_file(
+    file: &crate::util::FilePath,
+) -> Result<crate::model::AnonymousVideo, String> {
+    // ref: src/music_file/fs.rs
+    todo!()
+}

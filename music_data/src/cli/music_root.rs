@@ -3,9 +3,12 @@
 pub struct MusicRootFromCli(String);
 
 impl MusicRootFromCli {
+    /// CLIから受け取った音楽情報のルートディレクトリを`MusicRoot`に変換
+    ///
+    /// Err(String)の時はエラーが綺麗に表示された文字列が返る
     pub fn try_into_music_root(self) -> Result<crate::music_file::MusicRoot, String> {
         let path = crate::util::DirPath::new(&std::path::PathBuf::from(self.0))?;
-        crate::music_file::MusicRoot::new(&path).map_err(|e| e.to_string())
+        crate::music_file::MusicRoot::new(&path).map_err(|e| e.to_pretty_string())
     }
 }
 

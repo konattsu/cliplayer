@@ -1,20 +1,9 @@
-use clap::builder::Str;
-
 pub fn apply_new(
     files: &[crate::model::AnonymousVideo],
     api_key: crate::fetcher::YouTubeApiKey,
     music_root: &crate::music_file::MusicRoot,
     min_path: &crate::util::FilePath,
 ) {
-    let files_video =
-        match crate::music_file::get_videos_list_from_music_root(music_root) {
-            Ok(f) => f,
-            Err(e) => {
-                e.display_prettier();
-                return;
-            }
-        };
-
     //
 }
 
@@ -76,14 +65,33 @@ async fn foo(
     }
 
     let mut verified_videos = Vec::new();
+    let mut verified_videos_err = Vec::new();
 
     for (an, detail) in anonymity_detail {
-        verified_videos.push(crate::model::VerifiedVideo::from_anonymous_video(
-            an, detail,
-        ));
+        match crate::model::VerifiedVideo::from_anonymous_video(an, detail) {
+            Ok(verified_video) => {
+                verified_videos.push(verified_video);
+            }
+            Err(e) => {
+                verified_videos_err.push(e);
+            }
+        }
     }
 
+    if !verified_videos_err.is_empty() {
+        for e in verified_videos_err {
+            e.to_pretty_string();
+        }
+        // なにか
+        return Err("".to_string());
+    }
+
+    // begin: apply/write.rsみたいなパスに分離
+
+    // end: apply/write.rsみたいなパスに分離
+
     // TODO ここから、ここから
+    // x_todo.md見て
     // `video_detail_fetch`見直し中
 
     todo!()

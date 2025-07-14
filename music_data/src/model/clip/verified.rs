@@ -46,8 +46,8 @@ pub enum VerifiedClipError {
     },
     /// UUIDv7にあるタイムスタンプの時間(h:m:s)と`start_time`の時間が一致しないとき
     #[error(
-        "(@song title: {song_title}), invalid uuid: \
-        time({uuid_time}) does not match start time({start_time})"
+        "(@song title: {song_title}), uuid time({uuid_time}) \
+        does not match start time({start_time})"
     )]
     UuidTimeMismatch {
         song_title: String,
@@ -56,8 +56,8 @@ pub enum VerifiedClipError {
     },
     /// UUIDv7の日付(Y:M:D)と, 与えられた動画情報にある動画の公開日が一致しないとき
     #[error(
-        "(@song title: {song_title}), invalid uuid \
-        date({uuid_date}) does not match video date({video_date})"
+        "(@song title: {song_title}), uuid date({uuid_date}) \
+        does not match video date({video_date})"
     )]
     UuidDateMismatch {
         song_title: String,

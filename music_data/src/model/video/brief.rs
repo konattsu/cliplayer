@@ -1,3 +1,4 @@
+/// 動画の概要情報
 #[derive(serde::Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 #[serde(deny_unknown_fields)]
