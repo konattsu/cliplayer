@@ -1,8 +1,9 @@
-mod root;
-mod validate;
+pub(super) mod fs;
+pub(super) mod validate;
 
-pub use root::{MusicFilePath, MusicRoot};
-pub use validate::{
-    FileVideo, ValidateError, ValidateErrorDeserialize, ValidateErrorFileOpen,
-    deserialize_from_file, get_videos_list_from_music_root,
+mod model;
+
+pub use model::{
+    MusicFileError, MusicFileErrors, MusicFilePath, MusicFilePathContent, MusicRoot,
+    MusicRootContent,
 };

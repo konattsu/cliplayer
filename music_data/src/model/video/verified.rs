@@ -98,31 +98,18 @@ impl VerifiedVideo {
         }
     }
 
-    // pub fn from_unverified_video(
-    //     unverified_video: crate::model::UnverifiedVideo,
-    // ) -> Result<Self, VerifiedVideoError> {
-    //     let (video_detail, unverified_clips) = unverified_video.into_inner();
-
-    //     let (verified_clips, errors): (Vec<_>, Vec<_>) = unverified_clips
-    //         .into_iter()
-    //         .map(|clip| {
-    //             clip.try_into_verified_clip(
-    //                 video_detail.get_published_at(),
-    //                 video_detail.get_duration(),
-    //             )
-    //         })
-    //         .partition(Result::is_ok);
-    //     if !errors.is_empty() {
-    //         Err(super::VerifiedVideoError::InvalidClip(
-    //             errors.into_iter().map(Result::unwrap_err).collect(),
-    //         ))
-    //     } else {
-    //         Ok(crate::model::VerifiedVideo {
-    //             video_detail,
-    //             clips: verified_clips.into_iter().map(Result::unwrap).collect(),
-    //         })
-    //     }
-    // }
+    pub fn get_year(&self) -> usize {
+        self.video_detail.get_published_at().get_year()
+    }
+    pub fn get_month(&self) -> usize {
+        self.video_detail.get_published_at().get_month()
+    }
+    pub fn get_video_id(&self) -> &crate::model::VideoId {
+        self.video_detail.get_video_id()
+    }
+    pub fn get_published_at(&self) -> &crate::model::VideoPublishedAt {
+        self.video_detail.get_published_at()
+    }
 
     /// `AnonymousVideo`と`VideoDetail`から`VerifiedVideo`を作成
     ///
@@ -169,6 +156,10 @@ impl VerifiedVideos {
         VerifiedVideos(videos)
     }
 
+    pub fn into_vec(self) -> Vec<VerifiedVideo> {
+        self.0
+    }
+
     pub fn has_video_id(&self, video_id: &crate::model::VideoId) -> bool {
         self.0
             .iter()
@@ -185,6 +176,21 @@ impl VerifiedVideos {
             }
         }
         duplicates
+    }
+
+    /// 動画を追加
+    ///
+    /// ソートも一緒に行う
+    pub fn push_video(&mut self, video: VerifiedVideo) {
+        let pos = self
+            .0
+            .binary_search_by(|v| {
+                v.video_detail
+                    .get_published_at()
+                    .cmp(video.video_detail.get_published_at())
+            })
+            .unwrap_or_else(|e| e);
+        self.0.insert(pos, video);
     }
 }
 
@@ -206,7 +212,7 @@ impl VerifiedVideoError {
     /// 成形して表示する用の文字列をつくる
     ///
     /// 文字列の最後に`\n`が付与される
-    pub fn display_prettier(&self) -> String {
+    pub fn to_pretty_string(&self) -> String {
         let mut msg = "Failed to create VerifiedVideo: ".to_string();
         match self {
             VerifiedVideoError::VideoIdMismatch { brief, fetched } => {

@@ -10,21 +10,20 @@
 
 ユニット名などは名前から算出できるけど処理速度が低下しそう
 
-musictl apply new -i ./input.json: 新しくデータを作成(WebApi有)
-musictl apply update -i ./music.json: 既存のデータに対して直接変更を適用
-musictl validate new-input -i ./input.json: 新しくデータを生成するための情報が入ったファイルの形式を確認
-musictl validate update-input -i ./music.json: 既存のデータに対して直接変更を適用するための情報が入ったファイルの形式を確認
-musictl validate exists -i ./music.json: 追加しようとしているデータが重複していないか
-
-上のオプション更新する
-
 musictl summary 的なもので.mdとかに登録済みの配信一覧出力機能作ったりしたい
 
 ...
 
-TODO cliから頑張って処理繋げる
-music.min.json用の構造体作成 <- fs/にあった, 別の場所に移動してfs/をフォルダごと消す
-全ファイルのunittest/comment/documentation見直し
+TODO :
+
+- anonymousを作成する処理
+  - verifiedみたいにvideosをanonymousにも作る
+  - fileからserde_json::from_readerをもつ関数をどっかに配置 <- どこがいい?, エラーは正味Vec<\String>とかでprettierしてあげてもいい, 専用のエラー型作ってもいい <- 使いどころそんなにないけど
+
+- fetchにつなげる処理
+  - sync(最新の動画情報と同期)の時は定期的にファイルに書き込むようにする
+
+- channelIdからuploaderNameの存在の妥当性を検証 <- ファイル先頭に書いてあった. 何のことか思い出す
 
 ...
 
