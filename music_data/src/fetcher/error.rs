@@ -25,3 +25,12 @@ pub enum YouTubeApiError {
         message: String,
     },
 }
+
+impl YouTubeApiError {
+    /// エラーメッセージを整形して返す
+    ///
+    /// 文字列の最後に`\n`が付与される
+    pub fn to_pretty_string(&self) -> String {
+        format!("Failed to call YouTube Api: {self}\n")
+    }
+}

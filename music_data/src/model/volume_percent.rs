@@ -4,7 +4,7 @@
 ///   - Ok: `42`, `1`, `50`, `100`, etc.
 ///   - Err: `0`, `0.1`, `101`, etc.
 #[derive(serde::Serialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub struct VolumePercent(std::num::NonZero<u8>);
+pub struct VolumePercent(std::num::NonZeroU8);
 
 impl VolumePercent {
     pub fn new(value: u8) -> Result<Self, String> {

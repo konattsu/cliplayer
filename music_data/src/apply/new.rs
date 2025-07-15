@@ -1,98 +1,123 @@
-pub fn apply_new(
-    files: &[crate::model::AnonymousVideo],
+pub async fn apply_new(
+    anonymous_videos: crate::model::AnonymousVideos,
     api_key: crate::fetcher::YouTubeApiKey,
-    music_root: &crate::music_file::MusicRoot,
+    root: crate::music_file::MusicRoot,
     min_path: &crate::util::FilePath,
-) {
-    //
-}
-
-pub fn apply_update() {
-    //
-}
-
-pub fn apply_sync() {
-    //
-}
-
-async fn foo(
-    mut anonymity: Vec<crate::model::AnonymousVideo>,
-    api_key: crate::fetcher::YouTubeApiKey,
+    min_flat_clips_path: &crate::util::FilePath,
 ) -> Result<(), String> {
-    let video_ids: Vec<crate::model::VideoId> = anonymity
-        .iter()
-        .map(|a| a.get_video_id())
-        .cloned()
-        .collect();
-    let res = crate::fetcher::YouTubeApi::new(api_key)
+    // api呼ぶ
+    let video_ids = anonymous_videos.to_video_ids();
+    let fetched_res = crate::fetcher::YouTubeApi::new(api_key)
         .run(video_ids)
         .await
         .map_err(|e| format!("{e}\n"))?;
 
-    let briefs = anonymity
-        .iter()
-        .map(|a| a.get_video_brief())
-        .cloned()
-        .collect::<Vec<_>>();
+    // briefsとfetched(detail)くっつける
+    let details = super::common::merge_briefs_and_details(
+        &anonymous_videos.to_briefs(),
+        fetched_res,
+    )?;
 
-    let details = match res.try_into_video_detail(&briefs) {
-        Ok(d) => d,
-        // 一旦適当
-        Err(non_exist_ids) => {
-            return Err(format!(
-                "Non-exist video id(s) are specified: {}",
-                non_exist_ids
+    // detailからverified clip/video作成
+    let verified_videos =
+        verify_videos(details, anonymous_videos).map_err(|e| e.to_pretty_string())?;
+
+    // begin: 既存の音楽ファイルの情報に追加
+    let mut content = crate::music_file::MusicRootContent::load(&root).unwrap();
+    content.append_videos(verified_videos).unwrap();
+
+    // begin: 書き出し
+    super::common::write_all(content, min_path, min_flat_clips_path)
+        .map_err(|e| e.to_pretty_string())?;
+    Ok(())
+}
+
+#[derive(Debug)]
+struct VerifyVideosErrors {
+    missing_detail_id: Vec<crate::model::VideoId>,
+    verification_failed: Vec<crate::model::VerifiedVideoError>,
+}
+
+impl VerifyVideosErrors {
+    fn new() -> Self {
+        Self {
+            missing_detail_id: Vec::new(),
+            verification_failed: Vec::new(),
+        }
+    }
+
+    fn is_empty(&self) -> bool {
+        self.missing_detail_id.is_empty() && self.verification_failed.is_empty()
+    }
+
+    /// エラーメッセージを整形して返す
+    ///
+    /// 文字列の最後に`\n`が付与される
+    fn to_pretty_string(&self) -> String {
+        if self.is_empty() {
+            return String::new();
+        }
+
+        let mut errors = Vec::new();
+        if !self.missing_detail_id.is_empty() {
+            errors.push(format!(
+                "Missing detail id(s). This may be a bug: {}\n",
+                self.missing_detail_id
                     .iter()
                     .map(|id| id.to_string())
                     .collect::<Vec<_>>()
                     .join(", ")
             ));
         }
-    };
+        if !self.verification_failed.is_empty() {
+            errors.push(format!(
+                "Verification failed for video(s): {}\n",
+                self.verification_failed
+                    .iter()
+                    .map(|e| e.to_pretty_string())
+                    .collect::<Vec<_>>()
+                    .join(", ")
+            ));
+        }
+        errors.concat()
+    }
+}
 
-    let detail_map: std::collections::HashMap<_, _> = details
+/// 動画の概要と詳細情報を照合し, 動画のクリップを検証する
+fn verify_videos(
+    details: Vec<crate::model::VideoDetail>,
+    videos: crate::model::AnonymousVideos,
+) -> Result<crate::model::VerifiedVideos, VerifyVideosErrors> {
+    let mut verified_videos = Vec::new();
+    let mut verify_videos_errs = VerifyVideosErrors::new();
+
+    // 二重ループを避けるために, VideoIdを使用してdetailにO(1)でアクセスできるようにする
+    let mut details: std::collections::HashMap<_, _> = details
         .into_iter()
         .map(|d| (d.get_video_id().clone(), d))
         .collect();
 
-    let mut anonymity_detail = Vec::new();
-    for an in anonymity {
-        if let Some(detail) = detail_map.get(an.get_video_id()) {
-            anonymity_detail.push((an, detail.clone()));
+    for video in videos.into_inner() {
+        if let Some(detail) = details.remove(video.get_video_id()) {
+            match crate::model::VerifiedVideo::from_anonymous_video(video, detail) {
+                // 対応するdetailが見つかり, verificationに成功したとき
+                Ok(verified) => {
+                    verified_videos.push(verified);
+                }
+                // 対応するdetailが見つかったが, verificationに失敗したとき
+                Err(e) => verify_videos_errs.verification_failed.push(e),
+            }
+        // 対応するdetailが見つからなかったとき
         } else {
-            // なにか
+            verify_videos_errs
+                .missing_detail_id
+                .push(video.get_video_id().clone());
         }
     }
 
-    let mut verified_videos = Vec::new();
-    let mut verified_videos_err = Vec::new();
-
-    for (an, detail) in anonymity_detail {
-        match crate::model::VerifiedVideo::from_anonymous_video(an, detail) {
-            Ok(verified_video) => {
-                verified_videos.push(verified_video);
-            }
-            Err(e) => {
-                verified_videos_err.push(e);
-            }
-        }
+    if verify_videos_errs.is_empty() {
+        Ok(crate::model::VerifiedVideos::new(verified_videos))
+    } else {
+        Err(verify_videos_errs)
     }
-
-    if !verified_videos_err.is_empty() {
-        for e in verified_videos_err {
-            e.to_pretty_string();
-        }
-        // なにか
-        return Err("".to_string());
-    }
-
-    // begin: apply/write.rsみたいなパスに分離
-
-    // end: apply/write.rsみたいなパスに分離
-
-    // TODO ここから、ここから
-    // x_todo.md見て
-    // `video_detail_fetch`見直し中
-
-    todo!()
 }

@@ -29,7 +29,7 @@ pub(super) fn collect_and_validate_year_directories(
                 continue;
             }
         };
-        let monthly_entries = match super::fs::read_dir(&year_entry.path()) {
+        let monthly_entries = match super::fs_util::read_dir(&year_entry.path()) {
             Ok(entries) => entries,
             Err(e) => {
                 errors.push(e);

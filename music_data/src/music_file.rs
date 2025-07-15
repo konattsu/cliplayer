@@ -1,9 +1,8 @@
-pub(super) mod fs;
+pub(super) mod fs_util;
 pub(super) mod validate;
 
-mod model;
+mod error;
+mod root;
 
-pub use model::{
-    MusicFileError, MusicFileErrors, MusicFilePath, MusicFilePathContent, MusicRoot,
-    MusicRootContent,
-};
+pub use error::{MusicFileError, MusicFileErrors};
+pub use root::{MusicFilePath, MusicFilePathContent, MusicRoot, MusicRootContent};

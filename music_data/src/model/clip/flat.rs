@@ -1,5 +1,8 @@
 // ! デシリアライザは付与しない, 整合性が綺麗に取れないため(動画情報が無くVerifiedClipにできないため)
 
+/// クリップ情報をフラット化した物をまとめたもの
+///
+/// min化に必要な情報のみをまとめている
 #[derive(Debug, Clone)]
 pub struct FlatClips {
     clips: std::collections::HashMap<crate::model::UuidVer7, FlatClip>,
@@ -20,6 +23,7 @@ struct FlatClip {
 }
 
 impl serde::Serialize for FlatClips {
+    // ソートしてからシリアライズ
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: serde::Serializer,
@@ -38,21 +42,6 @@ impl FlatClips {
             .collect();
 
         Self { clips }
-    }
-
-    pub fn output_json(&self, path: &std::path::Path) -> anyhow::Result<()> {
-        use anyhow::Context;
-
-        let file = std::fs::File::create(path).with_context(|| {
-            format!("Failed to create/truncate file at {}", path.display())
-        })?;
-        serde_json::to_writer_pretty(file, self).with_context(|| {
-            format!(
-                "Failed to serialize FlatClips to JSON at {}",
-                path.display()
-            )
-        })?;
-        Ok(())
     }
 }
 

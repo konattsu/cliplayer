@@ -1,13 +1,15 @@
 mod file_paths;
+mod min;
+mod min_clips;
 mod music_root;
-mod output_min;
 mod parser;
 mod tracing_level;
 mod video_ids;
 
 pub use file_paths::FilePathsFromCli;
+pub use min::OutputMinPathFromCli;
+pub use min_clips::OutputMinClipsPathFromCli;
 pub use music_root::MusicRootFromCli;
-pub use output_min::OutputMinPathFromCli;
 pub use parser::{ApplyCommands, Cli, Commands, TraceLevel, ValidateCommands};
 pub use tracing_level::TracingLevel;
 pub use video_ids::VideoIdsFromCli;

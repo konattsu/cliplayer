@@ -1,4 +1,4 @@
-#[derive(serde::Serialize, Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(serde::Serialize, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct StringNonEmpty(String);
 
 impl StringNonEmpty {

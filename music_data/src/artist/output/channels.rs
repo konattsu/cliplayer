@@ -1,11 +1,11 @@
 #[derive(serde::Serialize, Debug, Clone)]
 pub struct Channels(
-    std::collections::HashMap<crate::model::ChannelId, crate::artist::model::ArtistId>,
+    std::collections::BTreeMap<crate::model::ChannelId, crate::artist::model::ArtistId>,
 );
 
 impl Channels {
     pub fn new(artists: &crate::artist::model::Artists) -> Self {
-        let mut channels = std::collections::HashMap::with_capacity(artists.0.len());
+        let mut channels = std::collections::BTreeMap::new();
 
         for (artist_id, artist) in artists.0.iter() {
             channels.insert(artist.channel_id.clone(), artist_id.clone());

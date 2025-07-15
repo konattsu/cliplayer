@@ -11,10 +11,6 @@ impl VideoIdsFromCli {
         Ok(VideoIdsFromCli(ids))
     }
 
-    pub fn into_ids(self) -> Vec<crate::model::VideoId> {
-        self.0
-    }
-
     pub fn as_ids(&self) -> &[crate::model::VideoId] {
         &self.0
     }
@@ -53,7 +49,7 @@ mod tests {
     fn test_video_ids_from_str() {
         let input = "11111111111, 22222222222;;\n\n \r \r \r \r \t33333333333";
         let video_ids: VideoIdsFromCli = input.parse().unwrap();
-        assert_eq!(video_ids.clone().into_ids().len(), 3);
+        assert_eq!(video_ids.clone().as_ids().len(), 3);
         assert_eq!(
             video_ids.to_string(),
             "11111111111, 22222222222, 33333333333"
