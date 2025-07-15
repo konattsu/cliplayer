@@ -44,12 +44,14 @@ async fn handle_apply(apply_cmd: musictl::cli::ApplyCommands) -> Result<(), Stri
             )
             .await
         }
+
         musictl::cli::ApplyCommands::Update {
             music_root,
             output_min_file,
             output_min_clips_file,
             ..
         } => handle_apply_update(music_root, output_min_file, output_min_clips_file),
+
         musictl::cli::ApplyCommands::Sync {
             api_key,
             music_root,
@@ -125,10 +127,12 @@ fn handle_validate(validate_cmd: musictl::cli::ValidateCommands) -> Result<(), S
             let files = input.try_into_vec()?;
             musictl::validate::validate_new_input(&files)
         }
+
         musictl::cli::ValidateCommands::UpdateInput { music_root, .. } => {
             let music_root = music_root.try_into_music_root()?;
             musictl::validate::validate_update_input(&music_root)
         }
+
         musictl::cli::ValidateCommands::Duplicate { id, music_root, .. } => {
             let ids = id.as_ids();
             let music_root = music_root.try_into_music_root()?;
