@@ -44,10 +44,42 @@ pub(super) fn deserialize_from_file(
 }
 
 /// jsonファイルに楽曲情報を書き込む
+///
+/// pretty形式
 pub(super) fn serialize_to_file(
     file: &crate::util::FilePath,
     content: &crate::model::VerifiedVideos,
 ) -> Result<(), super::MusicFileError> {
+    use super::MusicFileError;
+
+    let file_handle = std::fs::File::create(file.as_path()).map_err(|e| {
+        MusicFileError::FileReadError {
+            path: file.clone(),
+            msg: e.to_string(),
+            when: "serializing to file".to_string(),
+        }
+    })?;
+
+    let write = std::io::BufWriter::new(file_handle);
+
+    serde_json::to_writer_pretty(write, content).map_err(|e| {
+        MusicFileError::FileWriteError {
+            path: file.clone(),
+            msg: e.to_string(),
+        }
+    })
+}
+
+/// jsonファイルに楽曲情報を書き込む
+///
+/// min形式
+pub(super) fn serialize_to_file_min<T>(
+    file: &crate::util::FilePath,
+    content: &T,
+) -> Result<(), super::MusicFileError>
+where
+    T: serde::Serialize,
+{
     use super::MusicFileError;
 
     let file_handle = std::fs::File::create(file.as_path()).map_err(|e| {

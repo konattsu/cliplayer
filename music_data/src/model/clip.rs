@@ -1,8 +1,10 @@
 mod anonymous;
+mod flat;
 mod unverified;
 mod verified;
 
 pub use anonymous::{AnonymousClip, AnonymousClipInitializer};
+pub use flat::FlatClips;
 pub use unverified::{UnverifiedClip, UnverifiedClipError, UnverifiedClipInitializer};
 pub use verified::{VerifiedClip, VerifiedClipError, VerifiedClipInitializer};
 

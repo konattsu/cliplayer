@@ -1,7 +1,7 @@
 /// アーティストのid
 ///
 /// `a-z`, `A-Z`, `_` のみ使用可
-#[derive(serde::Serialize, Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(serde::Serialize, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct ArtistId(String);
 
 const ALLOWED_CHARS: &str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-";

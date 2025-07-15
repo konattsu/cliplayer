@@ -1,6 +1,6 @@
 #[derive(serde::Serialize, Debug, Clone)]
 pub struct OutputArtists(
-    std::collections::HashMap<crate::artist::model::ArtistId, OutputArtist>,
+    std::collections::BTreeMap<crate::artist::model::ArtistId, OutputArtist>,
 );
 
 #[derive(serde::Serialize, Debug, Clone)]
@@ -20,7 +20,7 @@ fn is_false(value: &bool) -> bool {
 
 impl OutputArtists {
     pub fn new(artists: crate::artist::model::Artists) -> Self {
-        let mut map = std::collections::HashMap::new();
+        let mut map = std::collections::BTreeMap::new();
         for (artist_id, artist) in artists.0.into_iter() {
             let output_artist = OutputArtist {
                 ja: artist.ja,

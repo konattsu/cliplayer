@@ -14,8 +14,8 @@ mod volume_percent;
 pub use artist::{ExternalArtists, InternalArtists};
 pub use channel_id::ChannelId;
 pub use clip::{
-    AnonymousClip, AnonymousClipInitializer, UnverifiedClip, UnverifiedClipError,
-    UnverifiedClipInitializer, VerifiedClip, VerifiedClipError,
+    AnonymousClip, AnonymousClipInitializer, FlatClips, UnverifiedClip,
+    UnverifiedClipError, UnverifiedClipInitializer, VerifiedClip, VerifiedClipError,
     VerifiedClipInitializer,
 };
 pub use duration::Duration;
@@ -24,8 +24,8 @@ pub use tag::{ClipTags, VideoTags};
 pub use uploader_name::UploaderName;
 pub use uuid::UuidVer7;
 pub use video::{
-    AnonymousVideo, VerifiedVideo, VerifiedVideoError, VerifiedVideos, VideoBrief,
-    VideoDetail, VideoDetailInitializer,
+    AnonymousVideo, AnonymousVideos, VerifiedVideo, VerifiedVideoError, VerifiedVideos,
+    VideoBrief, VideoDetail, VideoDetailInitializer,
 };
 pub use video_id::VideoId;
 pub use video_published_at::VideoPublishedAt;

@@ -18,7 +18,15 @@ impl FromIterator<(crate::model::VideoId, Option<FetchedVideoDetail>)>
 }
 
 impl VideoDetailFetchResult {
-    /// 指定されたVideoBriefのリストに基づいてfetchしてきたデータからVideoDetailを取得する
+    /// 渡されたVideoBriefのリストと, fetchしてきたデータから, 適切なVideoDetailを取得する
+    ///
+    /// # Arguments:
+    /// - `video_briefs`: VideoDetailを取得するためのVideoBriefのリスト
+    ///
+    /// # Returns:
+    /// - `Ok`: Briefを昇格させたVideoDetailのリスト
+    /// - `Err`: 存在しないVideoIdのリスト
+    ///   - 1つでも存在しないVideoIdが含まれている場合はErrを返す
     pub fn try_into_video_detail(
         mut self,
         video_briefs: &[crate::model::VideoBrief],
@@ -32,6 +40,7 @@ impl VideoDetailFetchResult {
                     // 存在するvideo_idを指定した場合
                     Some(d) => {
                         details.push(
+                            // 両者のvideo_idが必ず一致するためunwrapで落とす
                             d.try_into_video_detail(video_brief).expect("Impl Err"),
                         );
                     }
@@ -118,7 +127,7 @@ impl FetchedVideoDetailInitializer {
 }
 
 impl FetchedVideoDetail {
-    pub fn try_into_video_detail(
+    fn try_into_video_detail(
         self,
         video_brief: &crate::model::VideoBrief,
     ) -> Result<crate::model::VideoDetail, String> {

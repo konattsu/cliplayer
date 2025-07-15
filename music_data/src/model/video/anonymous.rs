@@ -9,6 +9,13 @@ pub struct AnonymousVideo {
     clips: Vec<crate::model::AnonymousClip>,
 }
 
+/// `AnonymousVideo`のリスト
+#[derive(serde::Deserialize, Debug, Clone)]
+pub struct AnonymousVideos {
+    videos: Vec<AnonymousVideo>,
+}
+
+// deserialize時にclipsをソートするためのカスタムデシリアライザ
 impl<'de> serde::Deserialize<'de> for AnonymousVideo {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
@@ -45,5 +52,31 @@ impl AnonymousVideo {
 
     pub fn into_inner(self) -> (super::VideoBrief, Vec<crate::model::AnonymousClip>) {
         (self.video_brief, self.clips)
+    }
+}
+
+impl AnonymousVideos {
+    pub fn new(videos: Vec<AnonymousVideo>) -> Self {
+        AnonymousVideos { videos }
+    }
+
+    pub fn into_inner(self) -> Vec<AnonymousVideo> {
+        self.videos
+    }
+
+    pub fn to_video_ids(&self) -> Vec<crate::model::VideoId> {
+        self.videos
+            .iter()
+            .map(|v| v.get_video_id())
+            .cloned()
+            .collect()
+    }
+
+    pub fn to_briefs(&self) -> Vec<super::VideoBrief> {
+        self.videos
+            .iter()
+            .map(|v| v.get_video_brief())
+            .cloned()
+            .collect()
     }
 }

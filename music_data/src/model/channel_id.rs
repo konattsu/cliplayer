@@ -2,7 +2,17 @@
 ///
 /// - 大文字の`UC`で始まる
 /// - 大文字の`UC`の直後に22文字の `a-z`, `A-Z`, `0-9`, `-`, `_` での構成 (計24文字)
-#[derive(serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    Hash,
+)]
 pub struct ChannelId(String);
 
 impl ChannelId {

@@ -23,6 +23,12 @@ impl ArtistSearchIndex {
             Self::push_aliases(artist.aliases, &mut index, &artist_id);
         }
 
+        index.sort_by(|a, b| {
+            a.key
+                .cmp(&b.key)
+                .then_with(|| a.artist_id.cmp(&b.artist_id))
+        });
+
         Self(index)
     }
 

@@ -111,6 +111,10 @@ impl VerifiedVideo {
         self.video_detail.get_published_at()
     }
 
+    pub fn into_clips(self) -> Vec<crate::model::VerifiedClip> {
+        self.clips
+    }
+
     /// `AnonymousVideo`と`VideoDetail`から`VerifiedVideo`を作成
     ///
     /// Error:
@@ -156,7 +160,7 @@ impl VerifiedVideos {
         VerifiedVideos(videos)
     }
 
-    pub fn into_vec(self) -> Vec<VerifiedVideo> {
+    pub fn into_inner(self) -> Vec<VerifiedVideo> {
         self.0
     }
 
