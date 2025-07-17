@@ -1,7 +1,17 @@
 /// 動画id
 ///
 /// - `a-z`, `A-Z`, `0-9`, `-`, `_` の11文字で構成されていること
-#[derive(serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    Hash,
+    PartialOrd,
+    Ord,
+)]
 pub struct VideoId(String);
 
 impl VideoId {

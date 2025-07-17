@@ -11,6 +11,43 @@ pub struct VideoBrief {
     tags: crate::model::VideoTags,
 }
 
+/// `VideoBrief`のリスト
+///
+/// 各`VideoBrief`に含まれる動画idが一意であることを保証
+#[derive(Debug, Clone)]
+pub struct VideoBriefs {
+    pub inner: std::collections::HashMap<crate::model::VideoId, VideoBrief>,
+}
+
+impl VideoBriefs {
+    /// `VideoBrief`のリストを`VideoBriefs`に変換
+    ///
+    /// Err: 動画idが重複しているとき
+    pub fn try_from_vec(
+        briefs: Vec<VideoBrief>,
+    ) -> Result<Self, Vec<crate::model::VideoId>> {
+        use std::collections::{HashMap, HashSet};
+
+        let mut inner = HashMap::with_capacity(briefs.len());
+        let mut duplicated_ids = HashSet::new();
+
+        for brief in briefs {
+            if let Some(prev_brief) = inner.insert(brief.get_video_id().clone(), brief)
+            {
+                // 重複の有無のみ検出したく, すでに重複しているか(3回,同じ動画IDが来たとき)どうかは
+                // 気にしないのでinsertの結果は無視
+                let _res = duplicated_ids.insert(prev_brief.get_video_id().clone());
+            }
+        }
+
+        if duplicated_ids.is_empty() {
+            Ok(Self { inner })
+        } else {
+            Err(duplicated_ids.into_iter().collect())
+        }
+    }
+}
+
 impl VideoBrief {
     pub fn get_video_id(&self) -> &crate::model::VideoId {
         &self.video_id
@@ -20,5 +57,66 @@ impl VideoBrief {
     }
     pub fn get_tags(&self) -> &crate::model::VideoTags {
         &self.tags
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn make_video_brief(id: crate::model::VideoId) -> VideoBrief {
+        VideoBrief {
+            video_id: id,
+            uploader_name: None,
+            tags: crate::model::VideoTags::new(vec![]).expect("will be valid"),
+        }
+    }
+
+    #[test]
+    fn test_video_briefs_try_into_video_briefs_unique() {
+        let briefs = vec![
+            make_video_brief(crate::model::VideoId::test_id_1()),
+            make_video_brief(crate::model::VideoId::test_id_2()),
+            make_video_brief(crate::model::VideoId::test_id_3()),
+        ];
+        let result = VideoBriefs::try_from_vec(briefs);
+        assert!(result.is_ok());
+        let briefs = result.unwrap();
+        let keys = briefs
+            .inner
+            .keys()
+            .cloned()
+            .collect::<std::collections::HashSet<_>>();
+        assert_eq!(
+            keys,
+            [
+                crate::model::VideoId::test_id_1(),
+                crate::model::VideoId::test_id_2(),
+                crate::model::VideoId::test_id_3()
+            ]
+            .into_iter()
+            .collect()
+        );
+    }
+
+    #[test]
+    fn test_video_briefs_try_into_video_briefs_duplicate() {
+        let briefs = vec![
+            make_video_brief(crate::model::VideoId::test_id_1()),
+            make_video_brief(crate::model::VideoId::test_id_2()),
+            make_video_brief(crate::model::VideoId::test_id_1()), // duplicate
+            make_video_brief(crate::model::VideoId::test_id_3()),
+            make_video_brief(crate::model::VideoId::test_id_3()), // duplicate
+        ];
+        let result = VideoBriefs::try_from_vec(briefs);
+        assert!(result.is_err());
+        let mut ids = result.err().unwrap();
+        ids.sort();
+        let mut expected: Vec<crate::model::VideoId> = vec![
+            crate::model::VideoId::test_id_1(),
+            crate::model::VideoId::test_id_3(),
+        ];
+        expected.sort();
+        assert_eq!(ids, expected);
     }
 }

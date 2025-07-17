@@ -1,7 +1,7 @@
 /// チャンネル名を表す構造体
 ///
 /// 箱外で行われた配信/動画の時に付与
-#[derive(Debug, serde::Deserialize, serde::Serialize, Clone)]
+#[derive(Debug, serde::Deserialize, serde::Serialize, Clone, PartialEq)]
 pub struct UploaderName(String);
 
 impl UploaderName {

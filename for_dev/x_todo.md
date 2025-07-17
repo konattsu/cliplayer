@@ -2,6 +2,8 @@
 
 ## back
 
+- *_initializer系をcfg(test)のみでもいいかも <- 必要なものもあるのでpub(crate)とかでre-export廃止がいいかも. main.rsからは必要ないので
+
 - fetchにつなげる処理
   - sync(最新の動画情報と同期)の時は定期的にファイルに書き込むようにする
 

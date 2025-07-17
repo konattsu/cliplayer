@@ -85,20 +85,14 @@ impl VerifyVideosErrors {
 
 /// 動画の概要と詳細情報を照合し, 動画のクリップを検証する
 fn verify_videos(
-    details: Vec<crate::model::VideoDetail>,
+    mut details: crate::model::VideoDetails,
     videos: crate::model::AnonymousVideos,
 ) -> Result<crate::model::VerifiedVideos, VerifyVideosErrors> {
     let mut verified_videos = Vec::new();
     let mut verify_videos_errs = VerifyVideosErrors::new();
 
-    // 二重ループを避けるために, VideoIdを使用してdetailにO(1)でアクセスできるようにする
-    let mut details: std::collections::HashMap<_, _> = details
-        .into_iter()
-        .map(|d| (d.get_video_id().clone(), d))
-        .collect();
-
-    for video in videos.into_inner() {
-        if let Some(detail) = details.remove(video.get_video_id()) {
+    for video in videos.inner.into_values() {
+        if let Some(detail) = details.inner.remove(video.get_video_id()) {
             match crate::model::VerifiedVideo::from_anonymous_video(video, detail) {
                 // 対応するdetailが見つかり, verificationに成功したとき
                 Ok(verified) => {
@@ -116,7 +110,10 @@ fn verify_videos(
     }
 
     if verify_videos_errs.is_empty() {
-        Ok(crate::model::VerifiedVideos::new(verified_videos))
+        // 引数の`details`に対応する`VerifiedVideos`を作成しており, 元の`details`は
+        // `video_id`が一意であることを保証しているため`VerifiedVideos`の`video_id`も一意
+        Ok(crate::model::VerifiedVideos::try_from_vec(verified_videos)
+            .expect("will not fail"))
     } else {
         Err(verify_videos_errs)
     }

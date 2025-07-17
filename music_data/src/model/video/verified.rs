@@ -16,11 +16,11 @@ pub struct VerifiedVideo {
 
 /// `VerifiedVideo`のリスト
 ///
-/// 内部の情報は`published_at`順にソートされていることを保証
-#[derive(serde::Serialize, Debug, Clone)]
-#[serde(rename_all = "camelCase")]
-#[serde(deny_unknown_fields)]
-pub struct VerifiedVideos(Vec<VerifiedVideo>);
+/// 内部の情報はシリアライズ時に`published_at`順にソートされていることを保証
+#[derive(Debug, Clone)]
+pub struct VerifiedVideos {
+    pub inner: std::collections::HashMap<crate::model::VideoId, VerifiedVideo>,
+}
 
 /// `VerifiedVideo`を作ろうとしたときのエラー
 #[derive(Debug, Clone)]
@@ -67,22 +67,6 @@ impl<'de> serde::Deserialize<'de> for VerifiedVideo {
             video_detail: raw.video_detail,
             clips: verified_clips,
         })
-    }
-}
-
-// published_at順にソートする
-impl<'de> serde::Deserialize<'de> for VerifiedVideos {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        #[derive(serde::Deserialize)]
-        struct RawVerifiedVideos(Vec<VerifiedVideo>);
-
-        let mut raw = RawVerifiedVideos::deserialize(deserializer)?;
-        raw.0
-            .sort_by_key(|v| v.video_detail.get_published_at().as_secs());
-        Ok(VerifiedVideos(raw.0))
     }
 }
 
@@ -152,49 +136,136 @@ impl VerifiedVideo {
             clips: oks.into_iter().map(Result::unwrap).collect(),
         })
     }
+
+    /// 既存の`VerifiedVideo`に新しい動画の詳細情報を適用する
+    pub fn with_new_video_detail(
+        self,
+        detail: crate::model::VideoDetail,
+    ) -> Result<Self, VerifiedVideoError> {
+        // 内容が変更されていないとき
+        if detail == self.video_detail {
+            return Ok(self);
+        }
+
+        // 動画idが変更されていないかどうか確認
+        VerifiedVideoError::ensure_video_id_match(
+            self.video_detail.get_video_id(),
+            detail.get_video_id(),
+        )?;
+
+        let unverified_clips: Vec<crate::model::UnverifiedClip> = self
+            .clips
+            .into_iter()
+            .map(crate::model::UnverifiedClip::from_verified_clip)
+            .collect();
+
+        let (oks, errs): (Vec<_>, Vec<_>) = unverified_clips
+            .into_iter()
+            .map(|clip| {
+                clip.try_into_verified_clip(
+                    detail.get_published_at(),
+                    detail.get_duration(),
+                )
+            })
+            // ここでoks, errsに分割しているため後方の処理ではそれぞれunwrapを使用
+            .partition(Result::is_ok);
+
+        if !errs.is_empty() {
+            return Err(VerifiedVideoError::InvalidClip(
+                errs.into_iter().map(Result::unwrap_err).collect(),
+            ));
+        }
+        Ok(VerifiedVideo {
+            video_detail: detail,
+            clips: oks.into_iter().map(Result::unwrap).collect(),
+        })
+    }
+}
+
+impl<'de> serde::Deserialize<'de> for VerifiedVideos {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        #[derive(serde::Deserialize)]
+        struct RawVerifiedVideos(Vec<VerifiedVideo>);
+
+        let raw = RawVerifiedVideos::deserialize(deserializer)?;
+
+        Self::try_from_vec(raw.0)
+            .map_err(|e| {
+                format!(
+                    "Failed to deserialize VerifiedVideos: \
+                    found duplicated video_id(s): {}",
+                    e.iter()
+                        .map(|id| id.as_str())
+                        .collect::<Vec<_>>()
+                        .join(", ")
+                )
+            })
+            .map_err(serde::de::Error::custom)
+    }
+}
+
+impl serde::Serialize for VerifiedVideos {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        let mut vec = self.inner.values().collect::<Vec<_>>();
+        vec.sort_by_key(|video| video.get_published_at().as_secs());
+        vec.serialize(serializer)
+    }
 }
 
 impl VerifiedVideos {
-    pub fn new(mut videos: Vec<VerifiedVideo>) -> Self {
-        videos.sort_by_key(|v| v.video_detail.get_published_at().as_secs());
-        VerifiedVideos(videos)
-    }
+    /// `VerifiedVideo`のリストを`VerifiedVideos`に変換
+    ///
+    /// Err: 動画のvideo_idが重複している場合
+    pub fn try_from_vec(
+        videos: Vec<VerifiedVideo>,
+    ) -> Result<Self, Vec<crate::model::VideoId>> {
+        use std::collections::{HashMap, HashSet};
 
-    pub fn into_inner(self) -> Vec<VerifiedVideo> {
-        self.0
-    }
+        let mut inner = HashMap::with_capacity(videos.len());
+        let mut duplicated_ids = HashSet::new();
 
-    pub fn has_video_id(&self, video_id: &crate::model::VideoId) -> bool {
-        self.0
-            .iter()
-            .any(|video| video.video_detail.get_video_id() == video_id)
-    }
-
-    pub fn duplicates_videos(&self) -> Vec<&crate::model::VideoId> {
-        let mut duplicates = Vec::new();
-        let mut seen = std::collections::HashSet::new();
-        for video in &self.0 {
-            let video_id = video.video_detail.get_video_id();
-            if !seen.insert(video_id) {
-                duplicates.push(video_id);
+        for video in videos {
+            if let Some(prev_video) = inner.insert(video.get_video_id().clone(), video)
+            {
+                // 重複の有無のみ検出したく, すでに重複しているか(3回,同じ動画IDが来たとき)どうかは
+                // 気にしないのでinsertの結果は無視
+                let _res = duplicated_ids.insert(prev_video.get_video_id().clone());
             }
         }
-        duplicates
+
+        if duplicated_ids.is_empty() {
+            Ok(Self { inner })
+        } else {
+            Err(duplicated_ids.into_iter().collect())
+        }
     }
 
     /// 動画を追加
     ///
-    /// ソートも一緒に行う
-    pub fn push_video(&mut self, video: VerifiedVideo) {
-        let pos = self
-            .0
-            .binary_search_by(|v| {
-                v.video_detail
-                    .get_published_at()
-                    .cmp(video.video_detail.get_published_at())
-            })
-            .unwrap_or_else(|e| e);
-        self.0.insert(pos, video);
+    /// Err: 動画のvideo_idが重複している場合
+    pub fn push_video(
+        &mut self,
+        video: VerifiedVideo,
+    ) -> Result<(), crate::model::VideoId> {
+        if let Some(prev_video) = self.inner.insert(video.get_video_id().clone(), video)
+        {
+            Err(prev_video.get_video_id().clone())
+        } else {
+            Ok(())
+        }
+    }
+
+    /// 内部の動画をソートして返す
+    pub fn into_sorted_vec(self) -> Vec<VerifiedVideo> {
+        let mut vec = self.inner.into_values().collect::<Vec<_>>();
+        vec.sort_by_key(|video| video.get_published_at().as_secs());
+        vec
     }
 }
 

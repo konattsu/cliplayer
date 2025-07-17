@@ -1,5 +1,5 @@
 /// 動画の詳細情報
-#[derive(serde::Deserialize, serde::Serialize, Debug, Clone)]
+#[derive(serde::Deserialize, serde::Serialize, Debug, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 #[serde(deny_unknown_fields)]
 pub struct VideoDetail {
@@ -25,6 +25,14 @@ pub struct VideoDetail {
     embeddable: bool,
     /// 動画のタグ
     video_tags: crate::model::VideoTags,
+}
+
+/// 動画の詳細情報のリスト
+///
+/// 各`VideoDetail`に含まれる動画idが一意であることを保証
+#[derive(Debug, Clone)]
+pub struct VideoDetails {
+    pub inner: std::collections::HashMap<crate::model::VideoId, VideoDetail>,
 }
 
 pub struct VideoDetailInitializer {
@@ -76,5 +84,35 @@ impl VideoDetail {
     }
     pub fn get_video_id(&self) -> &crate::model::VideoId {
         &self.video_id
+    }
+}
+
+impl VideoDetails {
+    /// `VideoDetail`のリストを`VideoDetails`に変換
+    ///
+    /// Err: 動画idが重複しているとき
+    pub fn try_from_vec(
+        details: Vec<VideoDetail>,
+    ) -> Result<Self, Vec<crate::model::VideoId>> {
+        use std::collections::{HashMap, HashSet};
+
+        let mut inner = HashMap::new();
+        let mut duplicated_ids = HashSet::new();
+
+        for detail in details {
+            if let Some(prev_detail) =
+                inner.insert(detail.get_video_id().clone(), detail)
+            {
+                // 重複の有無のみ検出したく, すでに重複しているか(3回,同じ動画IDが来たとき)どうかは
+                // 気にしないのでinsertの結果は無視
+                let _res = duplicated_ids.insert(prev_detail.get_video_id().clone());
+            }
+        }
+
+        if duplicated_ids.is_empty() {
+            Ok(Self { inner })
+        } else {
+            Err(duplicated_ids.into_iter().collect())
+        }
     }
 }

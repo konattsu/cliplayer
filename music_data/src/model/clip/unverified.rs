@@ -148,8 +148,21 @@ impl<'de> serde::Deserialize<'de> for UnverifiedClip {
 }
 
 impl UnverifiedClip {
-    pub fn get_start_time(&self) -> &crate::model::Duration {
-        &self.start_time
+    /// `UnverifiedClip`から`VerifiedClip`に変換
+    pub fn from_verified_clip(verified_clip: crate::model::VerifiedClip) -> Self {
+        let inner = verified_clip.into_inner();
+        // VerifiedClipの方が制約が強いため必ずUnverifiedClipに変換できる
+        Self {
+            song_title: inner.song_title,
+            artists: inner.artists,
+            external_artists: inner.external_artists,
+            is_clipped: inner.is_clipped,
+            start_time: inner.start_time,
+            end_time: inner.end_time,
+            clip_tags: inner.clip_tags,
+            uuid: inner.uuid,
+            volume_percent: inner.volume_percent,
+        }
     }
 
     /// 与えられた`datetime`と`start_time`を基に`UnverifiedClip`から`VerifiedClip`を生成する

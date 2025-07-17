@@ -25,7 +25,7 @@ pub use uploader_name::UploaderName;
 pub use uuid::UuidVer7;
 pub use video::{
     AnonymousVideo, AnonymousVideos, VerifiedVideo, VerifiedVideoError, VerifiedVideos,
-    VideoBrief, VideoDetail, VideoDetailInitializer,
+    VideoBrief, VideoBriefs, VideoDetail, VideoDetailInitializer, VideoDetails,
 };
 pub use video_id::VideoId;
 pub use video_published_at::VideoPublishedAt;
