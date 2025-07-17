@@ -18,16 +18,25 @@ pub struct MusicFilePath {
 pub struct MusicRootContent {
     // 一応持っておく
     _root: crate::util::DirPath,
-    files: Vec<MusicFilePathContent>,
+    files: Vec<MusicFilePathVideos>,
 }
 
 /// 音楽情報のファイルパスの内容
 #[derive(Debug, Clone)]
-pub struct MusicFilePathContent {
+pub struct MusicFilePathVideos {
     year: usize,
     month: usize,
     file_path: crate::util::FilePath,
-    content: crate::model::VerifiedVideos,
+    videos: crate::model::VerifiedVideos,
+}
+
+/// 音楽情報のファイルパスの中身
+#[derive(Debug, Clone)]
+pub struct MusicFilePathVideosInner {
+    pub year: usize,
+    pub month: usize,
+    pub file_path: crate::util::FilePath,
+    pub videos: crate::model::VerifiedVideos,
 }
 
 impl MusicRoot {
@@ -77,18 +86,30 @@ impl MusicFilePath {
 }
 
 impl MusicRootContent {
+    pub fn into_inner(self) -> Vec<MusicFilePathVideosInner> {
+        self.files
+            .into_iter()
+            .map(|f| MusicFilePathVideosInner {
+                year: f.year,
+                month: f.month,
+                file_path: f.file_path,
+                videos: f.videos,
+            })
+            .collect()
+    }
+
     /// 楽曲情報をファイルから読み取る
     pub fn load(root: &MusicRoot) -> Result<Self, super::MusicFileErrors> {
         let mut errs: Vec<super::MusicFileError> = Vec::new();
-        let mut contents: Vec<MusicFilePathContent> = Vec::new();
+        let mut contents: Vec<MusicFilePathVideos> = Vec::new();
 
         for file in root.files.iter() {
             match super::fs_util::deserialize_from_file(file.get_file_path()) {
-                Ok(content) => contents.push(MusicFilePathContent {
+                Ok(content) => contents.push(MusicFilePathVideos {
                     year: file.get_year(),
                     month: file.get_month(),
                     file_path: file.get_file_path().clone(),
-                    content,
+                    videos: content,
                 }),
                 Err(e) => errs.push(e),
             }
@@ -104,14 +125,14 @@ impl MusicRootContent {
         }
     }
 
-    /// 楽曲情報をファイルに書き込む
+    /// 全ての楽曲情報をファイルに書き込む
     ///
     /// 書き込めなかったらスキップする. 全てのファイルに書き込もうとする
     pub fn write(&self) -> Result<(), super::MusicFileErrors> {
         let mut errs: Vec<super::MusicFileError> = Vec::new();
 
         for file in self.files.iter() {
-            match super::fs_util::serialize_to_file(&file.file_path, &file.content) {
+            match super::fs_util::serialize_to_file(&file.file_path, &file.videos) {
                 Ok(_ok) => (),
                 Err(e) => {
                     errs.push(e);
@@ -126,6 +147,30 @@ impl MusicRootContent {
         }
     }
 
+    /// 特定の年月の楽曲情報をファイルに書き込む
+    pub fn write_single_file(
+        &self,
+        year: usize,
+        month: usize,
+    ) -> Result<(), super::MusicFileErrors> {
+        let file = self
+            .files
+            .iter()
+            .find(|f| f.year == year && f.month == month);
+        if let Some(file) = file {
+            super::fs_util::serialize_to_file(&file.file_path, &file.videos)
+                .map_err(|e| e.into_errors())
+        } else {
+            Err(super::MusicFileErrors {
+                errs: vec![super::MusicFileError::NonExistentMonthFile {
+                    year,
+                    month,
+                    id: None,
+                }],
+            })
+        }
+    }
+
     /// 楽曲情報をmin化して書き込む
     pub fn write_minified(
         self,
@@ -135,6 +180,8 @@ impl MusicRootContent {
         super::fs_util::serialize_to_file_min(min_path, &content)
     }
 
+    // TODO このファイル直す, src/validate.rs直す(ファイル分割地味に悩み中), src/apply/sync.rs作る
+
     /// クリップ情報をフラット化したものを書き込む
     pub fn write_flat_clips(
         self,
@@ -142,7 +189,7 @@ impl MusicRootContent {
     ) -> Result<(), super::MusicFileError> {
         let clips: Vec<crate::model::VerifiedClip> = self
             .into_flattened_files()
-            .into_inner()
+            .into_sorted_vec()
             .into_iter()
             .flat_map(|v| v.into_clips())
             .collect();
@@ -171,7 +218,7 @@ impl MusicRootContent {
                     let err = super::MusicFileError::NonExistentMonthFile {
                         year,
                         month,
-                        id: video.get_video_id().clone(),
+                        id: Some(video.get_video_id().clone()),
                     };
                     errs.push(err);
                 }
@@ -190,25 +237,29 @@ impl MusicRootContent {
         &mut self,
         year: usize,
         month: usize,
-    ) -> Option<&mut MusicFilePathContent> {
+    ) -> Option<&mut MusicFilePathVideos> {
         self.files
             .iter_mut()
             .find(|f| f.year == year && f.month == month)
     }
 
     /// 内部の動画をflat化する
-    pub fn into_flattened_files(self) -> crate::model::VerifiedVideos {
+    pub fn into_flattened_files(
+        self,
+    ) -> Result<crate::model::VerifiedVideos, Vec<crate::model::VideoId>> {
         let vec_videos: Vec<crate::model::VerifiedVideo> = self
             .files
             .into_iter()
-            .flat_map(|f| f.content.into_inner())
+            .flat_map(|f| f.videos.inner.into_values())
             .collect();
-        crate::model::VerifiedVideos::new(vec_videos)
+        crate::model::VerifiedVideos::try_from_vec(vec_videos)
     }
 }
 
-impl MusicFilePathContent {
+impl MusicFilePathVideos {
     pub fn push_content(&mut self, content: crate::model::VerifiedVideo) {
-        self.content.push_video(content);
+        self.videos.push_video(content);
     }
 }
+
+// TODO このファイル全体的にコードが微妙. バグもあるかも

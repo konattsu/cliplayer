@@ -10,9 +10,12 @@ pub struct AnonymousVideo {
 }
 
 /// `AnonymousVideo`のリスト
-#[derive(serde::Deserialize, Debug, Clone)]
+///
+/// 内部の動画のvideo_idは重複しないことを保証
+
+#[derive(Debug, Clone)]
 pub struct AnonymousVideos {
-    videos: Vec<AnonymousVideo>,
+    pub inner: std::collections::HashMap<crate::model::VideoId, AnonymousVideo>,
 }
 
 // deserialize時にclipsをソートするためのカスタムデシリアライザ
@@ -56,27 +59,47 @@ impl AnonymousVideo {
 }
 
 impl AnonymousVideos {
-    pub fn new(videos: Vec<AnonymousVideo>) -> Self {
-        AnonymousVideos { videos }
-    }
+    /// `AnonymousVideo`のリストを`AnonymousVideos`に変換
+    ///
+    /// Err: 動画のvideo_idが重複している場合
+    pub fn try_from_vec(
+        videos: Vec<AnonymousVideo>,
+    ) -> Result<Self, Vec<crate::model::VideoId>> {
+        use std::collections::{HashMap, HashSet};
 
-    pub fn into_inner(self) -> Vec<AnonymousVideo> {
-        self.videos
+        let mut inner = HashMap::with_capacity(videos.len());
+        let mut duplicated_ids = HashSet::new();
+
+        for video in videos {
+            if let Some(prev_video) = inner.insert(video.get_video_id().clone(), video)
+            {
+                // 重複の有無のみ検出したく, すでに重複しているか(3回,同じ動画IDが来たとき)どうかは
+                // 気にしないのでinsertの結果は無視
+                let _res = duplicated_ids.insert(prev_video.get_video_id().clone());
+            }
+        }
+
+        if duplicated_ids.is_empty() {
+            Ok(Self { inner })
+        } else {
+            Err(duplicated_ids.into_iter().collect())
+        }
     }
 
     pub fn to_video_ids(&self) -> Vec<crate::model::VideoId> {
-        self.videos
-            .iter()
-            .map(|v| v.get_video_id())
-            .cloned()
-            .collect()
+        self.inner.keys().cloned().collect()
     }
 
-    pub fn to_briefs(&self) -> Vec<super::VideoBrief> {
-        self.videos
-            .iter()
+    pub fn to_briefs(&self) -> crate::model::VideoBriefs {
+        let briefs = self
+            .inner
+            .values()
             .map(|v| v.get_video_brief())
             .cloned()
-            .collect()
+            .collect();
+
+        // `Self(AnonymousVideos)`も`VideoBriefs`もvideo_idの重複を許可しないので
+        // `Self`は`VideoBriefs`に変換するための十分条件を満たしている
+        crate::model::VideoBriefs::try_from_vec(briefs).expect("will not fail")
     }
 }

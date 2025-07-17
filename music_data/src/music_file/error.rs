@@ -38,7 +38,7 @@ pub enum MusicFileError {
     NonExistentMonthFile {
         year: usize,
         month: usize,
-        id: crate::model::VideoId,
+        id: Option<crate::model::VideoId>,
     },
 }
 
@@ -82,9 +82,13 @@ impl MusicFileError {
                 format!("Invalid content in file {path}: {msg}\n")
             }
             Self::NonExistentMonthFile { year, month, id } => {
-                format!(
-                    "No corresponding file for this video(id: {id}) in {year}/{month}\n"
-                )
+                if let Some(id) = id {
+                    format!(
+                        "No corresponding file for this video(id: {id}) in {year}/{month}\n"
+                    )
+                } else {
+                    format!("No corresponding file in {year}/{month}\n")
+                }
             }
         }
     }

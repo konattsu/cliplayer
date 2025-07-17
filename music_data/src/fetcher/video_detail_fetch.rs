@@ -21,7 +21,7 @@ impl VideoDetailFetchResult {
     /// 渡されたVideoBriefのリストと, fetchしてきたデータから, 適切なVideoDetailを取得する
     ///
     /// # Arguments:
-    /// - `video_briefs`: VideoDetailを取得するためのVideoBriefのリスト
+    /// - `video_briefs`: VideoDetailを取得するためのVideoBrief
     ///
     /// # Returns:
     /// - `Ok`: Briefを昇格させたVideoDetailのリスト
@@ -29,12 +29,12 @@ impl VideoDetailFetchResult {
     ///   - 1つでも存在しないVideoIdが含まれている場合はErrを返す
     pub fn try_into_video_detail(
         mut self,
-        video_briefs: &[crate::model::VideoBrief],
-    ) -> Result<Vec<crate::model::VideoDetail>, Vec<crate::model::VideoId>> {
+        video_briefs: &crate::model::VideoBriefs,
+    ) -> Result<crate::model::VideoDetails, Vec<crate::model::VideoId>> {
         let mut details = Vec::new();
         let mut non_exist_ids = Vec::new();
 
-        for video_brief in video_briefs {
+        for video_brief in video_briefs.inner.values() {
             match self.0.remove(video_brief.get_video_id()) {
                 Some(detail) => match detail {
                     // 存在するvideo_idを指定した場合
@@ -64,7 +64,9 @@ impl VideoDetailFetchResult {
         }
 
         if non_exist_ids.is_empty() {
-            Ok(details)
+            Ok(crate::model::VideoDetails::try_from_vec(details).expect(
+                "Impl Err: VideoDetails should be created from a non-empty Vec",
+            ))
         } else {
             Err(non_exist_ids)
         }
