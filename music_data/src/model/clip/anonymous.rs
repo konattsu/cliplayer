@@ -2,10 +2,10 @@
 ///
 /// - `start_time` < `end_time`のみの保証
 /// - 外部の値との整合性の確認をしていない
-#[derive(serde::Serialize, Debug, Clone)]
+#[derive(serde::Serialize, Debug, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 #[serde(deny_unknown_fields)]
-pub struct AnonymousClip {
+pub(crate) struct AnonymousClip {
     /// 曲名
     song_title: String,
     /// 内部アーティストの一覧
@@ -22,21 +22,21 @@ pub struct AnonymousClip {
     clip_tags: Option<crate::model::ClipTags>,
 }
 
-pub struct AnonymousClipInitializer {
+pub(crate) struct AnonymousClipInitializer {
     /// 曲名
-    pub song_title: String,
+    pub(crate) song_title: String,
     /// 内部アーティストの一覧
-    pub artists: crate::model::InternalArtists,
+    pub(crate) artists: crate::model::InternalArtists,
     /// 外部アーティストの一覧
-    pub external_artists: Option<crate::model::ExternalArtists>,
+    pub(crate) external_artists: Option<crate::model::ExternalArtists>,
     /// 切り抜いた動画が投稿されているか
-    pub is_clipped: bool,
+    pub(crate) is_clipped: bool,
     /// 曲が始まる時間
-    pub start_time: crate::model::Duration,
+    pub(crate) start_time: crate::model::Duration,
     /// 曲が終わる時間
-    pub end_time: crate::model::Duration,
+    pub(crate) end_time: crate::model::Duration,
     /// タグ
-    pub clip_tags: Option<crate::model::ClipTags>,
+    pub(crate) clip_tags: Option<crate::model::ClipTags>,
 }
 
 impl AnonymousClipInitializer {
@@ -44,7 +44,7 @@ impl AnonymousClipInitializer {
     ///
     /// - Error: `start_time` >= `end_time`のとき
     ///   - e.g. `start_time`: 5秒, `end_time`: 3秒
-    pub fn init(self) -> Result<AnonymousClip, String> {
+    pub(crate) fn init(self) -> Result<AnonymousClip, String> {
         super::validate_start_end_times(&self.start_time, &self.end_time)?;
 
         Ok(AnonymousClip {
@@ -97,8 +97,14 @@ impl<'de> serde::Deserialize<'de> for AnonymousClip {
 }
 
 impl AnonymousClip {
-    pub fn get_start_time(&self) -> &crate::model::Duration {
+    pub(crate) fn get_start_time(&self) -> &crate::model::Duration {
         &self.start_time
+    }
+    pub(crate) fn get_end_time(&self) -> &crate::model::Duration {
+        &self.end_time
+    }
+    pub(crate) fn get_song_title(&self) -> &str {
+        &self.song_title
     }
 
     /// 与えられた`datetime`と`start_time`を基にUUIDを生成
@@ -125,7 +131,7 @@ impl AnonymousClip {
     }
 
     /// `AnonymousClip`を`VerifiedClip`に変換
-    pub fn try_into_verified_clip(
+    pub(crate) fn try_into_verified_clip(
         self,
         video_published_at: &crate::model::VideoPublishedAt,
         video_duration: &crate::model::Duration,
@@ -146,7 +152,8 @@ impl AnonymousClip {
         .init(video_published_at, video_duration)
     }
 
-    pub fn try_into_unverified_clip(
+    /// `AnonymousClip`を`UnverifiedClip`に変換
+    pub(crate) fn try_into_unverified_clip(
         self,
         video_published_at: &crate::model::VideoPublishedAt,
     ) -> Result<super::UnverifiedClip, super::UnverifiedClipError> {
@@ -167,11 +174,152 @@ impl AnonymousClip {
     }
 }
 
+// MARK: For Tests
+#[cfg(test)]
+impl AnonymousClip {
+    pub(crate) fn self_a_1() -> Self {
+        AnonymousClipInitializer {
+            song_title: "Test Song A1".to_string(),
+            artists: crate::model::InternalArtists::test_name_1(),
+            external_artists: Some(crate::model::ExternalArtists::test_name_1()),
+            is_clipped: false,
+            start_time: crate::model::Duration::from_secs(5),
+            end_time: crate::model::Duration::from_secs(10),
+            clip_tags: None,
+        }
+        .init()
+        .unwrap()
+    }
+    pub(crate) fn self_a_2() -> Self {
+        AnonymousClipInitializer {
+            song_title: "Test Song A2".to_string(),
+            artists: crate::model::InternalArtists::test_name_2(),
+            external_artists: None,
+            is_clipped: true,
+            start_time: crate::model::Duration::from_secs(15),
+            end_time: crate::model::Duration::from_secs(20),
+            clip_tags: None,
+        }
+        .init()
+        .unwrap()
+    }
+    pub(crate) fn self_a_3() -> Self {
+        AnonymousClipInitializer {
+            song_title: "Test Song A3".to_string(),
+            artists: crate::model::InternalArtists::test_name_3(),
+            external_artists: Some(crate::model::ExternalArtists::test_name_2()),
+            is_clipped: false,
+            start_time: crate::model::Duration::from_secs(25),
+            end_time: crate::model::Duration::from_secs(30),
+            clip_tags: Some(crate::model::ClipTags::self_2()),
+        }
+        .init()
+        .unwrap()
+    }
+    pub(crate) fn self_b_1() -> Self {
+        AnonymousClipInitializer {
+            song_title: "Test Song B1".to_string(),
+            artists: crate::model::InternalArtists::test_name_1(),
+            external_artists: Some(crate::model::ExternalArtists::test_name_3()),
+            is_clipped: true,
+            start_time: crate::model::Duration::from_secs(7),
+            end_time: crate::model::Duration::from_secs(17),
+            clip_tags: Some(crate::model::ClipTags::self_3()),
+        }
+        .init()
+        .unwrap()
+    }
+    pub(crate) fn self_b_2() -> Self {
+        AnonymousClipInitializer {
+            song_title: "Test Song B2".to_string(),
+            artists: crate::model::InternalArtists::test_name_2(),
+            external_artists: None,
+            is_clipped: false,
+            start_time: crate::model::Duration::from_secs(27),
+            end_time: crate::model::Duration::from_secs(37),
+            clip_tags: Some(crate::model::ClipTags::self_1()),
+        }
+        .init()
+        .unwrap()
+    }
+    pub(crate) fn self_b_3() -> Self {
+        AnonymousClipInitializer {
+            song_title: "Test Song B3".to_string(),
+            artists: crate::model::InternalArtists::test_name_1(),
+            external_artists: None,
+            is_clipped: true,
+            start_time: crate::model::Duration::from_secs(47),
+            end_time: crate::model::Duration::from_secs(57),
+            clip_tags: None,
+        }
+        .init()
+        .unwrap()
+    }
+}
+
 // MARK: Tests
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    #[rustfmt::skip]
+    fn test_anonymous_clip_for_test_methods() {
+        let clip_a_1 = AnonymousClip::self_a_1();
+        assert_eq!(clip_a_1.song_title, "Test Song A1");
+        assert_eq!(clip_a_1.artists, crate::model::InternalArtists::test_name_1());
+        assert_eq!(clip_a_1.external_artists, Some(crate::model::ExternalArtists::test_name_1()));
+        assert!(!clip_a_1.is_clipped);
+        assert_eq!(clip_a_1.start_time, crate::model::Duration::from_secs(5));
+        assert_eq!(clip_a_1.end_time, crate::model::Duration::from_secs(10));
+        assert_eq!(clip_a_1.clip_tags, None);
+
+        let clip_a_2 = AnonymousClip::self_a_2();
+        assert_eq!(clip_a_2.song_title, "Test Song A2");
+        assert_eq!(clip_a_2.artists, crate::model::InternalArtists::test_name_2());
+        assert_eq!(clip_a_2.external_artists, None);
+        assert!(clip_a_2.is_clipped);
+        assert_eq!(clip_a_2.start_time, crate::model::Duration::from_secs(15));
+        assert_eq!(clip_a_2.end_time, crate::model::Duration::from_secs(20));
+        assert_eq!(clip_a_2.clip_tags, None);
+
+        let clip_a_3 = AnonymousClip::self_a_3();
+        assert_eq!(clip_a_3.song_title, "Test Song A3");
+        assert_eq!(clip_a_3.artists, crate::model::InternalArtists::test_name_3());
+        assert_eq!(clip_a_3.external_artists, Some(crate::model::ExternalArtists::test_name_2()));
+        assert!(!clip_a_3.is_clipped);
+        assert_eq!(clip_a_3.start_time, crate::model::Duration::from_secs(25));
+        assert_eq!(clip_a_3.end_time, crate::model::Duration::from_secs(30));
+        assert_eq!(clip_a_3.clip_tags, Some(crate::model::ClipTags::self_2()));
+
+        let clip_b_1 = AnonymousClip::self_b_1();
+        assert_eq!(clip_b_1.song_title, "Test Song B1");
+        assert_eq!(clip_b_1.artists, crate::model::InternalArtists::test_name_1());
+        assert_eq!(clip_b_1.external_artists, Some(crate::model::ExternalArtists::test_name_3()));
+        assert!(clip_b_1.is_clipped);
+        assert_eq!(clip_b_1.start_time, crate::model::Duration::from_secs(7));
+        assert_eq!(clip_b_1.end_time, crate::model::Duration::from_secs(17));
+        assert_eq!(clip_b_1.clip_tags, Some(crate::model::ClipTags::self_3()));
+
+        let clip_b_2 = AnonymousClip::self_b_2();
+        assert_eq!(clip_b_2.song_title, "Test Song B2");
+        assert_eq!(clip_b_2.artists, crate::model::InternalArtists::test_name_2());
+        assert_eq!(clip_b_2.external_artists, None);
+        assert!(!clip_b_2.is_clipped);
+        assert_eq!(clip_b_2.start_time, crate::model::Duration::from_secs(27));
+        assert_eq!(clip_b_2.end_time, crate::model::Duration::from_secs(37));
+        assert_eq!(clip_b_2.clip_tags, Some(crate::model::ClipTags::self_1()));
+
+        let clip_b_3 = AnonymousClip::self_b_3();
+        assert_eq!(clip_b_3.song_title, "Test Song B3");
+        assert_eq!(clip_b_3.artists, crate::model::InternalArtists::test_name_1());
+        assert_eq!(clip_b_3.external_artists, None);
+        assert!(clip_b_3.is_clipped);
+        assert_eq!(clip_b_3.start_time, crate::model::Duration::from_secs(47));
+        assert_eq!(clip_b_3.end_time, crate::model::Duration::from_secs(57));
+        assert_eq!(clip_b_3.clip_tags, None);
+    }
 
     const ANONYMOUS_CLIP_JSON_VALID: &str = r#"
     {

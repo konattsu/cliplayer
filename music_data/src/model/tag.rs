@@ -2,44 +2,104 @@
 
 /// 動画に適用するタグ
 ///
-/// タグは空文字列を許容しない
-#[derive(serde::Deserialize, serde::Serialize, Debug, Clone, PartialEq, Eq)]
-pub struct VideoTags(Tags);
+/// - タグは空文字列を許容しない
+/// - 内部ではタグをソートして保持する
+/// - deserialize時にnullはベクタが空とみなす
+#[derive(serde::Serialize, Debug, Clone, PartialEq, Eq, Default)]
+pub(crate) struct VideoTags(Tags);
+
+impl<'de> serde::Deserialize<'de> for VideoTags {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let tags = Tags::deserialize(deserializer)?;
+        Ok(VideoTags::from_tags(tags))
+    }
+}
 
 impl VideoTags {
     /// 動画タグを新規作成する
     ///
     /// - Error: タグが空文字列のとき
     /// - Ok: 空文字列でないとき, ベクタが空の時も許容
-    pub fn new(tags: Vec<String>) -> Result<Self, &'static str> {
+    pub(crate) fn new(tags: Vec<String>) -> Result<Self, &'static str> {
         Tags::new(tags).map(VideoTags)
+    }
+
+    fn from_tags(tags: Tags) -> Self {
+        VideoTags(tags)
+    }
+
+    pub(crate) fn is_empty(&self) -> bool {
+        self.0.0.is_empty()
     }
 }
 
 /// クリップに適用するタグ
 ///
-/// タグは空文字列を許容しない
-#[derive(serde::Deserialize, serde::Serialize, Debug, Clone, PartialEq, Eq)]
-pub struct ClipTags(Tags);
+/// - タグは空文字列を許容しない
+/// - 内部ではタグをソートして保持する
+/// - deserialize時にnullはベクタが空とみなす
+#[derive(serde::Serialize, Debug, Clone, PartialEq, Eq, Default)]
+pub(crate) struct ClipTags(Tags);
+
+impl<'de> serde::Deserialize<'de> for ClipTags {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let tags = Tags::deserialize(deserializer)?;
+        Ok(ClipTags::from_tags(tags))
+    }
+}
 
 impl ClipTags {
     /// クリップタグを新規作成する
     ///
     /// - Error: タグが空文字列のとき
     /// - Ok: 空文字列でないとき, ベクタが空の時も許容
-    pub fn new(tags: Vec<String>) -> Result<Self, &'static str> {
+    pub(crate) fn new(tags: Vec<String>) -> Result<Self, &'static str> {
         Tags::new(tags).map(ClipTags)
+    }
+
+    fn from_tags(tags: Tags) -> Self {
+        ClipTags(tags)
+    }
+
+    pub(crate) fn is_empty(&self) -> bool {
+        self.0.0.is_empty()
     }
 }
 
 /// タグたち
-#[derive(serde::Deserialize, serde::Serialize, Debug, Clone, PartialEq, Eq)]
+///
+/// - タグは空文字列を許容しない
+/// - 内部ではタグをソートして保持する
+/// - deserialize時にnullはベクタが空とみなす
+#[derive(serde::Serialize, Debug, Clone, PartialEq, Eq, Default)]
 struct Tags(Vec<Tag>);
 
+impl<'de> serde::Deserialize<'de> for Tags {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        // nullだとdefault(空のベクタ)とみなす
+        let tags: Vec<Tag> =
+            Option::<Vec<Tag>>::deserialize(deserializer)?.unwrap_or_default();
+        Ok(Tags::from_vec(tags))
+    }
+}
+
 impl Tags {
+    /// タグのベクタを新規作成
+    ///
+    /// ソートして保持
+    ///
     /// - Error: タグが空文字列のとき
     /// - Ok: 空文字列でないとき, ベクタが空の時も許容
-    pub fn new(tags: Vec<String>) -> Result<Self, &'static str> {
+    pub(crate) fn new(tags: Vec<String>) -> Result<Self, &'static str> {
         let mut tags = tags
             .into_iter()
             .map(|tag| Tag::new(tag))
@@ -47,9 +107,17 @@ impl Tags {
         tags.sort();
         Ok(Self(tags))
     }
+
+    fn from_vec(tags: Vec<Tag>) -> Self {
+        let mut tags = tags;
+        tags.sort();
+        Tags(tags)
+    }
 }
 
 /// タグ
+///
+/// - タグは空文字列を許容しない
 #[derive(serde::Serialize, Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 struct Tag(String);
 
@@ -77,18 +145,20 @@ impl Tag {
     }
 }
 
+// MARK: For Tests
+
 #[cfg(test)]
 impl VideoTags {
     /// returns `Test Video Tag1`
-    pub fn self_1() -> Self {
+    pub(crate) fn self_1() -> Self {
         VideoTags(Tags(vec![Tag::new("Test Video Tag1".to_string()).unwrap()]))
     }
     /// returns `Test Video Tag2`
-    pub fn self_2() -> Self {
+    pub(crate) fn self_2() -> Self {
         VideoTags(Tags(vec![Tag::new("Test Video Tag2".to_string()).unwrap()]))
     }
     /// returns `Test Video Tag3`, `Test Video Tag4`
-    pub fn self_3() -> Self {
+    pub(crate) fn self_3() -> Self {
         VideoTags(Tags(vec![
             Tag::new("Test Video Tag3".to_string()).unwrap(),
             Tag::new("Test Video Tag4".to_string()).unwrap(),
@@ -99,15 +169,15 @@ impl VideoTags {
 #[cfg(test)]
 impl ClipTags {
     /// returns `Test Clip Tag1`
-    pub fn self_1() -> Self {
+    pub(crate) fn self_1() -> Self {
         ClipTags(Tags(vec![Tag::new("Test Clip Tag1".to_string()).unwrap()]))
     }
     /// returns `Test Clip Tag2`
-    pub fn self_2() -> Self {
+    pub(crate) fn self_2() -> Self {
         ClipTags(Tags(vec![Tag::new("Test Clip Tag2".to_string()).unwrap()]))
     }
     /// returns `Test Clip Tag3`, `Test Clip Tag4`
-    pub fn self_3() -> Self {
+    pub(crate) fn self_3() -> Self {
         ClipTags(Tags(vec![
             Tag::new("Test Clip Tag3".to_string()).unwrap(),
             Tag::new("Test Clip Tag4".to_string()).unwrap(),
@@ -115,9 +185,30 @@ impl ClipTags {
     }
 }
 
+// MARK: Tests
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_tags_for_test_methods() {
+        let video_tags_1 = VideoTags::self_1();
+        assert_eq!(video_tags_1.0.0[0].0, "Test Video Tag1");
+        let video_tags_2 = VideoTags::self_2();
+        assert_eq!(video_tags_2.0.0[0].0, "Test Video Tag2");
+        let video_tags_3 = VideoTags::self_3();
+        assert_eq!(video_tags_3.0.0[0].0, "Test Video Tag3");
+        assert_eq!(video_tags_3.0.0[1].0, "Test Video Tag4");
+
+        let clip_tags_1 = ClipTags::self_1();
+        assert_eq!(clip_tags_1.0.0[0].0, "Test Clip Tag1");
+        let clip_tags_2 = ClipTags::self_2();
+        assert_eq!(clip_tags_2.0.0[0].0, "Test Clip Tag2");
+        let clip_tags_3 = ClipTags::self_3();
+        assert_eq!(clip_tags_3.0.0[0].0, "Test Clip Tag3");
+        assert_eq!(clip_tags_3.0.0[1].0, "Test Clip Tag4");
+    }
 
     fn tags() -> Vec<String> {
         vec![
@@ -157,5 +248,47 @@ mod tests {
         assert_eq!(video_tags.0.0[2].0, "Tag2");
         assert_eq!(video_tags.0.0[3].0, "Tag3");
         assert_eq!(video_tags.0.0[4].0, "Tag4");
+    }
+
+    #[test]
+    fn test_tags_new_invalid() {
+        let empty_tag = Tag::new("".to_string());
+        assert!(empty_tag.is_err());
+
+        let video_tags = VideoTags::new(vec!["".to_string()]);
+        assert!(video_tags.is_err());
+
+        let clip_tags = ClipTags::new(vec!["".to_string()]);
+        assert!(clip_tags.is_err());
+    }
+
+    #[test]
+    fn test_tags_deserialize() {
+        #[derive(serde::Deserialize)]
+        struct ForDe {
+            #[serde(default)]
+            video: VideoTags,
+            #[serde(default)]
+            clip: ClipTags,
+        }
+
+        let json =
+            r#"{"video": ["Tag2", "Tag3", "Tag1"], "clip": ["Tag2", "Tag3", "Tag1"]}"#;
+        let de: ForDe = serde_json::from_str(json).unwrap();
+        // 整列してるか
+        assert_eq!(de.video.0.0.len(), 3);
+        assert_eq!(de.video.0.0[0].0, "Tag1");
+        assert_eq!(de.video.0.0[1].0, "Tag2");
+        assert_eq!(de.video.0.0[2].0, "Tag3");
+        // 整列してるか
+        assert_eq!(de.clip.0.0.len(), 3);
+        assert_eq!(de.clip.0.0[0].0, "Tag1");
+        assert_eq!(de.clip.0.0[1].0, "Tag2");
+        assert_eq!(de.clip.0.0[2].0, "Tag3");
+
+        let json_empty = r#"{"video": null, "clip": null}"#;
+        let de_empty: ForDe = serde_json::from_str(json_empty).unwrap();
+        assert!(de_empty.video.is_empty());
+        assert!(de_empty.clip.is_empty());
     }
 }

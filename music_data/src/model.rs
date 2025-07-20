@@ -1,6 +1,5 @@
 mod artist;
 mod channel_id;
-mod clip;
 mod duration;
 mod privacy_status;
 mod tag;
@@ -11,22 +10,22 @@ mod video_id;
 mod video_published_at;
 mod volume_percent;
 
-pub use artist::{ExternalArtists, InternalArtists};
-pub use channel_id::ChannelId;
-pub use clip::{
-    AnonymousClip, AnonymousClipInitializer, FlatClips, UnverifiedClip,
-    UnverifiedClipError, UnverifiedClipInitializer, VerifiedClip, VerifiedClipError,
-    VerifiedClipInitializer,
+pub mod clip;
+
+pub(crate) use artist::{ExternalArtists, InternalArtists};
+pub(crate) use channel_id::ChannelId;
+pub(crate) use clip::{
+    AnonymousClip, FlatClips, UnverifiedClip, VerifiedClip, VerifiedClipError,
 };
-pub use duration::Duration;
-pub use privacy_status::PrivacyStatus;
-pub use tag::{ClipTags, VideoTags};
-pub use uploader_name::UploaderName;
-pub use uuid::UuidVer7;
-pub use video::{
+pub(crate) use duration::Duration;
+pub(crate) use privacy_status::PrivacyStatus;
+pub(crate) use tag::{ClipTags, VideoTags};
+pub(crate) use uploader_name::UploaderName;
+pub(crate) use uuid::UuidVer7;
+pub(crate) use video::{
     AnonymousVideo, AnonymousVideos, VerifiedVideo, VerifiedVideoError, VerifiedVideos,
     VideoBrief, VideoBriefs, VideoDetail, VideoDetailInitializer, VideoDetails,
 };
-pub use video_id::VideoId;
-pub use video_published_at::VideoPublishedAt;
-pub use volume_percent::VolumePercent;
+pub(crate) use video_id::VideoId;
+pub(crate) use video_published_at::VideoPublishedAt;
+pub(crate) use volume_percent::VolumePercent;

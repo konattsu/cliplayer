@@ -13,24 +13,25 @@ pub struct VideoIdPublishedAt {
 /// Returns:
 /// - Ok(a): 重複していた動画idとその動画が公開された日のリスト
 /// - Err(e): 何らかのエラー. 整形済みの文字列
-pub fn duplicate_video_ids(
+pub fn find_video_ids_with_published_at(
     music_root: &crate::music_file::MusicRoot,
     video_ids: &[crate::model::VideoId],
 ) -> Result<Vec<VideoIdPublishedAt>, String> {
     let videos = crate::music_file::MusicRootContent::load(music_root)
         .map_err(|e| e.to_pretty_string())?
-        .into_flattened_files();
+        .into_flattened_files()
+        .map_err(|e| e.to_pretty_string())?;
 
-    let video_ids_set = videos.into_inner();
-    let video_ids_set: std::collections::HashMap<_, _> = video_ids_set
+    let video_ids_set: std::collections::HashMap<_, _> = videos
+        .inner
         .iter()
-        .map(|v| (v.get_video_id(), v.get_published_at()))
+        .map(|(id, video)| (id, video.get_published_at().clone()))
         .collect();
 
     let duplicates: Vec<VideoIdPublishedAt> = video_ids
         .iter()
         .filter_map(|id| {
-            video_ids_set.get(id).copied().map(|p| VideoIdPublishedAt {
+            video_ids_set.get(id).map(|p| VideoIdPublishedAt {
                 video_id: id.clone(),
                 published_at: p.clone(),
             })
@@ -45,10 +46,14 @@ pub struct AnonymousVideoValidateErrors {
 }
 
 pub enum AnonymousVideoValidateError {
+    /// 動画idが重複
+    DuplicateVideoId(Vec<crate::model::VideoId>),
+    /// ファイルの読み込み失敗
     FileReadError {
         path: crate::util::FilePath,
         msg: String,
     },
+    /// ファイルの内容が不正
     InvalidFileContent {
         path: crate::util::FilePath,
         msg: String,
@@ -63,13 +68,10 @@ impl From<AnonymousVideoValidateErrors> for Vec<AnonymousVideoValidateError> {
 
 impl AnonymousVideoValidateErrors {
     pub fn to_pretty_string(&self) -> String {
-        format!(
-            "{}\n",
-            self.errs
-                .iter()
-                .map(|e| e.to_pretty_string())
-                .collect::<String>()
-        )
+        self.errs
+            .iter()
+            .map(|e| e.to_pretty_string())
+            .collect::<String>()
     }
 }
 
@@ -79,6 +81,14 @@ impl AnonymousVideoValidateError {
     /// 文字列の最後に`\n`が付与される
     pub fn to_pretty_string(&self) -> String {
         match self {
+            Self::DuplicateVideoId(ids) => {
+                let ids_str = ids
+                    .iter()
+                    .map(|id| id.to_string())
+                    .collect::<Vec<_>>()
+                    .join(", ");
+                format!("Duplicate video IDs found: {ids_str}\n")
+            }
             Self::FileReadError { path, msg } => {
                 format!("Failed to read file {path}: {msg}\n",)
             }
@@ -86,6 +96,10 @@ impl AnonymousVideoValidateError {
                 format!("Invalid content in file {path}: {msg}\n",)
             }
         }
+    }
+
+    fn into_errors(self) -> AnonymousVideoValidateErrors {
+        AnonymousVideoValidateErrors { errs: vec![self] }
     }
 }
 
@@ -106,19 +120,22 @@ pub fn try_load_anonymous_videos(
 
     for file in files {
         match deserialize_from_file(file) {
-            Ok(v) => videos.extend(v.into_inner()),
+            Ok(v) => videos.extend(v.inner.into_values()),
             Err(e) => errs.push(e),
         }
     }
 
     if errs.is_empty() {
-        Ok(crate::model::AnonymousVideos::new(videos))
+        Ok(
+            crate::model::AnonymousVideos::try_from_vec(videos).map_err(|e| {
+                AnonymousVideoValidateError::DuplicateVideoId(e).into_errors()
+            })?,
+        )
     } else {
         Err(AnonymousVideoValidateErrors { errs })
     }
 }
 
-// TODO 通常と同じパースを適用している. 専用で処理するか要件等
 /// 既存の楽曲情報に対する変更を検証
 pub fn validate_update_input(
     music_root: &crate::music_file::MusicRoot,

@@ -54,7 +54,7 @@ struct InternalArtist(String);
 /// - `artists` は空でないこと
 /// - `artists` の要素は `InternalArtist` の順序でソートされていること
 #[derive(Debug, serde::Serialize, Clone, PartialEq, Eq)]
-pub struct InternalArtists(Vec<InternalArtist>);
+pub(crate) struct InternalArtists(Vec<InternalArtist>);
 
 impl InternalArtist {
     fn new<'a, T: Into<std::borrow::Cow<'a, str>>>(id: T) -> Result<Self, String> {
@@ -112,15 +112,15 @@ impl<'de> serde::Deserialize<'de> for InternalArtists {
 #[cfg(test)]
 impl InternalArtist {
     /// `Aimer Test`
-    pub fn test_name1() -> Self {
+    pub(crate) fn test_name1() -> Self {
         Self::new("Aimer Test").unwrap()
     }
     /// `Eir Aoi Test`
-    pub fn test_name2() -> Self {
+    pub(crate) fn test_name2() -> Self {
         Self::new("Eir Aoi Test").unwrap()
     }
     /// `Lisa Test`
-    pub fn test_name3() -> Self {
+    pub(crate) fn test_name3() -> Self {
         Self::new("Lisa Test").unwrap()
     }
 }
@@ -137,15 +137,15 @@ impl InternalArtists {
     }
 
     /// Vec `Aimer Test`
-    pub fn test_name_1() -> Self {
+    pub(crate) fn test_name_1() -> Self {
         Self::new_for_test(vec![InternalArtist::test_name1()]).unwrap()
     }
     /// Vec `Eir Aoi Test`
-    pub fn test_name_2() -> Self {
+    pub(crate) fn test_name_2() -> Self {
         Self::new_for_test(vec![InternalArtist::test_name2()]).unwrap()
     }
     /// Vec `Lisa Test`
-    pub fn test_name_3() -> Self {
+    pub(crate) fn test_name_3() -> Self {
         Self::new_for_test(vec![InternalArtist::test_name3()]).unwrap()
     }
 }
@@ -168,7 +168,7 @@ struct ExternalArtist(String);
 /// - `artists` は空でないこと
 /// - `artists` の要素は `ExternalArtist` の順序でソートされていること
 #[derive(Debug, serde::Serialize, Clone, PartialEq, Eq)]
-pub struct ExternalArtists(Vec<ExternalArtist>);
+pub(crate) struct ExternalArtists(Vec<ExternalArtist>);
 
 impl ExternalArtist {
     /// 新しい外部アーティストを生成
@@ -229,18 +229,20 @@ impl<'de> serde::Deserialize<'de> for ExternalArtists {
     }
 }
 
+// MARK: For Tests
+
 #[cfg(test)]
 impl ExternalArtist {
     /// `Apple Mike`
-    pub fn test_name1() -> Self {
+    pub(crate) fn test_name1() -> Self {
         Self::new("Apple Mike").unwrap()
     }
     /// `Milk Mike`
-    pub fn test_name2() -> Self {
+    pub(crate) fn test_name2() -> Self {
         Self::new("Milk Mike").unwrap()
     }
     /// `Banana Mike`
-    pub fn test_name3() -> Self {
+    pub(crate) fn test_name3() -> Self {
         Self::new("Banana Mike").unwrap()
     }
 }
@@ -257,15 +259,15 @@ impl ExternalArtists {
     }
 
     /// Vec `Apple Mike`
-    pub fn test_name_1() -> Self {
+    pub(crate) fn test_name_1() -> Self {
         Self::new_for_test(vec![ExternalArtist::test_name1()]).unwrap()
     }
     /// Vec `Milk Mike`
-    pub fn test_name_2() -> Self {
+    pub(crate) fn test_name_2() -> Self {
         Self::new_for_test(vec![ExternalArtist::test_name2()]).unwrap()
     }
     /// Vec `Banana Mike`
-    pub fn test_name_3() -> Self {
+    pub(crate) fn test_name_3() -> Self {
         Self::new_for_test(vec![ExternalArtist::test_name3()]).unwrap()
     }
 }

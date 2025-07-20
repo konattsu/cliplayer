@@ -2,28 +2,53 @@
 #[derive(serde::Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 #[serde(deny_unknown_fields)]
-pub struct VideoBrief {
+pub(crate) struct VideoBrief {
     /// 動画ID
     video_id: crate::model::VideoId,
     /// チャンネル名, 箱外で行われた配信/動画の時に付与
     uploader_name: Option<crate::model::UploaderName>,
     /// 動画のタグ
-    tags: crate::model::VideoTags,
+    #[serde(default)]
+    video_tags: crate::model::VideoTags,
 }
 
 /// `VideoBrief`のリスト
 ///
 /// 各`VideoBrief`に含まれる動画idが一意であることを保証
 #[derive(Debug, Clone)]
-pub struct VideoBriefs {
-    pub inner: std::collections::HashMap<crate::model::VideoId, VideoBrief>,
+pub(crate) struct VideoBriefs {
+    pub(crate) inner: std::collections::HashMap<crate::model::VideoId, VideoBrief>,
+}
+
+impl VideoBrief {
+    pub(crate) fn new(
+        video_id: crate::model::VideoId,
+        uploader_name: Option<crate::model::UploaderName>,
+        tags: crate::model::VideoTags,
+    ) -> Self {
+        Self {
+            video_id,
+            uploader_name,
+            video_tags: tags,
+        }
+    }
+
+    pub(crate) fn get_video_id(&self) -> &crate::model::VideoId {
+        &self.video_id
+    }
+    pub(crate) fn get_uploader_name(&self) -> Option<&crate::model::UploaderName> {
+        self.uploader_name.as_ref()
+    }
+    pub(crate) fn get_tags(&self) -> &crate::model::VideoTags {
+        &self.video_tags
+    }
 }
 
 impl VideoBriefs {
     /// `VideoBrief`のリストを`VideoBriefs`に変換
     ///
     /// Err: 動画idが重複しているとき
-    pub fn try_from_vec(
+    pub(crate) fn try_from_vec(
         briefs: Vec<VideoBrief>,
     ) -> Result<Self, Vec<crate::model::VideoId>> {
         use std::collections::{HashMap, HashSet};
@@ -48,17 +73,27 @@ impl VideoBriefs {
     }
 }
 
+// MARK: For Tests
+
+#[cfg(test)]
 impl VideoBrief {
-    pub fn get_video_id(&self) -> &crate::model::VideoId {
-        &self.video_id
+    pub(crate) fn self_a() -> Self {
+        VideoBrief::new(
+            crate::model::VideoId::test_id_1(),
+            Some(crate::model::UploaderName::test_uploader_name_1()),
+            crate::model::VideoTags::self_1(),
+        )
     }
-    pub fn get_uploader_name(&self) -> Option<&crate::model::UploaderName> {
-        self.uploader_name.as_ref()
-    }
-    pub fn get_tags(&self) -> &crate::model::VideoTags {
-        &self.tags
+    pub(crate) fn self_b() -> Self {
+        VideoBrief::new(
+            crate::model::VideoId::test_id_2(),
+            None,
+            crate::model::VideoTags::self_2(),
+        )
     }
 }
+
+// MARK: Tests
 
 #[cfg(test)]
 mod tests {
@@ -68,7 +103,7 @@ mod tests {
         VideoBrief {
             video_id: id,
             uploader_name: None,
-            tags: crate::model::VideoTags::new(vec![]).expect("will be valid"),
+            video_tags: crate::model::VideoTags::new(vec![]).expect("will be valid"),
         }
     }
 
@@ -118,5 +153,56 @@ mod tests {
         ];
         expected.sort();
         assert_eq!(ids, expected);
+    }
+
+    const VIDEO_BRIEF_VALID_JSON_1: &str = r#"{
+        "videoId": "11111111111",
+        "uploaderName": "Test Channel 1",
+        "videoTags": ["Test Video Tag1"]
+    }"#;
+
+    const VIDEO_BRIEF_VALID_JSON_2: &str = r#"{
+        "videoId": "22222222222"
+    }"#;
+
+    #[test]
+    fn test_video_brief_deserialize_valid() {
+        let brief: VideoBrief = serde_json::from_str(VIDEO_BRIEF_VALID_JSON_1)
+            .expect("should deserialize successfully");
+        assert_eq!(brief.video_id, crate::model::VideoId::test_id_1());
+        assert_eq!(
+            brief.uploader_name,
+            Some(crate::model::UploaderName::test_uploader_name_1())
+        );
+        assert_eq!(brief.video_tags, crate::model::VideoTags::self_1());
+
+        let brief: VideoBrief = serde_json::from_str(VIDEO_BRIEF_VALID_JSON_2)
+            .expect("should deserialize successfully");
+        assert_eq!(brief.video_id, crate::model::VideoId::test_id_2());
+        assert!(brief.uploader_name.is_none());
+        assert!(brief.video_tags.is_empty());
+    }
+
+    // unknown fieldsがある
+    const VIDEO_BRIEF_INVALID_JSON_1: &str = r#"{
+        "videoId": "33333333333",
+        "videoTags": null,
+        "editor": "vscode"
+    }"#;
+
+    // 必須フィールドの欠如
+    const VIDEO_BRIEF_INVALID_JSON_2: &str = r#"{
+        "uploaderName": "test_uploader",
+        "videoTags": null
+    }"#;
+
+    #[test]
+    fn test_video_brief_deserialize_invalid() {
+        let result: Result<VideoBrief, _> =
+            serde_json::from_str(VIDEO_BRIEF_INVALID_JSON_1);
+        assert!(result.is_err());
+        let result: Result<VideoBrief, _> =
+            serde_json::from_str(VIDEO_BRIEF_INVALID_JSON_2);
+        assert!(result.is_err());
     }
 }

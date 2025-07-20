@@ -14,7 +14,7 @@ static RE_UUID7: once_cell::sync::Lazy<regex::Regex> = once_cell::sync::Lazy::ne
 
 /// UUIDv7 (RFC 9562)
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct UuidVer7 {
+pub(crate) struct UuidVer7 {
     /// `数字`を格納
     bytes: [u8; 16],
 }
@@ -127,7 +127,7 @@ impl UuidVer7 {
     ///
     /// - Error: `bytes`がUUIDv7の形式でないとき
     /// - i.e. バージョンビットが0b0111でない || バリアントビットが0b10でない
-    pub fn from_bytes(bytes: [u8; 16]) -> Result<Self, &'static str> {
+    pub(crate) fn from_bytes(bytes: [u8; 16]) -> Result<Self, &'static str> {
         if !Self::is_uuid_ver7(&bytes) {
             return Err("invalid UUIDv7 format");
         }
@@ -135,7 +135,7 @@ impl UuidVer7 {
     }
 
     /// 日付を基にUUIDv7を新規作成
-    pub fn generate(datetime: &crate::model::VideoPublishedAt) -> Self {
+    pub(crate) fn generate(datetime: &crate::model::VideoPublishedAt) -> Self {
         let (rand_a, rand_b) = Self::generate_rand();
         Self::generate_with_rand(datetime, rand_a, rand_b)
     }
@@ -212,7 +212,7 @@ impl UuidVer7 {
     }
 
     /// UUIDv7の値から内部に含まれるタイムスタンプを取得
-    pub fn get_datetime(&self) -> chrono::DateTime<chrono::Utc> {
+    pub(crate) fn get_datetime(&self) -> chrono::DateTime<chrono::Utc> {
         use chrono::TimeZone;
 
         // bytes[0..6]はtimestampの上位48bit
@@ -229,14 +229,14 @@ impl UuidVer7 {
     }
 }
 
-// MARK: Tests
+// MARK: For Tests
 
 #[cfg(test)]
 impl UuidVer7 {
     /// `0193bac8-a560-7000-8000-000000000000`
     ///
     /// `2024-12-12T12:12:12Z`
-    pub fn self_1() -> Self {
+    pub(crate) fn self_1() -> Self {
         use chrono::TimeZone;
         let datetime = crate::model::VideoPublishedAt::new(
             chrono::Utc
@@ -251,7 +251,7 @@ impl UuidVer7 {
     /// `01920ef6-46d0-70f0-8000-000f0f0f0f0f`
     ///
     /// `2024-09-20T10:24:34Z`
-    pub fn self_2() -> Self {
+    pub(crate) fn self_2() -> Self {
         use chrono::TimeZone;
         let datetime = crate::model::VideoPublishedAt::new(
             chrono::Utc
@@ -267,7 +267,7 @@ impl UuidVer7 {
     /// `017f22e2-79b0-7cc3-98c4-dc0c0c07398f`
     ///
     /// `2022-02-22T19:22:22Z`
-    pub fn self_3() -> Self {
+    pub(crate) fn self_3() -> Self {
         use chrono::TimeZone;
         let datetime = crate::model::VideoPublishedAt::new(
             chrono::Utc
@@ -282,7 +282,7 @@ impl UuidVer7 {
     /// `0193b63c-5eb0-70f0-8000-000f0f0f0f0f`
     ///
     /// `2024-12-12T00:00:30Z`
-    pub fn self_4() -> Self {
+    pub(crate) fn self_4() -> Self {
         use chrono::TimeZone;
         let datetime = crate::model::VideoPublishedAt::new(
             chrono::Utc
@@ -293,7 +293,60 @@ impl UuidVer7 {
         // 2024-12-12T00:00:30Z
         Self::generate_with_rand(&datetime, 0xF0, 0x0F0F0F0F0F)
     }
+
+    /// `2024-12-12T00:MM:SSZ`
+    ///
+    /// `Panic`: 各値が0-59の範囲外
+    pub(crate) fn self_fix_rnd_1(m: u8, s: u8) -> Self {
+        use chrono::TimeZone;
+        let datetime = crate::model::VideoPublishedAt::new(
+            chrono::Utc
+                .with_ymd_and_hms(2024, 12, 12, 0, m as u32, s as u32)
+                .unwrap(),
+        )
+        .unwrap();
+        let rand_a = 0x0;
+        let rand_b = 0x0;
+
+        Self::generate_with_rand(&datetime, rand_a, rand_b)
+    }
+
+    /// `2025-05-30T00:MM:SSZ`
+    ///
+    /// `Panic`: 各値が0-59の範囲外
+    pub(crate) fn self_fix_rnd_2(m: u8, s: u8) -> Self {
+        use chrono::TimeZone;
+        let datetime = crate::model::VideoPublishedAt::new(
+            chrono::Utc
+                .with_ymd_and_hms(2025, 5, 30, 0, m as u32, s as u32)
+                .unwrap(),
+        )
+        .unwrap();
+        let rand_a = 0x0;
+        let rand_b = 0x0;
+
+        Self::generate_with_rand(&datetime, rand_a, rand_b)
+    }
+
+    /// `2025-05-18T00:MM:SSZ`
+    ///
+    /// `Panic`: 各値が0-59の範囲外
+    pub(crate) fn self_fix_rnd_3(m: u8, s: u8) -> Self {
+        use chrono::TimeZone;
+        let datetime = crate::model::VideoPublishedAt::new(
+            chrono::Utc
+                .with_ymd_and_hms(2025, 5, 18, 0, m as u32, s as u32)
+                .unwrap(),
+        )
+        .unwrap();
+        let rand_a = 0x0;
+        let rand_b = 0x0;
+
+        Self::generate_with_rand(&datetime, rand_a, rand_b)
+    }
 }
+
+// MARK: Tests
 
 #[cfg(test)]
 mod tests {
@@ -388,6 +441,14 @@ mod tests {
         );
 
         assert_eq!(uuid.to_string(), "0193b82a-c130-70f0-8000-000f0f0f0f0f");
+    }
+
+    #[test]
+    fn test_uuid_ver7_fix_rnd() {
+        // panicなければok
+        let _uuid = UuidVer7::self_fix_rnd_1(30, 45);
+        let _uuid = UuidVer7::self_fix_rnd_2(0, 0);
+        let _uuid = UuidVer7::self_fix_rnd_3(59, 59);
     }
 
     #[test]

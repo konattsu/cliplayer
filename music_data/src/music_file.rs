@@ -6,6 +6,6 @@ mod root;
 
 pub use error::{MusicFileError, MusicFileErrors};
 pub use root::{
-    MusicFilePath, MusicFilePathVideos, MusicFilePathVideosInner, MusicRoot,
+    MusicFileEntry, MusicFileEntryWithVideos, MusicFileEntryWithVideosInner, MusicRoot,
     MusicRootContent,
 };

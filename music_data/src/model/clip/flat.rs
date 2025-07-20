@@ -4,7 +4,7 @@
 ///
 /// min化に必要な情報のみをまとめている
 #[derive(Debug, Clone)]
-pub struct FlatClips {
+pub(crate) struct FlatClips {
     clips: std::collections::HashMap<crate::model::UuidVer7, FlatClip>,
 }
 
@@ -28,20 +28,25 @@ impl serde::Serialize for FlatClips {
     where
         S: serde::Serializer,
     {
-        let mut clips: Vec<&FlatClip> = self.clips.values().collect();
-        clips.sort_by(|a, b| a.uuid.cmp(&b.uuid));
+        let clips = self.sorted_clips();
         clips.serialize(serializer)
     }
 }
 
 impl FlatClips {
-    pub fn new(clips: Vec<crate::model::VerifiedClip>) -> Self {
+    pub(crate) fn new(clips: Vec<crate::model::VerifiedClip>) -> Self {
         let clips = clips
             .into_iter()
             .map(|clip| (clip.get_uuid().clone(), FlatClip::from_verified_clip(clip)))
             .collect();
 
         Self { clips }
+    }
+
+    fn sorted_clips(&self) -> Vec<&FlatClip> {
+        let mut clips: Vec<&FlatClip> = self.clips.values().collect();
+        clips.sort_by(|a, b| a.uuid.cmp(&b.uuid));
+        clips
     }
 }
 
@@ -58,5 +63,50 @@ impl FlatClip {
             start_time: clip.start_time,
             end_time: clip.end_time,
         }
+    }
+}
+
+// MARK: Tests
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_flat_clips_sorted_clips() {
+        // 新しい
+        let clip1 = FlatClip {
+            uuid: crate::model::UuidVer7::self_1(),
+            song_title: "Song A".to_string(),
+            artists: crate::model::InternalArtists::test_name_1(),
+            external_artists: None,
+            clips_tags: None,
+            start_time: crate::model::Duration::from_secs(0),
+            end_time: crate::model::Duration::from_secs(10),
+        };
+        // 古い
+        let clip2 = FlatClip {
+            uuid: crate::model::UuidVer7::self_2(),
+            song_title: "Song B".to_string(),
+            artists: crate::model::InternalArtists::test_name_2(),
+            external_artists: None,
+            clips_tags: None,
+            start_time: crate::model::Duration::from_secs(5),
+            end_time: crate::model::Duration::from_secs(15),
+        };
+
+        let flat_clips = FlatClips {
+            clips: vec![
+                (clip1.uuid.clone(), clip1.clone()),
+                (clip2.uuid.clone(), clip2.clone()),
+            ]
+            .into_iter()
+            .collect(),
+        };
+
+        let sorted_clips = flat_clips.sorted_clips();
+        assert_eq!(sorted_clips.len(), 2);
+        assert_eq!(sorted_clips[0].uuid, clip2.uuid);
+        assert_eq!(sorted_clips[1].uuid, clip1.uuid);
     }
 }
