@@ -8,15 +8,15 @@
 /// - ディレクトリ構造が不正な場合
 pub(super) fn collect_and_validate_year_directories(
     year_entries: &[std::fs::DirEntry],
-) -> Result<Vec<super::MusicFilePath>, super::MusicFileErrors> {
+) -> Result<Vec<super::MusicFileEntry>, super::MusicFileErrors> {
     if year_entries.is_empty() {
-        return Err(super::MusicFileError::YearFolderError(
+        return Err(super::MusicFileError::YearFolder(
             "No entries found in the music root directory".to_string(),
         )
         .into_errors());
     }
 
-    let mut years: Vec<super::MusicFilePath> = Vec::new();
+    let mut years: Vec<super::MusicFileEntry> = Vec::new();
     let mut errors: Vec<super::MusicFileError> = Vec::new();
 
     // 1つのファイルの一部にだけエラーが無かったとしても他のファイルをすべてparseしたいので,
@@ -42,7 +42,7 @@ pub(super) fn collect_and_validate_year_directories(
             Err(e) => {
                 // 親フォルダのパスがエラー情報に欲しいのでErrの返却値はmsgのみで,
                 // 呼び出し元(ここ)で親フォルダのパスを付与
-                errors.push(super::MusicFileError::MonthFileError {
+                errors.push(super::MusicFileError::MonthFile {
                     underlying: year_entry.path().display().to_string(),
                     msg: e,
                 });
@@ -51,7 +51,7 @@ pub(super) fn collect_and_validate_year_directories(
         };
 
         monthly_files.into_iter().for_each(|(file, month)| {
-            years.push(super::MusicFilePath::new(year, month, file));
+            years.push(super::MusicFileEntry::new(year, month, file));
         });
     }
 
@@ -78,7 +78,7 @@ fn validate_year_directory(
     use super::MusicFileError;
 
     if !entry.file_type().map(|f| f.is_dir()).unwrap_or(false) {
-        return Err(MusicFileError::YearFolderError(format!(
+        return Err(MusicFileError::YearFolder(format!(
             "{} is not a directory",
             entry.path().display()
         )));
@@ -86,21 +86,21 @@ fn validate_year_directory(
 
     let dir_name = entry.file_name();
     let name = dir_name.to_str().ok_or_else(|| {
-        MusicFileError::YearFolderError(format!(
+        MusicFileError::YearFolder(format!(
             "Invalid UTF-8 in directory name: {}",
             dir_name.display()
         ))
     })?;
 
     if name.len() != 4 || name.chars().any(|c| !c.is_ascii_digit()) {
-        return Err(MusicFileError::YearFolderError(format!(
+        return Err(MusicFileError::YearFolder(format!(
             "Directory {} is not a valid year directory name",
             entry.path().display()
         )));
     }
 
     name.parse().map_err(|_| {
-        MusicFileError::YearFolderError(format!(
+        MusicFileError::YearFolder(format!(
             "invalid year directory name: {}",
             entry.path().display()
         ))
@@ -191,7 +191,7 @@ mod tests {
             .unwrap();
         let err = validate_year_directory(&entry).unwrap_err();
         match err {
-            super::super::MusicFileError::YearFolderError(msg) => {
+            super::super::MusicFileError::YearFolder(msg) => {
                 assert!(
                     msg.contains("not a valid year directory name")
                         || msg.contains("invalid year directory name")
@@ -297,10 +297,9 @@ mod tests {
             .collect();
         let err = collect_and_validate_year_directories(&year_entries).unwrap_err();
         assert!(
-            err.errs.iter().any(|e| matches!(
-                e,
-                super::super::MusicFileError::MonthFileError { .. }
-            ))
+            err.errs
+                .iter()
+                .any(|e| matches!(e, super::super::MusicFileError::MonthFile { .. }))
         );
     }
 }

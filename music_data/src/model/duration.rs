@@ -3,12 +3,12 @@
 /// - 0..24時間まで
 /// - 秒未満を保持しない
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
-pub struct Duration {
+pub(crate) struct Duration {
     inner: chrono::Duration,
 }
 
 impl Duration {
-    pub fn from_chrono_duration(
+    pub(crate) fn from_chrono_duration(
         duration: chrono::Duration,
     ) -> Result<Duration, &'static str> {
         Self::validate_within_24_hours(&duration)?;
@@ -18,7 +18,7 @@ impl Duration {
         })
     }
 
-    pub fn from_secs(secs: u16) -> Self {
+    pub(crate) fn from_secs(secs: u16) -> Self {
         // - 24 hours = 86400 seconds
         // - u16 max: 65535
         // 絶対に0..24時間の範囲内の値になる
@@ -26,15 +26,15 @@ impl Duration {
             .expect("Duration.from_secs() should not fail")
     }
 
-    pub fn as_chrono_duration(&self) -> &chrono::Duration {
+    pub(crate) fn as_chrono_duration(&self) -> &chrono::Duration {
         &self.inner
     }
 
-    pub fn as_secs(&self) -> u32 {
+    pub(crate) fn as_secs(&self) -> u32 {
         u32::try_from(self.inner.num_seconds()).expect("Duration.as_secs() overflowed")
     }
 
-    pub fn as_chrono_time(&self) -> chrono::NaiveTime {
+    pub(crate) fn as_chrono_time(&self) -> chrono::NaiveTime {
         chrono::NaiveTime::from_num_seconds_from_midnight_opt(
             self.inner.num_seconds() as u32,
             0,
@@ -43,7 +43,7 @@ impl Duration {
         .expect("Duration exceeds 24 hours")
     }
 
-    pub fn try_add(&self, other: &Duration) -> Result<Duration, &'static str> {
+    pub(crate) fn try_add(&self, other: &Duration) -> Result<Duration, &'static str> {
         let new_duration = self.inner + other.inner;
         Self::validate_within_24_hours(&new_duration)?;
         Ok(Self {
@@ -190,24 +190,28 @@ impl<'de> serde::Deserialize<'de> for Duration {
     }
 }
 
+// MARK: For Tests
+
 #[cfg(test)]
 impl Duration {
     /// returns `PT10S`
-    pub fn self_1() -> Self {
+    pub(crate) fn self_1() -> Self {
         use std::str::FromStr;
         Self::from_str("PT10S").unwrap()
     }
     /// returns `PT20M`
-    pub fn self_2() -> Self {
+    pub(crate) fn self_2() -> Self {
         use std::str::FromStr;
         Self::from_str("PT20M").unwrap()
     }
     /// returns `PT1H`
-    pub fn self_3() -> Self {
+    pub(crate) fn self_3() -> Self {
         use std::str::FromStr;
         Self::from_str("PT1H").unwrap()
     }
 }
+
+// MARK: Tests
 
 #[cfg(test)]
 mod tests {

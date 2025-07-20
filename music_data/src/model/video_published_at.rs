@@ -3,7 +3,7 @@
 /// - ミリ秒以下は切り捨て
 /// - タイムスタンプに直したとき, 符号なし48bitで表現できる範囲内であることを保証
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct VideoPublishedAt(chrono::DateTime<chrono::Utc>);
+pub(crate) struct VideoPublishedAt(chrono::DateTime<chrono::Utc>);
 
 impl VideoPublishedAt {
     /// 動画のアップデート時間を生成
@@ -12,26 +12,28 @@ impl VideoPublishedAt {
     ///
     /// - Error: `upload_at`が符号なし48ビットのタイムスタンプの範囲外の場合
     ///   - i.e. `0..2^48-1` millisの範囲外
-    pub fn new(upload_at: chrono::DateTime<chrono::Utc>) -> Result<Self, &'static str> {
+    pub(crate) fn new(
+        upload_at: chrono::DateTime<chrono::Utc>,
+    ) -> Result<Self, &'static str> {
         Self::validate_unsigned_48bit_timestamp(upload_at)?;
         Ok(VideoPublishedAt(Self::truncate_millis(upload_at)))
     }
 
-    pub fn as_chrono_datetime(&self) -> &chrono::DateTime<chrono::Utc> {
+    pub(crate) fn as_chrono_datetime(&self) -> &chrono::DateTime<chrono::Utc> {
         &self.0
     }
 
-    pub fn as_secs(&self) -> u64 {
+    pub(crate) fn as_secs(&self) -> u64 {
         u64::try_from(self.0.timestamp())
             .expect("VideoPublishedAt::as_secs() is overflow")
     }
 
-    pub fn get_year(&self) -> usize {
+    pub(crate) fn get_year(&self) -> usize {
         use chrono::Datelike;
         self.0.year() as usize
     }
 
-    pub fn get_month(&self) -> usize {
+    pub(crate) fn get_month(&self) -> usize {
         use chrono::Datelike;
         self.0.month() as usize
     }
@@ -40,7 +42,7 @@ impl VideoPublishedAt {
     ///
     /// - Error: 加算した結果が符号なし48ビットのタイムスタンプの範囲外の場合
     ///   - i.e. `0..2^48-1` millisの範囲外
-    pub fn try_add(
+    pub(crate) fn try_add(
         &self,
         other: &VideoPublishedAt,
     ) -> Result<VideoPublishedAt, &'static str> {
@@ -127,27 +129,31 @@ impl<'de> serde::Deserialize<'de> for VideoPublishedAt {
     }
 }
 
+// MARK: For Tests
+
 #[cfg(test)]
 impl VideoPublishedAt {
     /// returns `2024-01-01T01:01:01Z`
-    pub fn self_1() -> Self {
+    pub(crate) fn self_1() -> Self {
         use chrono::TimeZone;
         let dt = chrono::Utc.with_ymd_and_hms(2024, 1, 1, 1, 1, 1).unwrap();
         VideoPublishedAt::new(dt).unwrap()
     }
     /// returns `2024-02-02T02:02:02Z`
-    pub fn self_2() -> Self {
+    pub(crate) fn self_2() -> Self {
         use chrono::TimeZone;
         let dt = chrono::Utc.with_ymd_and_hms(2024, 2, 2, 2, 2, 2).unwrap();
         VideoPublishedAt::new(dt).unwrap()
     }
     /// returns `2024-03-03T03:03:03Z`
-    pub fn self_3() -> Self {
+    pub(crate) fn self_3() -> Self {
         use chrono::TimeZone;
         let dt = chrono::Utc.with_ymd_and_hms(2024, 3, 3, 3, 3, 3).unwrap();
         VideoPublishedAt::new(dt).unwrap()
     }
 }
+
+// MARK: Tests
 
 #[cfg(test)]
 mod tests {
@@ -155,18 +161,54 @@ mod tests {
     use chrono::{TimeZone, Utc};
 
     #[test]
-    fn test_video_published_at_test() {
+    fn test_video_published_at_test_cases() {
         use chrono::TimeZone;
-        let v1 = VideoPublishedAt::self_1();
-        let v2 = VideoPublishedAt::self_2();
-        let v3 = VideoPublishedAt::self_3();
-        let expect_v1 = Utc.with_ymd_and_hms(2024, 1, 1, 1, 1, 1).unwrap();
-        let expect_v2 = Utc.with_ymd_and_hms(2024, 2, 2, 2, 2, 2).unwrap();
-        let expect_v3 = Utc.with_ymd_and_hms(2024, 3, 3, 3, 3, 3).unwrap();
+        let cases = vec![
+            (
+                VideoPublishedAt::self_1(),
+                Utc.with_ymd_and_hms(2024, 1, 1, 1, 1, 1).unwrap(),
+            ),
+            (
+                VideoPublishedAt::self_2(),
+                Utc.with_ymd_and_hms(2024, 2, 2, 2, 2, 2).unwrap(),
+            ),
+            (
+                VideoPublishedAt::self_3(),
+                Utc.with_ymd_and_hms(2024, 3, 3, 3, 3, 3).unwrap(),
+            ),
+        ];
+        for (actual, expected) in cases {
+            assert_eq!(actual.as_chrono_datetime(), &expected);
+        }
+    }
 
-        assert_eq!(v1.as_chrono_datetime(), &expect_v1);
-        assert_eq!(v2.as_chrono_datetime(), &expect_v2);
-        assert_eq!(v3.as_chrono_datetime(), &expect_v3);
+    #[test]
+    fn test_video_published_at_boundary_values() {
+        use chrono::TimeZone;
+        // 0ミリ秒
+        let dt0 = Utc.timestamp_millis_opt(0).unwrap();
+        assert!(VideoPublishedAt::new(dt0).is_ok());
+
+        // 2^48-1ミリ秒
+        let max = (1u64 << 48) - 1;
+        let dt_max = Utc.timestamp_millis_opt(max as i64).unwrap();
+        assert!(VideoPublishedAt::new(dt_max).is_ok());
+
+        // 2^48ミリ秒（範囲外）
+        let over = (1u64 << 48) as i64;
+        let dt_over = Utc.timestamp_millis_opt(over).unwrap();
+        assert!(VideoPublishedAt::new(dt_over).is_err());
+    }
+
+    #[test]
+    fn test_video_published_at_truncate_millis() {
+        use chrono::TimeZone;
+        // ミリ秒以下が切り捨てられることを確認
+        let dt = Utc.with_ymd_and_hms(2024, 5, 5, 5, 5, 5).unwrap()
+            + chrono::Duration::milliseconds(123);
+        let v = VideoPublishedAt::new(dt).unwrap();
+        let expected = Utc.with_ymd_and_hms(2024, 5, 5, 5, 5, 5).unwrap();
+        assert_eq!(v.as_chrono_datetime(), &expected);
     }
 
     #[test]

@@ -10,12 +10,12 @@ pub(super) fn read_dir(
     use super::MusicFileError;
 
     std::fs::read_dir(path)
-        .map_err(|e| MusicFileError::ReadDirError {
+        .map_err(|e| MusicFileError::ReadDir {
             dir: path.display().to_string(),
             msg: e.to_string(),
         })?
         .collect::<Result<Vec<_>, _>>()
-        .map_err(|e| MusicFileError::ReadDirError {
+        .map_err(|e| MusicFileError::ReadDir {
             dir: path.display().to_string(),
             msg: e.to_string(),
         })
@@ -27,13 +27,12 @@ pub(super) fn deserialize_from_file(
 ) -> Result<crate::model::VerifiedVideos, super::MusicFileError> {
     use super::MusicFileError;
 
-    let file_handle = std::fs::File::open(file.as_path()).map_err(|e| {
-        MusicFileError::FileReadError {
+    let file_handle =
+        std::fs::File::open(file.as_path()).map_err(|e| MusicFileError::FileRead {
             path: file.clone(),
             msg: e.to_string(),
             when: "deserializing from file".to_string(),
-        }
-    })?;
+        })?;
 
     let reader = std::io::BufReader::new(file_handle);
 
@@ -53,7 +52,7 @@ pub(super) fn serialize_to_file(
     use super::MusicFileError;
 
     let file_handle = std::fs::File::create(file.as_path()).map_err(|e| {
-        MusicFileError::FileReadError {
+        MusicFileError::FileRead {
             path: file.clone(),
             msg: e.to_string(),
             when: "serializing to file".to_string(),
@@ -63,7 +62,7 @@ pub(super) fn serialize_to_file(
     let write = std::io::BufWriter::new(file_handle);
 
     serde_json::to_writer_pretty(write, content).map_err(|e| {
-        MusicFileError::FileWriteError {
+        MusicFileError::FileWrite {
             path: file.clone(),
             msg: e.to_string(),
         }
@@ -83,7 +82,7 @@ where
     use super::MusicFileError;
 
     let file_handle = std::fs::File::create(file.as_path()).map_err(|e| {
-        MusicFileError::FileReadError {
+        MusicFileError::FileRead {
             path: file.clone(),
             msg: e.to_string(),
             when: "serializing to file".to_string(),
@@ -92,7 +91,7 @@ where
 
     let write = std::io::BufWriter::new(file_handle);
 
-    serde_json::to_writer(write, content).map_err(|e| MusicFileError::FileWriteError {
+    serde_json::to_writer(write, content).map_err(|e| MusicFileError::FileWrite {
         path: file.clone(),
         msg: e.to_string(),
     })

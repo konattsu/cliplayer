@@ -4,18 +4,9 @@ pub(super) fn write_all(
     min_path: &crate::util::FilePath,
     min_flat_clips: &crate::util::FilePath,
 ) -> Result<(), crate::music_file::MusicFileErrors> {
-    let into_errs = |e: crate::music_file::MusicFileError| e.into_errors();
-
     content.write()?;
-    content
-        .clone()
-        .write_minified(min_path)
-        .map_err(into_errs)?;
-    content
-        .write_flat_clips(min_flat_clips)
-        .map_err(into_errs)?;
-
-    Ok(())
+    content.clone().write_minified(min_path)?;
+    content.write_flat_clips(min_flat_clips)
 }
 
 /// 動画の概要とレスポンスを照合し, 動画の詳細情報を作成する
@@ -41,9 +32,9 @@ pub(super) fn merge_briefs_and_details(
 #[derive(Debug)]
 pub(super) struct VerifyVideosErrors {
     /// 動画の詳細情報が欠落している動画ID
-    missing_detail_id: Vec<crate::model::VideoId>,
+    pub(super) missing_detail_id: Vec<crate::model::VideoId>,
     /// 動画の検証に失敗
-    verification_failed: Vec<crate::model::VerifiedVideoError>,
+    pub(super) verification_failed: Vec<crate::model::VerifiedVideoError>,
 }
 
 impl VerifyVideosErrors {
@@ -88,5 +79,41 @@ impl VerifyVideosErrors {
             ));
         }
         errors.concat()
+    }
+}
+
+/// 動画の概要と詳細情報を照合し, 動画のクリップを検証する
+pub(super) fn verify_videos(
+    mut details: crate::model::VideoDetails,
+    videos: crate::model::AnonymousVideos,
+) -> Result<crate::model::VerifiedVideos, VerifyVideosErrors> {
+    let mut verified_videos = Vec::new();
+    let mut verify_videos_errs = VerifyVideosErrors::new();
+
+    for video in videos.inner.into_values() {
+        if let Some(detail) = details.inner.remove(video.get_video_id()) {
+            match crate::model::VerifiedVideo::from_anonymous_video(video, detail) {
+                // 対応するdetailが見つかり, verificationに成功したとき
+                Ok(verified) => {
+                    verified_videos.push(verified);
+                }
+                // 対応するdetailが見つかったが, verificationに失敗したとき
+                Err(e) => verify_videos_errs.verification_failed.push(e),
+            }
+        // 対応するdetailが見つからなかったとき
+        } else {
+            verify_videos_errs
+                .missing_detail_id
+                .push(video.get_video_id().clone());
+        }
+    }
+
+    if verify_videos_errs.is_empty() {
+        // 引数の`details`に対応する`VerifiedVideos`を作成しており, 元の`details`は
+        // `video_id`が一意であることを保証しているため`VerifiedVideos`の`video_id`も一意
+        Ok(crate::model::VerifiedVideos::try_from_vec(verified_videos)
+            .expect("will not fail"))
+    } else {
+        Err(verify_videos_errs)
     }
 }

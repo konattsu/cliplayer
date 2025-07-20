@@ -12,10 +12,10 @@
     PartialOrd,
     Ord,
 )]
-pub struct VideoId(String);
+pub(crate) struct VideoId(String);
 
 impl VideoId {
-    pub fn new(id: String) -> Result<Self, &'static str> {
+    pub(crate) fn new(id: String) -> Result<Self, &'static str> {
         if Self::is_valid_video_id(&id) {
             Ok(VideoId(id))
         } else {
@@ -23,7 +23,7 @@ impl VideoId {
         }
     }
 
-    pub fn as_str(&self) -> &str {
+    pub(crate) fn as_str(&self) -> &str {
         &self.0
     }
 
@@ -31,7 +31,7 @@ impl VideoId {
     ///
     /// `a-z`, `A-Z`, `0-9`, `-`, `_` の11文字で構成されていること
     fn is_valid_video_id(id: &str) -> bool {
-        static ID_CHARS: &str =
+        const ID_CHARS: &str =
             "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-";
         if id.len() != 11 {
             return false;
@@ -51,21 +51,25 @@ impl std::fmt::Display for VideoId {
     }
 }
 
+// MARK: For Tests
+
 #[cfg(test)]
 impl VideoId {
     /// return `11111111111`
-    pub fn test_id_1() -> Self {
+    pub(crate) fn test_id_1() -> Self {
         VideoId::new("11111111111".to_string()).unwrap()
     }
     /// return `22222222222`
-    pub fn test_id_2() -> Self {
+    pub(crate) fn test_id_2() -> Self {
         VideoId::new("22222222222".to_string()).unwrap()
     }
     /// return `33333333333`
-    pub fn test_id_3() -> Self {
+    pub(crate) fn test_id_3() -> Self {
         VideoId::new("33333333333".to_string()).unwrap()
     }
 }
+
+// MARK: Tests
 
 #[cfg(test)]
 mod tests {
@@ -79,18 +83,19 @@ mod tests {
     }
 
     #[test]
-    fn test_video_id_valid_lowercase_id() {
-        assert!(VideoId::new("abcdefghijk".to_string()).is_ok());
-    }
+    fn test_video_id_valid_id() {
+        let cases = vec![
+            "01234567890".to_string(),
+            "abcdefghijk".to_string(),
+            "ABCDEFGHIJK".to_string(),
+            "1234567890_".to_string(),
+            "1234567890-".to_string(),
+            "__________-".to_string(),
+        ];
 
-    #[test]
-    fn test_video_id_valid_uppercase_id() {
-        assert!(VideoId::new("ABCDEFGHIJK".to_string()).is_ok());
-    }
-
-    #[test]
-    fn test_video_id_valid_symbols_id() {
-        assert!(VideoId::new("__________-".to_string()).is_ok());
+        for id in cases {
+            assert!(VideoId::new(id).is_ok());
+        }
     }
 
     #[test]

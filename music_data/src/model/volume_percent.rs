@@ -4,10 +4,10 @@
 ///   - Ok: `42`, `1`, `50`, `100`, etc.
 ///   - Err: `0`, `0.1`, `101`, etc.
 #[derive(serde::Serialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub struct VolumePercent(std::num::NonZeroU8);
+pub(crate) struct VolumePercent(std::num::NonZeroU8);
 
 impl VolumePercent {
-    pub fn new(value: u8) -> Result<Self, String> {
+    pub(crate) fn new(value: u8) -> Result<Self, String> {
         Self::validate_range(value)?;
         Ok(VolumePercent(std::num::NonZeroU8::new(value).unwrap()))
     }
@@ -22,7 +22,7 @@ impl VolumePercent {
         }
     }
 
-    pub fn get(&self) -> u8 {
+    pub(crate) fn get(&self) -> u8 {
         self.0.get()
     }
 }
@@ -39,6 +39,8 @@ impl<'de> serde::Deserialize<'de> for VolumePercent {
         Ok(VolumePercent(std::num::NonZeroU8::new(value).unwrap()))
     }
 }
+
+// MARK: Tests
 
 #[cfg(test)]
 mod tests {

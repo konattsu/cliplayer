@@ -3,10 +3,10 @@
 /// 以下を保証
 /// - `start_time` < `end_time`
 /// - `UUIDv7`のタイムスタンプの時間(h:m:s)と`start_time`の時間が一致
-#[derive(serde::Serialize, Debug, Clone)]
+#[derive(serde::Serialize, Debug, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 #[serde(deny_unknown_fields)]
-pub struct UnverifiedClip {
+pub(crate) struct UnverifiedClip {
     /// 曲名
     song_title: String,
     /// 内部アーティストの一覧
@@ -29,7 +29,7 @@ pub struct UnverifiedClip {
 
 /// `UnverifiedClip`のエラー
 #[derive(thiserror::Error, Debug, Clone)]
-pub enum UnverifiedClipError {
+pub(crate) enum UnverifiedClipError {
     /// `start_time` >= `end_time`のとき
     #[error(
         "(@song_title: {song_title}), invalid clip time range: \
@@ -52,25 +52,25 @@ pub enum UnverifiedClipError {
     },
 }
 
-pub struct UnverifiedClipInitializer {
+pub(crate) struct UnverifiedClipInitializer {
     /// 曲名
-    pub song_title: String,
+    pub(crate) song_title: String,
     /// 内部アーティストの一覧
-    pub artists: crate::model::InternalArtists,
+    pub(crate) artists: crate::model::InternalArtists,
     /// 外部アーティストの一覧
-    pub external_artists: Option<crate::model::ExternalArtists>,
+    pub(crate) external_artists: Option<crate::model::ExternalArtists>,
     /// 切り抜いた動画が投稿されているか
-    pub is_clipped: bool,
+    pub(crate) is_clipped: bool,
     /// 曲が始まる時間
-    pub start_time: crate::model::Duration,
+    pub(crate) start_time: crate::model::Duration,
     /// 曲が終わる時間
-    pub end_time: crate::model::Duration,
+    pub(crate) end_time: crate::model::Duration,
     /// タグ
-    pub clip_tags: Option<crate::model::ClipTags>,
+    pub(crate) clip_tags: Option<crate::model::ClipTags>,
     /// uuid
-    pub uuid: crate::model::UuidVer7,
+    pub(crate) uuid: crate::model::UuidVer7,
     /// 音量の正規化時に設定すべき音量
-    pub volume_percent: Option<crate::model::VolumePercent>,
+    pub(crate) volume_percent: Option<crate::model::VolumePercent>,
 }
 
 impl UnverifiedClipInitializer {
@@ -78,7 +78,7 @@ impl UnverifiedClipInitializer {
     ///
     /// - Error: `start_time` >= `end_time`のとき
     ///   - e.g. `start_time`: 5秒, `end_time`: 3秒
-    pub fn init(self) -> Result<UnverifiedClip, UnverifiedClipError> {
+    pub(crate) fn init(self) -> Result<UnverifiedClip, UnverifiedClipError> {
         UnverifiedClip::validate_consistency(
             &self.song_title,
             &self.uuid,
@@ -148,11 +148,13 @@ impl<'de> serde::Deserialize<'de> for UnverifiedClip {
 }
 
 impl UnverifiedClip {
-    /// `UnverifiedClip`から`VerifiedClip`に変換
-    pub fn from_verified_clip(verified_clip: crate::model::VerifiedClip) -> Self {
+    /// `VerifiedClip`から`UnverifiedClip`に変換
+    pub(crate) fn from_verified_clip(
+        verified_clip: crate::model::VerifiedClip,
+    ) -> Self {
         let inner = verified_clip.into_inner();
         // VerifiedClipの方が制約が強いため必ずUnverifiedClipに変換できる
-        Self {
+        UnverifiedClipInitializer {
             song_title: inner.song_title,
             artists: inner.artists,
             external_artists: inner.external_artists,
@@ -163,6 +165,8 @@ impl UnverifiedClip {
             uuid: inner.uuid,
             volume_percent: inner.volume_percent,
         }
+        .init()
+        .expect("will be valid")
     }
 
     /// 与えられた`datetime`と`start_time`を基に`UnverifiedClip`から`VerifiedClip`を生成する
@@ -172,7 +176,7 @@ impl UnverifiedClip {
     ///   - `uuid`のタイムスタンプの時間(h:m:s)と`start_time`の時間が一致しないとき
     ///   - `uuid`の日付(Y:M:D)と, 与えられた動画情報にある動画の公開日が一致しないとき
     ///   - `start_time`or `end_time`の時間が, 与えられた動画情報にある動画の長さより長いとき
-    pub fn try_into_verified_clip(
+    pub(crate) fn try_into_verified_clip(
         self,
         video_published_at: &crate::model::VideoPublishedAt,
         video_duration: &crate::model::Duration,
@@ -226,11 +230,179 @@ impl UnverifiedClip {
     }
 }
 
+// MARK: For Tests
+
+#[cfg(test)]
+impl UnverifiedClip {
+    // Anonymousに対応するように作成
+
+    pub(crate) fn self_a_1() -> Self {
+        UnverifiedClipInitializer {
+            song_title: "Test Song A1".to_string(),
+            artists: crate::model::InternalArtists::test_name_1(),
+            external_artists: Some(crate::model::ExternalArtists::test_name_1()),
+            is_clipped: false,
+            start_time: crate::model::Duration::from_secs(5),
+            end_time: crate::model::Duration::from_secs(10),
+            clip_tags: None,
+            uuid: crate::model::UuidVer7::self_fix_rnd_1(0, 5),
+            volume_percent: None,
+        }
+        .init()
+        .unwrap()
+    }
+    pub(crate) fn self_a_2() -> Self {
+        UnverifiedClipInitializer {
+            song_title: "Test Song A2".to_string(),
+            artists: crate::model::InternalArtists::test_name_2(),
+            external_artists: None,
+            is_clipped: true,
+            start_time: crate::model::Duration::from_secs(15),
+            end_time: crate::model::Duration::from_secs(20),
+            clip_tags: None,
+            uuid: crate::model::UuidVer7::self_fix_rnd_1(0, 15),
+            volume_percent: None,
+        }
+        .init()
+        .unwrap()
+    }
+    pub(crate) fn self_a_3() -> Self {
+        UnverifiedClipInitializer {
+            song_title: "Test Song A3".to_string(),
+            artists: crate::model::InternalArtists::test_name_3(),
+            external_artists: Some(crate::model::ExternalArtists::test_name_2()),
+            is_clipped: false,
+            start_time: crate::model::Duration::from_secs(25),
+            end_time: crate::model::Duration::from_secs(30),
+            clip_tags: Some(crate::model::ClipTags::self_2()),
+            uuid: crate::model::UuidVer7::self_fix_rnd_1(0, 25),
+            volume_percent: None,
+        }
+        .init()
+        .unwrap()
+    }
+    pub(crate) fn self_b_1() -> Self {
+        UnverifiedClipInitializer {
+            song_title: "Test Song B1".to_string(),
+            artists: crate::model::InternalArtists::test_name_1(),
+            external_artists: Some(crate::model::ExternalArtists::test_name_3()),
+            is_clipped: true,
+            start_time: crate::model::Duration::from_secs(7),
+            end_time: crate::model::Duration::from_secs(17),
+            clip_tags: Some(crate::model::ClipTags::self_3()),
+            uuid: crate::model::UuidVer7::self_fix_rnd_2(0, 7),
+            volume_percent: None,
+        }
+        .init()
+        .unwrap()
+    }
+    pub(crate) fn self_b_2() -> Self {
+        UnverifiedClipInitializer {
+            song_title: "Test Song B2".to_string(),
+            artists: crate::model::InternalArtists::test_name_2(),
+            external_artists: None,
+            is_clipped: false,
+            start_time: crate::model::Duration::from_secs(27),
+            end_time: crate::model::Duration::from_secs(37),
+            clip_tags: Some(crate::model::ClipTags::self_1()),
+            uuid: crate::model::UuidVer7::self_fix_rnd_2(0, 27),
+            volume_percent: None,
+        }
+        .init()
+        .unwrap()
+    }
+    pub(crate) fn self_b_3() -> Self {
+        UnverifiedClipInitializer {
+            song_title: "Test Song B3".to_string(),
+            artists: crate::model::InternalArtists::test_name_1(),
+            external_artists: None,
+            is_clipped: true,
+            start_time: crate::model::Duration::from_secs(47),
+            end_time: crate::model::Duration::from_secs(57),
+            clip_tags: None,
+            uuid: crate::model::UuidVer7::self_fix_rnd_2(0, 47),
+            volume_percent: None,
+        }
+        .init()
+        .unwrap()
+    }
+}
+
 // MARK: Tests
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    #[rustfmt::skip]
+    fn test_unverified_clip_for_test_methods() {
+        let clip_a_1 = UnverifiedClip::self_a_1();
+        assert_eq!(clip_a_1.song_title, "Test Song A1");
+        assert_eq!(clip_a_1.artists, crate::model::InternalArtists::test_name_1());
+        assert_eq!(clip_a_1.external_artists, Some(crate::model::ExternalArtists::test_name_1()));
+        assert!(!clip_a_1.is_clipped);
+        assert_eq!(clip_a_1.start_time, crate::model::Duration::from_secs(5));
+        assert_eq!(clip_a_1.end_time, crate::model::Duration::from_secs(10));
+        assert_eq!(clip_a_1.clip_tags, None);
+        assert_eq!(clip_a_1.uuid, crate::model::UuidVer7::self_fix_rnd_1(0, 5));
+        assert_eq!(clip_a_1.volume_percent, None);
+
+        let clip_a_2 = UnverifiedClip::self_a_2();
+        assert_eq!(clip_a_2.song_title, "Test Song A2");
+        assert_eq!(clip_a_2.artists, crate::model::InternalArtists::test_name_2());
+        assert_eq!(clip_a_2.external_artists, None);
+        assert!(clip_a_2.is_clipped);
+        assert_eq!(clip_a_2.start_time, crate::model::Duration::from_secs(15));
+        assert_eq!(clip_a_2.end_time, crate::model::Duration::from_secs(20));
+        assert_eq!(clip_a_2.clip_tags, None);
+        assert_eq!(clip_a_2.uuid, crate::model::UuidVer7::self_fix_rnd_1(0, 15));
+        assert_eq!(clip_a_2.volume_percent, None);
+
+        let clip_a_3 = UnverifiedClip::self_a_3();
+        assert_eq!(clip_a_3.song_title, "Test Song A3");
+        assert_eq!(clip_a_3.artists, crate::model::InternalArtists::test_name_3());
+        assert_eq!(clip_a_3.external_artists, Some(crate::model::ExternalArtists::test_name_2()));
+        assert!(!clip_a_3.is_clipped);
+        assert_eq!(clip_a_3.start_time, crate::model::Duration::from_secs(25));
+        assert_eq!(clip_a_3.end_time, crate::model::Duration::from_secs(30));
+        assert_eq!(clip_a_3.clip_tags, Some(crate::model::ClipTags::self_2()));
+        assert_eq!(clip_a_3.uuid, crate::model::UuidVer7::self_fix_rnd_1(0, 25));
+        assert_eq!(clip_a_3.volume_percent, None);
+
+        let clip_b_1 = UnverifiedClip::self_b_1();
+        assert_eq!(clip_b_1.song_title, "Test Song B1");
+        assert_eq!(clip_b_1.artists, crate::model::InternalArtists::test_name_1());
+        assert_eq!(clip_b_1.external_artists, Some(crate::model::ExternalArtists::test_name_3()));
+        assert!(clip_b_1.is_clipped);
+        assert_eq!(clip_b_1.start_time, crate::model::Duration::from_secs(7));
+        assert_eq!(clip_b_1.end_time, crate::model::Duration::from_secs(17));
+        assert_eq!(clip_b_1.clip_tags, Some(crate::model::ClipTags::self_3()));
+        assert_eq!(clip_b_1.uuid, crate::model::UuidVer7::self_fix_rnd_2(0, 7));
+        assert_eq!(clip_b_1.volume_percent, None);
+
+        let clip_b_2 = UnverifiedClip::self_b_2();
+        assert_eq!(clip_b_2.song_title, "Test Song B2");
+        assert_eq!(clip_b_2.artists, crate::model::InternalArtists::test_name_2());
+        assert_eq!(clip_b_2.external_artists, None);
+        assert!(!clip_b_2.is_clipped);
+        assert_eq!(clip_b_2.start_time, crate::model::Duration::from_secs(27));
+        assert_eq!(clip_b_2.end_time, crate::model::Duration::from_secs(37));
+        assert_eq!(clip_b_2.clip_tags, Some(crate::model::ClipTags::self_1()));
+        assert_eq!(clip_b_2.uuid, crate::model::UuidVer7::self_fix_rnd_2(0, 27));
+        assert_eq!(clip_b_2.volume_percent, None);
+
+        let clip_b_3 = UnverifiedClip::self_b_3();
+        assert_eq!(clip_b_3.song_title, "Test Song B3");
+        assert_eq!(clip_b_3.artists, crate::model::InternalArtists::test_name_1());
+        assert_eq!(clip_b_3.external_artists, None);
+        assert!(clip_b_3.is_clipped);
+        assert_eq!(clip_b_3.start_time, crate::model::Duration::from_secs(47));
+        assert_eq!(clip_b_3.end_time, crate::model::Duration::from_secs(57));
+        assert_eq!(clip_b_3.clip_tags, None);
+        assert_eq!(clip_b_3.uuid, crate::model::UuidVer7::self_fix_rnd_2(0, 47));
+        assert_eq!(clip_b_3.volume_percent, None);
+    }
 
     // 2024-12-12T12:12:12Z
     const UNVERIFIED_CLIP_JSON_VALID: &str = r#"
@@ -264,7 +436,7 @@ mod tests {
         crate::model::Duration::from_secs(SEC_12H_12M_12S)
     }
 
-    /// 引数の値が大きすぎるとpanic
+    /// テスト用, 引数の値が大きすぎるとpanic
     fn dur_12h_12m_12s_plus(secs: i8) -> crate::model::Duration {
         let total_secs = SEC_12H_12M_12S as i32 + secs as i32;
         crate::model::Duration::from_secs(total_secs.try_into().unwrap())
@@ -273,6 +445,7 @@ mod tests {
     // deserializeでも存在条件が確認されているか確認
     #[test]
     fn test_unverified_clip_deserialize() {
+        // 正常
         let clip: UnverifiedClip = serde_json::from_str(UNVERIFIED_CLIP_JSON_VALID)
             .expect("Failed to deserialize valid UnverifiedClip JSON");
         assert_eq!(clip.song_title, "Test Song 1");
@@ -291,6 +464,7 @@ mod tests {
         );
         assert_eq!(clip.volume_percent, None);
 
+        // 異常
         let result =
             serde_json::from_str::<UnverifiedClip>(UNVERIFIED_CLIP_JSON_INVALID);
         assert!(result.is_err());
