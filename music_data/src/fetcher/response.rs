@@ -40,8 +40,8 @@ pub(super) struct YouTubeApiStatus {
 impl YouTubeApiItem {
     pub(super) fn into_fetched_video_detail(
         self,
-    ) -> crate::fetcher::FetchedVideoDetail {
-        crate::fetcher::FetchedVideoDetailInitializer {
+    ) -> super::video_detail_fetch::FetchedVideoDetail {
+        super::video_detail_fetch::FetchedVideoDetailInitializer {
             video_id: self.id,
             title: self.snippet.title,
             channel_id: self.snippet.channel_id,

@@ -1,11 +1,11 @@
-pub(super) mod fs_util;
-pub(super) mod validate;
-
 mod error;
-mod root;
+mod file;
+mod fs_util;
+mod library;
+mod videos;
 
-pub use error::{MusicFileError, MusicFileErrors};
-pub use root::{
-    MusicFileEntry, MusicFileEntryWithVideos, MusicFileEntryWithVideosInner, MusicRoot,
-    MusicRootContent,
-};
+pub(crate) use error::{MusicFileError, MusicFileErrors};
+pub(crate) use file::MusicFile;
+pub(crate) use videos::VideosSameYearMonth;
+
+pub use library::MusicLibrary;

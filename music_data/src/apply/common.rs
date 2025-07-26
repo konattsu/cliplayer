@@ -1,14 +1,3 @@
-/// 楽曲情報を動画に書き込む
-pub(super) fn write_all(
-    content: crate::music_file::MusicRootContent,
-    min_path: &crate::util::FilePath,
-    min_flat_clips: &crate::util::FilePath,
-) -> Result<(), crate::music_file::MusicFileErrors> {
-    content.write()?;
-    content.clone().write_minified(min_path)?;
-    content.write_flat_clips(min_flat_clips)
-}
-
 /// 動画の概要とレスポンスを照合し, 動画の詳細情報を作成する
 ///
 /// # Errors
@@ -17,7 +6,7 @@ pub(super) fn merge_briefs_and_details(
     briefs: &crate::model::VideoBriefs,
     fetch_res: crate::fetcher::VideoDetailFetchResult,
 ) -> Result<crate::model::VideoDetails, String> {
-    fetch_res.try_into_video_detail(briefs).map_err(|ids| {
+    fetch_res.try_into_video_details(briefs).map_err(|ids| {
         format!(
             "Specified non-existent video id(s): {}\n",
             ids.iter()
@@ -90,7 +79,7 @@ pub(super) fn verify_videos(
     let mut verified_videos = Vec::new();
     let mut verify_videos_errs = VerifyVideosErrors::new();
 
-    for video in videos.inner.into_values() {
+    for video in videos.into_vec() {
         if let Some(detail) = details.inner.remove(video.get_video_id()) {
             match crate::model::VerifiedVideo::from_anonymous_video(video, detail) {
                 // 対応するdetailが見つかり, verificationに成功したとき

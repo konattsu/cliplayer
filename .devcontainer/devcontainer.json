@@ -69,7 +69,17 @@
         "shardulm94.trailing-spaces",
         "streetsidesoftware.code-spell-checker",
         "wmaurer.change-case"
-      ]
+      ],
+
+      "mcp": {
+        "servers": {
+          "context7": {
+            "type": "stdio",
+            "command": "npx",
+            "args": ["-y", "@upstash/context7-mcp"]
+          }
+        }
+      }
     }
   }
 }

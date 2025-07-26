@@ -21,6 +21,16 @@ pub(crate) struct VideoBriefs {
 }
 
 impl VideoBrief {
+    pub(crate) fn get_video_id(&self) -> &crate::model::VideoId {
+        &self.video_id
+    }
+    pub(crate) fn get_uploader_name(&self) -> Option<&crate::model::UploaderName> {
+        self.uploader_name.as_ref()
+    }
+    pub(crate) fn get_tags(&self) -> &crate::model::VideoTags {
+        &self.video_tags
+    }
+
     pub(crate) fn new(
         video_id: crate::model::VideoId,
         uploader_name: Option<crate::model::UploaderName>,
@@ -31,16 +41,6 @@ impl VideoBrief {
             uploader_name,
             video_tags: tags,
         }
-    }
-
-    pub(crate) fn get_video_id(&self) -> &crate::model::VideoId {
-        &self.video_id
-    }
-    pub(crate) fn get_uploader_name(&self) -> Option<&crate::model::UploaderName> {
-        self.uploader_name.as_ref()
-    }
-    pub(crate) fn get_tags(&self) -> &crate::model::VideoTags {
-        &self.video_tags
     }
 }
 

@@ -39,11 +39,15 @@
   // 楽曲データたちよう
   "json.schemas": [
     {
-      "fileMatch": ["/data/artists.json"],
-      "url": "./tools/artist.schema.json"
+      "fileMatch": ["/data/artists_data.json"],
+      "url": "./tools/artists_data.schema.json"
+    },
+    {
+      "fileMatch": ["/data/input.json", "for_dev/x_music_data.json"],
+      "url": "./tools/music_data.schema.json"
     }
   ],
-  "[json][**/*.min.json]": {
+  "[**/*.min.json]": {
     "editor.formatOnSave": false,
     "editor.renderFinalNewline": "off"
   },

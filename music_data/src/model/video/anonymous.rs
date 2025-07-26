@@ -21,16 +21,16 @@ pub(crate) struct AnonymousVideos {
 /// `AnonymousVideo`動画の検証エラー
 pub(crate) enum AnonymousVideoValidateError {
     /// 動画idが重複
-    #[error("Duplicate video ID(s): {0:?}")]
-    DuplicateVideoId(Vec<crate::model::VideoId>),
+    #[error("Duplicate video ID(s): {0}")]
+    DuplicateVideoId(crate::model::VideoIds),
     /// クリップを持たない
     #[error("Video ID {0} has no clips")]
     NoClips(crate::model::VideoId),
     /// クリップの指定時間が重複している
-    #[error("Clips overlap in video ID {id}: song titles`{clips_title:?}`")]
+    #[error("Clips overlap in video ID {id}: song titles`{clips_titles:?}`")]
     ClipsOverlap {
         id: crate::model::VideoId,
-        clips_title: Vec<String>,
+        clips_titles: Vec<String>,
     },
 }
 
@@ -115,7 +115,7 @@ impl AnonymousVideo {
         } else {
             Err(AnonymousVideoValidateError::ClipsOverlap {
                 id: video_brief.get_video_id().clone(),
-                clips_title: overlap_clips
+                clips_titles: overlap_clips
                     .iter()
                     .map(|c| c.get_song_title().to_string())
                     .collect(),
@@ -140,6 +140,10 @@ impl<'de> serde::Deserialize<'de> for AnonymousVideos {
 }
 
 impl AnonymousVideos {
+    pub(crate) fn into_vec(self) -> Vec<AnonymousVideo> {
+        self.inner.into_values().collect()
+    }
+
     /// `AnonymousVideo`のリストを`AnonymousVideos`に変換
     ///
     /// Err: 動画のvideo_idが重複している場合
@@ -169,7 +173,7 @@ impl AnonymousVideos {
         }
     }
 
-    pub(crate) fn to_video_ids(&self) -> Vec<crate::model::VideoId> {
+    pub(crate) fn to_video_ids(&self) -> crate::model::VideoIds {
         self.inner.keys().cloned().collect()
     }
 

@@ -14,6 +14,22 @@
 )]
 pub(crate) struct VideoId(String);
 
+/// 動画idのリスト
+///
+/// 単に`VideoId`をVecでラップしたもの
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    Hash,
+    PartialOrd,
+    Ord,
+)]
+pub(crate) struct VideoIds(Vec<VideoId>);
+
 impl VideoId {
     pub(crate) fn new(id: String) -> Result<Self, &'static str> {
         if Self::is_valid_video_id(&id) {
@@ -21,6 +37,10 @@ impl VideoId {
         } else {
             Err("Invalid video ID format")
         }
+    }
+
+    pub(crate) fn into_ids(self) -> VideoIds {
+        vec![self].into()
     }
 
     pub(crate) fn as_str(&self) -> &str {
@@ -48,6 +68,47 @@ impl VideoId {
 impl std::fmt::Display for VideoId {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.0)
+    }
+}
+
+impl From<Vec<VideoId>> for VideoIds {
+    fn from(video_id: Vec<VideoId>) -> Self {
+        VideoIds(video_id)
+    }
+}
+
+impl VideoIds {
+    pub(crate) fn into_vec(self) -> Vec<VideoId> {
+        self.0
+    }
+}
+
+impl std::fmt::Display for VideoIds {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let ids: Vec<String> =
+            self.0.iter().map(|id| id.as_str().to_string()).collect();
+        write!(f, "{}", ids.join(", "))
+    }
+}
+
+impl From<VideoIds> for Vec<VideoId> {
+    fn from(video_ids: VideoIds) -> Self {
+        video_ids.0
+    }
+}
+
+impl IntoIterator for VideoIds {
+    type Item = VideoId;
+    type IntoIter = std::vec::IntoIter<VideoId>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.0.into_iter()
+    }
+}
+
+impl FromIterator<VideoId> for VideoIds {
+    fn from_iter<I: IntoIterator<Item = VideoId>>(iter: I) -> Self {
+        VideoIds(iter.into_iter().collect())
     }
 }
 

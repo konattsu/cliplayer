@@ -42,7 +42,7 @@ impl std::fmt::Debug for YouTubeApiKey {
 
 #[cfg(test)]
 impl YouTubeApiKey {
-    pub fn dummy_api_key() -> Self {
+    pub(crate) fn dummy_api_key() -> Self {
         Self("dummy_api_key".to_string())
     }
 }

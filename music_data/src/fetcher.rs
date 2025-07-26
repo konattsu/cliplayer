@@ -1,13 +1,11 @@
 pub(super) mod response;
+pub(super) mod video_detail_fetch;
 
 mod error;
-mod video_detail_fetch;
 mod youtube;
 mod youtube_api_key;
 
-pub use error::YouTubeApiError;
-pub use video_detail_fetch::{
-    FetchedVideoDetail, FetchedVideoDetailInitializer, VideoDetailFetchResult,
-};
+pub(crate) use error::YouTubeApiError;
+pub(crate) use video_detail_fetch::VideoDetailFetchResult;
 pub use youtube::YouTubeApi;
 pub use youtube_api_key::YouTubeApiKey;

@@ -1,8 +1,8 @@
-// pub mod apply;
+pub mod apply;
 pub mod artist;
 // pub mod cli;
 pub mod fetcher;
 pub mod model;
-// pub mod music_file;
+pub mod music_file;
 pub mod util;
-// pub mod validate;
+pub mod validate;

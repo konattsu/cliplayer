@@ -16,10 +16,12 @@
 
 初回追加時は入力ファイル(input.json)を作成し, プルリク出してactionsが動作すると一次生成に追加され, 自動的に入力ファイル(input.json)は消える. その後マージする.
 
+[スキーマ](/tools/music_data.schema.json)を[設定](/.vscode/settings.json)済み
+
 ```json
 [
   {
-    "video_id": "ZeFvqdvutb4",
+    "videoId": "ZeFvqdvutb4",
     "uploaderName": "(例示用)",
     "videoTags": ["karaoke"],
     "clips": [
@@ -46,7 +48,7 @@
 
 フィールドについて
 
-- `video_id`: YouTubeの動画ID
+- `videoId`: YouTubeの動画ID
 - `uploaderName`: 動画のアップロード者名. 箱外のチャンネルのときのみ任意の適切な名称を付与する. 空文字列は絶対にno
 - `videoTags`: 動画のタグ
   - e.g. "karaoke", "3d", "sitr-nagoya"
@@ -67,7 +69,7 @@
   - `startTime`: クリップの開始時間. 音(イントロ||声)が流れた時間を指定
     - e.g. 1分30.4秒など中途半端であれば0.4秒早めて`PT1M30S`を指定.
   - `endTime`: クリップの終了時間. 同上
-    - e.g. 3分24.7秒であれば0.3秒遅くして`PT3M25S`を指定
+    - e.g. 3分24.1秒であれば0.9秒遅くして`PT3M25S`を指定
   - `clipTags`: クリップのタグ. 現在のところ未使用
 
 ### `(年)/(月).json`
@@ -161,7 +163,7 @@
 
 非公式wikiの左側の順番で記述, セグメント分離されている場合は空行を挟む.
 
-[スキーマ](/tools/artist.schema.json)を[設定](/.vscode/settings.json)済み
+[スキーマ](/tools/artists_data.schema.json)を[設定](/.vscode/settings.json)済み
 
 一旦jpのみ
 

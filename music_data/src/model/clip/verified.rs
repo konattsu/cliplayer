@@ -77,25 +77,25 @@ pub(crate) enum VerifiedClipError {
     },
 }
 
-pub(crate) struct VerifiedClipInner {
+pub(super) struct VerifiedClipInner {
     /// 曲名
-    pub(crate) song_title: String,
+    pub(super) song_title: String,
     /// 内部アーティストの一覧
-    pub(crate) artists: crate::model::InternalArtists,
+    pub(super) artists: crate::model::InternalArtists,
     /// 外部アーティストの一覧
-    pub(crate) external_artists: Option<crate::model::ExternalArtists>,
+    pub(super) external_artists: Option<crate::model::ExternalArtists>,
     /// 切り抜いた動画が投稿されているか
-    pub(crate) is_clipped: bool,
+    pub(super) is_clipped: bool,
     /// 曲が始まる時間
-    pub(crate) start_time: crate::model::Duration,
+    pub(super) start_time: crate::model::Duration,
     /// 曲が終わる時間
-    pub(crate) end_time: crate::model::Duration,
+    pub(super) end_time: crate::model::Duration,
     /// タグ
-    pub(crate) clip_tags: Option<crate::model::ClipTags>,
+    pub(super) clip_tags: Option<crate::model::ClipTags>,
     /// uuid
-    pub(crate) uuid: crate::model::UuidVer7,
+    pub(super) uuid: crate::model::UuidVer7,
     /// 音量の正規化時に設定すべき音量
-    pub(crate) volume_percent: Option<crate::model::VolumePercent>,
+    pub(super) volume_percent: Option<crate::model::VolumePercent>,
 }
 
 pub(crate) struct VerifiedClipInitializer {
@@ -233,7 +233,7 @@ impl VerifiedClip {
         &self.end_time
     }
 
-    pub(crate) fn into_inner(self) -> VerifiedClipInner {
+    pub(super) fn into_inner(self) -> VerifiedClipInner {
         VerifiedClipInner {
             song_title: self.song_title,
             artists: self.artists,
