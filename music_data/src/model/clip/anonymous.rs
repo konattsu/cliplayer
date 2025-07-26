@@ -22,29 +22,31 @@ pub(crate) struct AnonymousClip {
     clip_tags: Option<crate::model::ClipTags>,
 }
 
-pub(crate) struct AnonymousClipInitializer {
+#[cfg(test)]
+struct AnonymousClipInitializer {
     /// 曲名
-    pub(crate) song_title: String,
+    song_title: String,
     /// 内部アーティストの一覧
-    pub(crate) artists: crate::model::InternalArtists,
+    artists: crate::model::InternalArtists,
     /// 外部アーティストの一覧
-    pub(crate) external_artists: Option<crate::model::ExternalArtists>,
+    external_artists: Option<crate::model::ExternalArtists>,
     /// 切り抜いた動画が投稿されているか
-    pub(crate) is_clipped: bool,
+    is_clipped: bool,
     /// 曲が始まる時間
-    pub(crate) start_time: crate::model::Duration,
+    start_time: crate::model::Duration,
     /// 曲が終わる時間
-    pub(crate) end_time: crate::model::Duration,
+    end_time: crate::model::Duration,
     /// タグ
-    pub(crate) clip_tags: Option<crate::model::ClipTags>,
+    clip_tags: Option<crate::model::ClipTags>,
 }
 
+#[cfg(test)]
 impl AnonymousClipInitializer {
     /// `AnonymousClip`を作成
     ///
     /// - Error: `start_time` >= `end_time`のとき
     ///   - e.g. `start_time`: 5秒, `end_time`: 3秒
-    pub(crate) fn init(self) -> Result<AnonymousClip, String> {
+    fn init(self) -> Result<AnonymousClip, String> {
         super::validate_start_end_times(&self.start_time, &self.end_time)?;
 
         Ok(AnonymousClip {
@@ -150,27 +152,6 @@ impl AnonymousClip {
             volume_percent: None,
         }
         .init(video_published_at, video_duration)
-    }
-
-    /// `AnonymousClip`を`UnverifiedClip`に変換
-    pub(crate) fn try_into_unverified_clip(
-        self,
-        video_published_at: &crate::model::VideoPublishedAt,
-    ) -> Result<super::UnverifiedClip, super::UnverifiedClipError> {
-        let uuid = self.generate_uuid(video_published_at);
-        super::UnverifiedClipInitializer {
-            song_title: self.song_title,
-            artists: self.artists,
-            external_artists: self.external_artists,
-            is_clipped: self.is_clipped,
-            start_time: self.start_time,
-            end_time: self.end_time,
-            clip_tags: self.clip_tags,
-            uuid,
-            // データを保持していないのでNone
-            volume_percent: None,
-        }
-        .init()
     }
 }
 

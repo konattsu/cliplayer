@@ -26,6 +26,6 @@ pub(crate) use video::{
     AnonymousVideo, AnonymousVideos, VerifiedVideo, VerifiedVideoError, VerifiedVideos,
     VideoBrief, VideoBriefs, VideoDetail, VideoDetailInitializer, VideoDetails,
 };
-pub(crate) use video_id::VideoId;
+pub(crate) use video_id::{VideoId, VideoIds};
 pub(crate) use video_published_at::VideoPublishedAt;
 pub(crate) use volume_percent::VolumePercent;

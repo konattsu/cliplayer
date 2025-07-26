@@ -1,6 +1,6 @@
 // なぜか相対パスしか使えない
 // TODO public以外に配置することにした. また,シリアライズ時asc順に修正したのでなってるはず. cliに入れてあげる
-const INPUT_ARTIST_DATA_FULL_PATH: &str = "data/artists.json";
+const INPUT_ARTIST_DATA_FULL_PATH: &str = "data/artists_data.json";
 const ARTIST_OUTPUT_DIR: &str = "../public/music_data/";
 const ARTIST_SEARCH_INDEX_PATH: &str = "artist_search_index.min.json";
 const CHANNELS_PATH: &str = "channels.min.json";

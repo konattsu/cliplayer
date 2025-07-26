@@ -1,8 +1,7 @@
-// for artists_data.json
 {
   "artist": {
     "scope": "json",
-    "prefix": "artist",
+    "prefix": "only_artist_json",
     "body": [
       "\"${1:artistId}\": {",
       "  \"ja\": \"${2:jp}\",",

@@ -1,7 +1,7 @@
-/// VideoIdとそれに基づくVideoDetailWthoutTagsのペアを格納する構造体
+/// VideoIdとそれに基づくFetchedVideoDetailのペアを格納する構造体
 #[derive(Debug, Clone)]
-pub struct VideoDetailFetchResult(
-    pub std::collections::HashMap<crate::model::VideoId, Option<FetchedVideoDetail>>,
+pub(crate) struct VideoDetailFetchResult(
+    pub(crate) std::collections::HashMap<crate::model::VideoId, Option<FetchedVideoDetail>>,
 );
 
 impl FromIterator<(crate::model::VideoId, Option<FetchedVideoDetail>)>
@@ -27,7 +27,7 @@ impl VideoDetailFetchResult {
     /// - `Ok`: Briefを昇格させたVideoDetailのリスト
     /// - `Err`: 存在しないVideoIdのリスト
     ///   - 1つでも存在しないVideoIdが含まれている場合はErrを返す
-    pub fn try_into_video_detail(
+    pub(crate) fn try_into_video_details(
         mut self,
         video_briefs: &crate::model::VideoBriefs,
     ) -> Result<crate::model::VideoDetails, Vec<crate::model::VideoId>> {
@@ -48,7 +48,7 @@ impl VideoDetailFetchResult {
                     None => non_exist_ids.push(video_brief.get_video_id().clone()),
                 },
                 // このvideo_idをfetchするように指定しなかった場合
-                // 設計,呼び出しが正しければunreachableなはずなのでwarnだしておく
+                // 設計/呼び出しが正しければunreachableなはずなのでwarnだしておく
                 None => {
                     tracing::warn!(
                         "VideoBrief (video_id: {}) was passed to `try_into_video_detail`, \
@@ -75,7 +75,7 @@ impl VideoDetailFetchResult {
 
 /// VideoDetailのうちfetchできる情報を集めたもの
 #[derive(Debug, Clone)]
-pub struct FetchedVideoDetail {
+pub(super) struct FetchedVideoDetail {
     /// 動画ID
     video_id: crate::model::VideoId,
     /// 動画のタイトル
@@ -94,27 +94,27 @@ pub struct FetchedVideoDetail {
     embeddable: bool,
 }
 
-pub struct FetchedVideoDetailInitializer {
+pub(super) struct FetchedVideoDetailInitializer {
     /// 動画ID
-    pub video_id: crate::model::VideoId,
+    pub(super) video_id: crate::model::VideoId,
     /// 動画のタイトル
-    pub title: String,
+    pub(super) title: String,
     /// チャンネルID
-    pub channel_id: crate::model::ChannelId,
+    pub(super) channel_id: crate::model::ChannelId,
     /// 動画の公開日時
-    pub published_at: crate::model::VideoPublishedAt,
+    pub(super) published_at: crate::model::VideoPublishedAt,
     /// この情報を取得した日時
-    pub modified_at: chrono::DateTime<chrono::Utc>,
+    pub(super) modified_at: chrono::DateTime<chrono::Utc>,
     /// 動画の長さ
-    pub duration: crate::model::Duration,
+    pub(super) duration: crate::model::Duration,
     /// 動画のプライバシー設定
-    pub privacy_status: crate::model::PrivacyStatus,
+    pub(super) privacy_status: crate::model::PrivacyStatus,
     /// 動画が埋め込み可能かどうか
-    pub embeddable: bool,
+    pub(super) embeddable: bool,
 }
 
 impl FetchedVideoDetailInitializer {
-    pub fn init(self) -> FetchedVideoDetail {
+    pub(super) fn init(self) -> FetchedVideoDetail {
         FetchedVideoDetail {
             video_id: self.video_id,
             title: self.title,

@@ -1,0 +1,57 @@
+{
+  "VideoData Snippet": {
+    "prefix": "video",
+    "scope": "json",
+    "body": [
+      "[",
+      "  {",
+      "    \"videoId\": \"$1\",",
+      "    \"uploaderName\": ${2:null},",
+      "    \"videoTags\": [",
+      "      $3",
+      "    ],",
+      "    \"clips\": [",
+      "      $4",
+      "    ]",
+      "  }",
+      "]",
+    ],
+    "description": "VideoData object based on music_data.schema.json",
+  },
+
+  "Video Tags Snippet": {
+    "prefix": "vtag",
+    "scope": "json",
+    // (このコメントアウトも後で消す) nmf:歌謡祭
+    "body": ["\"${1|karaoke,2d,3d,nmf,sitr,3d-debut|}\",", ""],
+    "description": "Array of tags for video data",
+  },
+
+  "ClipData Snippet": {
+    "prefix": "clip",
+    "scope": "json",
+    "body": [
+      "{",
+      "  \"songTitle\": \"$1\",",
+      "  \"artists\": [",
+      "    $2",
+      "  ],",
+      "  \"externalArtists\": ${3:null},",
+      "  \"isClipped\": ${4|false,true|},",
+      "  \"startTime\": \"PT$5\",",
+      "  \"endTime\": \"PT$6\",",
+      "  \"clipTags\": ${7:null}",
+      "},",
+      "",
+    ],
+    "description": "ClipData object based on music_data.schema.json",
+  },
+
+  "ArtistData Snippet": {
+    "prefix": "artist",
+    "scope": "json",
+    // TODO ここ
+    "body": [""],
+    "description": "ArtistData object based on music_data.schema.json",
+  },
+}

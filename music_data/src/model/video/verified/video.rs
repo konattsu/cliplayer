@@ -51,9 +51,6 @@ impl<'de> serde::Deserialize<'de> for VerifiedVideo {
 }
 
 impl VerifiedVideo {
-    pub(crate) fn get_detail(&self) -> &crate::model::VideoDetail {
-        &self.video_detail
-    }
     pub(crate) fn get_year(&self) -> usize {
         self.video_detail.get_published_at().get_year()
     }
@@ -70,6 +67,12 @@ impl VerifiedVideo {
     pub(crate) fn into_clips(self) -> Vec<crate::model::VerifiedClip> {
         self.clips
     }
+
+    // TODO 多分消す
+    // pub(crate) fn into_videos(self) -> crate::model::VerifiedVideos {
+    //     // 動画が1つなので動画idは重複しないからunwrap
+    //     crate::model::VerifiedVideos::try_from_vec(vec![self]).unwrap()
+    // }
 
     /// `AnonymousVideo`と`VideoDetail`から`VerifiedVideo`を作成
     ///

@@ -99,7 +99,7 @@ impl VideoDetail {
             && self.video_tags == other.video_tags
     }
 
-    pub(crate) fn into_briefs(self) -> crate::model::VideoBrief {
+    fn into_briefs(self) -> crate::model::VideoBrief {
         crate::model::VideoBrief::new(
             self.video_id,
             self.uploader_name,
@@ -137,6 +137,7 @@ impl VideoDetails {
         }
     }
 
+    /// 動画の概要に変更. ダウングレード
     pub(crate) fn into_briefs(self) -> crate::model::VideoBriefs {
         let inner = self
             .inner

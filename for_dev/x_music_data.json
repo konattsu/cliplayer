@@ -1,0 +1,66 @@
+[
+  {
+    "videoId": "Dopc4AVV6TA",
+    "uploaderName": null,
+    "videoTags": ["3d", "3d-debut"],
+    "clips": [
+      {
+        "songTitle": "ebb and flow",
+        "artists": ["toru-koshimizu"],
+        "externalArtists": null,
+        "isClipped": true,
+        "startTime": "PT5M36S",
+        "endTime": "PT9M49S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "あのね。",
+        "artists": ["toru-koshimizu", "toko-inui"],
+        "externalArtists": null,
+        "isClipped": false,
+        "startTime": "PT34M44S",
+        "endTime": "PT38M15S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "shake it！",
+        "artists": [
+          "toru-koshimizu",
+          "lauren-iroas",
+          "hibari-watarai",
+          "naraka"
+        ],
+        "externalArtists": null,
+        "isClipped": false,
+        "startTime": "PT41M13S",
+        "endTime": "PT44M57S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "Wonder NeverLand",
+        "artists": [
+          "toru-koshimizu",
+          "makaino-ririmu",
+          "leos-vincent",
+          "debidebi-debiru",
+          "saku-sasaki",
+          "kizuku-yashiro"
+        ],
+        "externalArtists": null,
+        "isClipped": false,
+        "startTime": "PT45M10S",
+        "endTime": "PT49M27S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "lull ～そして僕らは～",
+        "artists": ["toru-koshimizu"],
+        "externalArtists": null,
+        "isClipped": false,
+        "startTime": "PT54M22S",
+        "endTime": "PT59M14S",
+        "clipTags": null
+      }
+    ]
+  }
+]

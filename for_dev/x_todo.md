@@ -2,11 +2,8 @@
 
 ## back
 
-- *_initializer系をcfg(test)のみでもいいかも <- 必要なものもあるのでpub(crate)とかでre-export廃止がいいかも. main.rsからは必要ないので
-
-- fetchにつなげる処理
-  - sync(最新の動画情報と同期)の時は定期的にファイルに書き込むようにする
-
+/music_data/src/apply/sync.rs直す
+artists_idをmusic_data.code-snippetsに埋め込むようにする(/music_data/artistに処理追加する). schemaはいらない. どうせcliに食わせるので.
 musictl summary 的なもので.mdとかに登録済みの配信一覧出力機能作ったりしたい
 
 - e2e

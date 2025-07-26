@@ -19,7 +19,7 @@ impl YouTubeApi {
 
     pub async fn run(
         &self,
-        video_ids: Vec<crate::model::VideoId>,
+        video_ids: crate::model::VideoIds,
     ) -> Result<crate::fetcher::VideoDetailFetchResult, crate::fetcher::YouTubeApiError>
     {
         let mut detail_result: crate::fetcher::VideoDetailFetchResult =

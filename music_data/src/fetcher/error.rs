@@ -8,7 +8,7 @@
 
 /// YouTube API呼び出し時のエラー
 #[derive(Debug, thiserror::Error, Clone)]
-pub enum YouTubeApiError {
+pub(crate) enum YouTubeApiError {
     /// apiが不正/制限
     #[error("forbidden: {0}")]
     Forbidden(String),
@@ -28,9 +28,7 @@ pub enum YouTubeApiError {
 
 impl YouTubeApiError {
     /// エラーメッセージを整形して返す
-    ///
-    /// 文字列の最後に`\n`が付与される
-    pub fn to_pretty_string(&self) -> String {
-        format!("Failed to call YouTube Api: {self}\n")
+    pub(crate) fn to_pretty_string(&self) -> String {
+        format!("Failed to call YouTube Api: {self}")
     }
 }

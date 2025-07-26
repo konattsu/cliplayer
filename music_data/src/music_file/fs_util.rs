@@ -1,26 +1,3 @@
-/// 指定されたディレクトリを読み込んで配下にあるエントリ一覧を返す
-///
-/// # Errors:
-/// - ディレクトリが存在しない場合
-/// - 読み込みに失敗した場合
-///   - e.g. 権限不足
-pub(super) fn read_dir(
-    path: &std::path::Path,
-) -> Result<Vec<std::fs::DirEntry>, super::MusicFileError> {
-    use super::MusicFileError;
-
-    std::fs::read_dir(path)
-        .map_err(|e| MusicFileError::ReadDir {
-            dir: path.display().to_string(),
-            msg: e.to_string(),
-        })?
-        .collect::<Result<Vec<_>, _>>()
-        .map_err(|e| MusicFileError::ReadDir {
-            dir: path.display().to_string(),
-            msg: e.to_string(),
-        })
-}
-
 /// jsonファイルから楽曲情報をデシリアライズする
 pub(super) fn deserialize_from_file(
     file: &crate::util::FilePath,
@@ -28,15 +5,15 @@ pub(super) fn deserialize_from_file(
     use super::MusicFileError;
 
     let file_handle =
-        std::fs::File::open(file.as_path()).map_err(|e| MusicFileError::FileRead {
-            path: file.clone(),
+        std::fs::File::open(file.as_path()).map_err(|e| MusicFileError::FileOpen {
+            path: file.to_string(),
             msg: e.to_string(),
             when: "deserializing from file".to_string(),
         })?;
 
     let reader = std::io::BufReader::new(file_handle);
 
-    serde_json::from_reader(reader).map_err(|e| MusicFileError::InvalidFileContent {
+    serde_json::from_reader(reader).map_err(|e| MusicFileError::Deserialize {
         path: file.clone(),
         msg: e.to_string(),
     })
@@ -44,37 +21,14 @@ pub(super) fn deserialize_from_file(
 
 /// jsonファイルに楽曲情報を書き込む
 ///
-/// pretty形式
-pub(super) fn serialize_to_file(
-    file: &crate::util::FilePath,
-    content: &crate::model::VerifiedVideos,
-) -> Result<(), super::MusicFileError> {
-    use super::MusicFileError;
-
-    let file_handle = std::fs::File::create(file.as_path()).map_err(|e| {
-        MusicFileError::FileRead {
-            path: file.clone(),
-            msg: e.to_string(),
-            when: "serializing to file".to_string(),
-        }
-    })?;
-
-    let write = std::io::BufWriter::new(file_handle);
-
-    serde_json::to_writer_pretty(write, content).map_err(|e| {
-        MusicFileError::FileWrite {
-            path: file.clone(),
-            msg: e.to_string(),
-        }
-    })
-}
-
-/// jsonファイルに楽曲情報を書き込む
-///
-/// min形式
-pub(super) fn serialize_to_file_min<T>(
+/// # Arguments
+/// - `file`: 書き込むファイルのパス
+/// - `content`: 書き込む内容
+/// - `is_minimized`: minimizedさせるかどうか
+pub(super) fn serialize_to_file<T>(
     file: &crate::util::FilePath,
     content: &T,
+    is_minimized: bool,
 ) -> Result<(), super::MusicFileError>
 where
     T: serde::Serialize,
@@ -82,8 +36,8 @@ where
     use super::MusicFileError;
 
     let file_handle = std::fs::File::create(file.as_path()).map_err(|e| {
-        MusicFileError::FileRead {
-            path: file.clone(),
+        MusicFileError::FileOpen {
+            path: file.to_string(),
             msg: e.to_string(),
             when: "serializing to file".to_string(),
         }
@@ -91,7 +45,12 @@ where
 
     let write = std::io::BufWriter::new(file_handle);
 
-    serde_json::to_writer(write, content).map_err(|e| MusicFileError::FileWrite {
+    if is_minimized {
+        serde_json::to_writer(write, content)
+    } else {
+        serde_json::to_writer_pretty(write, content)
+    }
+    .map_err(|e| MusicFileError::FileWrite {
         path: file.clone(),
         msg: e.to_string(),
     })

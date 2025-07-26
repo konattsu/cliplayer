@@ -34,9 +34,11 @@ impl serde::Serialize for FlatClips {
 }
 
 impl FlatClips {
-    pub(crate) fn new(clips: Vec<crate::model::VerifiedClip>) -> Self {
-        let clips = clips
+    pub(crate) fn from_verified_videos(videos: crate::model::VerifiedVideos) -> Self {
+        let clips = videos
+            .into_sorted_vec()
             .into_iter()
+            .flat_map(|video| (video.into_clips()))
             .map(|clip| (clip.get_uuid().clone(), FlatClip::from_verified_clip(clip)))
             .collect();
 
@@ -53,7 +55,6 @@ impl FlatClips {
 impl FlatClip {
     fn from_verified_clip(clip: crate::model::VerifiedClip) -> Self {
         let clip = clip.into_inner();
-
         Self {
             uuid: clip.uuid,
             song_title: clip.song_title,
