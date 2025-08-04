@@ -21,10 +21,11 @@ pub(crate) use duration::Duration;
 pub(crate) use privacy_status::PrivacyStatus;
 pub(crate) use tag::{ClipTags, VideoTags};
 pub(crate) use uploader_name::UploaderName;
-pub(crate) use uuid::UuidVer7;
+pub(crate) use uuid::UuidVer4;
 pub(crate) use video::{
-    AnonymousVideo, AnonymousVideos, VerifiedVideo, VerifiedVideoError, VerifiedVideos,
-    VideoBrief, VideoBriefs, VideoDetail, VideoDetailInitializer, VideoDetails,
+    AnonymousVideo, AnonymousVideos, ApiVideoInfo, ApiVideoInfoInitializer,
+    ApiVideoInfoList, LocalVideoInfo, VerifiedVideo, VerifiedVideoError,
+    VerifiedVideos, VideoRecord,
 };
 pub(crate) use video_id::{VideoId, VideoIds};
 pub(crate) use video_published_at::VideoPublishedAt;

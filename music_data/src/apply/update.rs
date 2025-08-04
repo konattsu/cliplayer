@@ -13,5 +13,5 @@ pub fn apply_update(root: crate::music_file::MusicLibrary) -> Result<(), String>
     // - minに書き込みが必要なため
     // - 既存の楽曲情報でもソートされていることを保証するため
     root.save()
-        .map_err(|e| format!("Failed to save music files: {}", e))
+        .map_err(|e| format!("Failed to save music files: {e}"))
 }

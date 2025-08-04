@@ -109,36 +109,12 @@ impl AnonymousClip {
         &self.song_title
     }
 
-    /// 与えられた`datetime`と`start_time`を基にUUIDを生成
-    ///
-    /// - 引数の`video_upload_date`は日付のみを使用し, 時刻の情報は無視される
-    /// - 時刻の情報は`start_time`に基づいて生成される
-    ///   - e.g. `2024-01-01T12:12:12Z`と`start_time`: 5秒: `2024-01-01T00:00:05Z`となる
-    fn generate_uuid(
-        &self,
-        video_upload_date: &crate::model::VideoPublishedAt,
-    ) -> crate::model::UuidVer7 {
-        use chrono::{Datelike, TimeZone};
-
-        let date = video_upload_date.as_chrono_datetime();
-        // 時刻の情報を落とし, 日付のみにする
-        let date = chrono::Utc
-            .with_ymd_and_hms(date.year(), date.month(), date.day(), 0, 0, 0)
-            .unwrap();
-        // 日付に`start_time`の時間を加える
-        let chrono_datetime = date + *self.start_time.as_chrono_duration();
-
-        let dt = crate::model::VideoPublishedAt::new(chrono_datetime).unwrap();
-        crate::model::UuidVer7::generate(&dt)
-    }
-
     /// `AnonymousClip`を`VerifiedClip`に変換
     pub(crate) fn try_into_verified_clip(
         self,
-        video_published_at: &crate::model::VideoPublishedAt,
         video_duration: &crate::model::Duration,
     ) -> Result<super::VerifiedClip, super::VerifiedClipError> {
-        let uuid = self.generate_uuid(video_published_at);
+        let uuid = crate::model::UuidVer4::generate();
         super::VerifiedClipInitializer {
             song_title: self.song_title,
             artists: self.artists,
@@ -151,7 +127,7 @@ impl AnonymousClip {
             // データを保持していないのでNone
             volume_percent: None,
         }
-        .init(video_published_at, video_duration)
+        .init(video_duration)
     }
 }
 
@@ -164,8 +140,8 @@ impl AnonymousClip {
             artists: crate::model::InternalArtists::test_name_1(),
             external_artists: Some(crate::model::ExternalArtists::test_name_1()),
             is_clipped: false,
-            start_time: crate::model::Duration::from_secs(5),
-            end_time: crate::model::Duration::from_secs(10),
+            start_time: crate::model::Duration::from_secs_u16(5),
+            end_time: crate::model::Duration::from_secs_u16(10),
             clip_tags: None,
         }
         .init()
@@ -177,8 +153,8 @@ impl AnonymousClip {
             artists: crate::model::InternalArtists::test_name_2(),
             external_artists: None,
             is_clipped: true,
-            start_time: crate::model::Duration::from_secs(15),
-            end_time: crate::model::Duration::from_secs(20),
+            start_time: crate::model::Duration::from_secs_u16(15),
+            end_time: crate::model::Duration::from_secs_u16(20),
             clip_tags: None,
         }
         .init()
@@ -190,8 +166,8 @@ impl AnonymousClip {
             artists: crate::model::InternalArtists::test_name_3(),
             external_artists: Some(crate::model::ExternalArtists::test_name_2()),
             is_clipped: false,
-            start_time: crate::model::Duration::from_secs(25),
-            end_time: crate::model::Duration::from_secs(30),
+            start_time: crate::model::Duration::from_secs_u16(25),
+            end_time: crate::model::Duration::from_secs_u16(30),
             clip_tags: Some(crate::model::ClipTags::self_2()),
         }
         .init()
@@ -203,8 +179,8 @@ impl AnonymousClip {
             artists: crate::model::InternalArtists::test_name_1(),
             external_artists: Some(crate::model::ExternalArtists::test_name_3()),
             is_clipped: true,
-            start_time: crate::model::Duration::from_secs(7),
-            end_time: crate::model::Duration::from_secs(17),
+            start_time: crate::model::Duration::from_secs_u16(7),
+            end_time: crate::model::Duration::from_secs_u16(17),
             clip_tags: Some(crate::model::ClipTags::self_3()),
         }
         .init()
@@ -216,8 +192,8 @@ impl AnonymousClip {
             artists: crate::model::InternalArtists::test_name_2(),
             external_artists: None,
             is_clipped: false,
-            start_time: crate::model::Duration::from_secs(27),
-            end_time: crate::model::Duration::from_secs(37),
+            start_time: crate::model::Duration::from_secs_u16(27),
+            end_time: crate::model::Duration::from_secs_u16(37),
             clip_tags: Some(crate::model::ClipTags::self_1()),
         }
         .init()
@@ -229,8 +205,8 @@ impl AnonymousClip {
             artists: crate::model::InternalArtists::test_name_1(),
             external_artists: None,
             is_clipped: true,
-            start_time: crate::model::Duration::from_secs(47),
-            end_time: crate::model::Duration::from_secs(57),
+            start_time: crate::model::Duration::from_secs_u16(47),
+            end_time: crate::model::Duration::from_secs_u16(57),
             clip_tags: None,
         }
         .init()
@@ -252,8 +228,8 @@ mod tests {
         assert_eq!(clip_a_1.artists, crate::model::InternalArtists::test_name_1());
         assert_eq!(clip_a_1.external_artists, Some(crate::model::ExternalArtists::test_name_1()));
         assert!(!clip_a_1.is_clipped);
-        assert_eq!(clip_a_1.start_time, crate::model::Duration::from_secs(5));
-        assert_eq!(clip_a_1.end_time, crate::model::Duration::from_secs(10));
+        assert_eq!(clip_a_1.start_time, crate::model::Duration::from_secs_u16(5));
+        assert_eq!(clip_a_1.end_time, crate::model::Duration::from_secs_u16(10));
         assert_eq!(clip_a_1.clip_tags, None);
 
         let clip_a_2 = AnonymousClip::self_a_2();
@@ -261,8 +237,8 @@ mod tests {
         assert_eq!(clip_a_2.artists, crate::model::InternalArtists::test_name_2());
         assert_eq!(clip_a_2.external_artists, None);
         assert!(clip_a_2.is_clipped);
-        assert_eq!(clip_a_2.start_time, crate::model::Duration::from_secs(15));
-        assert_eq!(clip_a_2.end_time, crate::model::Duration::from_secs(20));
+        assert_eq!(clip_a_2.start_time, crate::model::Duration::from_secs_u16(15));
+        assert_eq!(clip_a_2.end_time, crate::model::Duration::from_secs_u16(20));
         assert_eq!(clip_a_2.clip_tags, None);
 
         let clip_a_3 = AnonymousClip::self_a_3();
@@ -270,8 +246,8 @@ mod tests {
         assert_eq!(clip_a_3.artists, crate::model::InternalArtists::test_name_3());
         assert_eq!(clip_a_3.external_artists, Some(crate::model::ExternalArtists::test_name_2()));
         assert!(!clip_a_3.is_clipped);
-        assert_eq!(clip_a_3.start_time, crate::model::Duration::from_secs(25));
-        assert_eq!(clip_a_3.end_time, crate::model::Duration::from_secs(30));
+        assert_eq!(clip_a_3.start_time, crate::model::Duration::from_secs_u16(25));
+        assert_eq!(clip_a_3.end_time, crate::model::Duration::from_secs_u16(30));
         assert_eq!(clip_a_3.clip_tags, Some(crate::model::ClipTags::self_2()));
 
         let clip_b_1 = AnonymousClip::self_b_1();
@@ -279,8 +255,8 @@ mod tests {
         assert_eq!(clip_b_1.artists, crate::model::InternalArtists::test_name_1());
         assert_eq!(clip_b_1.external_artists, Some(crate::model::ExternalArtists::test_name_3()));
         assert!(clip_b_1.is_clipped);
-        assert_eq!(clip_b_1.start_time, crate::model::Duration::from_secs(7));
-        assert_eq!(clip_b_1.end_time, crate::model::Duration::from_secs(17));
+        assert_eq!(clip_b_1.start_time, crate::model::Duration::from_secs_u16(7));
+        assert_eq!(clip_b_1.end_time, crate::model::Duration::from_secs_u16(17));
         assert_eq!(clip_b_1.clip_tags, Some(crate::model::ClipTags::self_3()));
 
         let clip_b_2 = AnonymousClip::self_b_2();
@@ -288,8 +264,8 @@ mod tests {
         assert_eq!(clip_b_2.artists, crate::model::InternalArtists::test_name_2());
         assert_eq!(clip_b_2.external_artists, None);
         assert!(!clip_b_2.is_clipped);
-        assert_eq!(clip_b_2.start_time, crate::model::Duration::from_secs(27));
-        assert_eq!(clip_b_2.end_time, crate::model::Duration::from_secs(37));
+        assert_eq!(clip_b_2.start_time, crate::model::Duration::from_secs_u16(27));
+        assert_eq!(clip_b_2.end_time, crate::model::Duration::from_secs_u16(37));
         assert_eq!(clip_b_2.clip_tags, Some(crate::model::ClipTags::self_1()));
 
         let clip_b_3 = AnonymousClip::self_b_3();
@@ -297,8 +273,8 @@ mod tests {
         assert_eq!(clip_b_3.artists, crate::model::InternalArtists::test_name_1());
         assert_eq!(clip_b_3.external_artists, None);
         assert!(clip_b_3.is_clipped);
-        assert_eq!(clip_b_3.start_time, crate::model::Duration::from_secs(47));
-        assert_eq!(clip_b_3.end_time, crate::model::Duration::from_secs(57));
+        assert_eq!(clip_b_3.start_time, crate::model::Duration::from_secs_u16(47));
+        assert_eq!(clip_b_3.end_time, crate::model::Duration::from_secs_u16(57));
         assert_eq!(clip_b_3.clip_tags, None);
     }
 
@@ -337,8 +313,8 @@ mod tests {
             Some(crate::model::ExternalArtists::test_name_1())
         );
         assert!(!clip.is_clipped);
-        assert_eq!(clip.start_time, crate::model::Duration::from_secs(5));
-        assert_eq!(clip.end_time, crate::model::Duration::from_secs(10));
+        assert_eq!(clip.start_time, crate::model::Duration::from_secs_u16(5));
+        assert_eq!(clip.end_time, crate::model::Duration::from_secs_u16(10));
         assert_eq!(clip.clip_tags, Some(crate::model::ClipTags::self_1()));
 
         // 異常なデシリアライズ
@@ -354,8 +330,8 @@ mod tests {
             artists: crate::model::InternalArtists::test_name_1(),
             external_artists: Some(crate::model::ExternalArtists::test_name_1()),
             is_clipped: true,
-            start_time: crate::model::Duration::from_secs(15),
-            end_time: crate::model::Duration::from_secs(20),
+            start_time: crate::model::Duration::from_secs_u16(15),
+            end_time: crate::model::Duration::from_secs_u16(20),
             clip_tags: Some(crate::model::ClipTags::self_1()),
         };
         let result = valid_initializer.init();
@@ -366,54 +342,12 @@ mod tests {
             artists: crate::model::InternalArtists::test_name_1(),
             external_artists: Some(crate::model::ExternalArtists::test_name_1()),
             is_clipped: false,
-            start_time: crate::model::Duration::from_secs(25),
+            start_time: crate::model::Duration::from_secs_u16(25),
             // start >= end
-            end_time: crate::model::Duration::from_secs(20),
+            end_time: crate::model::Duration::from_secs_u16(20),
             clip_tags: Some(crate::model::ClipTags::self_1()),
         };
         let result = invalid_initializer.init();
         assert!(result.is_err());
-    }
-
-    #[test]
-    fn test_anonymous_clip_generate_uuid() {
-        use chrono::TimeZone;
-
-        let clip = AnonymousClipInitializer {
-            song_title: "Test Song 5".to_string(),
-            artists: crate::model::InternalArtists::test_name_1(),
-            external_artists: Some(crate::model::ExternalArtists::test_name_1()),
-            is_clipped: false,
-            // この値が重要, UUIDv7の生成に使用される
-            start_time: crate::model::Duration::from_secs(30),
-            end_time: crate::model::Duration::from_secs(35),
-            clip_tags: Some(crate::model::ClipTags::self_1()),
-        }
-        .init()
-        .unwrap();
-
-        // 動画公開時刻の日付とclipの`start_time`が正常に反映されているか
-        let video_published_at = crate::model::VideoPublishedAt::new(
-            chrono::Utc.with_ymd_and_hms(2024, 1, 1, 0, 0, 0).unwrap(),
-        )
-        .unwrap();
-        let uuid = clip.generate_uuid(&video_published_at);
-        assert_eq!(
-            uuid.get_datetime(),
-            chrono::Utc.with_ymd_and_hms(2024, 1, 1, 0, 0, 30).unwrap()
-        );
-
-        // 動画公開時間の時間情報が落とされているか
-        let video_published_at = crate::model::VideoPublishedAt::new(
-            chrono::Utc
-                .with_ymd_and_hms(2024, 1, 1, 12, 12, 12)
-                .unwrap(),
-        )
-        .unwrap();
-        let uuid = clip.generate_uuid(&video_published_at);
-        assert_eq!(
-            uuid.get_datetime(),
-            chrono::Utc.with_ymd_and_hms(2024, 1, 1, 0, 0, 30).unwrap()
-        );
     }
 }

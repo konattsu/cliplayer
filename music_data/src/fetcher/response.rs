@@ -37,14 +37,24 @@ pub(super) struct YouTubeApiStatus {
     pub embeddable: bool,
 }
 
+impl YouTubeApiResponse {
+    /// `ApiVideoInfoList`を作成
+    ///
+    /// 重複があっても問題ないがどれが適用されるかは保証しない
+    pub(super) fn into_api_video_info_vec(self) -> Vec<crate::model::ApiVideoInfo> {
+        self.items
+            .into_iter()
+            .map(|item| item.into_api_video_info())
+            .collect()
+    }
+}
+
 impl YouTubeApiItem {
-    pub(super) fn into_fetched_video_detail(
-        self,
-    ) -> super::video_detail_fetch::FetchedVideoDetail {
-        super::video_detail_fetch::FetchedVideoDetailInitializer {
+    fn into_api_video_info(self) -> crate::model::ApiVideoInfo {
+        crate::model::ApiVideoInfoInitializer {
+            channel_id: self.snippet.channel_id,
             video_id: self.id,
             title: self.snippet.title,
-            channel_id: self.snippet.channel_id,
             published_at: self.snippet.published_at,
             modified_at: chrono::Utc::now(),
             duration: self.content_details.duration,

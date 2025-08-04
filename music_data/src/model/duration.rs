@@ -18,37 +18,8 @@ impl Duration {
         })
     }
 
-    pub(crate) fn from_secs(secs: u16) -> Self {
-        // - 24 hours = 86400 seconds
-        // - u16 max: 65535
-        // 絶対に0..24時間の範囲内の値になる
-        Self::from_chrono_duration(chrono::Duration::seconds(secs as i64))
-            .expect("Duration.from_secs() should not fail")
-    }
-
-    pub(crate) fn as_chrono_duration(&self) -> &chrono::Duration {
-        &self.inner
-    }
-
     pub(crate) fn as_secs(&self) -> u32 {
         u32::try_from(self.inner.num_seconds()).expect("Duration.as_secs() overflowed")
-    }
-
-    pub(crate) fn as_chrono_time(&self) -> chrono::NaiveTime {
-        chrono::NaiveTime::from_num_seconds_from_midnight_opt(
-            self.inner.num_seconds() as u32,
-            0,
-        )
-        // 内部の値は24時間を超えないのでunwrap
-        .expect("Duration exceeds 24 hours")
-    }
-
-    pub(crate) fn try_add(&self, other: &Duration) -> Result<Duration, &'static str> {
-        let new_duration = self.inner + other.inner;
-        Self::validate_within_24_hours(&new_duration)?;
-        Ok(Self {
-            inner: Self::truncate_millis(new_duration),
-        })
     }
 
     fn validate_within_24_hours(
@@ -208,6 +179,22 @@ impl Duration {
     pub(crate) fn self_3() -> Self {
         use std::str::FromStr;
         Self::from_str("PT1H").unwrap()
+    }
+
+    pub(crate) fn from_secs_u16(secs: u16) -> Self {
+        // - 24 hours = 86400 seconds
+        // - u16 max: 65535
+        // 絶対に0..24時間の範囲内の値になる
+        Self::from_chrono_duration(chrono::Duration::seconds(secs as i64))
+            .expect("Duration.from_secs() should not fail")
+    }
+
+    pub(crate) fn try_add(&self, other: &Duration) -> Result<Duration, &'static str> {
+        let new_duration = self.inner + other.inner;
+        Self::validate_within_24_hours(&new_duration)?;
+        Ok(Self {
+            inner: Self::truncate_millis(new_duration),
+        })
     }
 }
 

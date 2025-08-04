@@ -2,18 +2,18 @@
 ///
 /// - 大文字の`UC`で始まる
 /// - 大文字の`UC`の直後に22文字の `a-z`, `A-Z`, `0-9`, `-`, `_` での構成 (計24文字)
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    PartialOrd,
-    Ord,
-    Hash,
-)]
+#[derive(serde::Serialize, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(crate) struct ChannelId(String);
+
+impl<'de> serde::Deserialize<'de> for ChannelId {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let id = String::deserialize(deserializer)?;
+        ChannelId::new(id).map_err(serde::de::Error::custom)
+    }
+}
 
 impl ChannelId {
     pub(crate) fn new(id: String) -> Result<Self, &'static str> {

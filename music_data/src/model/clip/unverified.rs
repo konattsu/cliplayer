@@ -2,7 +2,6 @@
 ///
 /// 以下を保証
 /// - `start_time` < `end_time`
-/// - `UUIDv7`のタイムスタンプの時間(h:m:s)と`start_time`の時間が一致
 #[derive(serde::Serialize, Debug, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 #[serde(deny_unknown_fields)]
@@ -22,7 +21,7 @@ pub(crate) struct UnverifiedClip {
     /// タグ
     clip_tags: Option<crate::model::ClipTags>,
     /// uuid
-    uuid: crate::model::UuidVer7,
+    uuid: crate::model::UuidVer4,
     /// 音量の正規化時に設定すべき音量
     volume_percent: Option<crate::model::VolumePercent>,
 }
@@ -39,16 +38,6 @@ pub(crate) enum UnverifiedClipError {
         song_title: String,
         start_time: crate::model::Duration,
         end_time: crate::model::Duration,
-    },
-    /// UUIDv7にあるタイムスタンプの時間(h:m:s)と`start_time`の時間が一致しないとき
-    #[error(
-        "(@song_title: {song_title}), uuid time({uuid_time}) \
-        does not match start time({start_time})"
-    )]
-    UuidTimeMismatch {
-        song_title: String,
-        uuid_time: chrono::NaiveTime,
-        start_time: crate::model::Duration,
     },
 }
 
@@ -68,7 +57,7 @@ struct UnverifiedClipInitializer {
     /// タグ
     clip_tags: Option<crate::model::ClipTags>,
     /// uuid
-    uuid: crate::model::UuidVer7,
+    uuid: crate::model::UuidVer4,
     /// 音量の正規化時に設定すべき音量
     volume_percent: Option<crate::model::VolumePercent>,
 }
@@ -81,7 +70,6 @@ impl UnverifiedClipInitializer {
     fn init(self) -> Result<UnverifiedClip, UnverifiedClipError> {
         UnverifiedClip::validate_consistency(
             &self.song_title,
-            &self.uuid,
             &self.start_time,
             &self.end_time,
         )?;
@@ -117,7 +105,7 @@ impl<'de> serde::Deserialize<'de> for UnverifiedClip {
             start_time: crate::model::Duration,
             end_time: crate::model::Duration,
             clip_tags: Option<crate::model::ClipTags>,
-            uuid: crate::model::UuidVer7,
+            uuid: crate::model::UuidVer4,
             volume_percent: Option<crate::model::VolumePercent>,
         }
 
@@ -127,7 +115,6 @@ impl<'de> serde::Deserialize<'de> for UnverifiedClip {
         // `Self`の存在条件の検証
         UnverifiedClip::validate_consistency(
             &raw.song_title,
-            &raw.uuid,
             &raw.start_time,
             &raw.end_time,
         )
@@ -173,12 +160,9 @@ impl UnverifiedClip {
     ///
     /// - Error:
     ///   - `start_time` >= `end_time`のとき
-    ///   - `uuid`のタイムスタンプの時間(h:m:s)と`start_time`の時間が一致しないとき
-    ///   - `uuid`の日付(Y:M:D)と, 与えられた動画情報にある動画の公開日が一致しないとき
     ///   - `start_time`or `end_time`の時間が, 与えられた動画情報にある動画の長さより長いとき
     pub(crate) fn try_into_verified_clip(
         self,
-        video_published_at: &crate::model::VideoPublishedAt,
         video_duration: &crate::model::Duration,
     ) -> Result<super::VerifiedClip, super::VerifiedClipError> {
         super::VerifiedClipInitializer {
@@ -192,17 +176,15 @@ impl UnverifiedClip {
             uuid: self.uuid,
             volume_percent: self.volume_percent,
         }
-        .init(video_published_at, video_duration)
+        .init(video_duration)
     }
 
     /// `Self`が存在できるか検証
     ///
     /// Error:
     /// - `start_time` >= `end_time`のとき
-    /// - `uuid`のタイムスタンプの時間(h:m:s)と`start_time`の時間が一致しないとき
     fn validate_consistency(
         song_title: &str,
-        uuid: &crate::model::UuidVer7,
         start_time: &crate::model::Duration,
         end_time: &crate::model::Duration,
     ) -> Result<(), UnverifiedClipError> {
@@ -214,17 +196,6 @@ impl UnverifiedClip {
                 end_time: end_time.clone(),
             }
         })?;
-
-        // `uuid`のタイムスタンプの時間(h:m:s)と`start_time`の時間が一致するか検証
-        let uuid_time = uuid.get_datetime().time();
-        let start_time_chrono = start_time.as_chrono_time();
-        if uuid_time != start_time_chrono {
-            return Err(UnverifiedClipError::UuidTimeMismatch {
-                song_title: song_title.to_string(),
-                uuid_time,
-                start_time: start_time.clone(),
-            });
-        }
 
         Ok(())
     }
@@ -246,7 +217,7 @@ mod tests {
         "startTime": "PT12H12M12S",
         "endTime": "PT12H12M20S",
         "clipTags": ["Test Clip Tag1"],
-        "uuid": "0193bac8-a560-7000-8000-000000000000"
+        "uuid": "00000000-0000-4000-8000-000000000000"
     }"#;
 
     // `startTime` >= `endTime`
@@ -259,19 +230,19 @@ mod tests {
         "startTime": "PT12H12M12S",
         "endTime": "PT12H12M5S",
         "clipTags": ["Test Clip Tag1"],
-        "uuid": "0193bac8-a560-7000-8000-000000000000"
+        "uuid": "00000000-0000-4000-8000-000000000000"
     }"#;
 
     const SEC_12H_12M_12S: u16 = 12 * 3600 + 12 * 60 + 12;
 
     fn dur_12h_12m_12s() -> crate::model::Duration {
-        crate::model::Duration::from_secs(SEC_12H_12M_12S)
+        crate::model::Duration::from_secs_u16(SEC_12H_12M_12S)
     }
 
     /// テスト用, 引数の値が大きすぎるとpanic
     fn dur_12h_12m_12s_plus(secs: i8) -> crate::model::Duration {
         let total_secs = SEC_12H_12M_12S as i32 + secs as i32;
-        crate::model::Duration::from_secs(total_secs.try_into().unwrap())
+        crate::model::Duration::from_secs_u16(total_secs.try_into().unwrap())
     }
 
     // deserializeでも存在条件が確認されているか確認
@@ -290,58 +261,13 @@ mod tests {
         assert_eq!(clip.start_time, dur_12h_12m_12s());
         assert_eq!(clip.end_time, dur_12h_12m_12s_plus(8));
         assert_eq!(clip.clip_tags, Some(crate::model::ClipTags::self_1()));
-        assert_eq!(
-            clip.uuid.to_string(),
-            "0193bac8-a560-7000-8000-000000000000"
-        );
+        assert_eq!(clip.uuid, crate::model::UuidVer4::self_1());
         assert_eq!(clip.volume_percent, None);
 
         // 異常
         let result =
             serde_json::from_str::<UnverifiedClip>(UNVERIFIED_CLIP_JSON_INVALID);
         assert!(result.is_err());
-    }
-
-    #[test]
-    fn test_unverified_clip_validate_consistency() {
-        let uuid = crate::model::UuidVer7::self_1();
-        // 正常
-        {
-            let start_time = dur_12h_12m_12s();
-            let end_time = dur_12h_12m_12s_plus(8);
-            UnverifiedClip::validate_consistency("test", &uuid, &start_time, &end_time)
-                .expect("Failed to validate consistency");
-        }
-        // 異常, start_time >= end_time
-        {
-            let start_time = dur_12h_12m_12s();
-            let end_time_invalid = dur_12h_12m_12s_plus(-5);
-            let result = UnverifiedClip::validate_consistency(
-                "test",
-                &uuid,
-                &start_time,
-                &end_time_invalid,
-            );
-            assert!(matches!(
-                result,
-                Err(UnverifiedClipError::InvalidClipTimeRange { .. })
-            ));
-        }
-        // 異常, uuidのタイムスタンプの時間(h:m:s)とstart_timeの時間が一致しない
-        {
-            let start_time_invalid = dur_12h_12m_12s_plus(10);
-            let end_time = dur_12h_12m_12s_plus(20);
-            let result = UnverifiedClip::validate_consistency(
-                "test",
-                &uuid,
-                &start_time_invalid,
-                &end_time,
-            );
-            assert!(matches!(
-                result,
-                Err(UnverifiedClipError::UuidTimeMismatch { .. })
-            ));
-        }
     }
 
     #[test]
@@ -355,7 +281,7 @@ mod tests {
             start_time: dur_12h_12m_12s(),
             end_time: dur_12h_12m_12s_plus(8),
             clip_tags: Some(crate::model::ClipTags::self_1()),
-            uuid: crate::model::UuidVer7::self_1(),
+            uuid: crate::model::UuidVer4::self_1(),
             volume_percent: None,
         };
         let _clip = initializer.init().expect("Failed to create UnverifiedClip");
@@ -368,30 +294,13 @@ mod tests {
             start_time: dur_12h_12m_12s(),
             end_time: dur_12h_12m_12s_plus(-5),
             clip_tags: Some(crate::model::ClipTags::self_1()),
-            uuid: crate::model::UuidVer7::self_1(),
+            uuid: crate::model::UuidVer4::self_1(),
             volume_percent: None,
         };
         let result = initializer.init();
         assert!(matches!(
             result,
             Err(UnverifiedClipError::InvalidClipTimeRange { .. })
-        ));
-        // 異常, uuidのタイムスタンプの時間(h:m:s)とstart_timeの時間が一致しない
-        let initializer = UnverifiedClipInitializer {
-            song_title: "Test Song 3".to_string(),
-            artists: crate::model::InternalArtists::test_name_1(),
-            external_artists: Some(crate::model::ExternalArtists::test_name_1()),
-            is_clipped: false,
-            start_time: dur_12h_12m_12s_plus(10),
-            end_time: dur_12h_12m_12s_plus(20),
-            clip_tags: Some(crate::model::ClipTags::self_1()),
-            uuid: crate::model::UuidVer7::self_1(),
-            volume_percent: None,
-        };
-        let result = initializer.init();
-        assert!(matches!(
-            result,
-            Err(UnverifiedClipError::UuidTimeMismatch { .. })
         ));
     }
 }

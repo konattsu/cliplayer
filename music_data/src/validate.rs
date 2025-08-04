@@ -6,8 +6,7 @@
 ///
 /// Returns:
 /// - Ok(a): 重複していた動画id
-// TODO どうしよう
-pub fn find_video_ids_with_published_at(
+pub fn find_video_ids(
     music_lib: &crate::music_file::MusicLibrary,
     video_ids: &[crate::model::VideoId],
 ) -> crate::model::VideoIds {
@@ -76,10 +75,6 @@ impl AnonymousVideoValidateError {
                 format!("Invalid content in file {path}: {msg}\n",)
             }
         }
-    }
-
-    fn into_errors(self) -> AnonymousVideoValidateErrors {
-        AnonymousVideoValidateErrors { errs: vec![self] }
     }
 }
 

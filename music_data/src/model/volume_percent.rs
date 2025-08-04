@@ -7,11 +7,6 @@
 pub(crate) struct VolumePercent(std::num::NonZeroU8);
 
 impl VolumePercent {
-    pub(crate) fn new(value: u8) -> Result<Self, String> {
-        Self::validate_range(value)?;
-        Ok(VolumePercent(std::num::NonZeroU8::new(value).unwrap()))
-    }
-
     fn validate_range(value: u8) -> Result<(), String> {
         if (1..=100).contains(&value) {
             Ok(())
@@ -20,10 +15,6 @@ impl VolumePercent {
                 "Invalid volume percent: {value}. Must be in range (0, 100].",
             ))
         }
-    }
-
-    pub(crate) fn get(&self) -> u8 {
-        self.0.get()
     }
 }
 
@@ -40,28 +31,20 @@ impl<'de> serde::Deserialize<'de> for VolumePercent {
     }
 }
 
+// MARK: For Tests
+
+#[cfg(test)]
+impl VolumePercent {
+    fn get(&self) -> u8 {
+        self.0.get()
+    }
+}
+
 // MARK: Tests
 
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn volume_percent_new_valid() {
-        for v in [1, 42, 50, 100] {
-            let vp = VolumePercent::new(v);
-            assert!(vp.is_ok(), "{v} should be valid");
-            assert_eq!(vp.unwrap().get(), v);
-        }
-    }
-
-    #[test]
-    fn volume_percent_new_invalid() {
-        for v in [0, 101, 255] {
-            let vp = VolumePercent::new(v);
-            assert!(vp.is_err(), "{v} should be invalid");
-        }
-    }
 
     #[test]
     fn volume_percent_deserialize_valid() {

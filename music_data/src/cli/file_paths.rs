@@ -1,40 +1,24 @@
 /// 主にコマンドライン引数からファイルパスを受け取るための型
 #[derive(Debug, Clone)]
-pub struct FilePathsFromCli(Vec<String>);
+pub struct FilePathFromCli(String);
 
-impl FilePathsFromCli {
-    pub fn try_into_vec(self) -> Result<Vec<crate::util::FilePath>, String> {
-        self.0
-            .into_iter()
-            .map(|path| crate::util::FilePath::new(&std::path::PathBuf::from(path)))
-            .collect()
+impl FilePathFromCli {
+    pub fn try_into_file_path(self) -> Result<crate::util::FilePath, String> {
+        crate::util::FilePath::new(&std::path::PathBuf::from(self.0))
     }
 }
 
-impl std::fmt::Display for FilePathsFromCli {
+impl std::fmt::Display for FilePathFromCli {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let paths_str = self
-            .0
-            .iter()
-            .map(|path| path.to_string())
-            .collect::<Vec<_>>()
-            .join(", ");
-        write!(f, "{paths_str}")
+        write!(f, "{}", self.0)
     }
 }
 
-impl std::str::FromStr for FilePathsFromCli {
+impl std::str::FromStr for FilePathFromCli {
     type Err = &'static str;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let paths: Vec<String> = s
-            .split(|c| ",; \t\n\r".contains(c))
-            .filter(|path| !path.is_empty())
-            .map(|path| path.trim().to_string())
-            .collect();
-        if paths.is_empty() {
-            return Err("FilePaths cannot be empty");
-        }
-        Ok(FilePathsFromCli(paths))
+        let path = s.trim().to_string();
+        Ok(FilePathFromCli(path))
     }
 }
