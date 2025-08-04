@@ -1,5 +1,5 @@
 #[derive(serde::Serialize, Debug, Clone)]
-pub struct ArtistSearchIndex(Vec<ArtistSearchIndexInner>);
+pub(in crate::artist) struct ArtistSearchIndex(Vec<ArtistSearchIndexInner>);
 
 #[derive(serde::Serialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -11,7 +11,7 @@ struct ArtistSearchIndexInner {
 }
 
 impl ArtistSearchIndex {
-    pub fn new(artists: crate::artist::model::Artists) -> Self {
+    pub(in crate::artist) fn new(artists: crate::artist::model::Artists) -> Self {
         let mut index = Vec::new();
 
         for (artist_id, artist) in artists.0.into_iter() {
@@ -60,7 +60,10 @@ impl ArtistSearchIndex {
         }
     }
 
-    pub fn output_json(&self, path: &std::path::Path) -> anyhow::Result<()> {
+    pub(in crate::artist) fn output_json(
+        &self,
+        path: &std::path::Path,
+    ) -> anyhow::Result<()> {
         use anyhow::Context;
 
         let file = std::fs::File::create(path).with_context(|| {

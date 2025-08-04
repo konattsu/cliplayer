@@ -1,6 +1,6 @@
 /// color code
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Color {
+pub(in crate::artist) struct Color {
     red: u8,
     green: u8,
     blue: u8,

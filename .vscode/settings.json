@@ -16,10 +16,11 @@
     "typescriptreact"
   ],
 
-  // Tailwind CSS
   "files.associations": {
     "*.css": "tailwindcss"
   },
+
+  // Tailwind CSS
   "editor.quickSuggestions": {
     "strings": true
   },
@@ -47,7 +48,7 @@
       "url": "./tools/music_data.schema.json"
     }
   ],
-  "[**/*.min.json]": {
+  "[min.json]": {
     "editor.formatOnSave": false,
     "editor.renderFinalNewline": "off"
   },

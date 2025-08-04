@@ -2,18 +2,22 @@
 ///
 /// `a-z`, `A-Z`, `_` のみ使用可
 #[derive(serde::Serialize, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct ArtistId(String);
+pub(in crate::artist) struct ArtistId(String);
 
 const ALLOWED_CHARS: &str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-";
 
 impl ArtistId {
-    pub fn new(id: String) -> Result<Self, &'static str> {
+    pub(in crate::artist) fn new(id: String) -> Result<Self, &'static str> {
         if id.is_empty() {
             return Err("ArtistId cannot be empty");
         } else if id.chars().any(|c| !ALLOWED_CHARS.contains(c)) {
             return Err("ArtistId can only contain letters and hyphens");
         }
         Ok(Self(id))
+    }
+
+    pub(in crate::artist) fn as_str(&self) -> &str {
+        &self.0
     }
 }
 

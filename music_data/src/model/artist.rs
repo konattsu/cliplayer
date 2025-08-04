@@ -16,13 +16,20 @@ impl InputArtist {
 /// 有効なアーティストIDのセット
 ///
 /// - `ARTIST_SET_PATH` 環境変数で指定されたファイルから読み込む
-///   - 先ほどの環境変数が指定されていないと `./data/artists.json` を読み込む
+///   - 先ほどの環境変数が指定されていないと `./data/artists_data.json` を読み込む
 #[cfg(not(test))]
 static ARTIST_SET: once_cell::sync::Lazy<std::collections::HashSet<String>> =
     once_cell::sync::Lazy::new(|| {
+        const ARTIST_SET_PATH: &str = "./data/artists_data.json";
+
         let path_str = std::env::var("ARTIST_SET_PATH")
-            .unwrap_or_else(|_| "./data/artists.json".to_string());
-        let data = std::fs::read_to_string(path_str).unwrap();
+            .unwrap_or_else(|_| ARTIST_SET_PATH.to_string());
+        let data = std::fs::read_to_string(path_str.clone()).unwrap_or_else(|_| {
+            panic!(
+                "Failed to read artists data from {path_str}. \
+                This value is read from the env value, or default to {ARTIST_SET_PATH}."
+            )
+        });
         InputArtist::from_json_to_hash_set(&data)
     });
 
@@ -376,7 +383,7 @@ mod tests {
         let json = r#"["Eir Aoi Test", "Lisa Test", "Aimer Test"]"#;
         let artists: InternalArtists =
             serde_json::from_str(json).expect("Failed to deserialize internal artists");
-        // ソートできているか
+        // 54できているか
         assert_eq!(artists.0[0].0, "Aimer Test");
         assert_eq!(artists.0[1].0, "Eir Aoi Test");
         assert_eq!(artists.0[2].0, "Lisa Test");

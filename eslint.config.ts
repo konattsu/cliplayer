@@ -150,9 +150,4 @@ export default [
       "prefer-template": "error",
     },
   },
-  // min.json たちを無視する(フォーマットしないなど)
-  {
-    files: ["public/**/*.min.json"],
-    ignores: ["public/**/*.min.json"],
-  },
 ];

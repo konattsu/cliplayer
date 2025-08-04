@@ -1,18 +1,18 @@
 #[derive(Debug, Clone)]
-pub struct Artists(
-    pub std::collections::HashMap<crate::artist::model::ArtistId, Artist>,
+pub(in crate::artist) struct Artists(
+    pub(in crate::artist) std::collections::HashMap<crate::artist::model::ArtistId, Artist>,
 );
 
 #[derive(Debug, Clone)]
-pub struct Artist {
-    pub artist_id: crate::artist::model::ArtistId,
-    pub ja: crate::artist::model::StringNonEmpty,
-    pub jah: crate::artist::model::StringNonEmpty,
-    pub en: crate::artist::model::StringNonEmpty,
-    pub aliases: Vec<crate::artist::model::StringNonEmpty>,
-    pub channel_id: crate::model::ChannelId,
-    pub color: crate::artist::model::Color,
-    pub is_graduated: bool,
+pub(in crate::artist) struct Artist {
+    pub(in crate::artist) artist_id: crate::artist::model::ArtistId,
+    pub(in crate::artist) ja: crate::artist::model::StringNonEmpty,
+    pub(in crate::artist) jah: crate::artist::model::StringNonEmpty,
+    pub(in crate::artist) en: crate::artist::model::StringNonEmpty,
+    pub(in crate::artist) aliases: Vec<crate::artist::model::StringNonEmpty>,
+    pub(in crate::artist) channel_id: crate::model::ChannelId,
+    pub(in crate::artist) color: crate::artist::model::Color,
+    pub(in crate::artist) is_graduated: bool,
 }
 
 impl<'de> serde::Deserialize<'de> for Artists {
@@ -61,7 +61,7 @@ impl<'de> serde::Deserialize<'de> for Artists {
 }
 
 impl Artists {
-    pub fn load(path: &str) -> anyhow::Result<Self> {
+    pub(in crate::artist) fn load(path: &str) -> anyhow::Result<Self> {
         let file = std::fs::File::open(path)
             .map_err(|e| anyhow::anyhow!("Failed to open file {}: {}", path, e))?;
         serde_json::from_reader(file).map_err(|e| {

@@ -11,6 +11,8 @@ pub enum Commands {
     Apply(ApplyCommands),
     #[command(subcommand)]
     Validate(ValidateCommands),
+    #[command(subcommand)]
+    Artist(ArtistCommands),
 }
 
 // 入力値は形式が正しければ成功とみなす. 例えば指定されたパスが存在しないなら後続の処理でエラーを出す
@@ -73,8 +75,6 @@ pub enum ApplyCommands {
     },
 }
 
-// あくまで`validate`ってことに注意しながら実装
-
 #[derive(Debug, clap::Subcommand)]
 pub enum ValidateCommands {
     /// Validate new music data input files
@@ -123,6 +123,52 @@ pub enum ValidateCommands {
     },
 }
 
+#[derive(Debug, clap::Subcommand)]
+pub enum ArtistCommands {
+    /// Generate artist-related data
+    Generate {
+        /// Path to the input artist data file
+        #[arg(long, default_value_t = default_input_artists_data_path())]
+        input_artists_data_path: String,
+        /// Directory for artist output
+        #[arg(long, default_value_t = default_artist_output_dir())]
+        artist_output_dir: String,
+        /// Path to the search index file
+        #[arg(long, default_value_t = default_search_index_file_path())]
+        search_index_file_name: String,
+        /// Path to the channel info file
+        #[arg(long, default_value_t = default_channel_file_path())]
+        channel_file_name: String,
+        /// Path to the artist info file
+        #[arg(long, default_value_t = default_artists_file_path())]
+        artists_file_name: String,
+        #[arg(long, default_value_t = default_code_snippets_path())]
+        music_data_code_snippets_path: String,
+
+        #[clap(flatten)]
+        trace_level: TraceLevel,
+    },
+}
+
+fn default_input_artists_data_path() -> String {
+    "data/artists_data.json".to_string()
+}
+fn default_artist_output_dir() -> String {
+    "../src/music_data/".to_string()
+}
+fn default_search_index_file_path() -> String {
+    "artist_search_index.min.json".to_string()
+}
+fn default_channel_file_path() -> String {
+    "channels.min.json".to_string()
+}
+fn default_artists_file_path() -> String {
+    "artists.min.json".to_string()
+}
+fn default_code_snippets_path() -> String {
+    "../.vscode/music_data.code-snippets".to_string()
+}
+
 #[derive(Debug, clap::Args)]
 pub struct TraceLevel {
     /// Tracing level for file operations
@@ -158,6 +204,11 @@ impl Cli {
                     &trace_level.file_tracing_level
                 }
             },
+            Commands::Artist(ref artist_cmd) => match artist_cmd {
+                ArtistCommands::Generate { trace_level, .. } => {
+                    &trace_level.file_tracing_level
+                }
+            },
         };
         level.clone().map(|lv| lv.into_tracing_level_filter())
     }
@@ -183,6 +234,11 @@ impl Cli {
                     &trace_level.stdout_tracing_level
                 }
                 ValidateCommands::Duplicate { trace_level, .. } => {
+                    &trace_level.stdout_tracing_level
+                }
+            },
+            Commands::Artist(ref artist_cmd) => match artist_cmd {
+                ArtistCommands::Generate { trace_level, .. } => {
                     &trace_level.stdout_tracing_level
                 }
             },

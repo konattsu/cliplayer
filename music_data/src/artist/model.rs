@@ -3,7 +3,7 @@ mod artist_id;
 mod color;
 mod string_non_empty;
 
-pub use artist_data::Artists;
-pub use artist_id::ArtistId;
-pub use color::Color;
-pub use string_non_empty::StringNonEmpty;
+pub(in crate::artist) use artist_data::Artists;
+pub(in crate::artist) use artist_id::ArtistId;
+pub(in crate::artist) use color::Color;
+pub(in crate::artist) use string_non_empty::StringNonEmpty;
