@@ -1,11 +1,11 @@
 /// `VerifiedVideo`を作ろうとしたときのエラー
 #[derive(Debug)]
-pub enum VerifiedVideoError {
+pub(crate) enum VerifiedVideoError {
     /// クリップの情報が不正
     InvalidClip(Vec<crate::model::VerifiedClipError>),
     /// 動画IDが一致しない
     VideoIdMismatch {
-        brief: crate::model::VideoId,
+        local: crate::model::VideoId,
         fetched: crate::model::VideoId,
     },
     /// クリップの範囲が重複
@@ -15,6 +15,26 @@ pub enum VerifiedVideoError {
     },
     /// クリップが存在しない
     NoClips(crate::model::VideoId),
+    /// 動画のapiから取得できる詳細情報が欠如
+    MissingApiInfo(crate::model::VideoId),
+}
+
+/// `VerifiedVideo`を作ろうとしたときのエラー
+#[derive(Debug)]
+pub(crate) struct VerifiedVideoErrors {
+    errs: Vec<VerifiedVideoError>,
+}
+
+impl From<Vec<VerifiedVideoError>> for VerifiedVideoErrors {
+    fn from(value: Vec<VerifiedVideoError>) -> Self {
+        Self { errs: value }
+    }
+}
+
+impl From<VerifiedVideoErrors> for Vec<VerifiedVideoError> {
+    fn from(value: VerifiedVideoErrors) -> Self {
+        value.errs
+    }
 }
 
 impl VerifiedVideoError {
@@ -26,7 +46,7 @@ impl VerifiedVideoError {
             Ok(())
         } else {
             Err(VerifiedVideoError::VideoIdMismatch {
-                brief: expected.clone(),
+                local: expected.clone(),
                 fetched: actual.clone(),
             })
         }
@@ -36,12 +56,15 @@ impl VerifiedVideoError {
     pub fn to_pretty_string(&self) -> String {
         let mut msg = "Failed to create VerifiedVideo: ".to_string();
         match self {
-            VerifiedVideoError::VideoIdMismatch { brief, fetched } => {
+            Self::VideoIdMismatch {
+                local: brief,
+                fetched,
+            } => {
                 msg.push_str(&format!(
                     "video_id mismatch: expected {brief}, got {fetched}",
                 ));
             }
-            VerifiedVideoError::InvalidClip(errors) => {
+            Self::InvalidClip(errors) => {
                 let invalid_clip_err_msgs =
                     errors.iter().map(|e| e.to_string()).collect::<Vec<_>>();
                 msg.push_str(&format!(
@@ -50,15 +73,28 @@ impl VerifiedVideoError {
                     invalid_clip_err_msgs.join("\n\t")
                 ));
             }
-            VerifiedVideoError::ClipsOverlap { id, clips_title } => {
+            Self::ClipsOverlap { id, clips_title } => {
                 msg.push_str(&format!(
                     "Clips overlap in video ID {id}: song titles`{clips_title:?}`"
                 ));
             }
-            VerifiedVideoError::NoClips(id) => {
+            Self::NoClips(id) => {
                 msg.push_str(&format!("No clips found for video ID {id}"));
+            }
+            Self::MissingApiInfo(id) => {
+                msg.push_str(&format!("Missing api info for video ID {id}"));
             }
         }
         msg
+    }
+}
+
+impl VerifiedVideoErrors {
+    pub fn to_pretty_string(&self) -> String {
+        let mut err_str = String::new();
+        for e in self.errs.iter() {
+            err_str.push_str(&e.to_pretty_string());
+        }
+        err_str
     }
 }

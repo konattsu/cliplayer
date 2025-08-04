@@ -70,16 +70,6 @@ impl VideosSameYearMonth {
         Ok(())
     }
 
-    /// 動画情報を動画idを基に削除
-    ///
-    /// `Some(VerifiedVideo)`: 動画idが存在していた場合
-    pub(crate) fn remove_video(
-        &mut self,
-        video_id: &crate::model::VideoId,
-    ) -> Option<crate::model::VerifiedVideo> {
-        self.videos.delete_video(video_id)
-    }
-
     /// 動画情報を置き換え
     ///
     /// `Err`: 動画の投稿日の年/月がこのVideosSameYearMonthの年/月と異なる場合

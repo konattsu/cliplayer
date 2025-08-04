@@ -45,6 +45,48 @@ impl VerifiedVideos {
         }
     }
 
+    /// `AnonymousVideos`と`ApiVideoInfo`から`VerifiedVideo`を作成
+    ///
+    /// # Error:
+    /// - `anonymous_video`のクリップの情報が不正なとき
+    /// - `AnonymousVideos`, `ApiVideoInfo`が完全に対応しないとき
+    pub(crate) fn from_anonymous_video(
+        anonymous_videos: crate::model::AnonymousVideos,
+        api_info_list: crate::model::ApiVideoInfoList,
+    ) -> Result<Self, super::error::VerifiedVideoErrors> {
+        let mut videos = Vec::new();
+        let mut errs = Vec::new();
+        let mut api_info_list = api_info_list.inner;
+
+        for (id, anonymous_video) in anonymous_videos.into_inner() {
+            // `anonymous_video`に対応した`api_info`があるとき
+            if let Some(api_info) = api_info_list.remove(&id) {
+                match crate::model::VerifiedVideo::from_anonymous_video(
+                    anonymous_video,
+                    api_info,
+                ) {
+                    // 正常にverifyできたとき
+                    Ok(video) => videos.push(video),
+                    // verifyできなかったとき
+                    Err(e) => errs.push(e),
+                }
+            // `anonymous_video`に対応した`api_info`がないとき
+            } else {
+                errs.push(crate::model::VerifiedVideoError::MissingApiInfo(id));
+            }
+            // NOTE api_info_listのみに動画idが存在しても検出できない機構やけどまぁいらんと思う
+        }
+
+        if errs.is_empty() {
+            // `anonymous_videos`の時点でvideo_idが重複してない(hashmapで管理)ので
+            // 変換の際にも重複しないからunwrap
+            let videos = crate::model::VerifiedVideos::try_from_vec(videos).unwrap();
+            Ok(videos)
+        } else {
+            Err(errs.into())
+        }
+    }
+
     /// `VerifiedVideo`のリストを`VerifiedVideos`に変換
     ///
     /// Err: 動画のvideo_idが重複している場合
@@ -87,16 +129,6 @@ impl VerifiedVideos {
         self.inner.insert(video.get_video_id().clone(), video)
     }
 
-    /// 動画情報を動画idを基に削除
-    ///
-    /// `Some(VerifiedVideo)`: 動画idが存在していた場合
-    pub(crate) fn delete_video(
-        &mut self,
-        video_id: &crate::model::VideoId,
-    ) -> Option<super::VerifiedVideo> {
-        self.inner.remove(video_id)
-    }
-
     /// 内部の動画が全て同じ年/月であるかを検証
     ///
     /// Err: 同じ年/月でない動画のvideo_idのリスト
@@ -117,6 +149,41 @@ impl VerifiedVideos {
             Ok(())
         } else {
             Err(non_same.into())
+        }
+    }
+
+    /// 動画の詳細情報を更新
+    pub(crate) fn with_new_api_info_list(
+        self,
+        mut api_list: crate::model::ApiVideoInfoList,
+    ) -> Result<Self, super::error::VerifiedVideoErrors> {
+        let mut new_videos = Vec::new();
+        let mut errs = Vec::new();
+
+        for video in self.inner.into_values() {
+            let api_info = api_list.inner.remove(video.get_video_id());
+            // 対応する動画の詳細情報が見つかったとき
+            if let Some(api_info) = api_info {
+                match video.with_new_api_info(api_info) {
+                    // 成功したとき
+                    Ok(new_video) => new_videos.push(new_video),
+                    // 動画の詳細情報は見つかったが失敗したとき
+                    Err(e) => errs.push(e),
+                }
+            // 対応する動画の詳細情報が見つからなかったとき
+            } else {
+                errs.push(super::VerifiedVideoError::MissingApiInfo(
+                    video.get_video_id().clone(),
+                ));
+            }
+        }
+
+        if errs.is_empty() {
+            // 引数の`self`で動画idは一意であり, それを順に処理しているため`new_videos`も一意
+            // そのため失敗することはない
+            Ok(Self::try_from_vec(new_videos).unwrap())
+        } else {
+            Err(errs.into())
         }
     }
 

@@ -25,7 +25,7 @@ pub(crate) struct VerifiedClip {
     #[serde(skip_serializing_if = "Option::is_none")]
     clip_tags: Option<crate::model::ClipTags>,
     /// uuid
-    uuid: crate::model::UuidVer7,
+    uuid: crate::model::UuidVer4,
     /// 音量の正規化時に設定すべき音量
     #[serde(skip_serializing_if = "Option::is_none")]
     volume_percent: Option<crate::model::VolumePercent>,
@@ -43,26 +43,6 @@ pub(crate) enum VerifiedClipError {
         song_title: String,
         start_time: crate::model::Duration,
         end_time: crate::model::Duration,
-    },
-    /// UUIDv7にあるタイムスタンプの時間(h:m:s)と`start_time`の時間が一致しないとき
-    #[error(
-        "(@song title: {song_title}), uuid time({uuid_time}) \
-        does not match start time({start_time})"
-    )]
-    UuidTimeMismatch {
-        song_title: String,
-        uuid_time: chrono::NaiveTime,
-        start_time: crate::model::Duration,
-    },
-    /// UUIDv7の日付(Y:M:D)と, 与えられた動画情報にある動画の公開日が一致しないとき
-    #[error(
-        "(@song title: {song_title}), uuid date({uuid_date}) \
-        does not match video date({video_date})"
-    )]
-    UuidDateMismatch {
-        song_title: String,
-        uuid_date: chrono::NaiveDate,
-        video_date: crate::model::VideoPublishedAt,
     },
     /// `start_time`or `end_time`の時間が, 与えられた動画情報にある動画の長さより長いとき
     #[error(
@@ -93,7 +73,7 @@ pub(super) struct VerifiedClipInner {
     /// タグ
     pub(super) clip_tags: Option<crate::model::ClipTags>,
     /// uuid
-    pub(super) uuid: crate::model::UuidVer7,
+    pub(super) uuid: crate::model::UuidVer4,
     /// 音量の正規化時に設定すべき音量
     pub(super) volume_percent: Option<crate::model::VolumePercent>,
 }
@@ -114,7 +94,7 @@ pub(crate) struct VerifiedClipInitializer {
     /// タグ
     pub(crate) clip_tags: Option<crate::model::ClipTags>,
     /// uuid
-    pub(crate) uuid: crate::model::UuidVer7,
+    pub(crate) uuid: crate::model::UuidVer4,
     /// 音量の正規化時に設定すべき音量
     pub(crate) volume_percent: Option<crate::model::VolumePercent>,
 }
@@ -124,15 +104,12 @@ impl VerifiedClipInitializer {
     ///
     /// - Error:
     ///   - `start_time` >= `end_time`のとき
-    ///   - `uuid`のタイムスタンプの時間(h:m:s)と`start_time`の時間が一致しないとき
-    ///   - `uuid`の日付(Y:M:D)と, 与えられた動画情報にある動画の公開日が一致しないとき
     ///   - `start_time`or `end_time`の時間が, 与えられた動画情報にある動画の長さより長いとき
     pub(crate) fn init(
         self,
-        video_published_at: &crate::model::VideoPublishedAt,
         video_duration: &crate::model::Duration,
     ) -> Result<VerifiedClip, VerifiedClipError> {
-        self.validate_consistency(video_published_at, video_duration)?;
+        self.validate_consistency(video_duration)?;
 
         Ok(VerifiedClip {
             song_title: self.song_title,
@@ -150,7 +127,6 @@ impl VerifiedClipInitializer {
     /// `Self`が存在できるか検証
     fn validate_consistency(
         &self,
-        video_published_at: &crate::model::VideoPublishedAt,
         video_duration: &crate::model::Duration,
     ) -> Result<(), VerifiedClipError> {
         super::validate_start_end_times(&self.start_time, &self.end_time).map_err(
@@ -160,42 +136,7 @@ impl VerifiedClipInitializer {
                 end_time: self.end_time.clone(),
             },
         )?;
-        self.validate_uuid_time()?;
-        self.validate_uuid_date(video_published_at)?;
         self.validate_video_duration(video_duration)?;
-        Ok(())
-    }
-
-    /// uuidのタイムスタンプとクリップの開始時間が一致するか検証
-    fn validate_uuid_time(&self) -> Result<(), VerifiedClipError> {
-        let uuid_time = self.uuid.get_datetime().time();
-        let start_time = self.start_time.as_chrono_time();
-
-        if uuid_time != start_time {
-            return Err(VerifiedClipError::UuidTimeMismatch {
-                song_title: self.song_title.clone(),
-                uuid_time,
-                start_time: self.start_time.clone(),
-            });
-        }
-        Ok(())
-    }
-
-    /// uuidのタイムスタンプと動画の公開日が一致するか検証
-    fn validate_uuid_date(
-        &self,
-        video_published_at: &crate::model::VideoPublishedAt,
-    ) -> Result<(), VerifiedClipError> {
-        let uuid_date = self.uuid.get_datetime().date_naive();
-        let video_date = video_published_at.as_chrono_datetime().date_naive();
-
-        if uuid_date != video_date {
-            return Err(VerifiedClipError::UuidDateMismatch {
-                song_title: self.song_title.clone(),
-                uuid_date,
-                video_date: video_published_at.clone(),
-            });
-        }
         Ok(())
     }
 
@@ -220,7 +161,7 @@ impl VerifiedClipInitializer {
 // ∵ 単品で`Verified`かどうかを確認できないため
 
 impl VerifiedClip {
-    pub(crate) fn get_uuid(&self) -> &crate::model::UuidVer7 {
+    pub(crate) fn get_uuid(&self) -> &crate::model::UuidVer4 {
         &self.uuid
     }
     pub(crate) fn get_song_title(&self) -> &str {
@@ -255,15 +196,8 @@ impl VerifiedClip {
     // Unverifiedに対応するように作成
 
     fn self_a_initialize(ini_1: VerifiedClipInitializer) -> Self {
-        use chrono::TimeZone;
         ini_1
-            .init(
-                &crate::model::VideoPublishedAt::new(
-                    chrono::Utc.with_ymd_and_hms(2024, 12, 12, 0, 0, 0).unwrap(),
-                )
-                .unwrap(),
-                &crate::model::Duration::from_secs(120),
-            )
+            .init(&crate::model::Duration::from_secs_u16(120))
             .expect("Failed to create VerifiedClip A1")
     }
     pub(crate) fn self_a_1() -> Self {
@@ -272,10 +206,10 @@ impl VerifiedClip {
             artists: crate::model::InternalArtists::test_name_1(),
             external_artists: Some(crate::model::ExternalArtists::test_name_1()),
             is_clipped: false,
-            start_time: crate::model::Duration::from_secs(5),
-            end_time: crate::model::Duration::from_secs(10),
+            start_time: crate::model::Duration::from_secs_u16(5),
+            end_time: crate::model::Duration::from_secs_u16(10),
             clip_tags: None,
-            uuid: crate::model::UuidVer7::self_fix_rnd_1(0, 5),
+            uuid: crate::model::UuidVer4::self_partly_rand(0xa1),
             volume_percent: None,
         };
         Self::self_a_initialize(ini_1)
@@ -286,10 +220,10 @@ impl VerifiedClip {
             artists: crate::model::InternalArtists::test_name_2(),
             external_artists: None,
             is_clipped: true,
-            start_time: crate::model::Duration::from_secs(15),
-            end_time: crate::model::Duration::from_secs(20),
+            start_time: crate::model::Duration::from_secs_u16(15),
+            end_time: crate::model::Duration::from_secs_u16(20),
             clip_tags: None,
-            uuid: crate::model::UuidVer7::self_fix_rnd_1(0, 15),
+            uuid: crate::model::UuidVer4::self_partly_rand(0xa2),
             volume_percent: None,
         };
         Self::self_a_initialize(ini_2)
@@ -300,26 +234,18 @@ impl VerifiedClip {
             artists: crate::model::InternalArtists::test_name_3(),
             external_artists: Some(crate::model::ExternalArtists::test_name_2()),
             is_clipped: false,
-            start_time: crate::model::Duration::from_secs(25),
-            end_time: crate::model::Duration::from_secs(30),
+            start_time: crate::model::Duration::from_secs_u16(25),
+            end_time: crate::model::Duration::from_secs_u16(30),
             clip_tags: Some(crate::model::ClipTags::self_2()),
-            uuid: crate::model::UuidVer7::self_fix_rnd_1(0, 25),
+            uuid: crate::model::UuidVer4::self_partly_rand(0xa3),
             volume_percent: None,
         };
         Self::self_a_initialize(ini_3)
     }
 
     fn self_b_initialize(ini_2: VerifiedClipInitializer) -> Self {
-        use chrono::TimeZone;
-
         ini_2
-            .init(
-                &crate::model::VideoPublishedAt::new(
-                    chrono::Utc.with_ymd_and_hms(2025, 5, 30, 0, 0, 0).unwrap(),
-                )
-                .unwrap(),
-                &crate::model::Duration::from_secs(120),
-            )
+            .init(&crate::model::Duration::from_secs_u16(120))
             .expect("Failed to create VerifiedClip A2")
     }
     pub(crate) fn self_b_1() -> Self {
@@ -328,10 +254,10 @@ impl VerifiedClip {
             artists: crate::model::InternalArtists::test_name_1(),
             external_artists: Some(crate::model::ExternalArtists::test_name_3()),
             is_clipped: true,
-            start_time: crate::model::Duration::from_secs(7),
-            end_time: crate::model::Duration::from_secs(17),
+            start_time: crate::model::Duration::from_secs_u16(7),
+            end_time: crate::model::Duration::from_secs_u16(17),
             clip_tags: Some(crate::model::ClipTags::self_3()),
-            uuid: crate::model::UuidVer7::self_fix_rnd_2(0, 7),
+            uuid: crate::model::UuidVer4::self_partly_rand(0xb1),
             volume_percent: None,
         };
         Self::self_b_initialize(ini_b1)
@@ -342,10 +268,10 @@ impl VerifiedClip {
             artists: crate::model::InternalArtists::test_name_2(),
             external_artists: None,
             is_clipped: false,
-            start_time: crate::model::Duration::from_secs(27),
-            end_time: crate::model::Duration::from_secs(37),
+            start_time: crate::model::Duration::from_secs_u16(27),
+            end_time: crate::model::Duration::from_secs_u16(37),
             clip_tags: Some(crate::model::ClipTags::self_1()),
-            uuid: crate::model::UuidVer7::self_fix_rnd_2(0, 27),
+            uuid: crate::model::UuidVer4::self_partly_rand(0xb2),
             volume_percent: None,
         };
         Self::self_b_initialize(ini_b2)
@@ -356,10 +282,10 @@ impl VerifiedClip {
             artists: crate::model::InternalArtists::test_name_1(),
             external_artists: None,
             is_clipped: true,
-            start_time: crate::model::Duration::from_secs(47),
-            end_time: crate::model::Duration::from_secs(57),
+            start_time: crate::model::Duration::from_secs_u16(47),
+            end_time: crate::model::Duration::from_secs_u16(57),
             clip_tags: None,
-            uuid: crate::model::UuidVer7::self_fix_rnd_2(0, 47),
+            uuid: crate::model::UuidVer4::self_partly_rand(0xb3),
             volume_percent: None,
         };
         Self::self_b_initialize(ini_b3)
@@ -385,10 +311,10 @@ mod tests {
         assert_eq!(clip_a_1.artists, crate::model::InternalArtists::test_name_1());
         assert_eq!(clip_a_1.external_artists, Some(crate::model::ExternalArtists::test_name_1()));
         assert!(!clip_a_1.is_clipped);
-        assert_eq!(clip_a_1.start_time, crate::model::Duration::from_secs(5));
-        assert_eq!(clip_a_1.end_time, crate::model::Duration::from_secs(10));
+        assert_eq!(clip_a_1.start_time, crate::model::Duration::from_secs_u16(5));
+        assert_eq!(clip_a_1.end_time, crate::model::Duration::from_secs_u16(10));
         assert_eq!(clip_a_1.clip_tags, None);
-        assert_eq!(clip_a_1.uuid, crate::model::UuidVer7::self_fix_rnd_1(0, 5));
+        assert_eq!(clip_a_1.uuid, crate::model::UuidVer4::self_partly_rand(0xa1));
         assert_eq!(clip_a_1.volume_percent, None);
 
         let clip_a_2 = VerifiedClip::self_a_2();
@@ -396,10 +322,10 @@ mod tests {
         assert_eq!(clip_a_2.artists, crate::model::InternalArtists::test_name_2());
         assert_eq!(clip_a_2.external_artists, None);
         assert!(clip_a_2.is_clipped);
-        assert_eq!(clip_a_2.start_time, crate::model::Duration::from_secs(15));
-        assert_eq!(clip_a_2.end_time, crate::model::Duration::from_secs(20));
+        assert_eq!(clip_a_2.start_time, crate::model::Duration::from_secs_u16(15));
+        assert_eq!(clip_a_2.end_time, crate::model::Duration::from_secs_u16(20));
         assert_eq!(clip_a_2.clip_tags, None);
-        assert_eq!(clip_a_2.uuid, crate::model::UuidVer7::self_fix_rnd_1(0, 15));
+        assert_eq!(clip_a_2.uuid, crate::model::UuidVer4::self_partly_rand(0xa2));
         assert_eq!(clip_a_2.volume_percent, None);
 
         let clip_a_3 = VerifiedClip::self_a_3();
@@ -407,10 +333,10 @@ mod tests {
         assert_eq!(clip_a_3.artists, crate::model::InternalArtists::test_name_3());
         assert_eq!(clip_a_3.external_artists, Some(crate::model::ExternalArtists::test_name_2()));
         assert!(!clip_a_3.is_clipped);
-        assert_eq!(clip_a_3.start_time, crate::model::Duration::from_secs(25));
-        assert_eq!(clip_a_3.end_time, crate::model::Duration::from_secs(30));
+        assert_eq!(clip_a_3.start_time, crate::model::Duration::from_secs_u16(25));
+        assert_eq!(clip_a_3.end_time, crate::model::Duration::from_secs_u16(30));
         assert_eq!(clip_a_3.clip_tags, Some(crate::model::ClipTags::self_2()));
-        assert_eq!(clip_a_3.uuid, crate::model::UuidVer7::self_fix_rnd_1(0, 25));
+        assert_eq!(clip_a_3.uuid, crate::model::UuidVer4::self_partly_rand(0xa3));
         assert_eq!(clip_a_3.volume_percent, None);
 
         let clip_b_1 = VerifiedClip::self_b_1();
@@ -418,10 +344,10 @@ mod tests {
         assert_eq!(clip_b_1.artists, crate::model::InternalArtists::test_name_1());
         assert_eq!(clip_b_1.external_artists, Some(crate::model::ExternalArtists::test_name_3()));
         assert!(clip_b_1.is_clipped);
-        assert_eq!(clip_b_1.start_time, crate::model::Duration::from_secs(7));
-        assert_eq!(clip_b_1.end_time, crate::model::Duration::from_secs(17));
+        assert_eq!(clip_b_1.start_time, crate::model::Duration::from_secs_u16(7));
+        assert_eq!(clip_b_1.end_time, crate::model::Duration::from_secs_u16(17));
         assert_eq!(clip_b_1.clip_tags, Some(crate::model::ClipTags::self_3()));
-        assert_eq!(clip_b_1.uuid, crate::model::UuidVer7::self_fix_rnd_2(0, 7));
+        assert_eq!(clip_b_1.uuid, crate::model::UuidVer4::self_partly_rand(0xb1));
         assert_eq!(clip_b_1.volume_percent, None);
 
         let clip_b_2 = VerifiedClip::self_b_2();
@@ -429,10 +355,10 @@ mod tests {
         assert_eq!(clip_b_2.artists, crate::model::InternalArtists::test_name_2());
         assert_eq!(clip_b_2.external_artists, None);
         assert!(!clip_b_2.is_clipped);
-        assert_eq!(clip_b_2.start_time, crate::model::Duration::from_secs(27));
-        assert_eq!(clip_b_2.end_time, crate::model::Duration::from_secs(37));
+        assert_eq!(clip_b_2.start_time, crate::model::Duration::from_secs_u16(27));
+        assert_eq!(clip_b_2.end_time, crate::model::Duration::from_secs_u16(37));
         assert_eq!(clip_b_2.clip_tags, Some(crate::model::ClipTags::self_1()));
-        assert_eq!(clip_b_2.uuid, crate::model::UuidVer7::self_fix_rnd_2(0, 27));
+        assert_eq!(clip_b_2.uuid, crate::model::UuidVer4::self_partly_rand(0xb2));
         assert_eq!(clip_b_2.volume_percent, None);
 
         let clip_b_3 = VerifiedClip::self_b_3();
@@ -440,94 +366,11 @@ mod tests {
         assert_eq!(clip_b_3.artists, crate::model::InternalArtists::test_name_1());
         assert_eq!(clip_b_3.external_artists, None);
         assert!(clip_b_3.is_clipped);
-        assert_eq!(clip_b_3.start_time, crate::model::Duration::from_secs(47));
-        assert_eq!(clip_b_3.end_time, crate::model::Duration::from_secs(57));
+        assert_eq!(clip_b_3.start_time, crate::model::Duration::from_secs_u16(47));
+        assert_eq!(clip_b_3.end_time, crate::model::Duration::from_secs_u16(57));
         assert_eq!(clip_b_3.clip_tags, None);
-        assert_eq!(clip_b_3.uuid, crate::model::UuidVer7::self_fix_rnd_2(0, 47));
+        assert_eq!(clip_b_3.uuid, crate::model::UuidVer4::self_partly_rand(0xb3));
         assert_eq!(clip_b_3.volume_percent, None);
-    }
-
-    #[test]
-    fn test_verified_clip_validate_uuid_time() {
-        // 正常
-        let verified_initializer = VerifiedClipInitializer {
-            song_title: "Test Song".to_string(),
-            artists: crate::model::InternalArtists::test_name_1(),
-            external_artists: None,
-            is_clipped: false,
-            start_time: crate::model::Duration::from_secs(30),
-            end_time: crate::model::Duration::from_secs(40),
-            clip_tags: None,
-            uuid: crate::model::UuidVer7::self_4(),
-            volume_percent: None,
-        };
-        verified_initializer
-            .validate_uuid_time()
-            .expect("UUID time validation should succeed");
-
-        // 異常, `start_time`と`uuid`の時間が一致しない
-        let verified_initializer = VerifiedClipInitializer {
-            song_title: "Test Song".to_string(),
-            artists: crate::model::InternalArtists::test_name_1(),
-            external_artists: None,
-            is_clipped: false,
-            // この値が`uuid`の時間が一致しない
-            start_time: crate::model::Duration::from_secs(40),
-            end_time: crate::model::Duration::from_secs(50),
-            clip_tags: None,
-            uuid: crate::model::UuidVer7::self_4(),
-            volume_percent: None,
-        };
-        let result = verified_initializer.validate_uuid_time();
-        assert!(result.is_err());
-    }
-
-    #[test]
-    fn test_verified_clip_validate_uuid_date() {
-        use chrono::TimeZone;
-
-        // 正常
-        let verified_initializer = VerifiedClipInitializer {
-            song_title: "Test Song".to_string(),
-            artists: crate::model::InternalArtists::test_name_1(),
-            external_artists: None,
-            is_clipped: false,
-            start_time: crate::model::Duration::from_secs(30),
-            end_time: crate::model::Duration::from_secs(40),
-            clip_tags: None,
-            uuid: crate::model::UuidVer7::self_4(),
-            volume_percent: None,
-        };
-        verified_initializer
-            .validate_uuid_date(
-                &crate::model::VideoPublishedAt::new(
-                    chrono::Utc
-                        .with_ymd_and_hms(2024, 12, 12, 0, 0, 30)
-                        .unwrap(),
-                )
-                .unwrap(),
-            )
-            .expect("UUID date validation should succeed");
-
-        // 異常, `uuid`の日付と動画の公開日が一致しない
-        let verified_initializer = VerifiedClipInitializer {
-            song_title: "Test Song".to_string(),
-            artists: crate::model::InternalArtists::test_name_1(),
-            external_artists: None,
-            is_clipped: false,
-            start_time: crate::model::Duration::from_secs(30),
-            end_time: crate::model::Duration::from_secs(40),
-            clip_tags: None,
-            uuid: crate::model::UuidVer7::self_4(),
-            volume_percent: None,
-        };
-        let result = verified_initializer.validate_uuid_date(
-            &crate::model::VideoPublishedAt::new(
-                chrono::Utc.with_ymd_and_hms(2024, 1, 1, 0, 0, 30).unwrap(),
-            )
-            .unwrap(),
-        );
-        assert!(result.is_err());
     }
 
     #[test]
@@ -538,14 +381,14 @@ mod tests {
             artists: crate::model::InternalArtists::test_name_1(),
             external_artists: None,
             is_clipped: false,
-            start_time: crate::model::Duration::from_secs(30),
-            end_time: crate::model::Duration::from_secs(40),
+            start_time: crate::model::Duration::from_secs_u16(30),
+            end_time: crate::model::Duration::from_secs_u16(40),
             clip_tags: None,
-            uuid: crate::model::UuidVer7::self_4(),
+            uuid: crate::model::UuidVer4::self_4(),
             volume_percent: None,
         };
         verified_initializer
-            .validate_video_duration(&crate::model::Duration::from_secs(60))
+            .validate_video_duration(&crate::model::Duration::from_secs_u16(60))
             .expect("Video duration validation should succeed");
 
         // 異常, `start_time`か`end_time`動画の長さを超えている
@@ -554,14 +397,14 @@ mod tests {
             artists: crate::model::InternalArtists::test_name_1(),
             external_artists: None,
             is_clipped: false,
-            start_time: crate::model::Duration::from_secs(30),
-            end_time: crate::model::Duration::from_secs(50),
+            start_time: crate::model::Duration::from_secs_u16(30),
+            end_time: crate::model::Duration::from_secs_u16(50),
             clip_tags: None,
-            uuid: crate::model::UuidVer7::self_4(),
+            uuid: crate::model::UuidVer4::self_4(),
             volume_percent: None,
         };
         let result = verified_initializer
-            .validate_video_duration(&crate::model::Duration::from_secs(40));
+            .validate_video_duration(&crate::model::Duration::from_secs_u16(40));
         assert!(result.is_err());
     }
 }

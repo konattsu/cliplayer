@@ -2,7 +2,8 @@
 
 ## back
 
-/music_data/src/apply/sync.rs直す
+/music_data/src/apply/直す
+uuidv4にする
 artists_idをmusic_data.code-snippetsに埋め込むようにする(/music_data/artistに処理追加する). schemaはいらない. どうせcliに食わせるので.
 musictl summary 的なもので.mdとかに登録済みの配信一覧出力機能作ったりしたい
 

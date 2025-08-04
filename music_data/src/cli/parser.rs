@@ -21,13 +21,13 @@ pub enum ApplyCommands {
     New {
         /// Comma-separated file(s) containing new music data to apply
         #[arg(short, long, value_name = "FILES")]
-        input: crate::cli::FilePathsFromCli,
+        input: crate::cli::FilePathFromCli,
         /// The key of YouTube Data v3 api to fetch data
         #[arg(short, long, env = "YOUTUBE_API_KEY")]
         api_key: crate::fetcher::YouTubeApiKey,
         /// Directory where the results will be written
-        #[arg(long, value_name = "DIR", default_value_t = crate::cli::MusicRootFromCli::default())]
-        music_root: crate::cli::MusicRootFromCli,
+        #[arg(long, value_name = "DIR", default_value_t = crate::cli::MusicLibraryCli::default())]
+        music_root: crate::cli::MusicLibraryCli,
         /// Path to the output file for minimized JSON data
         #[arg(long, value_name = "FILE", default_value_t = crate::cli::OutputMinPathFromCli::default())]
         output_min_file: crate::cli::OutputMinPathFromCli,
@@ -41,8 +41,8 @@ pub enum ApplyCommands {
     /// Update existing music data from input files
     Update {
         /// Directory where the results will be written
-        #[arg(long, value_name = "DIR", default_value_t = crate::cli::MusicRootFromCli::default())]
-        music_root: crate::cli::MusicRootFromCli,
+        #[arg(long, value_name = "DIR", default_value_t = crate::cli::MusicLibraryCli::default())]
+        music_root: crate::cli::MusicLibraryCli,
         /// Path to the output file for minimized JSON data
         #[arg(long, value_name = "FILE", default_value_t = crate::cli::OutputMinPathFromCli::default())]
         output_min_file: crate::cli::OutputMinPathFromCli,
@@ -59,8 +59,8 @@ pub enum ApplyCommands {
         #[arg(short, long, env = "YOUTUBE_API_KEY")]
         api_key: crate::fetcher::YouTubeApiKey,
         /// Directory of the music data to synchronize with
-        #[arg(long, value_name = "DIR", default_value_t = crate::cli::MusicRootFromCli::default())]
-        music_root: crate::cli::MusicRootFromCli,
+        #[arg(long, value_name = "DIR", default_value_t = crate::cli::MusicLibraryCli::default())]
+        music_root: crate::cli::MusicLibraryCli,
         /// Path to the output file for minimized JSON data
         #[arg( long, value_name = "FILE", default_value_t = crate::cli::OutputMinPathFromCli::default())]
         output_min_file: crate::cli::OutputMinPathFromCli,
@@ -81,7 +81,7 @@ pub enum ValidateCommands {
     NewInput {
         /// Comma-separated file(s) containing new music data to validate
         #[arg(short, long, value_name = "FILES")]
-        input: crate::cli::FilePathsFromCli,
+        input: crate::cli::FilePathFromCli,
 
         #[clap(flatten)]
         trace_level: TraceLevel,
@@ -89,8 +89,16 @@ pub enum ValidateCommands {
     /// Validate existing music data input files
     UpdateInput {
         /// Directory of the music data to use for validation
-        #[arg(long, value_name = "DIR", default_value_t = crate::cli::MusicRootFromCli::default())]
-        music_root: crate::cli::MusicRootFromCli,
+        #[arg(long, value_name = "DIR", default_value_t = crate::cli::MusicLibraryCli::default())]
+        music_root: crate::cli::MusicLibraryCli,
+        // NOTE: 将来的にMusicLibraryのインスタンス生成の制約を緩くして
+        // 引数に**_min_**系受け取らないようにしたい. 下のDuplicateも同様
+        /// Path to the output file for minimized JSON data
+        #[arg(long, value_name = "FILE", default_value_t = crate::cli::OutputMinPathFromCli::default())]
+        output_min_file: crate::cli::OutputMinPathFromCli,
+        /// Path to the output file for minimized clips JSON data
+        #[arg(long, value_name = "FILE", default_value_t = crate::cli::OutputMinClipsPathFromCli::default())]
+        output_min_clips_file: crate::cli::OutputMinClipsPathFromCli,
 
         #[clap(flatten)]
         trace_level: TraceLevel,
@@ -101,8 +109,14 @@ pub enum ValidateCommands {
         #[arg(short, long, value_name = "String")]
         id: crate::cli::VideoIdsFromCli,
         /// Directory of the music data to use for duplicate checking
-        #[arg(long, value_name = "DIR", default_value_t = crate::cli::MusicRootFromCli::default())]
-        music_root: crate::cli::MusicRootFromCli,
+        #[arg(long, value_name = "DIR", default_value_t = crate::cli::MusicLibraryCli::default())]
+        music_root: crate::cli::MusicLibraryCli,
+        /// Path to the output file for minimized JSON data
+        #[arg(long, value_name = "FILE", default_value_t = crate::cli::OutputMinPathFromCli::default())]
+        output_min_file: crate::cli::OutputMinPathFromCli,
+        /// Path to the output file for minimized clips JSON data
+        #[arg(long, value_name = "FILE", default_value_t = crate::cli::OutputMinClipsPathFromCli::default())]
+        output_min_clips_file: crate::cli::OutputMinClipsPathFromCli,
 
         #[clap(flatten)]
         trace_level: TraceLevel,

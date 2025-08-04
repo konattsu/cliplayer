@@ -99,8 +99,8 @@
         "isClipped": false,
         "startTime": "PT1M10S",
         "endTime": "PT4M21S",
-        // publishedAtの日付(!日時) + startTimeを基に生成
-        "uuid": "0197bbd1-039e-77f6-9112-519561b61f9e",
+        // uuid version 4
+        "uuid": "d5cb8a6b-fb40-424d-9079-c62bd76b92a5",
         "clipTags": ["(例示用)"],
         // 今は未実装. 実装しても, actionsで直接付与できるものではなくローカルからのPRになりそう
         "volumePercent": 50,
@@ -111,7 +111,7 @@
         "isClipped": false,
         "startTime": "PT7M12S",
         "endTime": "PT11M34S",
-        "uuid": "0197bbd1-039e-7b67-8c92-6f557c60f187"
+        "uuid": "6af3a9fb-05ab-4e53-8cdf-9e63869c4246"
       }
     ]
   }
@@ -129,7 +129,7 @@
 ```json
 [
   {
-    "uuid": "0197bbd1-039e-77f6-9112-519561b61f9e",
+    "uuid": "d5cb8a6b-fb40-424d-9079-c62bd76b92a5",
     "songTitle": "おねがいダーリン",
     "artists": ["ruri-shioriha"],
     "externalArtists": ["(例示用)"],
@@ -139,7 +139,7 @@
     // volumePercentは含めない
   },
   {
-    "uuid": "0197bbd1-039e-7b67-8c92-6f557c60f187",
+    "uuid": "6af3a9fb-05ab-4e53-8cdf-9e63869c4246",
     "songTitle": "命に嫌われている。",
     "artists": ["ruri-shioriha"],
     "startTime": "PT7M12S",

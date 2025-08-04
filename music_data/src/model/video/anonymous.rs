@@ -4,7 +4,7 @@
 #[derive(Debug, Clone)]
 pub(crate) struct AnonymousVideo {
     /// 動画の情報
-    video_brief: super::VideoBrief,
+    local_record: super::LocalVideoInfo,
     /// クリップ
     clips: Vec<crate::model::AnonymousClip>,
 }
@@ -13,7 +13,7 @@ pub(crate) struct AnonymousVideo {
 ///
 /// 内部の動画のvideo_idは重複しないことを保証
 #[derive(Debug, Clone)]
-pub(crate) struct AnonymousVideos {
+pub struct AnonymousVideos {
     inner: std::collections::HashMap<crate::model::VideoId, AnonymousVideo>,
 }
 
@@ -45,7 +45,7 @@ impl<'de> serde::Deserialize<'de> for AnonymousVideo {
         #[serde(deny_unknown_fields)]
         struct RawAnonymousVideo {
             #[serde(flatten)]
-            video_brief: super::VideoBrief,
+            video_brief: super::LocalVideoInfo,
             clips: Vec<crate::model::AnonymousClip>,
         }
 
@@ -57,16 +57,13 @@ impl<'de> serde::Deserialize<'de> for AnonymousVideo {
 }
 
 impl AnonymousVideo {
-    pub(crate) fn get_video_brief(&self) -> &super::VideoBrief {
-        &self.video_brief
-    }
     pub(crate) fn get_video_id(&self) -> &crate::model::VideoId {
-        self.video_brief.get_video_id()
+        self.local_record.get_video_id()
     }
     pub(crate) fn into_inner(
         self,
-    ) -> (super::VideoBrief, Vec<crate::model::AnonymousClip>) {
-        (self.video_brief, self.clips)
+    ) -> (super::LocalVideoInfo, Vec<crate::model::AnonymousClip>) {
+        (self.local_record, self.clips)
     }
 
     /// `AnonymousVideo`を生成
@@ -77,13 +74,16 @@ impl AnonymousVideo {
     /// - クリップの指定時間が重複しているとき
     /// - クリップが空のとき
     pub(crate) fn new(
-        video_brief: super::VideoBrief,
+        video_brief: super::LocalVideoInfo,
         clips: Vec<crate::model::AnonymousClip>,
     ) -> Result<Self, AnonymousVideoValidateError> {
         let mut clips = clips;
         clips.sort_by_key(|clip| clip.get_start_time().as_secs());
         Self::validate_consistency(&clips, &video_brief)?;
-        Ok(Self { video_brief, clips })
+        Ok(Self {
+            local_record: video_brief,
+            clips,
+        })
     }
 
     /// 動画のクリップの整合性を検証
@@ -92,7 +92,7 @@ impl AnonymousVideo {
     /// - クリップが空でないか
     fn validate_consistency(
         clips: &[crate::model::AnonymousClip],
-        video_brief: &super::VideoBrief,
+        video_brief: &super::LocalVideoInfo,
     ) -> Result<(), AnonymousVideoValidateError> {
         // クリップが空でないか
         if clips.is_empty() {
@@ -140,8 +140,10 @@ impl<'de> serde::Deserialize<'de> for AnonymousVideos {
 }
 
 impl AnonymousVideos {
-    pub(crate) fn into_vec(self) -> Vec<AnonymousVideo> {
-        self.inner.into_values().collect()
+    pub(crate) fn into_inner(
+        self,
+    ) -> std::collections::HashMap<crate::model::VideoId, AnonymousVideo> {
+        self.inner
     }
 
     /// `AnonymousVideo`のリストを`AnonymousVideos`に変換
@@ -177,18 +179,19 @@ impl AnonymousVideos {
         self.inner.keys().cloned().collect()
     }
 
-    pub(crate) fn to_briefs(&self) -> crate::model::VideoBriefs {
-        let briefs = self
-            .inner
-            .values()
-            .map(|v| v.get_video_brief())
-            .cloned()
-            .collect();
+    // TODO 多分いらない
+    // pub(crate) fn to_briefs(&self) -> crate::model::VideoBriefs {
+    //     let briefs = self
+    //         .inner
+    //         .values()
+    //         .map(|v| v.get_video_brief())
+    //         .cloned()
+    //         .collect();
 
-        // `Self(AnonymousVideos)`も`VideoBriefs`もvideo_idの重複を許可しないので
-        // `Self`は`VideoBriefs`に変換するための十分条件を満たしている
-        crate::model::VideoBriefs::try_from_vec(briefs).expect("will not fail")
-    }
+    //     // `Self(AnonymousVideos)`も`VideoBriefs`もvideo_idの重複を許可しないので
+    //     // `Self`は`VideoBriefs`に変換するための十分条件を満たしている
+    //     crate::model::VideoBriefs::try_from_vec(briefs).expect("will not fail")
+    // }
 }
 
 // MARK: Tests
@@ -246,7 +249,7 @@ mod tests {
 
     #[test]
     fn test_anonymous_video_new() {
-        let brief = crate::model::VideoBrief::new(
+        let brief = crate::model::LocalVideoInfo::new(
             crate::model::VideoId::test_id_1(),
             None,
             crate::model::VideoTags::self_1(),
@@ -260,10 +263,7 @@ mod tests {
         let video =
             AnonymousVideo::new(brief, clips).expect("should create successfully");
 
-        assert_eq!(
-            video.get_video_brief().get_video_id(),
-            &crate::model::VideoId::test_id_1()
-        );
+        assert_eq!(video.get_video_id(), &crate::model::VideoId::test_id_1());
         assert_eq!(video.clips.len(), 3);
         // ソートを確認
         assert_eq!(video.clips[0], crate::model::AnonymousClip::self_a_1());
@@ -273,7 +273,7 @@ mod tests {
 
     #[test]
     fn test_anonymous_video_new_with_overlapping_clips() {
-        let brief = crate::model::VideoBrief::new(
+        let brief = crate::model::LocalVideoInfo::new(
             crate::model::VideoId::test_id_1(),
             None,
             crate::model::VideoTags::self_1(),
@@ -293,7 +293,7 @@ mod tests {
 
     #[test]
     fn test_anonymous_video_new_with_empty_clips() {
-        let brief = crate::model::VideoBrief::new(
+        let brief = crate::model::LocalVideoInfo::new(
             crate::model::VideoId::test_id_1(),
             None,
             crate::model::VideoTags::self_1(),
@@ -309,7 +309,7 @@ mod tests {
     #[test]
     fn test_anonymous_videos_try_from_vec() {
         let video1 = AnonymousVideo::new(
-            crate::model::VideoBrief::new(
+            crate::model::LocalVideoInfo::new(
                 crate::model::VideoId::test_id_1(),
                 None,
                 crate::model::VideoTags::self_1(),
@@ -318,7 +318,7 @@ mod tests {
         )
         .expect("should create successfully");
         let video2 = AnonymousVideo::new(
-            crate::model::VideoBrief::new(
+            crate::model::LocalVideoInfo::new(
                 crate::model::VideoId::test_id_2(),
                 None,
                 crate::model::VideoTags::self_2(),
@@ -346,7 +346,7 @@ mod tests {
     #[test]
     fn test_anonymous_videos_try_from_vec_with_duplicates() {
         let video1 = AnonymousVideo::new(
-            crate::model::VideoBrief::new(
+            crate::model::LocalVideoInfo::new(
                 crate::model::VideoId::test_id_1(),
                 None,
                 crate::model::VideoTags::self_1(),
@@ -355,7 +355,7 @@ mod tests {
         )
         .expect("should create successfully");
         let video2 = AnonymousVideo::new(
-            crate::model::VideoBrief::new(
+            crate::model::LocalVideoInfo::new(
                 crate::model::VideoId::test_id_1(), // 重複するID
                 None,
                 crate::model::VideoTags::self_2(),

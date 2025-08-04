@@ -19,20 +19,8 @@ impl<'de> serde::Deserialize<'de> for VideoTags {
 }
 
 impl VideoTags {
-    /// 動画タグを新規作成する
-    ///
-    /// - Error: タグが空文字列のとき
-    /// - Ok: 空文字列でないとき, ベクタが空の時も許容
-    pub(crate) fn new(tags: Vec<String>) -> Result<Self, &'static str> {
-        Tags::new(tags).map(VideoTags)
-    }
-
     fn from_tags(tags: Tags) -> Self {
         VideoTags(tags)
-    }
-
-    pub(crate) fn is_empty(&self) -> bool {
-        self.0.0.is_empty()
     }
 }
 
@@ -55,20 +43,8 @@ impl<'de> serde::Deserialize<'de> for ClipTags {
 }
 
 impl ClipTags {
-    /// クリップタグを新規作成する
-    ///
-    /// - Error: タグが空文字列のとき
-    /// - Ok: 空文字列でないとき, ベクタが空の時も許容
-    pub(crate) fn new(tags: Vec<String>) -> Result<Self, &'static str> {
-        Tags::new(tags).map(ClipTags)
-    }
-
     fn from_tags(tags: Tags) -> Self {
         ClipTags(tags)
-    }
-
-    pub(crate) fn is_empty(&self) -> bool {
-        self.0.0.is_empty()
     }
 }
 
@@ -93,21 +69,6 @@ impl<'de> serde::Deserialize<'de> for Tags {
 }
 
 impl Tags {
-    /// タグのベクタを新規作成
-    ///
-    /// ソートして保持
-    ///
-    /// - Error: タグが空文字列のとき
-    /// - Ok: 空文字列でないとき, ベクタが空の時も許容
-    pub(crate) fn new(tags: Vec<String>) -> Result<Self, &'static str> {
-        let mut tags = tags
-            .into_iter()
-            .map(|tag| Tag::new(tag))
-            .collect::<Result<Vec<Tag>, &'static str>>()?;
-        tags.sort();
-        Ok(Self(tags))
-    }
-
     fn from_vec(tags: Vec<Tag>) -> Self {
         let mut tags = tags;
         tags.sort();
@@ -164,6 +125,18 @@ impl VideoTags {
             Tag::new("Test Video Tag4".to_string()).unwrap(),
         ]))
     }
+
+    /// 動画タグを新規作成する
+    ///
+    /// - Error: タグが空文字列のとき
+    /// - Ok: 空文字列でないとき, ベクタが空の時も許容
+    pub(crate) fn new(tags: Vec<String>) -> Result<Self, &'static str> {
+        Tags::new(tags).map(VideoTags)
+    }
+
+    pub(crate) fn is_empty(&self) -> bool {
+        self.0.0.is_empty()
+    }
 }
 
 #[cfg(test)]
@@ -182,6 +155,36 @@ impl ClipTags {
             Tag::new("Test Clip Tag3".to_string()).unwrap(),
             Tag::new("Test Clip Tag4".to_string()).unwrap(),
         ]))
+    }
+
+    /// クリップタグを新規作成する
+    ///
+    /// - Error: タグが空文字列のとき
+    /// - Ok: 空文字列でないとき, ベクタが空の時も許容
+    pub(crate) fn new(tags: Vec<String>) -> Result<Self, &'static str> {
+        Tags::new(tags).map(ClipTags)
+    }
+
+    pub(crate) fn is_empty(&self) -> bool {
+        self.0.0.is_empty()
+    }
+}
+
+#[cfg(test)]
+impl Tags {
+    /// タグのベクタを新規作成
+    ///
+    /// ソートして保持
+    ///
+    /// - Error: タグが空文字列のとき
+    /// - Ok: 空文字列でないとき, ベクタが空の時も許容
+    fn new(tags: Vec<String>) -> Result<Self, &'static str> {
+        let mut tags = tags
+            .into_iter()
+            .map(|tag| Tag::new(tag))
+            .collect::<Result<Vec<Tag>, &'static str>>()?;
+        tags.sort();
+        Ok(Self(tags))
     }
 }
 

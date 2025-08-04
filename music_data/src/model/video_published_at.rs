@@ -19,10 +19,6 @@ impl VideoPublishedAt {
         Ok(VideoPublishedAt(Self::truncate_millis(upload_at)))
     }
 
-    pub(crate) fn as_chrono_datetime(&self) -> &chrono::DateTime<chrono::Utc> {
-        &self.0
-    }
-
     pub(crate) fn as_secs(&self) -> u64 {
         u64::try_from(self.0.timestamp())
             .expect("VideoPublishedAt::as_secs() is overflow")
@@ -36,23 +32,6 @@ impl VideoPublishedAt {
     pub(crate) fn get_month(&self) -> usize {
         use chrono::Datelike;
         self.0.month() as usize
-    }
-
-    /// 動画のアップロード時間を加算
-    ///
-    /// - Error: 加算した結果が符号なし48ビットのタイムスタンプの範囲外の場合
-    ///   - i.e. `0..2^48-1` millisの範囲外
-    pub(crate) fn try_add(
-        &self,
-        other: &VideoPublishedAt,
-    ) -> Result<VideoPublishedAt, &'static str> {
-        // 最大で,48bit + 48bit = 49bitなので`chrono::Duration`を一時的に使用する
-        // `chrono::Duration`側では符号なしだと63bitまで扱えるので問題ない
-        let new_upload_at =
-            self.0 + chrono::Duration::milliseconds(other.0.timestamp_millis());
-        // 最大が49bitなので, 再度48bitの範囲内であることを確認
-        Self::validate_unsigned_48bit_timestamp(new_upload_at)?;
-        Ok(VideoPublishedAt(new_upload_at))
     }
 
     /// 符号なし48ビットのタイムスタンプの範囲内であることを検証
@@ -151,6 +130,10 @@ impl VideoPublishedAt {
         let dt = chrono::Utc.with_ymd_and_hms(2024, 3, 3, 3, 3, 3).unwrap();
         VideoPublishedAt::new(dt).unwrap()
     }
+
+    fn as_chrono_datetime(&self) -> &chrono::DateTime<chrono::Utc> {
+        &self.0
+    }
 }
 
 // MARK: Tests
@@ -241,27 +224,5 @@ mod tests {
         let s = serde_json::to_string(&v).unwrap();
         let v2: VideoPublishedAt = serde_json::from_str(&s).unwrap();
         assert_eq!(v, v2);
-    }
-
-    #[test]
-    fn test_video_published_at_try_add_valid() {
-        let dt1 = Utc.timestamp_millis_opt(1_000_000).unwrap();
-        let dt2 = Utc.timestamp_millis_opt(2_000_000).unwrap();
-        let v1 = VideoPublishedAt::new(dt1).unwrap();
-        let v2 = VideoPublishedAt::new(dt2).unwrap();
-        let v3 = v1.try_add(&v2).unwrap();
-        let expected = Utc.timestamp_millis_opt(1_000_000 + 2_000_000).unwrap();
-        assert_eq!(v3.as_chrono_datetime(), &expected);
-    }
-
-    #[test]
-    fn test_video_published_at_try_add_overflow() {
-        let base = (1u64 << 48) as i64 - 500;
-        let dt1 = Utc.timestamp_millis_opt(base).unwrap();
-        let dt2 = Utc.timestamp_millis_opt(1000).unwrap();
-        let v1 = VideoPublishedAt::new(dt1).unwrap();
-        let v2 = VideoPublishedAt::new(dt2).unwrap();
-        let result = v1.try_add(&v2);
-        assert!(result.is_err());
     }
 }

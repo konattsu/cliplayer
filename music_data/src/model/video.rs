@@ -1,9 +1,10 @@
 mod anonymous;
-mod brief;
-mod detail;
+mod record;
 mod verified;
 
 pub(crate) use anonymous::{AnonymousVideo, AnonymousVideos};
-pub(crate) use brief::{VideoBrief, VideoBriefs};
-pub(crate) use detail::{VideoDetail, VideoDetailInitializer, VideoDetails};
+pub(crate) use record::{
+    ApiVideoInfo, ApiVideoInfoInitializer, ApiVideoInfoList, LocalVideoInfo,
+    VideoRecord,
+};
 pub(crate) use verified::{VerifiedVideo, VerifiedVideoError, VerifiedVideos};

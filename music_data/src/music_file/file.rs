@@ -19,9 +19,6 @@ impl MusicFile {
     pub(crate) fn get_month(&self) -> usize {
         self.videos.get_month()
     }
-    pub(crate) fn get_videos(&self) -> &crate::model::VerifiedVideos {
-        &self.videos.get_videos()
-    }
     pub(crate) fn get_path(&self) -> &crate::util::FilePath {
         &self.path
     }
@@ -107,16 +104,6 @@ impl MusicFile {
                 file_path: self.path.clone(),
             }
         })
-    }
-
-    /// 動画情報を動画idを基に削除
-    ///
-    /// `Some(VerifiedVideo)`: 動画idが存在していた場合
-    pub(crate) fn remove_video(
-        &mut self,
-        video_id: crate::model::VideoId,
-    ) -> Option<crate::model::VerifiedVideo> {
-        self.videos.remove_video(&video_id)
     }
 
     /// 動画情報を置き換え

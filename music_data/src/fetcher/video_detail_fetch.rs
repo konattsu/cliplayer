@@ -1,23 +1,17 @@
 /// VideoIdとそれに基づくFetchedVideoDetailのペアを格納する構造体
 #[derive(Debug, Clone)]
-pub(crate) struct VideoDetailFetchResult(
-    pub(crate) std::collections::HashMap<crate::model::VideoId, Option<FetchedVideoDetail>>,
+pub(crate) struct VideoApiFetchResult(
+    pub(crate)  std::collections::HashMap<
+        crate::model::VideoId,
+        Option<crate::model::ApiVideoInfo>,
+    >,
 );
 
-impl FromIterator<(crate::model::VideoId, Option<FetchedVideoDetail>)>
-    for VideoDetailFetchResult
-{
-    fn from_iter<
-        I: IntoIterator<Item = (crate::model::VideoId, Option<FetchedVideoDetail>)>,
-    >(
-        iter: I,
-    ) -> Self {
-        let map = iter.into_iter().collect();
-        Self(map)
+impl VideoApiFetchResult {
+    pub(super) fn new(video_ids: crate::model::VideoIds) -> Self {
+        VideoApiFetchResult(video_ids.into_iter().map(|id| (id, None)).collect())
     }
-}
 
-impl VideoDetailFetchResult {
     /// 渡されたVideoBriefのリストと, fetchしてきたデータから, 適切なVideoDetailを取得する
     ///
     /// # Arguments:

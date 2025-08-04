@@ -1,34 +1,24 @@
 /// 動画id
 ///
 /// - `a-z`, `A-Z`, `0-9`, `-`, `_` の11文字で構成されていること
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    Hash,
-    PartialOrd,
-    Ord,
-)]
-pub(crate) struct VideoId(String);
+#[derive(serde::Serialize, Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
+pub struct VideoId(String);
 
 /// 動画idのリスト
 ///
 /// 単に`VideoId`をVecでラップしたもの
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    Hash,
-    PartialOrd,
-    Ord,
-)]
-pub(crate) struct VideoIds(Vec<VideoId>);
+#[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
+pub struct VideoIds(Vec<VideoId>);
+
+impl<'de> serde::Deserialize<'de> for VideoId {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let id = String::deserialize(deserializer)?;
+        VideoId::new(id).map_err(serde::de::Error::custom)
+    }
+}
 
 impl VideoId {
     pub(crate) fn new(id: String) -> Result<Self, &'static str> {
@@ -77,12 +67,6 @@ impl From<Vec<VideoId>> for VideoIds {
     }
 }
 
-impl VideoIds {
-    pub(crate) fn into_vec(self) -> Vec<VideoId> {
-        self.0
-    }
-}
-
 impl std::fmt::Display for VideoIds {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let ids: Vec<String> =
@@ -112,6 +96,19 @@ impl FromIterator<VideoId> for VideoIds {
     }
 }
 
+impl std::ops::Deref for VideoIds {
+    type Target = Vec<VideoId>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl std::ops::DerefMut for VideoIds {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
 // MARK: For Tests
 
 #[cfg(test)]
@@ -127,6 +124,13 @@ impl VideoId {
     /// return `33333333333`
     pub(crate) fn test_id_3() -> Self {
         VideoId::new("33333333333".to_string()).unwrap()
+    }
+}
+
+#[cfg(test)]
+impl VideoIds {
+    pub(crate) fn into_vec(self) -> Vec<VideoId> {
+        self.0
     }
 }
 
