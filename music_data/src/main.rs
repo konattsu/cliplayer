@@ -8,6 +8,7 @@ async fn main() {
     let res = match cli.command {
         musictl::cli::Commands::Apply(apply_cmd) => handle_apply(apply_cmd).await,
         musictl::cli::Commands::Validate(validate_cmd) => handle_validate(validate_cmd),
+        musictl::cli::Commands::Artist(artist_cmd) => handle_artist(artist_cmd),
     };
 
     if let Err(e) = res {
@@ -183,4 +184,28 @@ fn handle_validate_duplicate(
     }
 
     Ok(())
+}
+
+// MARK: artist
+
+fn handle_artist(artist_cmd: musictl::cli::ArtistCommands) -> Result<(), String> {
+    match artist_cmd {
+        musictl::cli::ArtistCommands::Generate {
+            input_artists_data_path,
+            artist_output_dir,
+            search_index_file_name,
+            channel_file_name,
+            artists_file_name,
+            music_data_code_snippets_path,
+            ..
+        } => musictl::artist::generate(
+            input_artists_data_path,
+            artist_output_dir,
+            search_index_file_name,
+            channel_file_name,
+            artists_file_name,
+            music_data_code_snippets_path,
+        )
+        .map_err(|e| e.to_string()),
+    }
 }

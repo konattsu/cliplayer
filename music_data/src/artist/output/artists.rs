@@ -1,5 +1,5 @@
 #[derive(serde::Serialize, Debug, Clone)]
-pub struct OutputArtists(
+pub(in crate::artist) struct OutputArtists(
     std::collections::BTreeMap<crate::artist::model::ArtistId, OutputArtist>,
 );
 
@@ -19,7 +19,7 @@ fn is_false(value: &bool) -> bool {
 }
 
 impl OutputArtists {
-    pub fn new(artists: crate::artist::model::Artists) -> Self {
+    pub(in crate::artist) fn new(artists: crate::artist::model::Artists) -> Self {
         let mut map = std::collections::BTreeMap::new();
         for (artist_id, artist) in artists.0.into_iter() {
             let output_artist = OutputArtist {
@@ -34,7 +34,10 @@ impl OutputArtists {
         Self(map)
     }
 
-    pub fn output_json(&self, path: &std::path::Path) -> anyhow::Result<()> {
+    pub(in crate::artist) fn output_json(
+        &self,
+        path: &std::path::Path,
+    ) -> anyhow::Result<()> {
         use anyhow::Context;
         let file = std::fs::File::create(path).with_context(|| {
             format!("Failed to create/truncate file at {}", path.display())

@@ -1,5 +1,5 @@
 #[derive(serde::Serialize, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct StringNonEmpty(String);
+pub(in crate::artist) struct StringNonEmpty(String);
 
 impl StringNonEmpty {
     pub fn new(s: String) -> Option<Self> {
