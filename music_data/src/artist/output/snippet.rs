@@ -63,12 +63,15 @@ impl Snippet {
         artists: &crate::artist::model::Artists,
     ) -> anyhow::Result<()> {
         use anyhow::Context;
-        let artist_ids_str = artists
+
+        // ソート
+        let mut artist_ids = artists
             .0
             .keys()
             .map(|id| id.as_str())
-            .collect::<Vec<&str>>()
-            .join(",");
+            .collect::<Vec<&str>>();
+        artist_ids.sort();
+        let artist_ids_str = artist_ids.join(",");
         let body = self
             .artist_data
             .body
