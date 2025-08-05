@@ -1,1 +1,109 @@
-[]
+[
+  {
+    "videoId": "ZeFvqdvutb4",
+    "title": "【収益化記念】イ　ン　タ　ー　ネ　ッ　ト　カ　ラ　オ　ケ　T　I　M　E【栞葉るり/にじさんじ】",
+    "channelId": "UC7_MFM9b8hp5kuTSpa8WyOQ",
+    "publishedAt": "2023-12-10T11:03:16Z",
+    "modifiedAt": "2025-08-05T14:23:19Z",
+    "duration": "PT59M23S",
+    "privacyStatus": "public",
+    "embeddable": true,
+    "uploaderName": null,
+    "videoTags": [
+      "2d",
+      "karaoke"
+    ],
+    "clips": [
+      {
+        "songTitle": "おねがいダーリン",
+        "artists": [
+          "ruri-shioriha"
+        ],
+        "isClipped": false,
+        "startTime": "PT1M9S",
+        "endTime": "PT4M23S",
+        "uuid": "9363b0be-6618-49a3-be09-03679190ffbb"
+      },
+      {
+        "songTitle": "命に嫌われている。",
+        "artists": [
+          "ruri-shioriha"
+        ],
+        "isClipped": false,
+        "startTime": "PT7M12S",
+        "endTime": "PT11M34S",
+        "uuid": "7e44ab72-1fa0-4c56-bd38-e077a2d35123"
+      },
+      {
+        "songTitle": "ぼなぺてぃーと♡S",
+        "artists": [
+          "ruri-shioriha"
+        ],
+        "isClipped": false,
+        "startTime": "PT14M53S",
+        "endTime": "PT19M4S",
+        "uuid": "53ef1c93-f44a-454e-8172-ad5af021fac5"
+      },
+      {
+        "songTitle": "ロウワー",
+        "artists": [
+          "ruri-shioriha"
+        ],
+        "isClipped": false,
+        "startTime": "PT21M32S",
+        "endTime": "PT25M22S",
+        "uuid": "fc50255d-a99e-453d-a9ca-a9bd4fb349d1"
+      },
+      {
+        "songTitle": "バラライカ",
+        "artists": [
+          "ruri-shioriha"
+        ],
+        "isClipped": false,
+        "startTime": "PT27M2S",
+        "endTime": "PT30M34S",
+        "uuid": "74b3fb99-0265-4269-bda1-bf04e333fc4e"
+      },
+      {
+        "songTitle": "ダーリンダンス",
+        "artists": [
+          "ruri-shioriha"
+        ],
+        "isClipped": false,
+        "startTime": "PT33M32S",
+        "endTime": "PT36M54S",
+        "uuid": "035fc1b9-55e8-494f-aad2-cd464ebbb38e"
+      },
+      {
+        "songTitle": "花の塔",
+        "artists": [
+          "ruri-shioriha"
+        ],
+        "isClipped": false,
+        "startTime": "PT39M6S",
+        "endTime": "PT43M43S",
+        "uuid": "27f13bee-8067-4c44-8e87-cc09e386711e"
+      },
+      {
+        "songTitle": "kaleidoscope",
+        "artists": [
+          "ruri-shioriha"
+        ],
+        "isClipped": false,
+        "startTime": "PT46M9S",
+        "endTime": "PT50M7S",
+        "uuid": "13491656-39e0-45f2-8410-45a0ec5832f5"
+      },
+      {
+        "songTitle": "ココロオドル",
+        "artists": [
+          "ruri-shioriha"
+        ],
+        "isClipped": false,
+        "startTime": "PT53M13S",
+        "endTime": "PT57M5S",
+        "uuid": "84c78d7a-bd2f-4002-b577-73c22a2afdbf"
+      }
+    ]
+  }
+]

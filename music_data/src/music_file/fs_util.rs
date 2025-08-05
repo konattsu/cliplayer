@@ -24,7 +24,7 @@ pub(super) fn deserialize_from_file(
 /// # Arguments
 /// - `file`: 書き込むファイルのパス
 /// - `content`: 書き込む内容
-/// - `is_minimized`: minimizedさせるかどうか
+/// - `is_minimized`: minimizedさせるかどうか, minimizedでないときは末尾に改行付与
 pub(super) fn serialize_to_file<T>(
     file: &crate::util::FilePath,
     content: &T,
@@ -34,6 +34,17 @@ where
     T: serde::Serialize,
 {
     use super::MusicFileError;
+    use std::io::Write;
+
+    fn to_err(
+        e: &dyn std::fmt::Display,
+        file: &crate::util::FilePath,
+    ) -> MusicFileError {
+        MusicFileError::FileWrite {
+            msg: e.to_string(),
+            path: file.clone(),
+        }
+    }
 
     let file_handle = std::fs::File::create(file.as_path()).map_err(|e| {
         MusicFileError::FileOpen {
@@ -43,15 +54,13 @@ where
         }
     })?;
 
-    let write = std::io::BufWriter::new(file_handle);
+    let mut writer = std::io::BufWriter::new(file_handle);
 
     if is_minimized {
-        serde_json::to_writer(write, content)
+        serde_json::to_writer(writer, content).map_err(|e| to_err(&e, file))
     } else {
-        serde_json::to_writer_pretty(write, content)
+        serde_json::to_writer_pretty(&mut writer, content)
+            .map_err(|e| to_err(&e, file))
+            .and_then(|_| writer.write_all(b"\n").map_err(|e| to_err(&e, file)))
     }
-    .map_err(|e| MusicFileError::FileWrite {
-        path: file.clone(),
-        msg: e.to_string(),
-    })
 }

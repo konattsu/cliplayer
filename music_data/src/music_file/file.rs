@@ -82,6 +82,9 @@ impl MusicFile {
     /// ファイルに楽曲情報を書き込む
     ///
     /// pretty形式
+    #[tracing::instrument(fields(
+        path = %self.path,
+    ), level = tracing::Level::TRACE)]
     pub(crate) fn save(&self) -> Result<(), super::MusicFileError> {
         super::fs_util::serialize_to_file(&self.path, self.videos.get_videos(), false)
     }
@@ -143,7 +146,10 @@ impl MusicFile {
                     file_path: path.clone(),
                 }
             })?;
-
+        tracing::trace!(
+            "music videos loaded: {year}-{month:02}, {} videos",
+            videos.len()
+        );
         Ok(Self { path, videos })
     }
 

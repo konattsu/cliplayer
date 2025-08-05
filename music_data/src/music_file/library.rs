@@ -4,7 +4,7 @@ pub struct MusicLibrary {
     root_dir: crate::util::DirPath,
     min_videos_path: crate::util::FilePath,
     min_flat_clips_path: crate::util::FilePath,
-    // (year, month)
+    /// (year, month)
     video_files:
         std::collections::HashMap<(usize, usize), crate::music_file::MusicFile>,
 }
@@ -31,6 +31,7 @@ impl MusicLibrary {
     /// - `dir`: 楽曲情報のルートディレクトリ
     /// - `min_videos_path`: 最小限の動画情報を保持するファイルパス
     /// - `min_flat_clips_path`: 最小限のフラットクリップ情報を保持するファイルパス
+    #[tracing::instrument(level = tracing::Level::DEBUG)]
     pub fn load(
         dir: &crate::util::DirPath,
         min_videos_path: &crate::util::FilePath,
@@ -51,7 +52,7 @@ impl MusicLibrary {
         root_dir = %self.root_dir,
         min_videos_path = %self.min_videos_path,
         min_flat_clips_path = %self.min_flat_clips_path
-    ), level = tracing::Level::TRACE)]
+    ), level = tracing::Level::DEBUG)]
     pub(crate) fn save(self) -> Result<(), super::MusicFileError> {
         println!("Saving music files to disk...");
         self.save_music_files()?;
@@ -73,7 +74,7 @@ impl MusicLibrary {
         root_dir = %self.root_dir,
         min_videos_path = %self.min_videos_path,
         min_flat_clips_path = %self.min_flat_clips_path
-    ), level = tracing::Level::TRACE)]
+    ), ret, level = tracing::Level::TRACE)]
     pub(crate) fn save_only_min(self) -> Result<(), super::MusicFileError> {
         let min_videos_path = self.min_videos_path.clone();
         let min_flat_clips_path = self.min_flat_clips_path.clone();
@@ -169,6 +170,11 @@ impl MusicLibrary {
         }
 
         if errs.is_empty() {
+            tracing::trace!(
+                "Loaded {} music files, dir {}",
+                files.len(),
+                dir.as_path().display()
+            );
             Ok(files)
         } else {
             Err(errs.into())
@@ -185,14 +191,14 @@ impl MusicLibrary {
         music_file: super::MusicFile,
     ) {
         let year_month = music_file.get_year_month();
-        if let Some(stale) = files.insert(year_month, music_file) {
+        if let Some(_stale) = files.insert(year_month, music_file) {
             tracing::trace!(
                 "Music file for year/month `{}/{}` already exists, \
-                replacing stale file with new one.\n\
-                Stale file: {:?}",
+                replacing stale file with new one.\n",
+                // Stale file: {:?}",
                 year_month.0,
                 year_month.1,
-                stale
+                // stale
             );
         }
     }
@@ -202,6 +208,7 @@ impl MusicLibrary {
     /// pretty形式で保存
     ///
     /// 一つでも保存できなかったら即座にエラーを返す
+    #[tracing::instrument(level = tracing::Level::TRACE)]
     fn save_music_files(&self) -> Result<(), super::MusicFileError> {
         for file in self.video_files.values() {
             if let Err(e) = file.save() {

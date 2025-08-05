@@ -1,7 +1,8 @@
 {
   "ArtistDataSnippet": {
     "body": [
-      "\"${1|miyako-seto,hibari-watarai,gilzaren-iii,kaisei,axia-krone,momo-azuchi,nozomi-ishigami,youko-akabane,akane-asahina,air-harusaki,akina-saegusa,rena-yorumi,hina-asuka,kagetsu-murakumo,wen-akagi,oliver-evans,toya-kenmochi,mana-hibachi,utako-suzuka,kanae,tsumugu-kataribe,akira-shikinagi,yotsuha-umise,haru-kaida,lauren-iroas,mirei-gundo,debidebi-debiru,tojiro-genzuki,ange-katrina,sango-suo,milan-kestrel,mahiro-yukishiro,ness-sakaki,era-otogibara,rika-igarashi,aki-suzuya,elu,chaika-hanabatake,yuika-shiina,rai-inami,salome-hyakumantenbara,riko-shiga,sakyo-itsuki,chihiro-yuki,natsume-kurusu,ibrahim,levi-elipha,meiji-warabeda,minato-fuwa,rion-takamiya,lain-paterson,ars-almal,ritsuki-sakura,tamako-kirara,kokoro-amamiya,kazaki-morinaka,nana-tamanoi,seraph-dazzlegarden,chima-machita,emma-august,hayato-kagami,ruri-shioriha,naraka,kisara,sho-hoshirube,leos-vincent,gwelu-os-gar,kizuku-yashiro,hajime-shibuya,ex-albio,belmond-banderas,roa-yuzuki,sou-hayase,sayo-amemori,ittetsu-saiki,toru-koshimizu,kana-sukoya,soma-sakayori,meruto-kuramochi,keisuke-maimoto,joe-rikiichi,gaku-fushimi,riri-yuhi,yusei-kitami,chigusa-nishizono,ichigo-ushimi,sister-claire,kei-nagao,tomoe-shirayuki,himawari-honma,alice-mononobe,fumi,rou-koyanagi,kirame-sorahoshi,saku-sasaki,nei-ponto,mito-tsukino,shellin-burgundy,mugi-ienaga,furen-e-lustario,toko-inui,uiha-aiba,kai-mayuzumi,moira,akari-shishido,makaino-ririmu,ryushen,marin-hayama,sophia-valentine,toto-tachitsute,eli-conifer,haruka-onomachi,kakeru-yumeoi,mao-matsukai,kyoko-todoroki,sara-hoshikawa,kohaku-todo,kaede-higuchi,nui-sociere,kou-uzuki,ayato-hitotsubashi,shoichi-kanda,mone-kozue,rito-usami,suzuna-nanase,melissa-kinrenka,luis-cammy,roco-kaburaki,rin-shizuka,berry-saotome,meme-mashiro,kanato-fura,karuta-yamagami,naru-naruse,lize-helesta,lunlun,tamaki-fumino,mikoto-rindou,manami-aizono,ratna-petit,kuzuha,dola,shiba-kuroi,masaru-suzuki,muyu-amagase,rine-yaguruma,lulu-suzuhara,hisui-kitakoji,fuyuki-hakase,trout-nagisa|}\""
+      "\"${1|uiha-aiba,akira-shikinagi,eli-conifer,soma-sakayori,yusei-kitami,kei-nagao,kokoro-amamiya,hajime-shibuya,lain-paterson,marin-hayama,keisuke-maimoto,lulu-suzuhara,yotsuha-umise,fumi,riko-shiga,hina-asuka,fuyuki-hakase,sophia-valentine,kanae,ritsuki-sakura,rai-inami,mito-tsukino,sho-hoshirube,minato-fuwa,kagetsu-murakumo,sou-hayase,kanato-fura,wen-akagi,luis-cammy,rena-yorumi,kakeru-yumeoi,tomoe-shirayuki,rika-igarashi,ange-katrina,ryushen,kou-uzuki,trout-nagisa,lize-helesta,natsume-kurusu,ruri-shioriha,ars-almal,ness-sakaki,mao-matsukai,naraka,saku-sasaki,ayato-hitotsubashi,joe-rikiichi,gaku-fushimi,ichigo-ushimi,muyu-amagase,ratna-petit,sakyo-itsuki,berry-saotome,kazaki-morinaka,chihiro-yuki,utako-suzuka,himawari-honma,levi-elipha,miyako-seto,rito-usami,roa-yuzuki,moira,kaede-higuchi,tojiro-genzuki,meiji-warabeda,momo-azuchi,nozomi-ishigami,karuta-yamagami,mikoto-rindou,haruka-onomachi,rin-shizuka,chima-machita,oliver-evans,tsumugu-kataribe,gilzaren-iii,toko-inui,toto-tachitsute,sara-hoshikawa,seraph-dazzlegarden,mirei-gundo,mahiro-yukishiro,toru-koshimizu,youko-akabane,akari-shishido,toya-kenmochi,elu,milan-kestrel,suzuna-nanase,shiba-kuroi,axia-krone,melissa-kinrenka,akane-asahina,shellin-burgundy,meruto-kuramochi,era-otogibara,lauren-iroas,roco-kaburaki,kana-sukoya,shoichi-kanda,dola,alice-mononobe,ex-albio,rou-koyanagi,lunlun,haru-kaida,akina-saegusa,tamaki-fumino,belmond-banderas,yuika-shiina,leos-vincent,kohaku-todo,hibari-watarai,hayato-kagami,nana-tamanoi,hisui-kitakoji,mugi-ienaga,sango-suo,chigusa-nishizono,kisara,furen-e-lustario,aki-suzuya,sister-claire,ibrahim,kuzuha,sayo-amemori,kizuku-yashiro,mana-hibachi,air-harusaki,rine-yaguruma,kirame-sorahoshi,chaika-hanabatake,ittetsu-saiki,riri-yuhi,emma-august,tamako-kirara,makaino-ririmu,kyoko-todoroki,debidebi-debiru,nui-sociere,meme-mashiro,naru-naruse,nei-ponto,kaisei,manami-aizono,kai-mayuzumi,salome-hyakumantenbara,masaru-suzuki,gwelu-os-gar,rion-takamiya,mone-kozue|}\",",
+      ""
     ],
     "description": "ArtistData object based on music_data.schema.json",
     "prefix": "artist",
@@ -27,25 +28,26 @@
     "scope": "json"
   },
   "Video Tags Snippet": {
-    "body": ["\"${1|karaoke,2d,3d,nmf,sitr,3d-debut|}\",", ""],
+    "body": [
+      "\"${1|karaoke,2d,3d,nmf,sitr,3d-debut|}\",",
+      ""
+    ],
     "description": "Array of tags for video data",
     "prefix": "vtag",
     "scope": "json"
   },
   "VideoData Snippet": {
     "body": [
-      "[",
-      "  {",
-      "    \"videoId\": \"$1\",",
-      "    \"uploaderName\": ${2:null},",
-      "    \"videoTags\": [",
-      "      $3",
-      "    ],",
-      "    \"clips\": [",
-      "      $4",
-      "    ]",
-      "  }",
-      "]"
+      "{",
+      "  \"videoId\": \"$1\",",
+      "  \"uploaderName\": ${2:null},",
+      "  \"videoTags\": [",
+      "    $3",
+      "  ],",
+      "  \"clips\": [",
+      "    $4",
+      "  ]",
+      "},"
     ],
     "description": "VideoData object based on music_data.schema.json",
     "prefix": "video",

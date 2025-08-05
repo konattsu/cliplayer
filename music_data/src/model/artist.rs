@@ -30,7 +30,9 @@ static ARTIST_SET: once_cell::sync::Lazy<std::collections::HashSet<String>> =
                 This value is read from the env value, or default to {ARTIST_SET_PATH}."
             )
         });
-        InputArtist::from_json_to_hash_set(&data)
+        let hash_set = InputArtist::from_json_to_hash_set(&data);
+        tracing::debug!("Loaded {} artists from {}", hash_set.len(), path_str);
+        hash_set
     });
 
 #[cfg(test)]
@@ -42,7 +44,9 @@ static ARTIST_SET: once_cell::sync::Lazy<std::collections::HashSet<String>> =
             "Eir Aoi Test": 42,
             "Lisa Test": null
         }"#;
-        InputArtist::from_json_to_hash_set(ARTIST_DATA)
+        let hash_set = InputArtist::from_json_to_hash_set(ARTIST_DATA);
+        tracing::debug!("Loaded {} artists. (for tests)", hash_set.len(),);
+        hash_set
     });
 
 // MARK: Internal

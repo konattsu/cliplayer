@@ -2,9 +2,10 @@
 
 ## back
 
-/music_data/src/apply/直す
-uuidv4にする
-artists_idをmusic_data.code-snippetsに埋め込むようにする(/music_data/artistに処理追加する). schemaはいらない. どうせcliに食わせるので.
+色んなreadme書く
+logを綺麗に吐くようにしてさっさとactions作って運用見ながらバグ修正する.
+actionsで最後に全てのlog出力するような処理追加. これを行うbash scriptを/tools/*に配置よさげ
+この感じのプロジェクトに対してe2eはちょっとめんどい, 気分良かったら書くかも
 musictl summary 的なもので.mdとかに登録済みの配信一覧出力機能作ったりしたい
 
 - e2e
