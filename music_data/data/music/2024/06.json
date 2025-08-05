@@ -1,1 +1,76 @@
-[]
+[
+  {
+    "videoId": "EuA7SNdZ8nk",
+    "title": "【 アコギ凸 】ろこの日だし鏑木のために一曲歌ってくれませんか？【 にじさんじ 】",
+    "channelId": "UClrQ7xhRBxS_v_-WuudGKmA",
+    "publishedAt": "2024-06-05T12:46:38Z",
+    "modifiedAt": "2025-08-05T14:23:19Z",
+    "duration": "PT1H20M6S",
+    "privacyStatus": "public",
+    "embeddable": true,
+    "uploaderName": null,
+    "videoTags": [
+      "2d",
+      "弾き語り"
+    ],
+    "clips": [
+      {
+        "songTitle": "ガーネット",
+        "artists": [
+          "roco-kaburaki",
+          "sister-claire"
+        ],
+        "isClipped": false,
+        "startTime": "PT21M23S",
+        "endTime": "PT26M27S",
+        "uuid": "cbaa7d80-133b-4d67-8fd7-540f7572aa92"
+      },
+      {
+        "songTitle": "orion",
+        "artists": [
+          "roco-kaburaki",
+          "ruri-shioriha"
+        ],
+        "isClipped": false,
+        "startTime": "PT34M2S",
+        "endTime": "PT38M27S",
+        "uuid": "3cdc34b9-4a70-44a3-81cc-2f9d17427b5b"
+      },
+      {
+        "songTitle": "ミカヅキ",
+        "artists": [
+          "roco-kaburaki",
+          "yotsuha-umise"
+        ],
+        "isClipped": false,
+        "startTime": "PT44M57S",
+        "endTime": "PT49M27S",
+        "uuid": "e6850ce5-abbb-49df-977b-f5c64f12807e"
+      },
+      {
+        "songTitle": "晩餐歌",
+        "artists": [
+          "meruto-kuramochi",
+          "roco-kaburaki",
+          "sophia-valentine"
+        ],
+        "isClipped": false,
+        "startTime": "PT56M35S",
+        "endTime": "PT59M51S",
+        "uuid": "079e6183-0ac0-4f4a-966a-460da1d16818"
+      },
+      {
+        "songTitle": "bling-bang-bang-born",
+        "artists": [
+          "kaede-higuchi",
+          "miyako-seto",
+          "roco-kaburaki"
+        ],
+        "isClipped": false,
+        "startTime": "PT1H9M9S",
+        "endTime": "PT1H11M49S",
+        "uuid": "1075b2a5-4a2d-4167-90b0-5d0ebe4daf37"
+      }
+    ]
+  }
+]

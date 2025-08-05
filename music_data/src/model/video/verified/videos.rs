@@ -38,6 +38,10 @@ impl serde::Serialize for VerifiedVideos {
 }
 
 impl VerifiedVideos {
+    pub(crate) fn len(&self) -> usize {
+        self.inner.len()
+    }
+
     /// 新規作成
     pub(crate) fn new() -> Self {
         Self {

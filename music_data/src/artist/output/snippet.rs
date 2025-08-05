@@ -75,7 +75,7 @@ impl Snippet {
             .get_mut(0)
             .context("Failed to access `body` of artist_data")?;
 
-        *body = format!("\"${{1|{artist_ids_str}|}}\"");
+        *body = format!("\"${{1|{artist_ids_str}|}}\",");
         Ok(())
     }
 }

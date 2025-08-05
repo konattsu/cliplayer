@@ -155,11 +155,9 @@ fn handle_validate_update(
     output_min_file: musictl::cli::OutputMinPathFromCli,
     output_min_clips_file: musictl::cli::OutputMinClipsPathFromCli,
 ) -> Result<(), String> {
-    let _music_lib = music_lib
+    let music_lib = music_lib
         .try_into_music_root_from_cli(output_min_file, output_min_clips_file)?;
-    // MusicLibrary生成出来た => 内部の動画形式が全て正しい
-    // ∴ Ok返す
-    Ok(())
+    musictl::apply::apply_update(music_lib)
 }
 
 fn handle_validate_duplicate(

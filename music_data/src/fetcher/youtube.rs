@@ -24,15 +24,13 @@ impl YouTubeApi {
         Self { api_key }
     }
 
+    #[tracing::instrument(skip(self, video_ids), level = tracing::Level::TRACE)]
     pub(crate) async fn run(
         &self,
         video_ids: crate::model::VideoIds,
     ) -> Result<crate::model::ApiVideoInfoList, crate::fetcher::YouTubeApiError> {
         match self.fetch_process(video_ids).await {
-            Ok(api_info_list) => {
-                tracing::info!("YouTube API fetch completed successfully");
-                Ok(api_info_list)
-            }
+            Ok(api_info_list) => Ok(api_info_list),
             Err(e) => {
                 tracing::error!(error = ?e, "YouTube API fetch failed");
                 Err(e)
@@ -40,6 +38,7 @@ impl YouTubeApi {
         }
     }
 
+    #[tracing::instrument(ret, level = tracing::Level::DEBUG)]
     async fn fetch_process(
         &self,
         mut pending_ids: crate::model::VideoIds,
@@ -52,7 +51,7 @@ impl YouTubeApi {
             let url = match self.generate_url(&mut pending_ids) {
                 Some(url) => url,
                 None => {
-                    tracing::info!("no more video IDs to fetch");
+                    tracing::trace!("no more video IDs to fetch");
                     break;
                 }
             };
@@ -167,6 +166,7 @@ impl YouTubeApi {
     async fn send_request(
         url: &str,
     ) -> Result<reqwest::Response, crate::fetcher::YouTubeApiError> {
+        // reqwest::headerはurl含むのでログ出さないように
         reqwest::Client::new()
             .get(url)
             .header(reqwest::header::ACCEPT, "application/json")

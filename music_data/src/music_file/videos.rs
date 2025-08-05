@@ -20,6 +20,10 @@ impl VideosSameYearMonth {
         self.videos
     }
 
+    pub(super) fn len(&self) -> usize {
+        self.videos.len()
+    }
+
     /// 新規作成
     ///
     /// `Err`:
