@@ -48,15 +48,15 @@ jobs:
           path: ./bin
 
       - name: Output folder structure under the ./bin for debug
-        run: ls -lR ./bin
+        run: ls -lR ../bin
 
       - name: Validate input.json
         if: steps.changed.outputs.changed_type == 'INPUT'
-        run: ./bin/musictl validate new-input -i data/input.json --file-tracing-level debug
+        run: ../bin/musictl validate new-input -i data/input.json --file-tracing-level debug
 
       - name: Validate update
         if: steps.changed.outputs.changed_type == 'UPDATE'
-        run: ./bin/musictl validate update --file-tracing-level debug
+        run: ../bin/musictl validate update --file-tracing-level debug
 
       - name: Post logs
         if: always()
@@ -96,11 +96,11 @@ jobs:
 
       - name: Apply new input to music data
         if: steps.changed.outputs.changed_type == 'INPUT'
-        run: ./bin/musictl apply new -i data/input.json --file-tracing-level debug
+        run: ../bin/musictl apply new -i data/input.json --file-tracing-level debug
 
       - name: Apply update
         if: steps.changed.outputs.changed_type == 'UPDATE'
-        run: ./bin/musictl apply update --file-tracing-level debug
+        run: ../bin/musictl apply update --file-tracing-level debug
 
       - name: Commit changes
         run: |
@@ -135,7 +135,7 @@ jobs:
           path: ./bin
 
       - name: Apply sync to music data
-        run: ./bin/musictl apply sync --file-tracing-level debug
+        run: ../bin/musictl apply sync --file-tracing-level debug
 
       - name: Commit changes
         run: |
