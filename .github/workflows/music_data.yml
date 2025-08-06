@@ -47,6 +47,9 @@ jobs:
           name: musictl-binary
           path: ./bin
 
+      - name: Output folder structure under the ./bin for debug
+        run: ls -lR ./bin
+
       - name: Validate input.json
         if: steps.changed.outputs.changed_type == 'INPUT'
         run: ./bin/musictl validate new-input -i data/input.json --file-tracing-level debug
