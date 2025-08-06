@@ -55,11 +55,11 @@ jobs:
 
       - name: Validate input.json
         if: steps.changed.outputs.changed_type == 'INPUT'
-        run: ../bin/musictl validate new-input -i data/input.json --file-tracing-level debug
+        run: ../bin/musictl validate input -i data/input.json --file-tracing-level debug
 
       - name: Validate update
         if: steps.changed.outputs.changed_type == 'UPDATE'
-        run: ../bin/musictl validate new-update --file-tracing-level debug
+        run: ../bin/musictl validate update --file-tracing-level debug
 
       - name: Post logs
         if: always()
