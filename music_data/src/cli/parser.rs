@@ -78,7 +78,7 @@ pub enum ApplyCommands {
 #[derive(Debug, clap::Subcommand)]
 pub enum ValidateCommands {
     /// Validate new music data input files
-    NewInput {
+    New {
         /// A file containing new music data to validate
         #[arg(short, long, value_name = "FILE")]
         input: crate::cli::FilePathFromCli,
@@ -87,7 +87,7 @@ pub enum ValidateCommands {
         trace_level: TraceLevel,
     },
     /// Validate existing music data input files
-    UpdateInput {
+    Update {
         /// Directory of the music data to use for validation
         #[arg(long, value_name = "DIR", default_value_t = crate::cli::MusicLibraryCli::default())]
         music_root: crate::cli::MusicLibraryCli,
@@ -194,10 +194,10 @@ impl Cli {
                 }
             },
             Commands::Validate(ref validate_cmd) => match validate_cmd {
-                ValidateCommands::NewInput { trace_level, .. } => {
+                ValidateCommands::New { trace_level, .. } => {
                     &trace_level.file_tracing_level
                 }
-                ValidateCommands::UpdateInput { trace_level, .. } => {
+                ValidateCommands::Update { trace_level, .. } => {
                     &trace_level.file_tracing_level
                 }
                 ValidateCommands::Duplicate { trace_level, .. } => {
@@ -227,10 +227,10 @@ impl Cli {
                 }
             },
             Commands::Validate(ref validate_cmd) => match validate_cmd {
-                ValidateCommands::NewInput { trace_level, .. } => {
+                ValidateCommands::New { trace_level, .. } => {
                     &trace_level.stdout_tracing_level
                 }
-                ValidateCommands::UpdateInput { trace_level, .. } => {
+                ValidateCommands::Update { trace_level, .. } => {
                     &trace_level.stdout_tracing_level
                 }
                 ValidateCommands::Duplicate { trace_level, .. } => {

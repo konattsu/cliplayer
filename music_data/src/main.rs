@@ -120,10 +120,8 @@ async fn handle_apply_sync(
 
 fn handle_validate(validate_cmd: musictl::cli::ValidateCommands) -> Result<(), String> {
     match validate_cmd {
-        musictl::cli::ValidateCommands::NewInput { input, .. } => {
-            handle_validate_new(input)
-        }
-        musictl::cli::ValidateCommands::UpdateInput {
+        musictl::cli::ValidateCommands::New { input, .. } => handle_validate_new(input),
+        musictl::cli::ValidateCommands::Update {
             music_root,
             output_min_file,
             output_min_clips_file,
