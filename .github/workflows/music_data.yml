@@ -2,6 +2,8 @@ name: music_data validate/apply/sync
 
 on:
   pull_request:
+    branches:
+      - main
     paths:
       - "music_data/data/music/**"
   schedule:
