@@ -59,7 +59,7 @@ jobs:
 
       - name: Validate update
         if: steps.changed.outputs.changed_type == 'UPDATE'
-        run: ../bin/musictl validate update --file-tracing-level debug
+        run: ../bin/musictl validate new-update --file-tracing-level debug
 
       - name: Post logs
         if: always()
