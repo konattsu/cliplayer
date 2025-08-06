@@ -9,6 +9,7 @@ pub(crate) struct FlatClips {
 }
 
 #[derive(Debug, Clone, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
 /// クリップ情報をフラット化した物
 struct FlatClip {
     uuid: crate::model::UuidVer4,
@@ -18,6 +19,8 @@ struct FlatClip {
     external_artists: Option<crate::model::ExternalArtists>,
     #[serde(skip_serializing_if = "Option::is_none")]
     clips_tags: Option<crate::model::ClipTags>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    clipped_video_id: Option<crate::model::VideoId>,
     start_time: crate::model::Duration,
     end_time: crate::model::Duration,
 }
@@ -61,6 +64,7 @@ impl FlatClip {
             artists: clip.artists,
             external_artists: clip.external_artists,
             clips_tags: clip.clip_tags,
+            clipped_video_id: clip.clipped_video_id,
             start_time: clip.start_time,
             end_time: clip.end_time,
         }
@@ -82,6 +86,7 @@ mod tests {
             artists: crate::model::InternalArtists::test_name_1(),
             external_artists: None,
             clips_tags: None,
+            clipped_video_id: None,
             start_time: crate::model::Duration::from_secs_u16(0),
             end_time: crate::model::Duration::from_secs_u16(10),
         };
@@ -92,6 +97,7 @@ mod tests {
             artists: crate::model::InternalArtists::test_name_2(),
             external_artists: None,
             clips_tags: None,
+            clipped_video_id: None,
             start_time: crate::model::Duration::from_secs_u16(5),
             end_time: crate::model::Duration::from_secs_u16(15),
         };

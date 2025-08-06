@@ -125,6 +125,14 @@ impl VideoId {
     pub(crate) fn test_id_3() -> Self {
         VideoId::new("33333333333".to_string()).unwrap()
     }
+    /// return `44444444444`
+    pub(crate) fn test_id_4() -> Self {
+        VideoId::new("44444444444".to_string()).unwrap()
+    }
+    /// return `55555555555`
+    pub(crate) fn test_id_5() -> Self {
+        VideoId::new("55555555555".to_string()).unwrap()
+    }
 }
 
 #[cfg(test)]
@@ -145,6 +153,8 @@ mod tests {
         assert_eq!(VideoId::test_id_1().0, "11111111111");
         assert_eq!(VideoId::test_id_2().0, "22222222222");
         assert_eq!(VideoId::test_id_3().0, "33333333333");
+        assert_eq!(VideoId::test_id_4().0, "44444444444");
+        assert_eq!(VideoId::test_id_5().0, "55555555555");
     }
 
     #[test]

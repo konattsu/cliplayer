@@ -12,8 +12,8 @@ pub(crate) struct UnverifiedClip {
     artists: crate::model::InternalArtists,
     /// 外部アーティストの一覧
     external_artists: Option<crate::model::ExternalArtists>,
-    /// 切り抜いた動画が投稿されているか
-    is_clipped: bool,
+    /// 切り抜いた動画が存在した場合の動画id
+    clipped_video_id: Option<crate::model::VideoId>,
     /// 曲が始まる時間
     start_time: crate::model::Duration,
     /// 曲が終わる時間
@@ -48,8 +48,8 @@ struct UnverifiedClipInitializer {
     artists: crate::model::InternalArtists,
     /// 外部アーティストの一覧
     external_artists: Option<crate::model::ExternalArtists>,
-    /// 切り抜いた動画が投稿されているか
-    is_clipped: bool,
+    /// 切り抜いた動画が存在した場合の動画id
+    clipped_video_id: Option<crate::model::VideoId>,
     /// 曲が始まる時間
     start_time: crate::model::Duration,
     /// 曲が終わる時間
@@ -78,7 +78,7 @@ impl UnverifiedClipInitializer {
             song_title: self.song_title,
             artists: self.artists,
             external_artists: self.external_artists,
-            is_clipped: self.is_clipped,
+            clipped_video_id: self.clipped_video_id,
             start_time: self.start_time,
             end_time: self.end_time,
             clip_tags: self.clip_tags,
@@ -101,7 +101,7 @@ impl<'de> serde::Deserialize<'de> for UnverifiedClip {
             song_title: String,
             artists: crate::model::InternalArtists,
             external_artists: Option<crate::model::ExternalArtists>,
-            is_clipped: bool,
+            clipped_video_id: Option<crate::model::VideoId>,
             start_time: crate::model::Duration,
             end_time: crate::model::Duration,
             clip_tags: Option<crate::model::ClipTags>,
@@ -124,7 +124,7 @@ impl<'de> serde::Deserialize<'de> for UnverifiedClip {
             song_title: raw.song_title,
             artists: raw.artists,
             external_artists: raw.external_artists,
-            is_clipped: raw.is_clipped,
+            clipped_video_id: raw.clipped_video_id,
             start_time: raw.start_time,
             end_time: raw.end_time,
             clip_tags: raw.clip_tags,
@@ -145,7 +145,7 @@ impl UnverifiedClip {
             song_title: inner.song_title,
             artists: inner.artists,
             external_artists: inner.external_artists,
-            is_clipped: inner.is_clipped,
+            clipped_video_id: inner.clipped_video_id,
             start_time: inner.start_time,
             end_time: inner.end_time,
             clip_tags: inner.clip_tags,
@@ -169,7 +169,7 @@ impl UnverifiedClip {
             song_title: self.song_title,
             artists: self.artists,
             external_artists: self.external_artists,
-            is_clipped: self.is_clipped,
+            clipped_video_id: self.clipped_video_id,
             start_time: self.start_time,
             end_time: self.end_time,
             clip_tags: self.clip_tags,
@@ -213,7 +213,7 @@ mod tests {
         "songTitle": "Test Song 1",
         "artists": ["Aimer Test"],
         "externalArtists": ["Apple Mike"],
-        "isClipped": false,
+        "clippedVideoId": null,
         "startTime": "PT12H12M12S",
         "endTime": "PT12H12M20S",
         "clipTags": ["Test Clip Tag1"],
@@ -226,7 +226,7 @@ mod tests {
         "songTitle": "Test Song 2",
         "artists": ["Aimer Test"],
         "externalArtists": ["Apple Mike"],
-        "isClipped": false,
+        "isClipped": null,
         "startTime": "PT12H12M12S",
         "endTime": "PT12H12M5S",
         "clipTags": ["Test Clip Tag1"],
@@ -257,7 +257,7 @@ mod tests {
             clip.external_artists,
             Some(crate::model::ExternalArtists::test_name_1())
         );
-        assert!(!clip.is_clipped);
+        assert!(clip.clipped_video_id.is_none());
         assert_eq!(clip.start_time, dur_12h_12m_12s());
         assert_eq!(clip.end_time, dur_12h_12m_12s_plus(8));
         assert_eq!(clip.clip_tags, Some(crate::model::ClipTags::self_1()));
@@ -277,7 +277,7 @@ mod tests {
             song_title: "Test Song 1".to_string(),
             artists: crate::model::InternalArtists::test_name_1(),
             external_artists: Some(crate::model::ExternalArtists::test_name_1()),
-            is_clipped: false,
+            clipped_video_id: None,
             start_time: dur_12h_12m_12s(),
             end_time: dur_12h_12m_12s_plus(8),
             clip_tags: Some(crate::model::ClipTags::self_1()),
@@ -290,7 +290,7 @@ mod tests {
             song_title: "Test Song 2".to_string(),
             artists: crate::model::InternalArtists::test_name_1(),
             external_artists: Some(crate::model::ExternalArtists::test_name_1()),
-            is_clipped: false,
+            clipped_video_id: None,
             start_time: dur_12h_12m_12s(),
             end_time: dur_12h_12m_12s_plus(-5),
             clip_tags: Some(crate::model::ClipTags::self_1()),

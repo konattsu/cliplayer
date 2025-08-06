@@ -4,11 +4,10 @@
     "title": "【 #栞葉るり3D 】ご機嫌麗しゅう～！  3Dの栞葉るりです🐾【栞葉るり/にじさんじ】",
     "channelId": "UC7_MFM9b8hp5kuTSpa8WyOQ",
     "publishedAt": "2025-05-23T13:17:48Z",
-    "modifiedAt": "2025-08-05T14:23:19Z",
+    "modifiedAt": "2025-08-06T10:39:23Z",
     "duration": "PT1H10M56S",
     "privacyStatus": "public",
     "embeddable": true,
-    "uploaderName": null,
     "videoTags": [
       "3d",
       "3d-debut"
@@ -20,7 +19,6 @@
           "meruto-kuramochi",
           "ruri-shioriha"
         ],
-        "isClipped": false,
         "startTime": "PT6M42S",
         "endTime": "PT9M34S",
         "uuid": "c925533e-55b3-44f0-a5d4-18dbe674ddd9"
@@ -34,7 +32,6 @@
           "sango-suo",
           "shiba-kuroi"
         ],
-        "isClipped": false,
         "startTime": "PT28M22S",
         "endTime": "PT31M55S",
         "uuid": "2796808e-f766-40a1-85cb-6e55426a880f"
@@ -45,7 +42,6 @@
           "mito-tsukino",
           "ruri-shioriha"
         ],
-        "isClipped": false,
         "startTime": "PT51M",
         "endTime": "PT54M15S",
         "uuid": "c14299d2-8eb2-4431-a300-3ae2859af74e"
@@ -55,7 +51,6 @@
         "artists": [
           "ruri-shioriha"
         ],
-        "isClipped": false,
         "startTime": "PT59M17S",
         "endTime": "PT1H3M35S",
         "uuid": "ef4af7b3-31b6-4ad8-b2b4-f7fca634f360"
@@ -65,7 +60,7 @@
         "artists": [
           "ruri-shioriha"
         ],
-        "isClipped": true,
+        "clippedVideoId": "dKBKAq0URvo",
         "startTime": "PT1H3M50S",
         "endTime": "PT1H8M43S",
         "uuid": "2fc1731d-30b1-403b-b698-9db2446abf4c"

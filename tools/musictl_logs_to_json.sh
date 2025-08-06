@@ -1,4 +1,3 @@
-
 #!/bin/sh
 
 LOG_DIR="./logs"

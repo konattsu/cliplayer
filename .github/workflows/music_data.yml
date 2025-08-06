@@ -1,0 +1,145 @@
+name: music_data validate/apply/sync
+
+on:
+  pull_request:
+    paths:
+      - "music_data/data/music/**"
+  schedule:
+    - cron: "0 0 */14 * *"
+  workflow_dispatch:
+
+jobs:
+  build_and_test:
+    uses: ./.github/workflows/musictl.yml
+
+  validate:
+    needs: build_and_test
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: music_data
+    env:
+      RUST_BACKTRACE: 1
+      CARGO_TERM_COLOR: always
+      YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Detect changed files
+        id: changed
+        run: |
+          CHANGED_FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | grep '^data/music' || true)
+          if [ "$CHANGED_FILES" = "data/input.json" ]; then
+            echo "changed_type=INPUT" >> $GITHUB_OUTPUT
+            echo "changed_type has been set to INPUT (data/input.json was changed)"
+          else
+            echo "changed_type=UPDATE" >> $GITHUB_OUTPUT
+            echo "changed_type has been set to UPDATE (other files were changed: $CHANGED_FILES)"
+          fi
+
+      - name: Download musictl binary
+        uses: actions/download-artifact@v4
+        with:
+          name: musictl-binary
+          path: ./bin
+
+      - name: Validate input.json
+        if: steps.changed.outputs.changed_type == 'INPUT'
+        run: ./bin/musictl validate new-input -i data/input.json --file-tracing-level debug
+
+      - name: Validate update
+        if: steps.changed.outputs.changed_type == 'UPDATE'
+        run: ./bin/musictl validate update --file-tracing-level debug
+
+      - name: Post logs
+        if: always()
+        run: ../tools/musictl_logs_to_stdout.sh
+
+  apply:
+    needs: [build_and_test, validate]
+    if: contains(github.event.pull_request.labels.*.name, 'apply-music-data') && github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: music_data
+    env:
+      RUST_BACKTRACE: 1
+      CARGO_TERM_COLOR: always
+      YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Detect changed files
+        id: changed
+        run: |
+          CHANGED_FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | grep '^data/music' || true)
+          if [ "$CHANGED_FILES" = "data/input.json" ]; then
+            echo "changed_type=INPUT" >> $GITHUB_OUTPUT
+            echo "changed_type has been set to INPUT (data/input.json was changed)"
+          else
+            echo "changed_type=UPDATE" >> $GITHUB_OUTPUT
+            echo "changed_type has been set to UPDATE (other files were changed: $CHANGED_FILES)"
+          fi
+
+      - name: Download musictl binary
+        uses: actions/download-artifact@v4
+        with:
+          name: musictl-binary
+          path: ./bin
+
+      - name: Apply new input to music data
+        if: steps.changed.outputs.changed_type == 'INPUT'
+        run: ./bin/musictl apply new -i data/input.json --file-tracing-level debug
+
+      - name: Apply update
+        if: steps.changed.outputs.changed_type == 'UPDATE'
+        run: ./bin/musictl apply update --file-tracing-level debug
+
+      - name: Commit changes
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add ../
+          git commit -m 'Apply music data changes [ci skip]' || echo 'No changes to commit'
+          git push
+
+      - name: Post logs
+        if: always()
+        run: ../tools/musictl_logs_to_stdout.sh
+
+  sync:
+    needs: build_and_test
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: music_data
+    env:
+      RUST_BACKTRACE: 1
+      CARGO_TERM_COLOR: always
+      YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download musictl binary
+        uses: actions/download-artifact@v4
+        with:
+          name: musictl-binary
+          path: ./bin
+
+      - name: Apply sync to music data
+        run: ./bin/musictl apply sync --file-tracing-level debug
+
+      - name: Commit changes
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add ../
+          git commit -m 'Apply music data sync [ci skip]' || echo 'No changes to commit'
+          git push
+
+      - name: Post logs
+        if: always()
+        run: ../tools/musictl_logs_to_stdout.sh

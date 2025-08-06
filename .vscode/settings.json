@@ -1,9 +1,14 @@
 {
+  "editor.formatOnSave": true,
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+  // "gitlens.codeLens.authors.enabled": false,
+  // "gitlens.codeLens.recentChange.enabled": false,
+
   // Prettier
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "prettier.requireConfig": true,
-  // To run Prettier in environments where ESLint doesn't run, such as JSON files
-  "editor.formatOnSave": true,
 
   // ESLint
   "editor.codeActionsOnSave": {
@@ -15,10 +20,6 @@
     "typescript",
     "typescriptreact"
   ],
-
-  "files.associations": {
-    "*.css": "tailwindcss"
-  },
 
   // Tailwind CSS
   "editor.quickSuggestions": {
@@ -37,6 +38,9 @@
     "editor.formatOnSave": true
   },
 
+  // Typescript
+  "typescript.tsserver.log": "verbose",
+
   // 楽曲データたちよう
   "json.schemas": [
     {
@@ -48,11 +52,8 @@
       "url": "./tools/music_data.schema.json"
     }
   ],
-  "[min.json]": {
-    "editor.formatOnSave": false,
-    "editor.renderFinalNewline": "off"
-  },
 
+  // spell checking
   "cSpell.words": [
     "appender",
     "chrono",

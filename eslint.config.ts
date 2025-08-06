@@ -151,14 +151,4 @@ export default [
       "prefer-template": "error",
     },
   },
-  {
-    // 効かない. 鬱
-    files: [".vscode/music_data.code-snippets"],
-    plugins: {
-      "@stylistic": stylistic,
-    },
-    rules: {
-      "@stylestic/array-element-newline": ["error", "always"],
-    },
-  },
 ];

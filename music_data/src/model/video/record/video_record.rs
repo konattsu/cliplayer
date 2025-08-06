@@ -38,6 +38,7 @@ struct RawVideoRecord {
 
     // local
     /// チャンネル名, 箱外で行われた配信/動画の時に付与
+    #[serde(skip_serializing_if = "Option::is_none")]
     uploader_name: Option<crate::model::UploaderName>,
     /// 動画のタグ
     #[serde(default)]

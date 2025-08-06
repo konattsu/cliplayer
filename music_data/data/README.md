@@ -29,7 +29,7 @@
         "songTitle": "おねがいダーリン",
         "artists": ["ruri-shioriha"],
         "externalArtists": ["(例示用)"],
-        "isClipped": false,
+        "clippedVideoId": null,
         "startTime": "PT1M10S",
         "endTime": "PT4M21S",
         "clipTags": ["(例示用)"]
@@ -37,7 +37,6 @@
       {
         "songTitle": "命に嫌われている。",
         "artists": ["ruri-shioriha"],
-        "isClipped": false,
         "startTime": "PT7M12S",
         "endTime": "PT11M34S"
       }
@@ -55,17 +54,15 @@
   - 命名規則
     - lower kebab-case
     - 子要素が親要素のタグを含む場合は親要素のタグも付与
-      - e.g. Sing'in the Rainbow 名古屋公演 であれば `sitr`, `sitr-nagoya`の二つを付与
-    - 以下のものは付与しない:
-      - "2d"
+      - e.g. 3dお披露目であれば `3d`, `3d-debut`の二つを付与
 
 - `clips`: 動画のクリップ情報の配列
   - `songTitle`: 楽曲のタイトル
     - e.g. "おねがいダーリン", "命に嫌われている。"
   - `artists`: 楽曲の歌唱者のアーティストID(箱内)の配列
   - `externalArtists`: 楽曲の外部アーティスト名(箱外)の配列
-  - `isClipped`: このクリップが公式で切り抜かれているか
-    - e.g. [この配信](https://youtu.be/6gKIA3_ihCY?t=1h4m20s)で最後から2番目に歌われている曲は, ご本人さんのチャンネルに[動画](https://youtu.be/NNVQm3qtkOY)として投稿されているので `true`
+  - `clippedVideoId`: このクリップが公式で切り抜かれているときはその動画id, 切り抜かれてないとnull
+    - e.g. [この配信](https://youtu.be/6gKIA3_ihCY?t=1h4m20s)で最後から2番目に歌われている曲は, ご本人さんのチャンネルに[動画](https://youtu.be/NNVQm3qtkOY)として投稿されているので `NNVQm3qtkOY`を指定
   - `startTime`: クリップの開始時間. 音(イントロ||声)が流れた時間を指定
     - e.g. 1分30.4秒など中途半端であれば0.4秒早めて`PT1M30S`を指定.
   - `endTime`: クリップの終了時間. 同上
@@ -96,7 +93,6 @@
         "songTitle": "おねがいダーリン",
         "artists": ["ruri-shioriha"],
         "externalArtists": ["(例示用)"],
-        "isClipped": false,
         "startTime": "PT1M10S",
         "endTime": "PT4M21S",
         // uuid version 4
@@ -108,7 +104,6 @@
       {
         "songTitle": "命に嫌われている。",
         "artists": ["ruri-shioriha"],
-        "isClipped": false,
         "startTime": "PT7M12S",
         "endTime": "PT11M34S",
         "uuid": "6af3a9fb-05ab-4e53-8cdf-9e63869c4246"
@@ -137,6 +132,7 @@
     "startTime": "PT1M10S",
     "endTime": "PT4M21S"
     // volumePercentは含めない
+    // clippedVideoIdは含める
   },
   {
     "uuid": "6af3a9fb-05ab-4e53-8cdf-9e63869c4246",
