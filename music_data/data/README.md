@@ -50,6 +50,7 @@
 - `videoId`: YouTubeの動画ID
 - `uploaderName`: 動画のアップロード者名. 箱外のチャンネルのときのみ任意の適切な名称を付与する. 空文字列は絶対にno
 - `videoTags`: 動画のタグ
+
   - e.g. "karaoke", "3d", "sitr-nagoya"
   - 命名規則
     - lower kebab-case
@@ -99,7 +100,7 @@
         "uuid": "d5cb8a6b-fb40-424d-9079-c62bd76b92a5",
         "clipTags": ["(例示用)"],
         // 今は未実装. 実装しても, actionsで直接付与できるものではなくローカルからのPRになりそう
-        "volumePercent": 50,
+        "volumePercent": 50
       },
       {
         "songTitle": "命に嫌われている。",
@@ -183,7 +184,7 @@
   "meruto-kuramochi": {
     "ja": "倉持めると",
     "jah": "くらもちめると",
-    "aliases": [ "めるち" ],
+    "aliases": ["めるち"],
     "en": "Kuramochi Meruto",
     "channelId": "UCiA-trSZfB0i92V_-dyDqBw",
     "color": "EB4682"
@@ -206,7 +207,7 @@
   { "key": "くらもちめると", "artistId": "meruto-kuramochi" },
   { "key": "Kuramochi Meruto", "artistId": "meruto-kuramochi" },
   // aliasは表示の優先度を下げたいので, aliasかどうかを判断できるようにしておく
-  { "key": "めるち", "artistId": "meruto-kuramochi" , "isAlias": true }
+  { "key": "めるち", "artistId": "meruto-kuramochi", "isAlias": true }
 ]
 ```
 
