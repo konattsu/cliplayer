@@ -3,12 +3,16 @@ name: musictl build & test
 on:
   workflow_call:
   push:
+    branches:
+      - main
     paths:
       - "music_data/**"
       - ".github/workflows/musictl.yml"
       - "!**/*.md"
       - "!music_data/data/"
   pull_request:
+    branches:
+      - main
     paths:
       - "music_data/**"
       - ".github/workflows/musictl.yml"
