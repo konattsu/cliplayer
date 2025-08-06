@@ -1,11 +1,12 @@
-import tseslintPlugin from "@typescript-eslint/eslint-plugin";
-import tseslintParser from "@typescript-eslint/parser";
-import prettierConfig from "eslint-config-prettier";
 import importPlugin from "eslint-plugin-import";
 import jsxA11y from "eslint-plugin-jsx-a11y";
+import prettierConfig from "eslint-config-prettier";
 import prettierPlugin from "eslint-plugin-prettier";
 import react from "eslint-plugin-react";
 import reactHooks from "eslint-plugin-react-hooks";
+import stylistic from "@stylistic/eslint-plugin";
+import tseslintParser from "@typescript-eslint/parser";
+import tseslintPlugin from "@typescript-eslint/eslint-plugin";
 import unusedImports from "eslint-plugin-unused-imports";
 
 // ref: https://eslint.org/docs/latest/use/configure/ignore#including-gitignore-files

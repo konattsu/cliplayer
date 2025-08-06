@@ -1,0 +1,117 @@
+[
+  {
+    "videoId": "Z8GJCulKlY4",
+    "title": "【10万人記念歌枠】1曲歌うごとに1年ずつタイムスリップしていく歌枠【栞葉るり/にじさんじ】",
+    "channelId": "UC7_MFM9b8hp5kuTSpa8WyOQ",
+    "publishedAt": "2024-01-20T11:16:41Z",
+    "modifiedAt": "2025-08-06T10:39:21Z",
+    "duration": "PT1H4M58S",
+    "privacyStatus": "public",
+    "embeddable": true,
+    "videoTags": [
+      "2d",
+      "karaoke"
+    ],
+    "clips": [
+      {
+        "songTitle": "アイドル",
+        "artists": [
+          "ruri-shioriha"
+        ],
+        "startTime": "PT1M9S",
+        "endTime": "PT4M44S",
+        "uuid": "8bbb1ffb-9e6c-42e7-a516-6476b2f1161a"
+      },
+      {
+        "songTitle": "KICK BACK",
+        "artists": [
+          "ruri-shioriha"
+        ],
+        "startTime": "PT8M59S",
+        "endTime": "PT12M11S",
+        "uuid": "a242003e-5f01-47a5-98d1-2257808db050"
+      },
+      {
+        "songTitle": "きゅうくらりん",
+        "artists": [
+          "ruri-shioriha"
+        ],
+        "startTime": "PT14M8S",
+        "endTime": "PT17M41S",
+        "uuid": "52c7cc5e-f7f3-4f6e-84b8-044443dd85fa"
+      },
+      {
+        "songTitle": "オトナブルー",
+        "artists": [
+          "ruri-shioriha"
+        ],
+        "startTime": "PT20M20S",
+        "endTime": "PT23M22S",
+        "uuid": "c874dbb3-2219-42fb-b733-84469937232b"
+      },
+      {
+        "songTitle": "ビターチョコデコレーション",
+        "artists": [
+          "ruri-shioriha"
+        ],
+        "startTime": "PT25M49S",
+        "endTime": "PT29M5S",
+        "uuid": "bff2de9c-7612-4f0a-a996-3d38b9173fb6"
+      },
+      {
+        "songTitle": "ここから、ここから",
+        "artists": [
+          "ruri-shioriha"
+        ],
+        "startTime": "PT31M1S",
+        "endTime": "PT35M34S",
+        "uuid": "8fa25247-8d48-42a8-b38b-5cd0a952f9db"
+      },
+      {
+        "songTitle": "命ばっかり",
+        "artists": [
+          "ruri-shioriha"
+        ],
+        "startTime": "PT38M37S",
+        "endTime": "PT42M45S",
+        "uuid": "3a1191db-819f-4dd2-8445-b347b7ede618"
+      },
+      {
+        "songTitle": "Stay Alive",
+        "artists": [
+          "ruri-shioriha"
+        ],
+        "startTime": "PT45M23S",
+        "endTime": "PT49M45S",
+        "uuid": "7b12facd-0caf-4583-82d7-7fe017d56e47"
+      },
+      {
+        "songTitle": "海色",
+        "artists": [
+          "ruri-shioriha"
+        ],
+        "startTime": "PT50M22S",
+        "endTime": "PT54M34S",
+        "uuid": "a9b4977d-b8ba-4359-bd0e-af708c4fe84a"
+      },
+      {
+        "songTitle": "午夜の待ち合わせ",
+        "artists": [
+          "ruri-shioriha"
+        ],
+        "startTime": "PT55M12S",
+        "endTime": "PT57M55S",
+        "uuid": "57df69f3-3244-4101-9f90-93bc0562e44c"
+      },
+      {
+        "songTitle": "starlog",
+        "artists": [
+          "ruri-shioriha"
+        ],
+        "startTime": "PT58M17S",
+        "endTime": "PT1H3M13S",
+        "uuid": "c8b93ce5-828a-4557-99eb-a21ca2a42644"
+      }
+    ]
+  }
+]

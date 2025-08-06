@@ -1,0 +1,1231 @@
+{
+  "mito-tsukino": {
+    "ja": "月ノ美兎",
+    "jah": "つきのみと",
+    "en": "Tsukino Mito",
+    "aliases": ["いいんちょう"],
+    "channelId": "UCD-miitqNY3nyukJ4Fnf4_A",
+    "color": "E43F3B"
+  },
+  "chihiro-yuki": {
+    "ja": "勇気ちひろ",
+    "jah": "ゆうきちひろ",
+    "en": "Yuki Chihiro",
+    "aliases": [],
+    "channelId": "UCLO9QDxVL4bnvRRsz6K4bsQ",
+    "color": "7BB3EE",
+    "isGraduated": true
+  },
+  "elu": {
+    "ja": "える",
+    "jah": "える",
+    "en": "Elu",
+    "aliases": [],
+    "channelId": "UCYKP16oMX9KKPbrNgo_Kgag",
+    "color": "E2364F"
+  },
+  "kaede-higuchi": {
+    "ja": "樋口楓",
+    "jah": "ひぐちかえで",
+    "en": "Higuchi Kaede",
+    "aliases": ["でろーん"],
+    "channelId": "UCsg-YqdqQ-KFF0LNk23BY4A",
+    "color": "FBAF71"
+  },
+  "rin-shizuka": {
+    "ja": "静凛",
+    "jah": "しずかりん",
+    "en": "Shizuka Rin",
+    "aliases": ["しずりん"],
+    "channelId": "UC6oDys1BGgBsIC3WhG1BovQ",
+    "color": "745399"
+  },
+  "hajime-shibuya": {
+    "ja": "渋谷ハジメ",
+    "jah": "しぶやはじめ",
+    "en": "Shibuya Hajime",
+    "aliases": [],
+    "channelId": "UCeK9HFcRZoTrvqcUCtccMoQ",
+    "color": "D7FAD7"
+  },
+  "aki-suzuya": {
+    "ja": "鈴谷アキ",
+    "jah": "すずやあき",
+    "en": "Suzuya Aki",
+    "aliases": ["あきくん"],
+    "channelId": "UCpnvhOIJ6BN-vPkYU9ls-Eg",
+    "color": "F2F9C3",
+    "isGraduated": true
+  },
+  "moira": {
+    "ja": "モイラ",
+    "jah": "もいら",
+    "en": "Moira",
+    "aliases": [],
+    "channelId": "UCvmppcdYf4HOv-tFQhHHJMA",
+    "color": "91ABD0"
+  },
+
+  "utako-suzuka": {
+    "ja": "鈴鹿詩子",
+    "jah": "すずかうたこ",
+    "en": "Suzuka Utako",
+    "aliases": [],
+    "channelId": "UCwokZsOK_uEre70XayaFnzA",
+    "color": "FA4F62",
+    "isGraduated": true
+  },
+  "ichigo-ushimi": {
+    "ja": "宇志海いちご",
+    "jah": "うしみいちご",
+    "en": "Ushimi Ichigo",
+    "aliases": [],
+    "channelId": "UCmUjjW5zF1MMOhYUwwwQv9Q",
+    "color": "FFCACE"
+  },
+  "mugi-ienaga": {
+    "ja": "家長むぎ",
+    "jah": "いえながむぎ",
+    "en": "Ienaga Mugi",
+    "aliases": [],
+    "channelId": "UC_GCs6GARLxEHxy1w40d6VQ",
+    "color": "FF899D"
+  },
+  "riri-yuhi": {
+    "ja": "夕陽リリ",
+    "jah": "ゆうひりり",
+    "en": "Yuhi Riri",
+    "aliases": [],
+    "channelId": "UC48jH1ul-6HOrcSSfoR02fQ",
+    "color": "BFFFFF"
+  },
+  "alice-mononobe": {
+    "ja": "物部有栖",
+    "jah": "もののべありす",
+    "en": "Mononobe Alice",
+    "aliases": [],
+    "channelId": "UCt0clH12Xk1-Ej5PXKGfdPA",
+    "color": "81D4E2"
+  },
+  "tamaki-fumino": {
+    "ja": "文野環",
+    "jah": "ふみのたまき",
+    "en": "Fumino Tamaki",
+    "aliases": [],
+    "channelId": "UCBiqkFJljoxAj10SoP2w2Cg",
+    "color": "EBDDB4"
+  },
+  "gaku-fushimi": {
+    "ja": "伏見ガク",
+    "jah": "ふしみがく",
+    "en": "Fushimi Gaku",
+    "aliases": ["がっくん"],
+    "channelId": "UCXU7YYxy_iQd3ulXyO-zC2w",
+    "color": "FFCB5B"
+  },
+  "gilzaren-iii": {
+    "ja": "ギルザレンIII世",
+    "jah": "ぎるざれんさんせい",
+    "en": "Gilzaren III",
+    "aliases": [],
+    "channelId": "UCUzJ90o1EjqUbk2pBAy0_aw",
+    "color": "002FA7"
+  },
+  "toya-kenmochi": {
+    "ja": "剣持刀也",
+    "jah": "けんもちとうや",
+    "en": "Kenmochi Toya",
+    "aliases": ["あご"],
+    "channelId": "UCv1fFr156jc65EMiLbaLImw",
+    "color": "A590AF"
+  },
+  "kazaki-morinaka": {
+    "ja": "森中花咲",
+    "jah": "もりなかかざき",
+    "en": "Morinaka Kazaki",
+    "aliases": [],
+    "channelId": "UCtpB6Bvhs1Um93ziEDACQ8g",
+    "color": "C8F39A"
+  },
+
+  "kanae": {
+    "ja": "叶",
+    "jah": "かなえ",
+    "en": "Kanae",
+    "aliases": [],
+    "channelId": "UCspv01oxUFf_MTSipURRhkA",
+    "color": "FF2FA2"
+  },
+  "youko-akabane": {
+    "ja": "赤羽葉子",
+    "jah": "あかばねようこ",
+    "en": "Akabane Youko",
+    "aliases": [],
+    "channelId": "UCBi8YaVyZpiKWN3_Z0dCTfQ",
+    "color": "CA636C"
+  },
+  "saku-sasaki": {
+    "ja": "笹木咲",
+    "jah": "ささきさく",
+    "en": "Sasaki Saku",
+    "aliases": [],
+    "channelId": "UCoztvTULBYd3WmStqYeoHcA",
+    "color": "EF9AAF"
+  },
+  "himawari-honma": {
+    "ja": "本間ひまわり",
+    "jah": "ほんまひまわり",
+    "en": "Honma Himawari",
+    "aliases": [],
+    "channelId": "UC0g1AE0DOjBYnLhkgoRWN1w",
+    "color": "FBE340"
+  },
+  "makaino-ririmu": {
+    "ja": "魔界ノりりむ",
+    "jah": "まかいのりりむ",
+    "en": "Makaino Ririmu",
+    "aliases": [],
+    "channelId": "UC9EjSJ8pvxtvPdxLOElv73w",
+    "color": "EF6F94"
+  },
+  "kuzuha": {
+    "ja": "葛葉",
+    "jah": "くずは",
+    "en": "Kuzuha",
+    "aliases": [],
+    "channelId": "UCSFCh5NL4qXrAy9u-u2lX3g",
+    "color": "ACA7BB"
+  },
+  "yuika-shiina": {
+    "ja": "椎名唯華",
+    "jah": "しいなゆいか",
+    "en": "Shiina Yuika",
+    "aliases": [],
+    "channelId": "UC_4tXjqecqox5Uc05ncxpxg",
+    "color": "F1C8DE"
+  },
+
+  "dola": {
+    "ja": "ドーラ",
+    "jah": "どーら",
+    "en": "Dola",
+    "aliases": [],
+    "channelId": "UC53UDnhAAYwvNO7j_2Ju1cQ",
+    "color": "A83E4A"
+  },
+  "kyoko-todoroki": {
+    "ja": "轟京子",
+    "jah": "とどろききょうこ",
+    "en": "Todoroki Kyoko",
+    "aliases": [],
+    "channelId": "UCRV9d6YCYIMUszK-83TwxVA",
+    "color": "F8A69A"
+  },
+  "sister-claire": {
+    "ja": "シスター・クレア",
+    "jah": "しすたーくれあ",
+    "en": "Sister Claire",
+    "aliases": [],
+    "channelId": "UC1zFJrfEKvCixhsjNSb1toQ",
+    "color": "DFC6A8"
+  },
+  "chaika-hanabatake": {
+    "ja": "花畑チャイカ",
+    "jah": "はなばたけちゃいか",
+    "en": "Hanabatake Chaika",
+    "aliases": [],
+    "channelId": "UCsFn_ueskBkMCEyzCEqAOvg",
+    "color": "40CF84"
+  },
+  "kizuku-yashiro": {
+    "ja": "社築",
+    "jah": "やしろきずく",
+    "en": "Yashiro Kizuku",
+    "aliases": ["やしきず"],
+    "channelId": "UCKMYISTJAQ8xTplUPHiABlA",
+    "color": "B6C6F2"
+  },
+  "momo-azuchi": {
+    "ja": "安土桃",
+    "jah": "あづちもも",
+    "en": "Azuchi Momo",
+    "aliases": [],
+    "channelId": "UC6TfqY40Xt1Y0J-N18c85qQ",
+    "color": "F295CE",
+    "isGraduated": true
+  },
+  "masaru-suzuki": {
+    "ja": "鈴木勝",
+    "jah": "すずきまさる",
+    "en": "Suzuki Masaru",
+    "aliases": [],
+    "channelId": "UCryOPk2GZ1meIDt53tL30Tw",
+    "color": "7B788A"
+  },
+  "ryushen": {
+    "ja": "緑仙",
+    "jah": "りゅーしぇん",
+    "en": "Ryushen",
+    "aliases": ["みどり"],
+    "channelId": "UCt5-0i4AVHXaWJrL8Wql3mw",
+    "color": "5DCCAB"
+  },
+  "kou-uzuki": {
+    "ja": "卯月コウ",
+    "jah": "うづきこう",
+    "en": "Uzuki Kou",
+    "aliases": [],
+    "channelId": "UC3lNFeJiTq6L3UWoz4g1e-A",
+    "color": "F9E97A"
+  },
+
+  "shoichi-kanda": {
+    "ja": "神田笑一",
+    "jah": "かんだしょういち",
+    "en": "Kanda Shoichi",
+    "aliases": [],
+    "channelId": "UCWz0CSYCxf4MhRKPDm220AQ",
+    "color": "F4D35B"
+  },
+  "hina-asuka": {
+    "ja": "飛鳥ひな",
+    "jah": "あすかひな",
+    "en": "Asuka Hina",
+    "aliases": [],
+    "channelId": "UCiSRx1a2k-0tOg-fs6gAolQ",
+    "color": "FAD8DC"
+  },
+  "air-harusaki": {
+    "ja": "春崎エアル",
+    "jah": "はるさきえある",
+    "en": "Harusaki Air",
+    "aliases": [],
+    "channelId": "UCtAvQ5U0aXyKwm2i4GqFgJg",
+    "color": "4B5F9E"
+  },
+  "sayo-amemori": {
+    "ja": "雨森小夜",
+    "jah": "あめもりさよ",
+    "en": "Amemori Sayo",
+    "aliases": [],
+    "channelId": "UCRWOdwLRsenx2jLaiCAIU4A",
+    "color": "756F7D"
+  },
+  "rion-takamiya": {
+    "ja": "鷹宮リオン",
+    "jah": "たかみやりおん",
+    "en": "Takamiya Rion",
+    "aliases": [],
+    "channelId": "UCV5ZZlLjk5MKGg3L0n0vbzw",
+    "color": "CC3D7B"
+  },
+  "keisuke-maimoto": {
+    "ja": "舞元啓介",
+    "jah": "まいもとけいすけ",
+    "en": "Maimoto Keisuke",
+    "aliases": [],
+    "channelId": "UCJubINhCcFXlsBwnHp0wl_g",
+    "color": "094078"
+  },
+  "mikoto-rindou": {
+    "ja": "竜胆尊",
+    "jah": "りんどうみこと",
+    "en": "Rindou Mikoto",
+    "aliases": [],
+    "channelId": "UCPvGypSgfDkVe7JG2KygK7A",
+    "color": "745BFF"
+  },
+  "debidebi-debiru": {
+    "ja": "でびでび・でびる",
+    "jah": "でびでびでびる",
+    "en": "Debidebi Debiru",
+    "aliases": [],
+    "channelId": "UCjlmCrq4TP1I4xguOtJ-31w",
+    "color": "444C7D"
+  },
+  "ritsuki-sakura": {
+    "ja": "桜凛月",
+    "jah": "さくらりつき",
+    "en": "Sakura Ritsuki",
+    "aliases": ["りつきん"],
+    "channelId": "UCfQVs_KuXeNAlGa3fb8rlnQ",
+    "color": "C57FC7"
+  },
+  "chima-machita": {
+    "ja": "町田ちま",
+    "jah": "まちたちま",
+    "en": "Machita Chima",
+    "aliases": [],
+    "channelId": "UCo7TRj3cS-f_1D9ZDmuTsjw",
+    "color": "80C8EF"
+  },
+  "joe-rikiichi": {
+    "ja": "ジョー・力一",
+    "jah": "じょーりきいち",
+    "en": "Joe Rikiichi",
+    "aliases": ["じょーかー"],
+    "channelId": "UChUJbHiTVeGrSkTdBzVfNCQ",
+    "color": "D598DD"
+  },
+  "naru-naruse": {
+    "ja": "成瀬鳴",
+    "jah": "なるせなる",
+    "en": "Naruse Naru",
+    "aliases": [],
+    "channelId": "UCoM_XmK45j504hfUWvN06Qg",
+    "color": "E06489",
+    "isGraduated": true
+  },
+  "belmond-banderas": {
+    "ja": "ベルモンド・バンデラス",
+    "jah": "でるもんどばんでらす",
+    "en": "Belmond Banderas",
+    "aliases": [],
+    "channelId": "UCbc8fwhdUNlqi-J99ISYu4A",
+    "color": "683D46"
+  },
+  "rine-yaguruma": {
+    "ja": "矢車りね",
+    "jah": "やぐるまりね",
+    "en": "Yaguruma Rine",
+    "aliases": [],
+    "channelId": "UCvzVB-EYuHFXHZrObB8a_Og",
+    "color": "FEECD8"
+  },
+  "kakeru-yumeoi": {
+    "ja": "夢追翔",
+    "jah": "ゆめおいかける",
+    "en": "Yumeoi Kakeru",
+    "aliases": [],
+    "channelId": "UCTIE7LM5X15NVugV7Krp9Hw",
+    "color": "AC324B"
+  },
+  "shiba-kuroi": {
+    "ja": "黒井しば",
+    "jah": "くろいしば",
+    "en": "Kuroi Shiba",
+    "aliases": [],
+    "channelId": "UCmeyo5pRj_6PXG-CsGUuWWg",
+    "color": "585C82"
+  },
+
+  "meiji-warabeda": {
+    "ja": "童田明治",
+    "jah": "わらべだめいじー",
+    "en": "Warabeda Meiji",
+    "aliases": [],
+    "channelId": "UCveZ9Ic1VtcXbsyaBgxPMvg",
+    "color": "E34E4F",
+    "isGraduated": true
+  },
+  "mirei-gundo": {
+    "ja": "群道美玲",
+    "jah": "ぐんどうみれい",
+    "en": "Gundo Mirei",
+    "aliases": [],
+    "channelId": "UCeShTCVgZyq2lsBW9QwIJcw",
+    "color": "A20063",
+    "isGraduated": true
+  },
+  "roa-yuzuki": {
+    "ja": "夢月ロア",
+    "jah": "ゆづきろあ",
+    "en": "Yuzuki Roa",
+    "aliases": ["ゆめつきろあ"],
+    "channelId": "UCCVwhI5trmaSxfcze_Ovzfw",
+    "color": "D8368D"
+  },
+  "haruka-onomachi": {
+    "ja": "小野町春香",
+    "jah": "おのまちはるか",
+    "en": "Onomachi Haruka",
+    "aliases": [],
+    "channelId": "UCg63a3lk6PNeWhVvMRM_mrQ",
+    "color": "FF336E"
+  },
+  "tsumugu-kataribe": {
+    "ja": "語部紡",
+    "jah": "かたりべつむぐ",
+    "en": "Kataribe Tsumugu",
+    "aliases": [],
+    "channelId": "UCufQu4q65z63IgE4cfKs1BQ",
+    "color": "07A4E3"
+  },
+  "miyako-seto": {
+    "ja": "瀬戸美夜子",
+    "jah": "せとみやこ",
+    "en": "Seto Miyako",
+    "aliases": [],
+    "channelId": "UCHK5wkevfaGrPr7j3g56Jmw",
+    "color": "C4FF2B",
+    "isGraduated": true
+  },
+  "era-otogibara": {
+    "ja": "御伽原江良",
+    "jah": "おとぎばらえら",
+    "en": "Otogibara Era",
+    "aliases": [],
+    "channelId": "UCwQ9Uv-m8xkE5PzRc7Bqx3Q",
+    "color": "FFBE5C",
+    "isGraduated": true
+  },
+  "toko-inui": {
+    "ja": "戌亥とこ",
+    "jah": "いぬいとこ",
+    "en": "Inui Toko",
+    "aliases": [],
+    "channelId": "UCXRlIK3Cw_TJIQC5kSJJQMg",
+    "color": "92F3A4"
+  },
+  "ange-katrina": {
+    "ja": "アンジュ・カトリーナ",
+    "jah": "あんじゅかとりーな",
+    "en": "Ange Katrina",
+    "aliases": [],
+    "channelId": "UCHVXbQzkl3rDfsXWo8xi2qw",
+    "color": "C83C35"
+  },
+  "lize-helesta": {
+    "ja": "リゼ・ヘルエスタ",
+    "jah": "りぜへるえすた",
+    "en": "Lize Helesta",
+    "aliases": [],
+    "channelId": "UCZ1xuCK1kNmn5RzPYIZop3w",
+    "color": "42FFFF"
+  },
+
+  "akina-saegusa": {
+    "ja": "三枝明那",
+    "jah": "さえぐさあきな",
+    "en": "Saegusa Akina",
+    "aliases": [],
+    "channelId": "UCNW1Ex0r6HsWRD4LCtPwvoQ",
+    "color": "F03C32"
+  },
+  "manami-aizono": {
+    "ja": "愛園愛美",
+    "jah": "あいぞのまなみ",
+    "en": "Aizono Manami",
+    "aliases": [],
+    "channelId": "UC0WwEfE-jOM2rzjpdfhTzZA",
+    "color": "F98FB7"
+  },
+  "lulu-suzuhara": {
+    "ja": "鈴原るる",
+    "jah": "すずはらるる",
+    "en": "Suzuhara Lulu",
+    "aliases": [],
+    "channelId": "UC_a1ZYZ8ZTXpjg9xUY9sj8w",
+    "color": "D7AFA8",
+    "isGraduated": true
+  },
+  "mahiro-yukishiro": {
+    "ja": "雪城眞尋",
+    "jah": "ゆきしろまひろ",
+    "en": "Yukishiro Mahiro",
+    "aliases": [],
+    "channelId": "UCHX7YpFG8rVwhsHCx34xt7w",
+    "color": "B4E9FF"
+  },
+  "ex-albio": {
+    "ja": "エクス・アルビオ",
+    "jah": "えくすあるびお",
+    "en": "Ex Albio",
+    "aliases": [],
+    "channelId": "UCIytNcoz4pWzXfLda0DoULQ",
+    "color": "5C9BBC"
+  },
+  "levi-elipha": {
+    "ja": "レヴィ・エリファ",
+    "jah": "れゔぃえりふぁ",
+    "en": "Levi Elipha",
+    "aliases": [],
+    "channelId": "UCtnO2N4kPTXmyvedjGWdx3Q",
+    "color": "E8E1E8"
+  },
+  "marin-hayama": {
+    "ja": "葉山舞鈴",
+    "jah": "はやままりん",
+    "en": "Hayama Marin",
+    "aliases": [],
+    "channelId": "UCfipDDn7wY-C-SoUChgxCQQ",
+    "color": "72D5CE"
+  },
+  "nui-sociere": {
+    "ja": "ニュイ・ソシエール",
+    "jah": "にゅいそしえーる",
+    "en": "Nui Sociere",
+    "aliases": [],
+    "channelId": "UCUc8GZfFxtmk7ZwSO7ccQ0g",
+    "color": "D24E5F"
+  },
+
+  "fuyuki-hakase": {
+    "ja": "葉加瀬冬雪",
+    "jah": "はかせふゆき",
+    "en": "Hakase Fuyuki",
+    "aliases": [],
+    "channelId": "UCGYAYLDE7TZiiC8U6teciDQ",
+    "color": "EEFFFF"
+  },
+  "hayato-kagami": {
+    "ja": "加賀美ハヤト",
+    "jah": "かがみはやと",
+    "en": "Kagami Hayato",
+    "aliases": [],
+    "channelId": "UCmovZ2th3Sqpd00F5RdeigQ",
+    "color": "B9ADB9"
+  },
+  "rena-yorumi": {
+    "ja": "夜見れな",
+    "jah": "よるみれな",
+    "en": "Yorumi Rena",
+    "aliases": [],
+    "channelId": "UCL34fAoFim9oHLbVzMKFavQ",
+    "color": "F7265A"
+  },
+  "kai-mayuzumi": {
+    "ja": "黛灰",
+    "jah": "まゆずみかい",
+    "en": "Mayuzumi Kai",
+    "aliases": [],
+    "channelId": "UCb5JxV6vKlYVknoJB8TnyYg",
+    "color": "086776",
+    "isGraduated": true
+  },
+  "ars-almal": {
+    "ja": "アルス・アルマル",
+    "jah": "あるすあるまる",
+    "en": "Ars Almal",
+    "aliases": [],
+    "channelId": "UCdpUojq0KWZCN9bxXnZwz5w",
+    "color": "7FD6E2"
+  },
+  "uiha-aiba": {
+    "ja": "相羽ういは",
+    "jah": "あいばういは",
+    "en": "Aiba Uiha",
+    "aliases": [],
+    "channelId": "UCnRQYHTnRLSF0cLJwMnedCg",
+    "color": "324CAC",
+    "isGraduated": true
+  },
+  "kokoro-amamiya": {
+    "ja": "天宮こころ",
+    "jah": "あまみやこころ",
+    "en": "Amamiya Kokoro",
+    "aliases": [],
+    "channelId": "UCkIimWZ9gBJRamKF0rmPU8w",
+    "color": "C5EDFF"
+  },
+  "eli-conifer": {
+    "ja": "エリー・コニファー",
+    "jah": "えりーこにふぁー",
+    "en": "Eli Conifer",
+    "aliases": [],
+    "channelId": "UCpNH2Zk2gw3JBjWAKSyZcQQ",
+    "color": "DAFFF9"
+  },
+  "ratna-petit": {
+    "ja": "ラトナ・プティ",
+    "jah": "らとなぷてぃ",
+    "en": "Ratna Petit",
+    "aliases": [],
+    "channelId": "UCIG9rDtgR45VCZmYnd-4DUw",
+    "color": "F8B759"
+  },
+  "sou-hayase": {
+    "ja": "早瀬走",
+    "jah": "はやせそう",
+    "en": "Hayase Sou",
+    "aliases": [],
+    "channelId": "UC2OacIzd2UxGHRGhdHl1Rhw",
+    "color": "AA7BE8"
+  },
+  "kana-sukoya": {
+    "ja": "健屋花那",
+    "jah": "すこやかな",
+    "en": "Sukoya Kana",
+    "aliases": ["けんやかな"],
+    "channelId": "UC8C1LLhBhf_E2IBPLSDJXlQ",
+    "color": "FF2FA2"
+  },
+  "shellin-burgundy": {
+    "ja": "シェリン・バーガンディ",
+    "jah": "しぇりんばーがんでぃ",
+    "en": "Shellin Burgundy",
+    "aliases": [],
+    "channelId": "UCHBhnG2G-qN0JrrWmMO2FTA",
+    "color": "6C2735"
+  },
+
+  "fumi": {
+    "ja": "フミ",
+    "jah": "ふみ",
+    "en": "Fumi",
+    "aliases": [],
+    "channelId": "UCwrjITPwG4q71HzihV2C7Nw",
+    "color": "F4E49D"
+  },
+  "sara-hoshikawa": {
+    "ja": "星川サラ",
+    "jah": "ほしかわさら",
+    "en": "Hoshikawa Sara",
+    "aliases": [],
+    "channelId": "UC9V3Y3_uzU5e-usObb6IE1w",
+    "color": "FAB80D"
+  },
+  "karuta-yamagami": {
+    "ja": "山神カルタ",
+    "jah": "やまがみかるた",
+    "en": "Yamagami Karuta",
+    "aliases": [],
+    "channelId": "UCllKI7VjyANuS1RXatizfLQ",
+    "color": "384B5A"
+  },
+  "emma-august": {
+    "ja": "えま★おうがすと",
+    "jah": "えまおうがすと",
+    "en": "Emma August",
+    "aliases": [],
+    "channelId": "UCl1oLKcAq93p-pwKfDGhiYQ",
+    "color": "B32F51"
+  },
+  "luis-cammy": {
+    "ja": "ルイス・キャミー",
+    "jah": "るいすきゃみー",
+    "en": "Luis Cammy",
+    "aliases": [],
+    "channelId": "UCb6ObE-XGCctO3WrjRZC-cw",
+    "color": "E86A74"
+  },
+  "mao-matsukai": {
+    "ja": "魔使マオ",
+    "jah": "まつかいまお",
+    "en": "Matsukai Mao",
+    "aliases": [],
+    "channelId": "UCerkculBD7YLc_vOGrF7tKg",
+    "color": "C93965"
+  },
+  "minato-fuwa": {
+    "ja": "不破湊",
+    "jah": "ふわみなと",
+    "en": "Fuwa Minato",
+    "aliases": [],
+    "channelId": "UC6wvdADTJ88OfIbJYIpAaDA",
+    "color": "BF69F4"
+  },
+  "tomoe-shirayuki": {
+    "ja": "白雪巴",
+    "jah": "しらゆきともえ",
+    "en": "Shirayuki Tomoe",
+    "aliases": [],
+    "channelId": "UCuvk5PilcvDECU7dDZhQiEw",
+    "color": "6E3FE7"
+  },
+  "gwelu-os-gar": {
+    "ja": "グウェル・オス・ガール",
+    "jah": "ぐうぇるおすがーる",
+    "en": "Gwelu Os Gar",
+    "aliases": [],
+    "channelId": "UC1QgXt46-GEvtNjEC1paHnw",
+    "color": "F04B2D"
+  },
+  "meme-mashiro": {
+    "ja": "ましろ爻",
+    "jah": "ましろめめ",
+    "en": "Mashiro Meme",
+    "aliases": [],
+    "channelId": "UCS-XXTgVkotkbkDnGEprXpg",
+    "color": "1E2232"
+  },
+  "naraka": {
+    "ja": "奈羅花",
+    "jah": "ならか",
+    "en": "Naraka",
+    "aliases": [],
+    "channelId": "UC-o-E6I3IC2q8sAoAuM6Umg",
+    "color": "A02655"
+  },
+  "natsume-kurusu": {
+    "ja": "来栖夏目",
+    "jah": "くるすなつめ",
+    "en": "Kurusu Natsume",
+    "aliases": [],
+    "channelId": "UCRcLAVTbmx2-iNcXSsupdNA",
+    "color": "8AD1EF"
+  },
+
+  "furen-e-lustario": {
+    "ja": "フレン・E・ルスタリオ",
+    "jah": "ふれんいーるすたりお",
+    "en": "Furen E Lustario",
+    "aliases": [],
+    "channelId": "UCuep1JCrMvSxOGgGhBfJuYw",
+    "color": "EC1D2F"
+  },
+  "melissa-kinrenka": {
+    "ja": "メリッサ・キンレンカ",
+    "jah": "めりっさきんれんか",
+    "en": "Melissa Kinrenka",
+    "aliases": [],
+    "channelId": "UCwcyyxn6h9ex4sMXGtpQE_g",
+    "color": "D3F377",
+    "isGraduated": true
+  },
+  "ibrahim": {
+    "ja": "イブラヒム",
+    "jah": "いぶらひむ",
+    "en": "Ibrahim",
+    "aliases": [],
+    "channelId": "UCmZ1Rbthn-6Jm_qOGjYsh5A",
+    "color": "7CA1F0"
+  },
+  "kei-nagao": {
+    "ja": "長尾景",
+    "jah": "ながおけい",
+    "en": "Nagao Kei",
+    "aliases": [],
+    "channelId": "UCXW4MqCQn-jCaxlX-nn-BYg",
+    "color": "625DA1"
+  },
+  "tojiro-genzuki": {
+    "ja": "弦月藤士郎",
+    "jah": "げんづきとうじろう",
+    "en": "Genzuki Tojiro",
+    "aliases": ["げんつきとうじろう"],
+    "channelId": "UCGw7lrT-rVZCWHfdG9Frcgg",
+    "color": "B43246"
+  },
+  "haru-kaida": {
+    "ja": "甲斐田晴",
+    "jah": "かいだはる",
+    "en": "Kaida Haru",
+    "aliases": [],
+    "channelId": "UCo2N7C-Z91waaR6lF3LL_jw",
+    "color": "4DD7E3"
+  },
+  "kirame-sorahoshi": {
+    "ja": "空星きらめ",
+    "jah": "そらほしきらめ",
+    "en": "Sorahoshi Kirame",
+    "aliases": [],
+    "channelId": "UC_82HBGtvwN1hcGeOGHzUBQ",
+    "color": "44DDF4"
+  },
+  "akane-asahina": {
+    "ja": "朝日南アカネ",
+    "jah": "あさひなあかね",
+    "en": "Asahina Akane",
+    "aliases": [],
+    "channelId": "UCe_p3YEuYJb8Np0Ip9dk-FQ",
+    "color": "B7282E",
+    "isGraduated": true
+  },
+  "sango-suo": {
+    "ja": "周央サンゴ",
+    "jah": "すごうさんご",
+    "en": "Suo Sango",
+    "aliases": [],
+    "channelId": "UCL_O_HXgLJx3Auteer0n0pA",
+    "color": "EF8468"
+  },
+  "kohaku-todo": {
+    "ja": "東堂コハク",
+    "jah": "とうどうこはく",
+    "en": "Todo Kohaku",
+    "aliases": [],
+    "channelId": "UCebT4Aq-3XWb5je1S1FvR_A",
+    "color": "EA930A"
+  },
+  "hisui-kitakoji": {
+    "ja": "北小路ヒスイ",
+    "jah": "きたこうじひすい",
+    "en": "Kitakoji Hisui",
+    "aliases": [],
+    "channelId": "UCRqBKoKuX30ruKAq05pCeRQ",
+    "color": "38B48B"
+  },
+  "chigusa-nishizono": {
+    "ja": "西園チグサ",
+    "jah": "にしぞのちぐさ",
+    "en": "Nishizono Chigusa",
+    "aliases": [],
+    "channelId": "UCkngxfPbmGyGl_RIq4FA3MQ",
+    "color": "3A8FB7"
+  },
+
+  "axia-krone": {
+    "ja": "アクシア・クローネ",
+    "jah": "あくしあくろーね",
+    "en": "Axia Krone",
+    "aliases": [],
+    "channelId": "UC8oPnditPSp5lZu45fnXWCA",
+    "color": "00A6FE",
+    "isGraduated": true
+  },
+  "lauren-iroas": {
+    "ja": "ローレン・イロアス",
+    "jah": "ろーれんいろあす",
+    "en": "Lauren Iroas",
+    "aliases": [],
+    "channelId": "UCgmFrRcyH7d1zR9sIVQhFow",
+    "color": "C10E49"
+  },
+  "leos-vincent": {
+    "ja": "レオス・ヴィンセント",
+    "jah": "れおすゔぃんせんと",
+    "en": "Leos Vincent",
+    "aliases": [],
+    "channelId": "UC-6rZgmxZSIbq786j3RD5ow",
+    "color": "234A87"
+  },
+  "oliver-evans": {
+    "ja": "オリバー・エバンス",
+    "jah": "おりばーえばんす",
+    "en": "Oliver Evans",
+    "aliases": [],
+    "channelId": "UCqjTqdVlvIipZXIKeCkHKUA",
+    "color": "BCC37E"
+  },
+  "lain-paterson": {
+    "ja": "レイン・パターソン",
+    "jah": "れいんぱたーそん",
+    "en": "Lain Paterson",
+    "aliases": [],
+    "channelId": "UCRm6lqtdxs_Qo6HeL-SRQ-w",
+    "color": "F74848"
+  },
+
+  "muyu-amagase": {
+    "ja": "天ケ瀬むゆ",
+    "jah": "あまがせむゆ",
+    "en": "Amagase Muyu",
+    "aliases": [],
+    "channelId": "UCAQDFeCTVdx90GtwohwjHzQ",
+    "color": "FA5578"
+  },
+  "nei-ponto": {
+    "ja": "先斗寧",
+    "jah": "ぽんとねい",
+    "en": "Ponto Nei",
+    "aliases": [],
+    "channelId": "UCe22Bcwd_GCpTjLxn83zl7A",
+    "color": "5A7DFF"
+  },
+  "yotsuha-umise": {
+    "ja": "海妹四葉",
+    "jah": "うみせよつは",
+    "en": "Umise Yotsuha",
+    "aliases": ["よつはぴ"],
+    "channelId": "UCtHY-tP0dyykhTRMmnfPs_g",
+    "color": "FFE632"
+  },
+  "salome-hyakumantenbara": {
+    "ja": "壱百満天原サロメ",
+    "jah": "ひゃくまんてんばらさろめ",
+    "en": "Hyakumantenbara Salome",
+    "aliases": [],
+    "channelId": "UCgIfLpQvelloDi8I0Ycbwpg",
+    "color": "CD3796"
+  },
+  "kanato-fura": {
+    "ja": "風楽奏斗",
+    "jah": "ふうらかなと",
+    "en": "Fura Kanato",
+    "aliases": [],
+    "channelId": "UCC7rRD6P7RQcx0hKv9RQP4w",
+    "color": "F0F0F5"
+  },
+  "hibari-watarai": {
+    "ja": "渡会雲雀",
+    "jah": "わたらいひばり",
+    "en": "Watarai Hibari",
+    "aliases": [],
+    "channelId": "UC4l9gz3q65lTBFfFtW5LLeA",
+    "color": "192332"
+  },
+  "akira-shikinagi": {
+    "ja": "四季凪アキラ",
+    "jah": "しきなぎあきら",
+    "en": "Shikinagi Akira",
+    "aliases": [],
+    "channelId": "UCcDDxnoQcezyTUzHg5uHaKg",
+    "color": "235AAA"
+  },
+  "seraph-dazzlegarden": {
+    "ja": "セラフ・ダズルガーデン",
+    "jah": "せらふだずるがーでん",
+    "en": "Seraph Dazzlegarden",
+    "aliases": [],
+    "channelId": "UC5dJFf4m-mEcoyJRfhBljoA",
+    "color": "DC3C41"
+  },
+
+  "toru-koshimizu": {
+    "ja": "小清水透",
+    "jah": "こしみずとおる",
+    "en": "Koshimizu Toru",
+    "aliases": ["ちいさみず"],
+    "channelId": "UCUP8TmlO7NNra88AMqGU_vQ",
+    "color": "CDA5FF"
+  },
+  "akari-shishido": {
+    "ja": "獅子堂あかり",
+    "jah": "ししどうあかり",
+    "en": "Shishido Akari",
+    "aliases": [],
+    "channelId": "UCWRPqA0ehhWV4Hnp27PJCkQ",
+    "color": "FFD728"
+  },
+  "roco-kaburaki": {
+    "ja": "鏑木ろこ",
+    "jah": "かぶらきろこ",
+    "en": "Kaburaki Roco",
+    "aliases": [],
+    "channelId": "UClrQ7xhRBxS_v_-WuudGKmA",
+    "color": "198CAA"
+  },
+  "rika-igarashi": {
+    "ja": "五十嵐梨花",
+    "jah": "いがらしりか",
+    "en": "Igarashi Rika",
+    "aliases": [],
+    "channelId": "UCu-rV2gPtJ-CsGxe71z_BrQ",
+    "color": "FF8C3C"
+  },
+  "nozomi-ishigami": {
+    "ja": "石神のぞみ",
+    "jah": "いしがみのぞみ",
+    "en": "Ishigami Nozomi",
+    "aliases": [],
+    "channelId": "UCtLfA_qUqCJtjXJM2ZR_keg",
+    "color": "E6325F"
+  },
+  "sophia-valentine": {
+    "ja": "ソフィア・ヴァレンタイン",
+    "jah": "そふぃあゔぁれんたいん",
+    "en": "Sophia Valentine",
+    "aliases": [],
+    "channelId": "UCivwPlOp0ojnMPZj5pNOPPA",
+    "color": "C8C3DC"
+  },
+  "meruto-kuramochi": {
+    "ja": "倉持めると",
+    "jah": "くらもちめると",
+    "aliases": ["めるち"],
+    "en": "Kuramochi Meruto",
+    "channelId": "UCiA-trSZfB0i92V_-dyDqBw",
+    "color": "EB4682"
+  },
+  "ittetsu-saiki": {
+    "ja": "佐伯イッテツ",
+    "jah": "さいきいってつ",
+    "en": "Saiki Ittetsu",
+    "aliases": [],
+    "channelId": "UCy8P3o5XlMpJGQY4WugzdNA",
+    "color": "8C4664"
+  },
+  "wen-akagi": {
+    "ja": "赤城ウェン",
+    "jah": "あかぎうぇん",
+    "en": "Akagi Wen",
+    "aliases": [],
+    "channelId": "UC1vawzfbCnRpHT9SJ5pHlHw",
+    "color": "FF8C9B"
+  },
+  "rito-usami": {
+    "ja": "宇佐美リト",
+    "jah": "うさみりと",
+    "en": "Usami Rito",
+    "aliases": [],
+    "channelId": "UCambvP8yxNDot4FzQc9cgiw",
+    "color": "FAC31E"
+  },
+  "mana-hibachi": {
+    "ja": "緋八マナ",
+    "jah": "ひばちまな",
+    "en": "Hibachi Mana",
+    "aliases": [],
+    "channelId": "UCqXxS-9x9Ha_UiH6hG4kh5Q",
+    "color": "64C8F0"
+  },
+  "sho-hoshirube": {
+    "ja": "星導ショウ",
+    "jah": "ほしるべしょう",
+    "en": "Hoshirube Sho",
+    "aliases": [],
+    "channelId": "UCgZ0pH7j6c9z-pkOG3PYw1Q",
+    "color": "A58CDC"
+  },
+  "kagetsu-murakumo": {
+    "ja": "叢雲カゲツ",
+    "jah": "むらくもかげつ",
+    "en": "Murakumo Kagetsu",
+    "aliases": [],
+    "channelId": "UChdY64fJb14Nfnbs8EGdQig",
+    "color": "6EB487"
+  },
+  "rou-koyanagi": {
+    "ja": "小柳ロウ",
+    "jah": "こやなぎろう",
+    "en": "Koyanagi Rou",
+    "aliases": [],
+    "channelId": "UC6WFKwYptsxVue56Lx218vg",
+    "color": "5A5FAA"
+  },
+  "rai-inami": {
+    "ja": "伊波ライ",
+    "jah": "いなみらい",
+    "en": "Inami Rai",
+    "aliases": [],
+    "channelId": "UCz89MGFBrAqwJ5xMr5weSuA",
+    "color": "DCFF50"
+  },
+  "toto-tachitsute": {
+    "ja": "立伝都々",
+    "jah": "たちつてとと",
+    "en": "Tachitsute Toto",
+    "aliases": ["とととととと"],
+    "channelId": "UCnbJ8LTbHrsRgqkxwJXCU8w",
+    "color": "C31E5A"
+  },
+  "ruri-shioriha": {
+    "ja": "栞葉るり",
+    "jah": "しおりはるり",
+    "en": "Shioriha Ruri",
+    "aliases": [],
+    "channelId": "UC7_MFM9b8hp5kuTSpa8WyOQ",
+    "color": "2887FF"
+  },
+  "milan-kestrel": {
+    "ja": "ミラン・ケストレル",
+    "jah": "みらんけすとれる",
+    "en": "Milan Kestrel",
+    "aliases": [],
+    "channelId": "UCFtyinR2ZdvKK_Xgy07qXUg",
+    "color": "2C35BD"
+  },
+
+  "yusei-kitami": {
+    "ja": "北見遊征",
+    "jah": "きたみゆうせい",
+    "en": "Kitami Yusei",
+    "aliases": [],
+    "channelId": "UCcx3crxPFi006DUhb_YU-tw",
+    "color": "FF6E1E"
+  },
+  "kaisei": {
+    "ja": "魁星",
+    "jah": "かいせい",
+    "en": "Kaisei",
+    "aliases": [],
+    "channelId": "UC8SJPcLpIM3x8RdBJFfiluw",
+    "color": "0C6F72"
+  },
+  "ness-sakaki": {
+    "ja": "榊ネス",
+    "jah": "さかきねす",
+    "en": "Sakaki Ness",
+    "aliases": [],
+    "channelId": "UCyXBNgCulibV9pRm3ZKpmoQ",
+    "color": "C2AAE6"
+  },
+  "riko-shiga": {
+    "ja": "司賀りこ",
+    "jah": "しがりこ",
+    "en": "Shiga Riko",
+    "aliases": [],
+    "channelId": "UCzsCWYuvPUky3-DKzphYbEw",
+    "color": "FFE36C"
+  },
+  "nana-tamanoi": {
+    "ja": "珠乃井ナナ",
+    "jah": "たまのいなな",
+    "en": "Tamanoi Nana",
+    "aliases": ["なななななな"],
+    "channelId": "UCkhViRjLUKgIcVpar9JiNrw",
+    "color": "63AED9"
+  },
+  "kisara": {
+    "ja": "綺沙良",
+    "jah": "きさら",
+    "en": "Kisara",
+    "aliases": [],
+    "channelId": "UCiJ_Um3KbfF19NzkDYLzZVQ",
+    "color": "846FC7"
+  },
+  "mone-kozue": {
+    "ja": "梢桃音",
+    "jah": "こずえもね",
+    "en": "Kozue Mone",
+    "aliases": [],
+    "channelId": "UCyJOgJhgfoVRpFjsBCUmuvg",
+    "color": "FFC6E2"
+  },
+  "lunlun": {
+    "ja": "ルンルン",
+    "jah": "るんるん",
+    "en": "Lunlun",
+    "aliases": [],
+    "channelId": "UCzNXpqpdvlibmNc1JpM1o4g",
+    "color": "D8E9FC"
+  },
+  "suzuna-nanase": {
+    "ja": "七瀬すず菜",
+    "jah": "ななせすずな",
+    "en": "Nanase Suzuna",
+    "aliases": ["おはすず"],
+    "channelId": "UCtC3B1n4XMiJmrDtu1Ni5qw",
+    "color": "B9E089"
+  },
+  "berry-saotome": {
+    "ja": "早乙女ベリー",
+    "jah": "さおとめべりー",
+    "en": "Saotome Berry",
+    "aliases": [],
+    "channelId": "UC0xry7czPasj1wPxR8L0MZg",
+    "color": "DF6D7C"
+  },
+  "tamako-kirara": {
+    "ja": "雲母たまこ",
+    "jah": "きららたまこ",
+    "en": "Kirara Tamako",
+    "aliases": [],
+    "channelId": "UCw-kTlPnZYSHhlGMFJ17Znw",
+    "color": "FFD264"
+  },
+  "soma-sakayori": {
+    "ja": "酒寄颯馬",
+    "jah": "さかよりそうま",
+    "en": "Sakayori Soma",
+    "aliases": [],
+    "channelId": "UCkQ8i_cz0prqdo9jj__L93Q",
+    "color": "BA6EA5"
+  },
+  "trout-nagisa": {
+    "ja": "渚トラウト",
+    "jah": "なぎさとらうと",
+    "en": "Nagisa Trout",
+    "aliases": [],
+    "channelId": "UCpjypWF_wNRs9_TrjjWngpQ",
+    "color": "77B6C2"
+  },
+
+  "ayato-hitotsubashi": {
+    "ja": "一橋彩人",
+    "jah": "ひとつばしあやと",
+    "en": "Hitotsubashi Ayato",
+    "aliases": [],
+    "channelId": "UCcyiT8QT7fo7LrxXe1oxOoA",
+    "color": "9FCEC9"
+  },
+  "sakyo-itsuki": {
+    "ja": "五木左京",
+    "jah": "いつきさきょう",
+    "en": "Itsuki Sakyo",
+    "aliases": [],
+    "channelId": "UCiBBDZ-ndtBgE4xKbswlgXQ",
+    "color": "F3A4A9"
+  }
+}

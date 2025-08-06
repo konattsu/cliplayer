@@ -1,10 +1,9 @@
 services:
   ts_react_dev:
-    # build:
-    #   context: .
-    #   dockerfile: Dockerfile
+    build:
+      context: .
+      dockerfile: Dockerfile
 
-    image: mcr.microsoft.com/vscode/devcontainers/typescript-node:22-bullseye
     container_name: ts_react_dev
     working_dir: /workspaces
 
@@ -20,5 +19,10 @@ services:
       SSH_AUTH_SOCK: /ssh-agent
       # NODE_ENV: development
       # CHOKIDAR_USEPOLLING: true
+
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
 
     command: sleep infinity

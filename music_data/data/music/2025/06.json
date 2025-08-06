@@ -1,0 +1,117 @@
+[
+  {
+    "videoId": "d3OqQL-Z5hk",
+    "title": "【歌枠】登録者30万人ありがとうございます歌枠【栞葉るり/にじさんじ】",
+    "channelId": "UC7_MFM9b8hp5kuTSpa8WyOQ",
+    "publishedAt": "2025-06-02T11:20:49Z",
+    "modifiedAt": "2025-08-06T10:39:21Z",
+    "duration": "PT1H8M1S",
+    "privacyStatus": "public",
+    "embeddable": true,
+    "videoTags": [
+      "2d",
+      "karaoke"
+    ],
+    "clips": [
+      {
+        "songTitle": "世界一可愛い私",
+        "artists": [
+          "ruri-shioriha"
+        ],
+        "startTime": "PT1M54S",
+        "endTime": "PT5M47S",
+        "uuid": "d3dd6136-8523-4b70-b906-f105c7338206"
+      },
+      {
+        "songTitle": "こんなあたしはいかがですか",
+        "artists": [
+          "ruri-shioriha"
+        ],
+        "startTime": "PT8M17S",
+        "endTime": "PT11M35S",
+        "uuid": "1e2ff0aa-fccd-4c0a-b5d8-49f75fe87ed7"
+      },
+      {
+        "songTitle": "大大大大大好きな君へ",
+        "artists": [
+          "ruri-shioriha"
+        ],
+        "startTime": "PT13M23S",
+        "endTime": "PT17M5S",
+        "uuid": "81c3a994-45f3-4f73-b826-93a5cc6e4487"
+      },
+      {
+        "songTitle": "かわいいだけじゃだめですか？",
+        "artists": [
+          "ruri-shioriha"
+        ],
+        "startTime": "PT20M48S",
+        "endTime": "PT24M55S",
+        "uuid": "8861e5f3-62de-4382-9e29-4c2a06b09b57"
+      },
+      {
+        "songTitle": "ルージュの伝言",
+        "artists": [
+          "ruri-shioriha"
+        ],
+        "startTime": "PT26M39S",
+        "endTime": "PT29M35S",
+        "uuid": "b5785a0a-1e4c-4ad8-9f35-642f854d1506"
+      },
+      {
+        "songTitle": "ずうっといっしょ！",
+        "artists": [
+          "ruri-shioriha"
+        ],
+        "startTime": "PT30M50S",
+        "endTime": "PT33M47S",
+        "uuid": "da84be91-03d8-4512-a25a-1b5b48e7e1a1"
+      },
+      {
+        "songTitle": "カタオモイ",
+        "artists": [
+          "ruri-shioriha"
+        ],
+        "startTime": "PT35M46S",
+        "endTime": "PT39M16S",
+        "uuid": "c78704dc-c15f-4aae-879f-9220773d7d90"
+      },
+      {
+        "songTitle": "恋の音色ライン",
+        "artists": [
+          "ruri-shioriha"
+        ],
+        "startTime": "PT40M29S",
+        "endTime": "PT45M9S",
+        "uuid": "3908cd14-1a2e-4578-8f23-2558042cd8db"
+      },
+      {
+        "songTitle": "ライラック",
+        "artists": [
+          "ruri-shioriha"
+        ],
+        "startTime": "PT46M45S",
+        "endTime": "PT51M32S",
+        "uuid": "18929a03-91a5-4c83-82a8-c71c1aaf4eb0"
+      },
+      {
+        "songTitle": "私たちはもう舞台の上",
+        "artists": [
+          "ruri-shioriha"
+        ],
+        "startTime": "PT54M32S",
+        "endTime": "PT59M39S",
+        "uuid": "a27512d1-824d-4043-b08c-f56af0011afb"
+      },
+      {
+        "songTitle": "透明なプロローグ",
+        "artists": [
+          "ruri-shioriha"
+        ],
+        "startTime": "PT1H2M31S",
+        "endTime": "PT1H6M27S",
+        "uuid": "fde26db1-6c43-49c1-b7ea-b43ea5604015"
+      }
+    ]
+  }
+]
