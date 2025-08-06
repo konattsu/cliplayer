@@ -36,6 +36,8 @@ jobs:
 
       - name: Cache Rust build
         uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: music_data
 
       - name: Build
         run: cargo build --release
