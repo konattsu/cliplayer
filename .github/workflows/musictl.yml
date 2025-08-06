@@ -46,7 +46,6 @@ jobs:
         run: cargo test --all --release
 
       - name: Upload musictl binary
-        if: github.event_name == 'workflow_call'
         uses: actions/upload-artifact@v4
         with:
           name: musictl-binary
