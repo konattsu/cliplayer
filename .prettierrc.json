@@ -3,5 +3,13 @@
   "semi": true,
   "tabWidth": 2,
   "useTabs": false,
-  "plugins": ["prettier-plugin-tailwindcss"]
+  "plugins": ["prettier-plugin-tailwindcss"],
+  "overrides": [
+    {
+      "files": ".vscode/music_data.code-snippets",
+      "options": {
+        "parser": "json"
+      }
+    }
+  ]
 }

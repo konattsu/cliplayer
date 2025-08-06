@@ -1,0 +1,8 @@
+# 変更を加えたときは`reload window`するといい感じになる
+include = ["music_data/**/*.toml", "./.taplo.toml"]
+
+exclude = ["Cargo.lock", "target"]
+
+[formatting]
+column_width = 88
+indent_string = "    "

@@ -1,0 +1,53 @@
+{
+  "ArtistDataSnippet": {
+    "body": [
+      "\"${1|air-harusaki,akane-asahina,akari-shishido,aki-suzuya,akina-saegusa,akira-shikinagi,alice-mononobe,ange-katrina,ars-almal,axia-krone,ayato-hitotsubashi,belmond-banderas,berry-saotome,chaika-hanabatake,chigusa-nishizono,chihiro-yuki,chima-machita,debidebi-debiru,dola,eli-conifer,elu,emma-august,era-otogibara,ex-albio,fumi,furen-e-lustario,fuyuki-hakase,gaku-fushimi,gilzaren-iii,gwelu-os-gar,hajime-shibuya,haru-kaida,haruka-onomachi,hayato-kagami,hibari-watarai,himawari-honma,hina-asuka,hisui-kitakoji,ibrahim,ichigo-ushimi,ittetsu-saiki,joe-rikiichi,kaede-higuchi,kagetsu-murakumo,kai-mayuzumi,kaisei,kakeru-yumeoi,kana-sukoya,kanae,kanato-fura,karuta-yamagami,kazaki-morinaka,kei-nagao,keisuke-maimoto,kirame-sorahoshi,kisara,kizuku-yashiro,kohaku-todo,kokoro-amamiya,kou-uzuki,kuzuha,kyoko-todoroki,lain-paterson,lauren-iroas,leos-vincent,levi-elipha,lize-helesta,luis-cammy,lulu-suzuhara,lunlun,mahiro-yukishiro,makaino-ririmu,mana-hibachi,manami-aizono,mao-matsukai,marin-hayama,masaru-suzuki,meiji-warabeda,melissa-kinrenka,meme-mashiro,meruto-kuramochi,mikoto-rindou,milan-kestrel,minato-fuwa,mirei-gundo,mito-tsukino,miyako-seto,moira,momo-azuchi,mone-kozue,mugi-ienaga,muyu-amagase,nana-tamanoi,naraka,naru-naruse,natsume-kurusu,nei-ponto,ness-sakaki,nozomi-ishigami,nui-sociere,oliver-evans,rai-inami,ratna-petit,rena-yorumi,rika-igarashi,riko-shiga,rin-shizuka,rine-yaguruma,rion-takamiya,riri-yuhi,rito-usami,ritsuki-sakura,roa-yuzuki,roco-kaburaki,rou-koyanagi,ruri-shioriha,ryushen,saku-sasaki,sakyo-itsuki,salome-hyakumantenbara,sango-suo,sara-hoshikawa,sayo-amemori,seraph-dazzlegarden,shellin-burgundy,shiba-kuroi,sho-hoshirube,shoichi-kanda,sister-claire,soma-sakayori,sophia-valentine,sou-hayase,suzuna-nanase,tamaki-fumino,tamako-kirara,tojiro-genzuki,toko-inui,tomoe-shirayuki,toru-koshimizu,toto-tachitsute,toya-kenmochi,trout-nagisa,tsumugu-kataribe,uiha-aiba,utako-suzuka,wen-akagi,yotsuha-umise,youko-akabane,yuika-shiina,yusei-kitami|}\",",
+      ""
+    ],
+    "description": "ArtistData object based on music_data.schema.json",
+    "prefix": "artist",
+    "scope": "json"
+  },
+  "ClipData Snippet": {
+    "body": [
+      "{",
+      "  \"songTitle\": \"$1\",",
+      "  \"artists\": [",
+      "    $2",
+      "  ],",
+      "  \"externalArtists\": ${3:null},",
+      "  \"isClipped\": ${4|false,true|},",
+      "  \"startTime\": \"PT$5\",",
+      "  \"endTime\": \"PT$6\",",
+      "  \"clipTags\": ${7:null}",
+      "},",
+      ""
+    ],
+    "description": "ClipData object based on music_data.schema.json",
+    "prefix": "clip",
+    "scope": "json"
+  },
+  "Video Tags Snippet": {
+    "body": ["\"${1|karaoke,2d,3d,nmf,sitr,3d-debut|}\",", ""],
+    "description": "Array of tags for video data",
+    "prefix": "vtag",
+    "scope": "json"
+  },
+  "VideoData Snippet": {
+    "body": [
+      "{",
+      "  \"videoId\": \"$1\",",
+      "  \"uploaderName\": ${2:null},",
+      "  \"videoTags\": [",
+      "    $3",
+      "  ],",
+      "  \"clips\": [",
+      "    $4",
+      "  ]",
+      "},"
+    ],
+    "description": "VideoData object based on music_data.schema.json",
+    "prefix": "video",
+    "scope": "json"
+  }
+}

@@ -1,0 +1,11 @@
+/// 動画の公開状況
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone, Copy, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub(crate) enum PrivacyStatus {
+    /// 公開
+    Public,
+    /// 限定公開
+    Unlisted,
+    /// 非公開
+    Private,
+}
