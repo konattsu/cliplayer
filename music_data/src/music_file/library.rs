@@ -37,6 +37,7 @@ impl MusicLibrary {
         min_videos_path: &crate::util::FilePath,
         min_flat_clips_path: &crate::util::FilePath,
     ) -> Result<Self, super::MusicFileErrors> {
+        tracing::debug!("Loading music files from directory: `{dir}`",);
         Self::collect_music_file_paths(dir).map(|file| Self {
             root_dir: dir.clone(),
             min_videos_path: min_videos_path.clone(),
@@ -48,34 +49,41 @@ impl MusicLibrary {
     /// 楽曲情報をファイルに保存する
     ///
     /// 単一のファイルたちとmin2種
-    #[tracing::instrument(fields(
-        root_dir = %self.root_dir,
-        min_videos_path = %self.min_videos_path,
-        min_flat_clips_path = %self.min_flat_clips_path
-    ), level = tracing::Level::DEBUG)]
+    #[tracing::instrument(
+        skip(self),
+        fields(
+            root_dir = %self.root_dir,
+            min_videos_path = %self.min_videos_path,
+            min_flat_clips_path = %self.min_flat_clips_path
+        ),
+        level = tracing::Level::DEBUG
+    )]
     pub(crate) fn save(self) -> Result<(), super::MusicFileError> {
         println!("Saving music files to disk...");
         self.save_music_files()?;
 
-        let min_videos_path = self.min_videos_path.clone();
-        let min_flat_clips_path = self.min_flat_clips_path.clone();
-
-        let videos = self.into_videos()?;
-        super::fs_util::serialize_to_file(&min_videos_path, &videos, true)?;
-
-        let clips = crate::model::FlatClips::from_verified_videos(videos);
-        super::fs_util::serialize_to_file(&min_flat_clips_path, &clips, true)?;
+        self.save_only_min()?;
 
         println!("Music files saved successfully.");
         Ok(())
     }
 
-    #[tracing::instrument(fields(
-        root_dir = %self.root_dir,
-        min_videos_path = %self.min_videos_path,
-        min_flat_clips_path = %self.min_flat_clips_path
-    ), ret, level = tracing::Level::TRACE)]
+    #[tracing::instrument(
+        skip(self),
+        fields(
+            root_dir = %self.root_dir,
+            min_videos_path = %self.min_videos_path,
+            min_flat_clips_path = %self.min_flat_clips_path
+        ),
+        level = tracing::Level::DEBUG
+    )]
     pub(crate) fn save_only_min(self) -> Result<(), super::MusicFileError> {
+        tracing::debug!(
+            "Saving min files to disk: `{}` and `{}`",
+            self.min_videos_path,
+            self.min_flat_clips_path
+        );
+
         let min_videos_path = self.min_videos_path.clone();
         let min_flat_clips_path = self.min_flat_clips_path.clone();
 
@@ -121,64 +129,68 @@ impl MusicLibrary {
     /// 楽曲情報をファイルから指定のディレクトリ以下から読むこむ
     ///
     /// `dir`以下の全てのファイルに対して`MusicFile::load_file`を適用
+    #[tracing::instrument(ret, level = tracing::Level::TRACE)]
     fn collect_music_file_paths(
         dir: &crate::util::DirPath,
     ) -> Result<
         std::collections::HashMap<(usize, usize), super::MusicFile>,
         super::MusicFileErrors,
     > {
-        use std::collections::HashMap;
-        let mut files: HashMap<(usize, usize), super::MusicFile> = HashMap::new();
-        let mut errs: Vec<crate::music_file::MusicFileError> = Vec::new();
-
-        for entry in walkdir::WalkDir::new(dir.as_path()) {
-            // ディレクトリ/ファイルなどのエントリを取得
-            let entry = match entry {
-                Ok(entry) => entry,
-                Err(e) => {
-                    errs.push(super::MusicFileError::ReadDir {
-                        dir: dir.clone(),
-                        msg: e.to_string(),
-                    });
-                    continue;
-                }
-            };
-            // entryがファイルだと, 楽曲情報のファイルとみなす
-            let file_path = if entry.file_type().is_file() {
-                match crate::util::FilePath::new(entry.path()) {
-                    // ファイルでFilePathの生成に成功したとき
-                    Ok(path) => path,
-                    // ファイルだったがFilePathの生成に失敗したとき
-                    Err(e) => {
-                        errs.push(super::MusicFileError::FileOpen {
-                            path: entry.path().display().to_string(),
-                            msg: e.to_string(),
-                            when: "load music data".to_string(),
-                        });
-                        continue;
-                    }
-                }
-            // ディレクトリ, シンボリックリンクなどのファイル以外のとき
-            } else {
-                continue;
-            };
-            // 楽曲情報のファイルを読み込む
-            match crate::music_file::MusicFile::load(file_path, dir) {
-                Ok(music_file) => Self::insert_music_file(&mut files, music_file),
-                Err(e) => errs.push(e),
-            }
-        }
-
+        let file_paths = Self::collect_music_file_paths_in_dir(dir);
+        let (files, errs) = Self::load_music_files(file_paths, dir);
         if errs.is_empty() {
-            tracing::trace!(
-                "Loaded {} music files, dir {}",
-                files.len(),
-                dir.as_path().display()
+            let mut debug_files = files.keys().collect::<Vec<_>>();
+            debug_files.sort_by(|y, m| y.0.cmp(&m.0).then(y.1.cmp(&m.1)));
+            tracing::debug!(
+                "Loaded {} music files, dir `{}`, (month/year): {:?}",
+                debug_files.len(),
+                dir.as_path().display(),
+                debug_files
             );
             Ok(files)
         } else {
             Err(errs.into())
         }
+    }
+
+    /// 指定ディレクトリ以下の全ファイルパスを収集
+    fn collect_music_file_paths_in_dir(
+        dir: &crate::util::DirPath,
+    ) -> Vec<crate::util::FilePath> {
+        let mut file_paths = Vec::new();
+        for entry in walkdir::WalkDir::new(dir.as_path()) {
+            let entry = match entry {
+                Ok(entry) => entry,
+                Err(_) => continue,
+            };
+            if entry.file_type().is_file() {
+                match crate::util::FilePath::new(entry.path()) {
+                    Ok(path) => file_paths.push(path),
+                    Err(_) => continue,
+                }
+            }
+        }
+        file_paths
+    }
+
+    /// ファイルパスごとにMusicFileをロードし、HashMapとエラーVecを返す
+    fn load_music_files(
+        file_paths: Vec<crate::util::FilePath>,
+        dir: &crate::util::DirPath,
+    ) -> (
+        std::collections::HashMap<(usize, usize), super::MusicFile>,
+        Vec<crate::music_file::MusicFileError>,
+    ) {
+        use std::collections::HashMap;
+        let mut files: HashMap<(usize, usize), super::MusicFile> = HashMap::new();
+        let mut errs: Vec<crate::music_file::MusicFileError> = Vec::new();
+        for file_path in file_paths {
+            match crate::music_file::MusicFile::load(file_path, dir) {
+                Ok(music_file) => Self::insert_music_file(&mut files, music_file),
+                Err(e) => errs.push(e),
+            }
+        }
+        (files, errs)
     }
 
     /// 楽曲情報を追加する
@@ -208,8 +220,13 @@ impl MusicLibrary {
     /// pretty形式で保存
     ///
     /// 一つでも保存できなかったら即座にエラーを返す
-    #[tracing::instrument(level = tracing::Level::TRACE)]
+    #[tracing::instrument(skip(self), level = tracing::Level::TRACE)]
     fn save_music_files(&self) -> Result<(), super::MusicFileError> {
+        tracing::debug!(
+            "Saving music files ({} videos) to disk",
+            self.get_video_ids().len()
+        );
+
         for file in self.video_files.values() {
             if let Err(e) = file.save() {
                 return Err(super::MusicFileError::FileWrite {

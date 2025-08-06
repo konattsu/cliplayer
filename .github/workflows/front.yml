@@ -1,10 +1,18 @@
-name: test
+name: Lint, Format, and Test for Frontend
 
 on:
   push:
     branches: [main]
+    paths:
+      - "**"
+      - "!music_data/**"
+      - "music_data/**/*.md"
   pull_request:
     branches: [main]
+    paths:
+      - "**"
+      - "!music_data/**"
+      - "music_data/**/*.md"
 
 jobs:
   lint-format-test:

@@ -21,11 +21,11 @@ pub enum Commands {
 pub enum ApplyCommands {
     /// Apply new music data from input files
     New {
-        /// Comma-separated file(s) containing new music data to apply
-        #[arg(short, long, value_name = "FILES")]
+        /// A file containing new music data to apply
+        #[arg(short, long, value_name = "FILE")]
         input: crate::cli::FilePathFromCli,
         /// The key of YouTube Data v3 api to fetch data
-        #[arg(short, long, env = "YOUTUBE_API_KEY")]
+        #[arg(short, long, env = "YOUTUBE_API_KEY", hide_env_values = true)]
         api_key: crate::fetcher::YouTubeApiKey,
         /// Directory where the results will be written
         #[arg(long, value_name = "DIR", default_value_t = crate::cli::MusicLibraryCli::default())]
@@ -58,7 +58,7 @@ pub enum ApplyCommands {
     /// Synchronize music data with the existing music directory using the Web API
     Sync {
         /// The key of YouTube Data v3 api to fetch data
-        #[arg(short, long, env = "YOUTUBE_API_KEY")]
+        #[arg(short, long, env = "YOUTUBE_API_KEY", hide_env_values = true)]
         api_key: crate::fetcher::YouTubeApiKey,
         /// Directory of the music data to synchronize with
         #[arg(long, value_name = "DIR", default_value_t = crate::cli::MusicLibraryCli::default())]
@@ -79,8 +79,8 @@ pub enum ApplyCommands {
 pub enum ValidateCommands {
     /// Validate new music data input files
     NewInput {
-        /// Comma-separated file(s) containing new music data to validate
-        #[arg(short, long, value_name = "FILES")]
+        /// A file containing new music data to validate
+        #[arg(short, long, value_name = "FILE")]
         input: crate::cli::FilePathFromCli,
 
         #[clap(flatten)]

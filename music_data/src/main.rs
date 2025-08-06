@@ -4,6 +4,7 @@ async fn main() {
 
     let cli = musictl::cli::Cli::parse();
     let _tracing_guard = enable_tracing_log(&cli);
+    tracing::debug!("Command line arguments: {:?}", cli);
 
     let res = match cli.command {
         musictl::cli::Commands::Apply(apply_cmd) => handle_apply(apply_cmd).await,

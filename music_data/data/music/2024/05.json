@@ -4,11 +4,10 @@
     "title": "【 #小清水透3D 】なんと3Dになりました。お披露目🎤✨【小清水 透 / にじさんじ】",
     "channelId": "UCUP8TmlO7NNra88AMqGU_vQ",
     "publishedAt": "2024-05-17T13:07:11Z",
-    "modifiedAt": "2025-08-05T13:09:24Z",
+    "modifiedAt": "2025-08-06T10:39:23Z",
     "duration": "PT1H2M55S",
     "privacyStatus": "public",
     "embeddable": true,
-    "uploaderName": null,
     "videoTags": [
       "3d",
       "3d-debut"
@@ -19,7 +18,6 @@
         "artists": [
           "toru-koshimizu"
         ],
-        "isClipped": true,
         "startTime": "PT5M36S",
         "endTime": "PT9M49S",
         "uuid": "10b9a047-86a2-4db7-8eaf-9bf19a35ed65"
@@ -30,7 +28,6 @@
           "toko-inui",
           "toru-koshimizu"
         ],
-        "isClipped": false,
         "startTime": "PT34M44S",
         "endTime": "PT38M15S",
         "uuid": "b1a11c49-c771-41df-a614-9f0f6351e865"
@@ -43,7 +40,6 @@
           "naraka",
           "toru-koshimizu"
         ],
-        "isClipped": false,
         "startTime": "PT41M13S",
         "endTime": "PT44M57S",
         "uuid": "7bdc5786-9368-421b-8e3a-9f291811aa1d"
@@ -58,7 +54,6 @@
           "saku-sasaki",
           "toru-koshimizu"
         ],
-        "isClipped": false,
         "startTime": "PT45M10S",
         "endTime": "PT49M27S",
         "uuid": "b4736722-8ef9-4eb0-9e6f-3dcc579398e2"
@@ -68,7 +63,6 @@
         "artists": [
           "toru-koshimizu"
         ],
-        "isClipped": false,
         "startTime": "PT54M22S",
         "endTime": "PT59M14S",
         "uuid": "4db10bad-6aea-44ff-bd3e-eac6136b6e25"

@@ -24,11 +24,12 @@ impl YouTubeApi {
         Self { api_key }
     }
 
-    #[tracing::instrument(skip(self, video_ids), level = tracing::Level::TRACE)]
+    #[tracing::instrument(skip(self, video_ids), level = tracing::Level::DEBUG)]
     pub(crate) async fn run(
         &self,
         video_ids: crate::model::VideoIds,
     ) -> Result<crate::model::ApiVideoInfoList, crate::fetcher::YouTubeApiError> {
+        tracing::trace!("YouTube API fetch started");
         match self.fetch_process(video_ids).await {
             Ok(api_info_list) => Ok(api_info_list),
             Err(e) => {
@@ -38,17 +39,17 @@ impl YouTubeApi {
         }
     }
 
-    #[tracing::instrument(ret, level = tracing::Level::DEBUG)]
+    #[tracing::instrument(skip(self), level = tracing::Level::TRACE)]
     async fn fetch_process(
         &self,
-        mut pending_ids: crate::model::VideoIds,
+        mut video_ids: crate::model::VideoIds,
     ) -> Result<crate::model::ApiVideoInfoList, crate::fetcher::YouTubeApiError> {
         let mut fetched_api_info: Vec<crate::model::ApiVideoInfo> =
-            Vec::with_capacity(pending_ids.len());
+            Vec::with_capacity(video_ids.len());
 
         // urlを作れなくなるまでループ
         loop {
-            let url = match self.generate_url(&mut pending_ids) {
+            let url = match self.generate_url(&mut video_ids) {
                 Some(url) => url,
                 None => {
                     tracing::trace!("no more video IDs to fetch");
@@ -68,10 +69,18 @@ impl YouTubeApi {
                         retry_count += 1;
                         if retry_count >= network_cfg::MAX_RETRY {
                             tracing::error!(error = ?e, "YouTube API fetch error after retries");
+                            eprintln!(
+                                "Failed to fetch YouTube API after {retry_count} retries: {e}"
+                            );
                             return Err(e);
                         }
                         tracing::warn!(
                             error = ?e,
+                            "YouTube API fetch error, retrying... (attempt {}/{})",
+                            retry_count,
+                            network_cfg::MAX_RETRY
+                        );
+                        eprintln!(
                             "YouTube API fetch error, retrying... (attempt {}/{})",
                             retry_count,
                             network_cfg::MAX_RETRY

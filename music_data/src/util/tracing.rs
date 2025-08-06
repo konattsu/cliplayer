@@ -34,6 +34,8 @@ pub fn apply_tracing_settings(
 
 /// ログ出力のフィルタを指定
 ///
+/// hyper_util, reqwestはtrace以外で無効化
+///
 /// - `None`: ログを出力しない
 fn filter_level(
     level: Option<tracing::level_filters::LevelFilter>,
@@ -41,7 +43,13 @@ fn filter_level(
     use tracing_subscriber::EnvFilter;
 
     match level.and_then(|lv| lv.into_level()) {
-        Some(level) => EnvFilter::from(level.as_str()),
+        Some(level) => match level {
+            tracing::Level::TRACE => EnvFilter::new(level.as_str()),
+            _ => {
+                // trace以外はhyper_util, reqwestをoff
+                EnvFilter::new(format!("{level},hyper_util=off,reqwest=off"))
+            }
+        },
         None => {
             // details of constant, ref:
             // https://docs.rs/tracing-subscriber/0.3.18/src/tracing_subscriber/filter/env/directive.rs.html#125-139
