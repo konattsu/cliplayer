@@ -32,7 +32,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          BRANCH="auto/update-music_data-pr-${{ steps.prnum.outputs.pr_number }}-$(date +'%Y%m%d-%H%M%S')"
+          BRANCH="auto/update-music_data-sync-$(date +'%Y%m%d-%H%M%S')"
           git fetch origin --depth=1
           git switch -c $BRANCH origin/main
 
@@ -59,11 +59,11 @@ jobs:
       - name: Commit and Push changes
         run: |
           git add .
-          git commit -m "[music-sync] Auto update music_data and relative min.json after merge of PR #${{ steps.prnum.outputs.pr_number }}"
+          git commit -m "[music-sync] Automatically synchronize music_data and related min.json (scheduled)"
           git push origin HEAD
 
       - name: Create PR
         run: |
           gh pr create --base main --head $(git rev-parse --abbrev-ref HEAD) \
-            --title "Auto update music_data and relative min.json (from PR #${{ steps.prnum.outputs.pr_number }})" \
-            --body "This PR updates music_data and relative min.json based on changes merged in PR #${{ steps.prnum.outputs.pr_number }}."
+            --title "Scheduled update: music_data and related min.json" \
+            --body "This pull request contains scheduled updates to music_data and
