@@ -81,20 +81,48 @@ impl AnonymousVideoValidateError {
 /// 新規の楽曲情報ファイルの形式を検証
 ///
 /// Error時はエラーメッセージを成形して表示
-pub fn validate_new_input(file: &crate::util::FilePath) -> Result<(), String> {
+pub fn validate_new_input(files: &[crate::util::FilePath]) -> Result<(), String> {
     // deserializeできたらok
-    let _videos = try_load_anonymous_videos(file).map_err(|e| e.to_pretty_string())?;
+    let _videos = try_load_anonymous_videos(files).map_err(|e| e.to_pretty_string())?;
     Ok(())
 }
 
-// TODO どうしよう
+/// anonymous videosのファイルを読み込む
 pub fn try_load_anonymous_videos(
-    file: &crate::util::FilePath,
-) -> Result<crate::model::AnonymousVideos, AnonymousVideoValidateError> {
-    deserialize_from_file(file)
+    files: &[crate::util::FilePath],
+) -> Result<crate::model::AnonymousVideos, AnonymousVideoValidateErrors> {
+    let mut videos = crate::model::AnonymousVideos::new();
+    let mut duplicate_ids: Vec<crate::model::VideoId> = Vec::new();
+    let mut errs: Vec<AnonymousVideoValidateError> = Vec::new();
+
+    for file in files {
+        match deserialize_anonymous_from_file(file) {
+            Ok(anonymous_videos) => {
+                if let Some(ids) = videos.extend(anonymous_videos) {
+                    duplicate_ids.extend(ids);
+                }
+            }
+            Err(e) => errs.push(e),
+        }
+    }
+
+    if !duplicate_ids.is_empty() {
+        let duplicate_ids = duplicate_ids
+            .into_iter()
+            .collect::<std::collections::HashSet<_>>()
+            .into_iter()
+            .collect();
+        errs.push(AnonymousVideoValidateError::DuplicateVideoId(duplicate_ids));
+    }
+
+    if errs.is_empty() {
+        Ok(videos)
+    } else {
+        Err(AnonymousVideoValidateErrors { errs })
+    }
 }
 
-fn deserialize_from_file(
+fn deserialize_anonymous_from_file(
     file: &crate::util::FilePath,
 ) -> Result<crate::model::AnonymousVideos, AnonymousVideoValidateError> {
     let file_handle = std::fs::File::open(file.as_path()).map_err(|e| {

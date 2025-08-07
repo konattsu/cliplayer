@@ -140,6 +140,13 @@ impl<'de> serde::Deserialize<'de> for AnonymousVideos {
 }
 
 impl AnonymousVideos {
+    /// 空の`AnonymousVideos`を生成
+    pub(crate) fn new() -> Self {
+        Self {
+            inner: std::collections::HashMap::new(),
+        }
+    }
+
     pub(crate) fn into_inner(
         self,
     ) -> std::collections::HashMap<crate::model::VideoId, AnonymousVideo> {
@@ -172,6 +179,30 @@ impl AnonymousVideos {
             Err(AnonymousVideoValidateError::DuplicateVideoId(
                 duplicated_ids.into_iter().collect(),
             ))
+        }
+    }
+
+    /// 動画をextend
+    ///
+    /// 動画idが重複していれば上書き
+    ///
+    /// - Returns: 重複していた動画IDのリスト
+    pub(crate) fn extend(
+        &mut self,
+        videos: AnonymousVideos,
+    ) -> Option<crate::model::VideoIds> {
+        let mut duplicated_ids = Vec::new();
+
+        for video in videos.into_inner() {
+            if let Some(stale_video) = self.inner.insert(video.0, video.1) {
+                duplicated_ids.push(stale_video.get_video_id().clone());
+            }
+        }
+
+        if duplicated_ids.is_empty() {
+            None
+        } else {
+            Some(duplicated_ids.into_iter().collect())
         }
     }
 
@@ -370,5 +401,85 @@ mod tests {
             result,
             Err(AnonymousVideoValidateError::DuplicateVideoId(_))
         ));
+    }
+
+    #[test]
+    fn test_anonymous_videos_extend() {
+        // Prepare initial videos
+        let video1 = AnonymousVideo::new(
+            crate::model::LocalVideoInfo::new(
+                crate::model::VideoId::test_id_1(),
+                None,
+                crate::model::VideoTags::self_1(),
+            ),
+            vec![crate::model::AnonymousClip::self_a_1()],
+        )
+        .expect("should create successfully");
+        let video2 = AnonymousVideo::new(
+            crate::model::LocalVideoInfo::new(
+                crate::model::VideoId::test_id_2(),
+                None,
+                crate::model::VideoTags::self_2(),
+            ),
+            vec![crate::model::AnonymousClip::self_b_1()],
+        )
+        .expect("should create successfully");
+        let mut videos =
+            AnonymousVideos::try_from_vec(vec![video1.clone(), video2.clone()])
+                .expect("should create successfully");
+
+        // Prepare videos to extend (one duplicate, one new)
+        let video2_updated = AnonymousVideo::new(
+            crate::model::LocalVideoInfo::new(
+                crate::model::VideoId::test_id_2(),
+                None,
+                crate::model::VideoTags::self_2(),
+            ),
+            vec![
+                crate::model::AnonymousClip::self_b_1(),
+                crate::model::AnonymousClip::self_b_2(),
+            ],
+        )
+        .expect("should create successfully");
+        let video3 = AnonymousVideo::new(
+            crate::model::LocalVideoInfo::new(
+                crate::model::VideoId::test_id_3(),
+                None,
+                crate::model::VideoTags::self_3(),
+            ),
+            vec![crate::model::AnonymousClip::self_a_1()],
+        )
+        .expect("should create successfully");
+        let extend_videos =
+            AnonymousVideos::try_from_vec(vec![video2_updated.clone(), video3.clone()])
+                .expect("should create successfully");
+
+        // Extend and check result
+        let result = videos.extend(extend_videos);
+        assert!(result.is_some());
+        let dupes = result.unwrap();
+        assert!(
+            dupes
+                .iter()
+                .any(|id| id == &crate::model::VideoId::test_id_2())
+        );
+        assert_eq!(dupes.len(), 1);
+
+        // The new video should be added
+        assert!(
+            videos
+                .inner
+                .contains_key(&crate::model::VideoId::test_id_3())
+        );
+        // The duplicate video should be updated
+        assert_eq!(
+            videos
+                .inner
+                .get(&crate::model::VideoId::test_id_2())
+                .unwrap()
+                .clips
+                .len(),
+            2
+        );
     }
 }
