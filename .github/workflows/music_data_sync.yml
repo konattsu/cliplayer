@@ -1,0 +1,67 @@
+name: Synchronize music data
+
+on:
+  schedule:
+    - cron: "0 0 */14 * *"
+  workflow_dispatch:
+
+jobs:
+  build_and_test:
+    uses: ./.github/workflows/musictl.yml
+
+  sync:
+    needs: build_and_test
+    runs-on: ubuntu-latest
+    env:
+      RUST_BACKTRACE: 1
+      CARGO_TERM_COLOR: always
+      YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get last merged PR number
+        id: prnum
+        run: |
+          PR_NUMBER=$(gh pr list --state merged --base main --limit 1 --json number --jq '.[0].number')
+          echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
+
+      - name: Create new branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          BRANCH="auto/update-music_data-pr-${{ steps.prnum.outputs.pr_number }}-$(date +'%Y%m%d-%H%M%S')"
+          git fetch origin --depth=1
+          git switch -c $BRANCH origin/main
+
+      - name: Download musictl binary
+        uses: actions/download-artifact@v4
+        with:
+          name: musictl-binary
+          path: ./bin
+
+      - name: Apply sync to music data
+        run: |
+          chmod +x ./bin/musictl
+          ls -lR ./bin
+          ./bin/musictl apply sync --file-tracing-level debug
+
+      - name: Post musictl logs
+        if: always()
+        # いつかきれいにする
+        run: |
+          cd ./music_data
+          ../tools/musictl_logs_to_stdout
+
+      - name: Commit and Push changes
+        run: |
+          git add .
+          git commit -m "[music-sync] Auto update music_data and relative min.json after merge of PR #${{ steps.prnum.outputs.pr_number }}"
+          git push origin HEAD
+
+      - name: Create PR
+        run: |
+          gh pr create --base main --head $(git rev-parse --abbrev-ref HEAD) \
+            --title "Auto update music_data and relative min.json (from PR #${{ steps.prnum.outputs.pr_number }})" \
+            --body "This PR updates music_data and relative min.json based on changes merged in PR #${{ steps.prnum.outputs.pr_number }}."
