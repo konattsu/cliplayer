@@ -134,6 +134,8 @@ jobs:
       RUST_BACKTRACE: 1
       CARGO_TERM_COLOR: always
       YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
