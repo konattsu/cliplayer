@@ -46,14 +46,15 @@ jobs:
         run: |
           chmod +x ./bin/musictl
           ls -lR ./bin
-          ./bin/musictl apply sync --file-tracing-level debug
+          cd ./music_data
+          ../bin/musictl apply sync --file-tracing-level debug
 
       - name: Post musictl logs
         if: always()
         # いつかきれいにする
         run: |
           cd ./music_data
-          ../tools/musictl_logs_to_stdout
+          ../tools/musictl_logs_to_stdout.sh
 
       - name: Commit and Push changes
         run: |
