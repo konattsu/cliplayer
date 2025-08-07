@@ -6,8 +6,6 @@ on:
       - main
     paths:
       - "music_data/data/music/**"
-  schedule:
-    - cron: "0 0 */14 * *"
   workflow_dispatch:
 
 jobs:
@@ -111,56 +109,20 @@ jobs:
         if: steps.changed.outputs.changed_type == 'UPDATE'
         run: ../bin/musictl apply update --file-tracing-level debug
 
-      - name: Commit changes
+      - name: Setup Git user
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git add ../
-          git commit -m 'Apply music data changes [ci skip]' || echo 'No changes to commit'
-          git push
 
-      - name: Post logs
-        if: always()
-        run: ../tools/musictl_logs_to_stdout.sh
-
-  sync:
-    needs: build_and_test
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: music_data
-    env:
-      RUST_BACKTRACE: 1
-      CARGO_TERM_COLOR: always
-      YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Download musictl binary
-        uses: actions/download-artifact@v4
-        with:
-          name: musictl-binary
-          path: ./bin
-
-      - name: Make musictl executable
-        run: chmod +x ../bin/musictl
-
-      - name: Output folder structure under ./bin
-        run: ls -lR ../bin
-
-      - name: Apply sync to music data
-        run: ../bin/musictl apply sync --file-tracing-level debug
-
-      - name: Commit changes
+      - name: Create new branche
         run: |
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          BRANCH="auto/music_data-update-$(data + '%Y%m%d-%H%M%S')"
+          git switch -c $BRANCH origin/main
+
+      - name: Push branch
+        run: |
           git add ../
-          git commit -m 'Apply music data sync [ci skip]' || echo 'No changes to commit'
-          git push
+          git commit -m "Auto update music_data and relative min.json after merge"
 
       - name: Post logs
         if: always()
