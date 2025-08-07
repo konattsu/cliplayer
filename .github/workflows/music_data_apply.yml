@@ -86,25 +86,30 @@ jobs:
 
       - name: Validate input
         if: steps.changed.outputs.changed_type == 'INPUT'
-        run: ./bin/musictl validate input -i ${{ steps.changed.outputs.input_changed_files }} --file-tracing-level debug
+        run: |
+          cd ./music_data
+          ../bin/musictl validate input -i ${{ steps.changed.outputs.input_changed_files }} --file-tracing-level debug
 
       - name: Validate update
         if: steps.changed.outputs.changed_type == 'UPDATE'
-        run: ./bin/musictl validate update --file-tracing-level debug
+        run: |
+          cd ./music_data
+          ../bin/musictl validate update --file-tracing-level debug
 
       - name: Validate input & update
         if: steps.changed.outputs.changed_type == 'BOTH'
         # inputだけでの実行でもいいが, どこで落ちたか分かり易くするためupdateを先に実行
         run: |
-          ./bin/musictl validate update --file-tracing-level debug
-          ./bin/musictl validate input -i "${{ steps.changed.outputs.input_changed_files }}" --file-tracing-level debug
+          cd ./music_data
+          ../bin/musictl validate update --file-tracing-level debug
+          ../bin/musictl validate input -i "${{ steps.changed.outputs.input_changed_files }}" --file-tracing-level debug
 
       - name: Post musictl logs
         if: always()
         # いつかきれいにする
         run: |
           cd ./music_data
-          ../tools/musictl_logs_to_stdout
+          ../tools/musictl_logs_to_stdout.sh
 
       - name: Commit and Push changes
         run: |
