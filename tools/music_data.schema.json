@@ -6,6 +6,7 @@
   "items": {
     "type": "object",
     "required": ["videoId", "videoTags", "clips"],
+    "additionalProperties": false,
     "properties": {
       "videoId": {
         "type": "string",
@@ -28,13 +29,7 @@
         "minItems": 1,
         "items": {
           "type": "object",
-          "required": [
-            "songTitle",
-            "artists",
-            "isClipped",
-            "startTime",
-            "endTime"
-          ],
+          "required": ["songTitle", "artists", "startTime", "endTime"],
           "properties": {
             "songTitle": { "type": ["string"], "minLength": 1 },
             "artists": {
@@ -47,7 +42,10 @@
               "items": { "type": "string" },
               "minItems": 0
             },
-            "isClipped": { "type": "boolean" },
+            "clippedVideoId": {
+              "type": ["string", "null"],
+              "pattern": "^[A-Za-z0-9_-]{11}$"
+            },
             "startTime": {
               "type": "string",
               "NOTE": "To prevent using default values(PT), the 'M' (minutes) designator must be present in the duration string.",

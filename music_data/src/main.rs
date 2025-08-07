@@ -75,13 +75,13 @@ async fn handle_apply(apply_cmd: musictl::cli::ApplyCommands) -> Result<(), Stri
 }
 
 async fn handle_apply_new(
-    input: musictl::cli::FilePathFromCli,
+    input: musictl::cli::FilePathsFromCli,
     api_key: musictl::fetcher::YouTubeApiKey,
     music_lib: musictl::cli::MusicLibraryCli,
     output_min_file: musictl::cli::OutputMinPathFromCli,
     output_min_clips_file: musictl::cli::OutputMinClipsPathFromCli,
 ) -> Result<(), String> {
-    let input_anonymous_file = input.try_into_file_path()?;
+    let input_anonymous_file = input.try_into_file_paths()?;
 
     let music_lib = music_lib
         .try_into_music_root_from_cli(output_min_file, output_min_clips_file)?;
@@ -143,9 +143,9 @@ fn handle_validate(validate_cmd: musictl::cli::ValidateCommands) -> Result<(), S
 }
 
 fn handle_validate_new(
-    input_file: musictl::cli::FilePathFromCli,
+    input_file: musictl::cli::FilePathsFromCli,
 ) -> Result<(), String> {
-    let file = input_file.try_into_file_path()?;
+    let file = input_file.try_into_file_paths()?;
     musictl::validate::validate_new_input(&file)
 }
 

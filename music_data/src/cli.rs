@@ -6,7 +6,7 @@ mod parser;
 mod tracing_level;
 mod video_ids;
 
-pub use file_paths::FilePathFromCli;
+pub use file_paths::FilePathsFromCli;
 pub use min::OutputMinPathFromCli;
 pub use min_clips::OutputMinClipsPathFromCli;
 pub use music_root::MusicLibraryCli;

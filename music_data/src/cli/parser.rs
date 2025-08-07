@@ -21,9 +21,9 @@ pub enum Commands {
 pub enum ApplyCommands {
     /// Apply new music data from input files
     New {
-        /// A file containing new music data to apply
-        #[arg(short, long, value_name = "FILE")]
-        input: crate::cli::FilePathFromCli,
+        /// Comma-separated file paths containing new music data to apply
+        #[arg(short, long, value_name = "FILES")]
+        input: crate::cli::FilePathsFromCli,
         /// The key of YouTube Data v3 api to fetch data
         #[arg(short, long, env = "YOUTUBE_API_KEY", hide_env_values = true)]
         api_key: crate::fetcher::YouTubeApiKey,
@@ -79,9 +79,9 @@ pub enum ApplyCommands {
 pub enum ValidateCommands {
     /// Validate new music data input files
     New {
-        /// A file containing new music data to validate
-        #[arg(short, long, value_name = "FILE")]
-        input: crate::cli::FilePathFromCli,
+        /// Comma-separated file paths containing new music data to validate
+        #[arg(short, long, value_name = "FILES")]
+        input: crate::cli::FilePathsFromCli,
 
         #[clap(flatten)]
         trace_level: TraceLevel,
@@ -91,8 +91,6 @@ pub enum ValidateCommands {
         /// Directory of the music data to use for validation
         #[arg(long, value_name = "DIR", default_value_t = crate::cli::MusicLibraryCli::default())]
         music_root: crate::cli::MusicLibraryCli,
-        // NOTE: 将来的にMusicLibraryのインスタンス生成の制約を緩くして
-        // 引数に**_min_**系受け取らないようにしたい. 下のDuplicateも同様
         /// Path to the output file for minimized JSON data
         #[arg(long, value_name = "FILE", default_value_t = crate::cli::OutputMinPathFromCli::default())]
         output_min_file: crate::cli::OutputMinPathFromCli,

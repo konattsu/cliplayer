@@ -36,10 +36,10 @@ $ musictl validate --help
 Usage: musictl validate <COMMAND>
 
 Commands:
-  new-input     Validate new music data input files
-  update-input  Validate existing music data input files
-  duplicate     Check for duplicate video IDs in the input
-  help          Print this message or the help of the given subcommand(s)
+  new        Validate new music data input files
+  update     Validate existing music data input files
+  duplicate  Check for duplicate video IDs in the input
+  help       Print this message or the help of the given subcommand(s)
 ```
 
 ```txt
