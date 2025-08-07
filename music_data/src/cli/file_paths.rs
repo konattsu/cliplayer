@@ -5,7 +5,7 @@ pub struct FilePathsFromCli(String);
 impl FilePathsFromCli {
     /// コマンドライン引数から受け取ったファイルパスをVec<`FilePath`>に変換
     ///
-    /// - delimiter: ','
+    /// - delimiter: ',', '\t', '\r', '\n'
     /// - delimiterだけで構成されたpathは無視
     /// - pathの文字列はtrimされる
     pub fn try_into_file_paths(self) -> Result<Vec<crate::util::FilePath>, String> {
@@ -30,7 +30,7 @@ impl FilePathsFromCli {
 
     fn split_paths(&self) -> Vec<&str> {
         // ' 'をdelimiterに追加してしまうとパスの一部の空白でもsplitしてしまうので追加しない
-        const DELIM: &str = ",";
+        const DELIM: [char; 4] = [',', '\t', '\r', '\n'];
         const IGNORE_ONLY_CHARS: &str = ",\t\r\n ";
 
         self.0

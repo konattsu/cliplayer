@@ -1,0 +1,90 @@
+name: Validate music data
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "music_data/data/music/**"
+    types: [opened, synchronize, reopened]
+
+jobs:
+  build_and_test:
+    uses: ./.github/workflows/musictl.yml
+
+  validate:
+    needs: build_and_test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: music_data
+    env:
+      RUST_BACKTRACE: 1
+      CARGO_TERM_COLOR: always
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # botは楽曲追加/編集を適用するPRを送るのでvalidateする必要はない
+      - name: Skip if PR author is a bot
+        if: github.event.pull_request.user.login == 'github-actions[bot]'
+        run: |
+          echo "PR author is a bot. Skipping workflow."
+          exit 0
+
+      - name: Detect changed files
+        id: changed
+        run: |
+          INPUT_CHANGED_FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | grep '^data/input' || true)
+          MUSIC_CHANGED_FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | grep '^data/music' || true)
+
+          if [ -n "$INPUT_CHANGED_FILES" ] && [ -z "$MUSIC_CHANGED_FILES" ]; then
+            # inputのみ変更
+            echo "changed_type=INPUT" >> $GITHUB_OUTPUT
+            echo "input_changed_files=$INPUT_CHANGED_FILES" >> $GITHUB_OUTPUT
+            echo "changed_type has been set to INPUT (input files were changed: $INPUT_CHANGED_FILES)"
+          elif [ -z "$INPUT_CHANGED_FILES" ] && [ -n "$MUSIC_CHANGED_FILES" ]; then
+            # musicのみ変更
+            echo "changed_type=UPDATE" >> $GITHUB_OUTPUT
+            echo "music_changed_files=$MUSIC_CHANGED_FILES" >> $GITHUB_OUTPUT
+            echo "changed_type has been set to UPDATE (music files were changed: $MUSIC_CHANGED_FILES)"
+          elif [ -n "$INPUT_CHANGED_FILES" ] && [ -n "$MUSIC_CHANGED_FILES" ]; then
+            # inputもmusicも変更
+            echo "changed_type=BOTH" >> $GITHUB_OUTPUT
+            echo "input_changed_files=$INPUT_CHANGED_FILES" >> $GITHUB_OUTPUT
+            echo "music_changed_files=$MUSIC_CHANGED_FILES" >> $GITHUB_OUTPUT
+            echo "changed_type has been set to BOTH (input and music files were changed: $INPUT_CHANGED_FILES, $MUSIC_CHANGED_FILES)"
+          else
+            # 該当ファイルなし
+            echo "changed_type=NONE" >> $GITHUB_OUTPUT
+            echo "changed_type has been set to NONE (no input or music files were changed)"
+          fi
+
+      - name: Download musictl binary
+        uses: actions/download-artifact@v4
+        with:
+          name: musictl-binary
+          path: ./bin
+
+      - name: Make musictl executable
+        run: |
+          chmod +x ../bin/musictl
+          ls -lR ../bin
+
+      - name: Validate input
+        if: steps.changed.outputs.changed_type == 'INPUT'
+        run: ../bin/musictl validate input -i ${{ steps.changed.outputs.input_changed_files }} --file-tracing-level debug
+
+      - name: Validate update
+        if: steps.changed.outputs.changed_type == 'UPDATE'
+        run: ../bin/musictl validate update --file-tracing-level debug
+
+      - name: Validate input & update
+        if: steps.changed.outputs.changed_type == 'BOTH'
+        run: |
+          ../bin/musictl validate input -i "${{ steps.changed.outputs.input_changed_files }}" --file-tracing-level debug
+          ../bin/musictl validate update --file-tracing-level debug
+
+      - name: Post logs
+        if: always()
+        run: ../tools/musictl_logs_to_stdout.sh
