@@ -9,7 +9,7 @@ async fn main() {
     let res = match cli.command {
         musictl::cli::Commands::Apply(apply_cmd) => handle_apply(apply_cmd).await,
         musictl::cli::Commands::Validate(validate_cmd) => handle_validate(validate_cmd),
-        musictl::cli::Commands::Artist(artist_cmd) => handle_artist(artist_cmd),
+        musictl::cli::Commands::Dev(dev_cmd) => handle_dev(dev_cmd),
     };
 
     if let Err(e) = res {
@@ -78,8 +78,8 @@ async fn handle_apply_new(
     input: musictl::cli::FilePathsFromCli,
     api_key: musictl::fetcher::YouTubeApiKey,
     music_lib: musictl::cli::MusicLibraryCli,
-    output_min_file: musictl::cli::OutputMinPathFromCli,
-    output_min_clips_file: musictl::cli::OutputMinClipsPathFromCli,
+    output_min_file: String,
+    output_min_clips_file: String,
 ) -> Result<(), String> {
     let input_anonymous_file = input.try_into_file_paths()?;
 
@@ -95,8 +95,8 @@ async fn handle_apply_new(
 
 fn handle_apply_update(
     music_lib: musictl::cli::MusicLibraryCli,
-    output_min_file: musictl::cli::OutputMinPathFromCli,
-    output_min_clips_file: musictl::cli::OutputMinClipsPathFromCli,
+    output_min_file: String,
+    output_min_clips_file: String,
 ) -> Result<(), String> {
     let music_lib = music_lib
         .try_into_music_root_from_cli(output_min_file, output_min_clips_file)?;
@@ -107,8 +107,8 @@ fn handle_apply_update(
 async fn handle_apply_sync(
     api_key: musictl::fetcher::YouTubeApiKey,
     music_lib: musictl::cli::MusicLibraryCli,
-    output_min_file: musictl::cli::OutputMinPathFromCli,
-    output_min_clips_file: musictl::cli::OutputMinClipsPathFromCli,
+    output_min_file: String,
+    output_min_clips_file: String,
 ) -> Result<(), String> {
     let music_lib = music_lib
         .try_into_music_root_from_cli(output_min_file, output_min_clips_file)?;
@@ -127,18 +127,6 @@ fn handle_validate(validate_cmd: musictl::cli::ValidateCommands) -> Result<(), S
             output_min_clips_file,
             ..
         } => handle_validate_update(music_root, output_min_file, output_min_clips_file),
-        musictl::cli::ValidateCommands::Duplicate {
-            id,
-            music_root,
-            output_min_file,
-            output_min_clips_file,
-            ..
-        } => handle_validate_duplicate(
-            music_root,
-            output_min_file,
-            output_min_clips_file,
-            id,
-        ),
     }
 }
 
@@ -151,43 +139,21 @@ fn handle_validate_new(
 
 fn handle_validate_update(
     music_lib: musictl::cli::MusicLibraryCli,
-    output_min_file: musictl::cli::OutputMinPathFromCli,
-    output_min_clips_file: musictl::cli::OutputMinClipsPathFromCli,
+    output_min_file: String,
+    output_min_clips_file: String,
 ) -> Result<(), String> {
     let music_lib = music_lib
         .try_into_music_root_from_cli(output_min_file, output_min_clips_file)?;
     musictl::apply::apply_update(music_lib)
 }
 
-fn handle_validate_duplicate(
-    music_lib: musictl::cli::MusicLibraryCli,
-    output_min_file: musictl::cli::OutputMinPathFromCli,
-    output_min_clips_file: musictl::cli::OutputMinClipsPathFromCli,
-    ids: musictl::cli::VideoIdsFromCli,
-) -> Result<(), String> {
-    let music_lib = music_lib
-        .try_into_music_root_from_cli(output_min_file, output_min_clips_file)?;
-    let video_ids = ids.as_ids();
+// MARK: dev
 
-    let duplicates = musictl::validate::find_video_ids(&music_lib, video_ids);
-
-    if duplicates.is_empty() {
-        println!("No duplicate video IDs found.");
-    } else {
-        println!("Duplicate video IDs found:");
-        for id in duplicates {
-            println!("Video ID: {id}",);
-        }
-    }
-
-    Ok(())
-}
-
-// MARK: artist
-
-fn handle_artist(artist_cmd: musictl::cli::ArtistCommands) -> Result<(), String> {
-    match artist_cmd {
-        musictl::cli::ArtistCommands::Generate {
+fn handle_dev(dev_cmd: musictl::cli::UtilCommands) -> Result<(), String> {
+    // TODO 修正. またparser.rsでapplyなどの引数を独自で無くてStringに変更. 入力ファイルはinput.json固定だとconflictの原因なので
+    // utilコマンドのmergeで出力後に(timestamp).jsonとかにする. 別にPRの時刻と一致させる必要はない
+    match dev_cmd {
+        musictl::cli::UtilCommands::GenerateArtist {
             input_artists_data_path,
             artist_output_dir,
             search_index_file_name,
@@ -204,5 +170,87 @@ fn handle_artist(artist_cmd: musictl::cli::ArtistCommands) -> Result<(), String>
             music_data_code_snippets_path,
         )
         .map_err(|e| e.to_string()),
+        musictl::cli::UtilCommands::MergeFiles {
+            files,
+            dir,
+            output_dir,
+            ..
+        } => handle_dev_merge_files(files, dir, output_dir),
+        musictl::cli::UtilCommands::DuplicateIds {
+            ids,
+            music_lib,
+            output_min_file,
+            output_min_clips_file,
+            ..
+        } => handle_dev_duplicate_ids(
+            music_lib,
+            output_min_file,
+            output_min_clips_file,
+            ids,
+        ),
     }
+}
+
+fn handle_dev_merge_files(
+    files: Option<musictl::cli::FilePathsFromCli>,
+    dir: String,
+    output_dir: String,
+) -> Result<(), String> {
+    let files = files.map(|f| f.try_into_file_paths()).transpose()?;
+    let dir = musictl::util::DirPath::from_path_buf(std::path::PathBuf::from(dir))
+        .map_err(|e| format!("Invalid directory path: {e}"))?;
+    let output_dir =
+        musictl::util::DirPath::from_path_buf(std::path::PathBuf::from(output_dir))
+            .map_err(|e| format!("Invalid output directory path: {e}"))?;
+
+    let files = musictl::dev::merge_files(files, &dir, output_dir)?;
+
+    if dialoguer::Confirm::new()
+        .with_prompt(format!(
+            "{} files merged. Do you want to delete the original files?",
+            files.len()
+        ))
+        .interact()
+        .map_err(|e| e.to_string())?
+    {
+        for file in &files {
+            if let Err(e) = std::fs::remove_file(file.as_path()) {
+                eprintln!("Failed to delete file {file}: {e}");
+            } else {
+                println!("Deleted file: {file}");
+            }
+        }
+    } else {
+        println!("Original files were not deleted.");
+    }
+    Ok(())
+}
+
+fn handle_dev_duplicate_ids(
+    music_lib: musictl::cli::MusicLibraryCli,
+    output_min_file: String,
+    output_min_clips_file: String,
+    ids: musictl::cli::VideoIdsFromCli,
+) -> Result<(), String> {
+    let music_lib = music_lib
+        .try_into_music_root_from_cli(output_min_file, output_min_clips_file)?;
+    let video_ids = ids.as_ids();
+
+    println!(
+        "Checking if any of the {} provided video IDs are already registered in the database.",
+        video_ids.len()
+    );
+
+    let duplicates = musictl::dev::find_video_ids(&music_lib, video_ids);
+
+    if duplicates.is_empty() {
+        println!("No duplicate video IDs found.");
+    } else {
+        println!("Duplicate video IDs found:");
+        for id in duplicates {
+            println!("Video ID: {id}",);
+        }
+    }
+
+    Ok(())
 }

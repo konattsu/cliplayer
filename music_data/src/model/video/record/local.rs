@@ -1,5 +1,5 @@
 /// 動画の概要情報
-#[derive(serde::Deserialize, Debug, Clone, PartialEq)]
+#[derive(serde::Deserialize, serde::Serialize, Debug, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 #[serde(deny_unknown_fields)]
 pub(crate) struct LocalVideoInfo {
@@ -38,36 +38,6 @@ impl LocalVideoInfo {
         }
     }
 }
-
-// TODO 本当に消すか確認
-// impl LocalVideoInfoList {
-// /// `LocalVideoInfo`のリストを`LocalVideoInfoList`に変換
-// ///
-// /// Err: 動画idが重複しているとき
-// pub(crate) fn try_from_vec(
-//     briefs: Vec<LocalVideoInfo>,
-// ) -> Result<Self, Vec<crate::model::VideoId>> {
-//     use std::collections::{HashMap, HashSet};
-
-//     let mut inner = HashMap::with_capacity(briefs.len());
-//     let mut duplicated_ids = HashSet::new();
-
-//     for brief in briefs {
-//         if let Some(prev_brief) = inner.insert(brief.get_video_id().clone(), brief)
-//         {
-//             // 重複の有無のみ検出したく, すでに重複しているか(3回,同じ動画IDが来たとき)どうかは
-//             // 気にしないのでinsertの結果は無視
-//             let _res = duplicated_ids.insert(prev_brief.get_video_id().clone());
-//         }
-//     }
-
-//     if duplicated_ids.is_empty() {
-//         Ok(Self { inner })
-//     } else {
-//         Err(duplicated_ids.into_iter().collect())
-//     }
-// }
-// }
 
 // MARK: For Tests
 
