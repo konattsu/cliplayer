@@ -59,7 +59,8 @@ jobs:
 
       - name: Commit and Push changes
         run: |
-          git add .
+          git add /music_data/data/music/
+          git add /public/music_data/
           git commit -m "[music-sync] Automatically synchronize music_data and related min.json (scheduled)"
           git push origin HEAD
 
