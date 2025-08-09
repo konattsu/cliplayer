@@ -1,7 +1,7 @@
 /// 構造と型だけ適している動画情報
 ///
 /// 内部のclipsが`stat_time`順でソートされていることを保証
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub(crate) struct AnonymousVideo {
     /// 動画の情報
     local_record: super::LocalVideoInfo,
@@ -53,6 +53,31 @@ impl<'de> serde::Deserialize<'de> for AnonymousVideo {
         let video_brief = raw.video_brief;
         let clips = raw.clips;
         AnonymousVideo::new(video_brief, clips).map_err(serde::de::Error::custom)
+    }
+}
+
+impl serde::Serialize for AnonymousVideo {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        #[derive(serde::Serialize)]
+        #[serde(rename_all = "camelCase")]
+        struct SerializableAnonymousVideo<'a> {
+            #[serde(flatten)]
+            video_brief: &'a super::LocalVideoInfo,
+            clips: Vec<&'a crate::model::AnonymousClip>,
+        }
+
+        let clips = self.to_sorted_clips();
+        let serializable = SerializableAnonymousVideo {
+            video_brief: &self.local_record,
+            clips: clips.iter().collect::<Vec<_>>(),
+        };
+
+        serializable
+            .serialize(serializer)
+            .map_err(serde::ser::Error::custom)
     }
 }
 
@@ -122,6 +147,12 @@ impl AnonymousVideo {
             })
         }
     }
+
+    fn to_sorted_clips(&self) -> Vec<crate::model::AnonymousClip> {
+        let mut vec = self.clips.clone();
+        vec.sort_by_key(|clip| clip.get_start_time().as_secs());
+        vec
+    }
 }
 
 // `Self`の存在条件を検証するためのカスタムデシリアライザ
@@ -136,6 +167,15 @@ impl<'de> serde::Deserialize<'de> for AnonymousVideos {
 
         let raw = RawAnonymousVideos::deserialize(deserializer)?;
         AnonymousVideos::try_from_vec(raw.0).map_err(serde::de::Error::custom)
+    }
+}
+
+impl serde::Serialize for AnonymousVideos {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        self.to_sorted_vec().serialize(serializer)
     }
 }
 
@@ -210,19 +250,11 @@ impl AnonymousVideos {
         self.inner.keys().cloned().collect()
     }
 
-    // TODO 多分いらない
-    // pub(crate) fn to_briefs(&self) -> crate::model::VideoBriefs {
-    //     let briefs = self
-    //         .inner
-    //         .values()
-    //         .map(|v| v.get_video_brief())
-    //         .cloned()
-    //         .collect();
-
-    //     // `Self(AnonymousVideos)`も`VideoBriefs`もvideo_idの重複を許可しないので
-    //     // `Self`は`VideoBriefs`に変換するための十分条件を満たしている
-    //     crate::model::VideoBriefs::try_from_vec(briefs).expect("will not fail")
-    // }
+    fn to_sorted_vec(&self) -> Vec<AnonymousVideo> {
+        let mut vec: Vec<_> = self.inner.values().cloned().collect();
+        vec.sort_by_key(|video| video.get_video_id().clone());
+        vec
+    }
 }
 
 // MARK: Tests
@@ -480,6 +512,43 @@ mod tests {
                 .clips
                 .len(),
             2
+        );
+    }
+
+    #[test]
+    fn test_anonymous_video_serialize_sorted_clips() {
+        let brief = crate::model::LocalVideoInfo::new(
+            crate::model::VideoId::test_id_1(),
+            Some(crate::model::UploaderName::test_uploader_name_1()),
+            crate::model::VideoTags::self_1(),
+        );
+        // clips: ソートされていない順で作成
+        let clips = vec![
+            crate::model::AnonymousClip::self_a_3(),
+            crate::model::AnonymousClip::self_a_1(),
+            crate::model::AnonymousClip::self_a_2(),
+        ];
+        let video =
+            AnonymousVideo::new(brief, clips).expect("should create successfully");
+        let serialized =
+            serde_json::to_string(&video).expect("should serialize successfully");
+
+        let brief = crate::model::LocalVideoInfo::new(
+            crate::model::VideoId::test_id_1(),
+            Some(crate::model::UploaderName::test_uploader_name_1()),
+            crate::model::VideoTags::self_1(),
+        );
+        let clips = vec![
+            crate::model::AnonymousClip::self_a_1(),
+            crate::model::AnonymousClip::self_a_2(),
+            crate::model::AnonymousClip::self_a_3(),
+        ];
+        let expected_video =
+            AnonymousVideo::new(brief, clips).expect("should create successfully");
+
+        assert_eq!(
+            serde_json::from_str::<AnonymousVideo>(&serialized).unwrap(),
+            expected_video
         );
     }
 }

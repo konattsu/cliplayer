@@ -14,7 +14,7 @@ Usage: musictl <COMMAND>
 Commands:
   apply
   validate
-  artist
+  dev
   help      Print this message or the help of the given subcommand(s)
 ```
 
@@ -36,18 +36,19 @@ $ musictl validate --help
 Usage: musictl validate <COMMAND>
 
 Commands:
-  new        Validate new music data input files
-  update     Validate existing music data input files
-  duplicate  Check for duplicate video IDs in the input
-  help       Print this message or the help of the given subcommand(s)
+  new     Validate new music data input files
+  update  Validate existing music data input files
+  help    Print this message or the help of the given subcommand(s)
 ```
 
 ```txt
-$ musictl artist --help
+$ musictl dev --help
 
-Usage: musictl artist <COMMAND>
+Usage: musictl dev <COMMAND>
 
 Commands:
-  generate  Generate artist-related data
-  help      Print this message or the help of the given subcommand(s)
+  generate-artist  Generate artist-related data
+  duplicate-ids    Check for duplicate video IDs in the input
+  merge-files      Merge multiple files containing input music data into a single file
+  help             Print this message or the help of the given subcommand(s)
 ```
