@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - "music_data/data/music/**"
+      - "music_data/data/input/**"
     types: [opened, synchronize, reopened]
 
 jobs:
