@@ -26,6 +26,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Skip if push is by bot
+        if: github.actor == 'github-actions[bot]'
+        run: |
+          echo "Push actor is a bot. Skipping workflow."
+          exit 0
+
       - name: Get last merged PR number
         id: prnum
         run: |
@@ -39,12 +45,6 @@ jobs:
           BRANCH="auto/update-music_data-pr-${{ steps.prnum.outputs.pr_number }}-$(date +'%Y%m%d-%H%M%S')"
           git fetch origin --depth=1
           git switch -c $BRANCH origin/main
-
-      - name: Skip if commit is by bot
-        if: github.event.head_commit.author.username == 'github-actions[bot]'
-        run: |
-          echo "PR author is a bot. Skipping workflow."
-          exit 0
 
       - name: Output git related info
         run: |

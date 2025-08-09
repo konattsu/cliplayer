@@ -28,7 +28,7 @@ jobs:
 
       # botは楽曲追加/編集を適用するPRを送るのでvalidateする必要はない
       - name: Skip if PR author is a bot
-        if: github.event.pull_request.user.login == 'github-actions[bot]'
+        if: github.event.pull_request.user.type == 'Bot'
         run: |
           echo "PR author is a bot. Skipping workflow."
           exit 0
