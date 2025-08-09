@@ -42,6 +42,7 @@ impl<'de> serde::Deserialize<'de> for VerifiedVideo {
             .collect::<Result<Vec<_>, _>>()
             .map_err(serde::de::Error::custom)?;
         // ソートして返す
+        // TODO ここ以外で作成したものはソートできてない, 要修正, serialize手動安定
         verified_clips.sort_by_key(|clip| clip.get_start_time().as_secs());
         Self::new(raw.record, verified_clips)
             .map_err(|e| serde::de::Error::custom(e.to_pretty_string()))

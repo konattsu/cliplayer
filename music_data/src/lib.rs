@@ -1,6 +1,7 @@
 pub mod apply;
 pub mod artist;
 pub mod cli;
+pub mod dev;
 pub mod fetcher;
 pub mod model;
 pub mod music_file;

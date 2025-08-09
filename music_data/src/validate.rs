@@ -1,25 +1,3 @@
-/// 既存の楽曲情報ファイルから, 指定された動画IDが重複しているかどうか確認
-///
-/// Arguments:
-/// - `music_root`: 楽曲情報のルートフォルダ
-/// - `video_ids`: 重複を確認したい動画IDのリスト
-///
-/// Returns:
-/// - Ok(a): 重複していた動画id
-pub fn find_video_ids(
-    music_lib: &crate::music_file::MusicLibrary,
-    video_ids: &[crate::model::VideoId],
-) -> crate::model::VideoIds {
-    let video_ids_set: std::collections::HashSet<_> =
-        music_lib.get_video_ids().into_iter().collect();
-
-    video_ids
-        .iter()
-        .filter_map(|id| video_ids_set.get(id))
-        .cloned()
-        .collect()
-}
-
 pub struct AnonymousVideoValidateErrors {
     errs: Vec<AnonymousVideoValidateError>,
 }

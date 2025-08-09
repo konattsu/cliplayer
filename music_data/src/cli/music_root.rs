@@ -8,11 +8,13 @@ impl MusicLibraryCli {
     /// Err(String)の時はエラーが綺麗に表示された文字列が返る
     pub fn try_into_music_root_from_cli(
         &self,
-        min_videos_path: super::OutputMinPathFromCli,
-        min_flat_clips_path: super::OutputMinClipsPathFromCli,
+        min_videos_path: String,
+        min_flat_clips_path: String,
     ) -> Result<crate::music_file::MusicLibrary, String> {
-        let min_videos_path = min_videos_path.try_into_path()?;
-        let min_flat_clips_path = min_flat_clips_path.try_into_path()?;
+        let min_videos_path =
+            crate::util::FilePath::new(&std::path::PathBuf::from(min_videos_path))?;
+        let min_flat_clips_path =
+            crate::util::FilePath::new(&std::path::PathBuf::from(min_flat_clips_path))?;
 
         self.clone()
             .try_into_music_root(&min_videos_path, &min_flat_clips_path)
