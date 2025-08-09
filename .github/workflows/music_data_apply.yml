@@ -12,7 +12,7 @@ jobs:
   build_and_test:
     uses: ./.github/workflows/musictl.yml
 
-  sync:
+  apply:
     needs: build_and_test
     runs-on: ubuntu-latest
     env:
@@ -46,12 +46,26 @@ jobs:
           echo "PR author is a bot. Skipping workflow."
           exit 0
 
+      - name: Output git related info
+        run: |
+          git log --oneline -10
+          git rev-parse HEAD
+          git rev-parse HEAD~1
+          git branch -a
+          git rev-parse --abbrev-ref HEAD
+          git show HEAD~1
+          git diff --name-only HEAD~1 HEAD
+
       - name: Detect changed files
         id: changed
         run: |
           BASE_COMMIT=$(git rev-parse HEAD~1)
           INPUT_CHANGED_FILES=$(git diff --name-only $BASE_COMMIT HEAD | grep '^music_data/data/input' || true)
           MUSIC_CHANGED_FILES=$(git diff --name-only $BASE_COMMIT HEAD | grep '^music_data/data/music' || true)
+
+          echo "BASE_COMMIT: $BASE_COMMIT"
+          echo "INPUT_CHANGED_FILES: $INPUT_CHANGED_FILES"
+          echo "MUSIC_CHANGED_FILES: $MUSIC_CHANGED_FILES"
 
           if [ -n "$INPUT_CHANGED_FILES" ] && [ -z "$MUSIC_CHANGED_FILES" ]; then
             # inputのみ変更
