@@ -12,7 +12,7 @@ pub enum Commands {
     #[command(subcommand)]
     Validate(ValidateCommands),
     #[command(subcommand)]
-    Artist(ArtistCommands),
+    Dev(UtilCommands),
 }
 
 // 入力値は形式が正しければ成功とみなす. 例えば指定されたパスが存在しないなら後続の処理でエラーを出す
@@ -31,11 +31,11 @@ pub enum ApplyCommands {
         #[arg(long, value_name = "DIR", default_value_t = crate::cli::MusicLibraryCli::default())]
         music_root: crate::cli::MusicLibraryCli,
         /// Path to the output file for minimized JSON data
-        #[arg(long, value_name = "FILE", default_value_t = crate::cli::OutputMinPathFromCli::default())]
-        output_min_file: crate::cli::OutputMinPathFromCli,
+        #[arg(long, value_name = "FILE", default_value_t = default_output_min_file())]
+        output_min_file: String,
         /// Path to the output file for minimized clips JSON data
-        #[arg(long, value_name = "FILE", default_value_t = crate::cli::OutputMinClipsPathFromCli::default())]
-        output_min_clips_file: crate::cli::OutputMinClipsPathFromCli,
+        #[arg(long, value_name = "FILE", default_value_t = default_output_min_clips_file())]
+        output_min_clips_file: String,
 
         #[clap(flatten)]
         trace_level: TraceLevel,
@@ -46,11 +46,11 @@ pub enum ApplyCommands {
         #[arg(long, value_name = "DIR", default_value_t = crate::cli::MusicLibraryCli::default())]
         music_root: crate::cli::MusicLibraryCli,
         /// Path to the output file for minimized JSON data
-        #[arg(long, value_name = "FILE", default_value_t = crate::cli::OutputMinPathFromCli::default())]
-        output_min_file: crate::cli::OutputMinPathFromCli,
+        #[arg(long, value_name = "FILE", default_value_t = default_output_min_file())]
+        output_min_file: String,
         /// Path to the output file for minimized clips JSON data
-        #[arg(long, value_name = "FILE", default_value_t = crate::cli::OutputMinClipsPathFromCli::default())]
-        output_min_clips_file: crate::cli::OutputMinClipsPathFromCli,
+        #[arg(long, value_name = "FILE", default_value_t = default_output_min_clips_file())]
+        output_min_clips_file: String,
 
         #[clap(flatten)]
         trace_level: TraceLevel,
@@ -64,11 +64,11 @@ pub enum ApplyCommands {
         #[arg(long, value_name = "DIR", default_value_t = crate::cli::MusicLibraryCli::default())]
         music_root: crate::cli::MusicLibraryCli,
         /// Path to the output file for minimized JSON data
-        #[arg( long, value_name = "FILE", default_value_t = crate::cli::OutputMinPathFromCli::default())]
-        output_min_file: crate::cli::OutputMinPathFromCli,
+        #[arg( long, value_name = "FILE", default_value_t = default_output_min_file())]
+        output_min_file: String,
         /// Path to the output file for minimized clips JSON data
-        #[arg(long, value_name = "FILE", default_value_t = crate::cli::OutputMinClipsPathFromCli::default())]
-        output_min_clips_file: crate::cli::OutputMinClipsPathFromCli,
+        #[arg(long, value_name = "FILE", default_value_t = default_output_min_clips_file())]
+        output_min_clips_file: String,
 
         #[clap(flatten)]
         trace_level: TraceLevel,
@@ -92,29 +92,11 @@ pub enum ValidateCommands {
         #[arg(long, value_name = "DIR", default_value_t = crate::cli::MusicLibraryCli::default())]
         music_root: crate::cli::MusicLibraryCli,
         /// Path to the output file for minimized JSON data
-        #[arg(long, value_name = "FILE", default_value_t = crate::cli::OutputMinPathFromCli::default())]
-        output_min_file: crate::cli::OutputMinPathFromCli,
+        #[arg(long, value_name = "FILE", default_value_t = default_output_min_file())]
+        output_min_file: String,
         /// Path to the output file for minimized clips JSON data
-        #[arg(long, value_name = "FILE", default_value_t = crate::cli::OutputMinClipsPathFromCli::default())]
-        output_min_clips_file: crate::cli::OutputMinClipsPathFromCli,
-
-        #[clap(flatten)]
-        trace_level: TraceLevel,
-    },
-    /// Check for duplicate video IDs in the input
-    Duplicate {
-        /// Comma-separated video IDs to check for duplicates
-        #[arg(short, long, value_name = "String")]
-        id: crate::cli::VideoIdsFromCli,
-        /// Directory of the music data to use for duplicate checking
-        #[arg(long, value_name = "DIR", default_value_t = crate::cli::MusicLibraryCli::default())]
-        music_root: crate::cli::MusicLibraryCli,
-        /// Path to the output file for minimized JSON data
-        #[arg(long, value_name = "FILE", default_value_t = crate::cli::OutputMinPathFromCli::default())]
-        output_min_file: crate::cli::OutputMinPathFromCli,
-        /// Path to the output file for minimized clips JSON data
-        #[arg(long, value_name = "FILE", default_value_t = crate::cli::OutputMinClipsPathFromCli::default())]
-        output_min_clips_file: crate::cli::OutputMinClipsPathFromCli,
+        #[arg(long, value_name = "FILE", default_value_t = default_output_min_clips_file())]
+        output_min_clips_file: String,
 
         #[clap(flatten)]
         trace_level: TraceLevel,
@@ -122,9 +104,9 @@ pub enum ValidateCommands {
 }
 
 #[derive(Debug, clap::Subcommand)]
-pub enum ArtistCommands {
+pub enum UtilCommands {
     /// Generate artist-related data
-    Generate {
+    GenerateArtist {
         /// Path to the input artist data file
         #[arg(long, default_value_t = default_input_artists_data_path())]
         input_artists_data_path: String,
@@ -146,8 +128,47 @@ pub enum ArtistCommands {
         #[clap(flatten)]
         trace_level: TraceLevel,
     },
+    /// Check for duplicate video IDs in the input
+    DuplicateIds {
+        /// Comma-separated video IDs to check for duplicates
+        #[arg(short, long, value_name = "String")]
+        ids: crate::cli::VideoIdsFromCli,
+        /// Directory of the music data to use for duplicate checking
+        #[arg(long, value_name = "DIR", default_value_t = crate::cli::MusicLibraryCli::default())]
+        music_lib: crate::cli::MusicLibraryCli,
+        /// Path to the output file for minimized JSON data
+        #[arg(long, value_name = "FILE", default_value_t = default_output_min_file())]
+        output_min_file: String,
+        /// Path to the output file for minimized clips JSON data
+        #[arg(long, value_name = "FILE", default_value_t = default_output_min_clips_file())]
+        output_min_clips_file: String,
+
+        #[clap(flatten)]
+        trace_level: TraceLevel,
+    },
+    /// Merge multiple files containing input music data into a single file
+    MergeFiles {
+        /// Comma-separated file paths containing new music data to merge
+        #[arg(short, long, value_name = "FILES")]
+        files: Option<crate::cli::FilePathsFromCli>,
+        /// Directory where the json files will be merged
+        #[arg(short, long, value_name = "DIR", default_value_t = default_merge_files_dir())]
+        dir: String,
+        /// Path to the output directory for merged data
+        #[arg(short, long, value_name = "DIR", default_value_t = default_merged_dir())]
+        output_dir: String,
+
+        #[clap(flatten)]
+        trace_level: TraceLevel,
+    },
 }
 
+fn default_output_min_file() -> String {
+    "../public/music_data/music.min.json".to_string()
+}
+fn default_output_min_clips_file() -> String {
+    "../public/music_data/clips.min.json".to_string()
+}
 fn default_input_artists_data_path() -> String {
     "data/artists_data.json".to_string()
 }
@@ -165,6 +186,12 @@ fn default_artists_file_path() -> String {
 }
 fn default_code_snippets_path() -> String {
     "../.vscode/music_data.code-snippets".to_string()
+}
+fn default_merge_files_dir() -> String {
+    "./data/input/".to_string()
+}
+fn default_merged_dir() -> String {
+    "./data/input/".to_string()
 }
 
 #[derive(Debug, clap::Args)]
@@ -198,12 +225,15 @@ impl Cli {
                 ValidateCommands::Update { trace_level, .. } => {
                     &trace_level.file_tracing_level
                 }
-                ValidateCommands::Duplicate { trace_level, .. } => {
+            },
+            Commands::Dev(ref util_cmd) => match util_cmd {
+                UtilCommands::GenerateArtist { trace_level, .. } => {
                     &trace_level.file_tracing_level
                 }
-            },
-            Commands::Artist(ref artist_cmd) => match artist_cmd {
-                ArtistCommands::Generate { trace_level, .. } => {
+                UtilCommands::DuplicateIds { trace_level, .. } => {
+                    &trace_level.file_tracing_level
+                }
+                UtilCommands::MergeFiles { trace_level, .. } => {
                     &trace_level.file_tracing_level
                 }
             },
@@ -231,12 +261,15 @@ impl Cli {
                 ValidateCommands::Update { trace_level, .. } => {
                     &trace_level.stdout_tracing_level
                 }
-                ValidateCommands::Duplicate { trace_level, .. } => {
+            },
+            Commands::Dev(ref util_cmd) => match util_cmd {
+                UtilCommands::GenerateArtist { trace_level, .. } => {
                     &trace_level.stdout_tracing_level
                 }
-            },
-            Commands::Artist(ref artist_cmd) => match artist_cmd {
-                ArtistCommands::Generate { trace_level, .. } => {
+                UtilCommands::DuplicateIds { trace_level, .. } => {
+                    &trace_level.stdout_tracing_level
+                }
+                UtilCommands::MergeFiles { trace_level, .. } => {
                     &trace_level.stdout_tracing_level
                 }
             },

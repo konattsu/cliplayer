@@ -10,6 +10,11 @@ impl DirPath {
         Ok(DirPath(path.to_owned()))
     }
 
+    pub fn from_path_buf(path: std::path::PathBuf) -> Result<Self, String> {
+        Self::is_dir(&path)?;
+        Ok(DirPath(path))
+    }
+
     pub fn into_path_buf(self) -> std::path::PathBuf {
         self.0
     }

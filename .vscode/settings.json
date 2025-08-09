@@ -44,11 +44,11 @@
   // 楽曲データたちよう
   "json.schemas": [
     {
-      "fileMatch": ["/data/artists_data.json"],
+      "fileMatch": ["/music_data/data/artists_data.json"],
       "url": "./tools/artists_data.schema.json"
     },
     {
-      "fileMatch": ["/data/input.json", "for_dev/x_music_data.json"],
+      "fileMatch": ["/music_data/data/input/*.json"],
       "url": "./tools/music_data.schema.json"
     }
   ],
@@ -59,6 +59,7 @@
     "chrono",
     "cliplayer",
     "Deque",
+    "dialoguer",
     "musictl",
     "reqwest",
     "rustls",
