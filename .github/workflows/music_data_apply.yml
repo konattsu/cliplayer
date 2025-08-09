@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - "music_data/data/music/**"
+      - "music_data/data/input/**"
 
 jobs:
   build_and_test:
@@ -85,25 +86,29 @@ jobs:
           chmod +x ./bin/musictl
           ls -lR ./bin
 
-      - name: Validate input
+      - name: Apply input
         if: steps.changed.outputs.changed_type == 'INPUT'
         run: |
           cd ./music_data
-          ../bin/musictl validate input -i ${{ steps.changed.outputs.input_changed_files }} --file-tracing-level debug
+          ../bin/musictl apply input -i ${{ steps.changed.outputs.input_changed_files }} --file-tracing-level debug
 
-      - name: Validate update
+      - name: Apply update
         if: steps.changed.outputs.changed_type == 'UPDATE'
         run: |
           cd ./music_data
-          ../bin/musictl validate update --file-tracing-level debug
+          ../bin/musictl apply update --file-tracing-level debug
+          # TODO 実際の動作要確認
+          rm ${{ steps.changed.outputs.input_changed_files }}
 
-      - name: Validate input & update
+      - name: Apply input & update
         if: steps.changed.outputs.changed_type == 'BOTH'
         # inputだけでの実行でもいいが, どこで落ちたか分かり易くするためupdateを先に実行
         run: |
           cd ./music_data
-          ../bin/musictl validate update --file-tracing-level debug
-          ../bin/musictl validate input -i "${{ steps.changed.outputs.input_changed_files }}" --file-tracing-level debug
+          ../bin/musictl apply update --file-tracing-level debug
+          ../bin/musictl apply input -i "${{ steps.changed.outputs.input_changed_files }}" --file-tracing-level debug
+          # TODO 上と同様
+          rm ${{ steps.changed.outputs.input_changed_files }}
 
       - name: Post musictl logs
         if: always()
@@ -115,7 +120,7 @@ jobs:
       - name: Commit and Push changes
         run: |
           git add .
-          git commit -m "[music-update] Auto update music_data and relative min.json after merge of PR #${{ steps.prnum.outputs.pr_number }}"
+          git commit -m "[music-apply] (PR #${{ steps.prnum.outputs.pr_number }} Auto apply music_data and relative min.json after merge"
           git push origin HEAD
 
       - name: Create PR
