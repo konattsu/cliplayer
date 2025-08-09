@@ -133,9 +133,9 @@ jobs:
 
       - name: Commit and Push changes
         run: |
-          git add /music_data/data/input/
-          git add /music_data/data/music/
-          git add /public/music_data/
+          git add ./music_data/data/input/
+          git add ./music_data/data/music/
+          git add ./public/music_data/
           git commit -m "[music-apply] (PR #${{ steps.prnum.outputs.pr_number }} Auto apply music_data and relative min.json after merge"
           git push origin HEAD
 
