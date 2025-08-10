@@ -26,6 +26,7 @@
       },
       "clips": {
         "type": "array",
+        "additionalProperties": false,
         "minItems": 1,
         "items": {
           "type": "object",
