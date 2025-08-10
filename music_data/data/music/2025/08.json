@@ -140,5 +140,147 @@
         "uuid": "491c1fec-bd2a-4b6c-83c4-d2bc4e584f9d"
       }
     ]
+  },
+  {
+    "videoId": "dIibav1M4BA",
+    "title": "【歌枠】なななと夏のデュエットお歌枠!!✨️【珠乃井ナナ、倉持めると/にじさんじ】supported by DAM",
+    "channelId": "UCiA-trSZfB0i92V_-dyDqBw",
+    "publishedAt": "2025-08-10T12:13:52Z",
+    "modifiedAt": "2025-08-10T12:28:38Z",
+    "duration": "PT1H53M53S",
+    "privacyStatus": "public",
+    "embeddable": true,
+    "videoTags": [
+      "2d",
+      "karaoke"
+    ],
+    "clips": [
+      {
+        "songTitle": "イケナイ太陽",
+        "artists": [
+          "meruto-kuramochi",
+          "nana-tamanoi"
+        ],
+        "startTime": "PT1M55S",
+        "endTime": "PT5M54S",
+        "uuid": "03dc1841-a0da-4165-9b28-1fcc4086dbe1"
+      },
+      {
+        "songTitle": "花火",
+        "artists": [
+          "meruto-kuramochi",
+          "nana-tamanoi"
+        ],
+        "startTime": "PT15M30S",
+        "endTime": "PT20M3S",
+        "uuid": "d0508f80-2ab6-4177-a18f-0950a641ea06"
+      },
+      {
+        "songTitle": "天体観測",
+        "artists": [
+          "meruto-kuramochi",
+          "nana-tamanoi"
+        ],
+        "startTime": "PT23M53S",
+        "endTime": "PT28M9S",
+        "uuid": "a833d030-ed0e-4fa3-8e6c-f8ae5da5557c"
+      },
+      {
+        "songTitle": "青のすみか",
+        "artists": [
+          "meruto-kuramochi"
+        ],
+        "startTime": "PT33M19S",
+        "endTime": "PT36M33S",
+        "uuid": "935a3b66-ca93-4a0d-bfa0-a38c486e2a28"
+      },
+      {
+        "songTitle": "美しい鰭",
+        "artists": [
+          "nana-tamanoi"
+        ],
+        "startTime": "PT39M27S",
+        "endTime": "PT42M52S",
+        "uuid": "a32f90c8-f878-4f42-9645-08f68d2cfac1"
+      },
+      {
+        "songTitle": "君の知らない物語",
+        "artists": [
+          "meruto-kuramochi",
+          "nana-tamanoi"
+        ],
+        "startTime": "PT45M57S",
+        "endTime": "PT51M37S",
+        "uuid": "d26db9dc-e261-4013-bbb7-5a133fc1041e"
+      },
+      {
+        "songTitle": "点描の唄",
+        "artists": [
+          "meruto-kuramochi",
+          "nana-tamanoi"
+        ],
+        "startTime": "PT58M7S",
+        "endTime": "PT1H3M8S",
+        "uuid": "54cd1865-b243-42c9-b576-f6b3be50c101"
+      },
+      {
+        "songTitle": "夜明けと蛍",
+        "artists": [
+          "meruto-kuramochi",
+          "nana-tamanoi"
+        ],
+        "startTime": "PT1H6M7S",
+        "endTime": "PT1H12M3S",
+        "uuid": "f3616608-e393-4946-b437-1de6561d40c6"
+      },
+      {
+        "songTitle": "島人ぬ宝",
+        "artists": [
+          "nana-tamanoi"
+        ],
+        "startTime": "PT1H15M34S",
+        "endTime": "PT1H20M43S",
+        "uuid": "cdc89fb8-137a-469e-bc3e-3a3210e0e66c"
+      },
+      {
+        "songTitle": "ノマド",
+        "artists": [
+          "meruto-kuramochi"
+        ],
+        "startTime": "PT1H21M2S",
+        "endTime": "PT1H24M46S",
+        "uuid": "6b0167e7-fe82-46bf-a4eb-0e9781e5ea06"
+      },
+      {
+        "songTitle": "愛包ダンスホール",
+        "artists": [
+          "meruto-kuramochi",
+          "nana-tamanoi"
+        ],
+        "startTime": "PT1H29M13S",
+        "endTime": "PT1H32M53S",
+        "uuid": "60a02e51-99e5-4a8a-b651-2021a40f23fd"
+      },
+      {
+        "songTitle": "ロウワー",
+        "artists": [
+          "meruto-kuramochi",
+          "nana-tamanoi"
+        ],
+        "startTime": "PT1H37M16S",
+        "endTime": "PT1H41M6S",
+        "uuid": "b6359cc6-a2db-4f40-b250-1fd47c1bd47a"
+      },
+      {
+        "songTitle": "夏祭り",
+        "artists": [
+          "meruto-kuramochi",
+          "nana-tamanoi"
+        ],
+        "startTime": "PT1H49M10S",
+        "endTime": "PT1H52M51S",
+        "uuid": "ee48ddda-cc63-4b8e-880e-995aa3a81539"
+      }
+    ]
   }
 ]
