@@ -15,6 +15,9 @@ jobs:
   apply:
     needs: build_and_test
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: music_data
     env:
       RUST_BACKTRACE: 1
       CARGO_TERM_COLOR: always
@@ -56,9 +59,6 @@ jobs:
           echo "input_changed_files=$INPUT_CHANGED_FILES" >> $GITHUB_OUTPUT
           echo "music_changed_files=$MUSIC_CHANGED_FILES" >> $GITHUB_OUTPUT
           echo "music_min_changed_files=$MUSIC_MIN_CHANGED_FILES" >> $GITHUB_OUTPUT
-
-          ls . -lR 
-          ls .. -lR
 
       - name: Detect changed type
         id: changed_type
@@ -112,12 +112,12 @@ jobs:
       - name: Apply input
         if: steps.changed_type.outputs.changed_type == 'INPUT'
         run: |
-          ./bin/musictl apply new -i "${{ steps.changed_type.outputs.input_changed_files }}" --file-tracing-level debug
+          ../bin/musictl apply new -i "${{ steps.changed_type.outputs.input_changed_files }}" --file-tracing-level debug
 
       - name: Apply update
         if: steps.changed_type.outputs.changed_type == 'UPDATE'
         run: |
-          ./bin/musictl apply update --file-tracing-level debug
+          ../bin/musictl apply update --file-tracing-level debug
           # TODO 実際の動作要確認
           rm ${{ steps.changed_type.outputs.input_changed_files }}
 
@@ -125,8 +125,8 @@ jobs:
         if: steps.changed_type.outputs.changed_type == 'BOTH'
         # inputだけでの実行でもいいが, どこで落ちたか分かり易くするためupdateを先に実行
         run: |
-          ./bin/musictl apply update --file-tracing-level debug
-          ./bin/musictl apply new -i "${{ steps.changed_type.outputs.input_changed_files }}" --file-tracing-level debug
+          ../bin/musictl apply update --file-tracing-level debug
+          ../bin/musictl apply new -i "${{ steps.changed_type.outputs.input_changed_files }}" --file-tracing-level debug
           # TODO 上と同様
           rm ${{ steps.changed_type.outputs.input_changed_files }}
 
