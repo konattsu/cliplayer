@@ -49,11 +49,11 @@ jobs:
         run: |
           BASE_COMMIT="${{ github.event.before }}"
           HEAD_COMMIT="${{ github.event.after }}"
-          INPUT_CHANGED_FILES=$(git diff --name-only $BASE_COMMIT $HEAD_COMMIT | grep '^music_data/data/input' | sed 's|^|./|' || true)
+          INPUT_CHANGED_FILES=$(git diff --name-only $BASE_COMMIT $HEAD_COMMIT | grep '^music_data/data/input' | sed 's|^|../|' || true)
           INPUT_CHANGED_FILES=$(echo "$INPUT_CHANGED_FILES" | xargs)
-          MUSIC_CHANGED_FILES=$(git diff --name-only $BASE_COMMIT $HEAD_COMMIT | grep '^music_data/data/music' | sed 's|^|./|' || true)
+          MUSIC_CHANGED_FILES=$(git diff --name-only $BASE_COMMIT $HEAD_COMMIT | grep '^music_data/data/music' | sed 's|^|../|' || true)
           MUSIC_CHANGED_FILES=$(echo "$MUSIC_CHANGED_FILES" | xargs)
-          MUSIC_MIN_CHANGED_FILES=$(git diff --name-only $BASE_COMMIT $HEAD_COMMIT | grep '^public/music_data/.*\.json$' | sed 's|^|./|' || true)
+          MUSIC_MIN_CHANGED_FILES=$(git diff --name-only $BASE_COMMIT $HEAD_COMMIT | grep '^public/music_data/.*\.json$' | sed 's|^|../|' || true)
           MUSIC_MIN_CHANGED_FILES=$(echo "$MUSIC_MIN_CHANGED_FILES" | xargs)
 
           echo "input_changed_files=$INPUT_CHANGED_FILES" >> $GITHUB_OUTPUT
