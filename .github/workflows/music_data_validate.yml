@@ -16,9 +16,9 @@ jobs:
   validate:
     needs: build_and_test
     runs-on: ubuntu-latest
-    # defaults:
-    # run:
-    # working-directory: music_data
+    defaults:
+      run:
+        working-directory: music_data
     env:
       RUST_BACKTRACE: 1
       CARGO_TERM_COLOR: always
@@ -32,11 +32,11 @@ jobs:
           BASE_COMMIT="${{ github.event.pull_request.base.sha }}"
           HEAD_COMMIT="${{ github.sha }}"
           INPUT_CHANGED_FILES=$(git diff --name-only $BASE_COMMIT $HEAD_COMMIT | grep '^music_data/data/input' || true)
-          INPUT_CHANGED_FILES=$(echo "$INPUT_CHANGED_FILES" | xargs)
+          INPUT_CHANGED_FILES=$(echo "$INPUT_CHANGED_FILES" | sed 's/^music_data\///' | xargs)
           MUSIC_CHANGED_FILES=$(git diff --name-only $BASE_COMMIT $HEAD_COMMIT | grep '^music_data/data/music' || true)
-          MUSIC_CHANGED_FILES=$(echo "$MUSIC_CHANGED_FILES" | xargs)
+          MUSIC_CHANGED_FILES=$(echo "$MUSIC_CHANGED_FILES" | sed 's/^music_data\///' | xargs)
           MUSIC_MIN_CHANGED_FILES=$(git diff --name-only $BASE_COMMIT $HEAD_COMMIT | grep '^public/music_data/.*\.json$' || true)
-          MUSIC_MIN_CHANGED_FILES=$(echo "$MUSIC_MIN_CHANGED_FILES" | xargs)
+          MUSIC_MIN_CHANGED_FILES=$(echo "$MUSIC_MIN_CHANGED_FILES" | sed 's/^music_data\///' | xargs)
 
           echo "input_changed_files=$INPUT_CHANGED_FILES" >> $GITHUB_OUTPUT
           echo "music_changed_files=$MUSIC_CHANGED_FILES" >> $GITHUB_OUTPUT
@@ -85,26 +85,24 @@ jobs:
 
       - name: Make musictl executable
         run: |
-          chmod +x ./bin/musictl
-          ls -lR ./bin
+          chmod +x ../bin/musictl
+          ls -lR ../bin
 
       - name: Validate input
         if: steps.changed_type.outputs.changed_type == 'INPUT'
         run: |
-          ./bin/musictl validate new -i "${{ steps.changes.outputs.input_changed_files }}" --file-tracing-level debug
+          ../bin/musictl validate new -i "${{ steps.changes.outputs.input_changed_files }}" --file-tracing-level debug
 
       - name: Validate update
         if: steps.changed_type.outputs.changed_type == 'UPDATE'
-        run: ./bin/musictl validate update --music-root ./music_data/data/music --output-min-file ./public/music_data/music.min.json --output-min-clips-file ./public/music_data/clips.min.json --file-tracing-level debug
+        run: ../bin/musictl validate update --file-tracing-level debug
 
       - name: Validate input & update
         if: steps.changed_type.outputs.changed_type == 'BOTH'
         run: |
-          ./bin/musictl validate new -i "${{ steps.changes.outputs.input_changed_files }}" --file-tracing-level debug
-          ./bin/musictl validate update --music-root ./music_data/data/music --output-min-file ./public/music_data/music.min.json --output-min-clips-file ./public/music_data/clips.min.json --file-tracing-level debug
+          ../bin/musictl validate new -i "${{ steps.changes.outputs.input_changed_files }}" --file-tracing-level debug
+          ../bin/musictl validate update --file-tracing-level debug
 
       - name: Post logs
         if: always()
-        run: |
-          cd ./music_data
-          ../tools/musictl_logs_to_stdout.sh
+        run: ../tools/musictl_logs_to_stdout.sh
