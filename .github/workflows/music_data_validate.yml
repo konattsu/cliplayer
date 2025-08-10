@@ -39,26 +39,30 @@ jobs:
           INPUT_CHANGED_FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | grep '^data/input' || true)
           MUSIC_CHANGED_FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | grep '^data/music' || true)
 
-          if [ -n "$INPUT_CHANGED_FILES" ] && [ -z "$MUSIC_CHANGED_FILES" ]; then
+          INPUT_CHANGED_FILES_CLEAN=$(echo "$INPUT_CHANGED_FILES" | tr '\n' ' ')
+          MUSIC_CHANGED_FILES_CLEAN=$(echo "$MUSIC_CHANGED_FILES" | tr '\n' ' ')
+
+          if [ -n "$INPUT_CHANGED_FILES_CLEAN" ] && [ -z "$MUSIC_CHANGED_FILES_CLEAN" ]; then
             # inputのみ変更
             echo "changed_type=INPUT" >> $GITHUB_OUTPUT
-            echo "input_changed_files=$INPUT_CHANGED_FILES" >> $GITHUB_OUTPUT
-            echo "changed_type has been set to INPUT (input files were changed: $INPUT_CHANGED_FILES)"
-          elif [ -z "$INPUT_CHANGED_FILES" ] && [ -n "$MUSIC_CHANGED_FILES" ]; then
+            echo "input_changed_files=$INPUT_CHANGED_FILES_CLEAN" >> $GITHUB_OUTPUT
+            echo "changed_type has been set to INPUT (input files were changed: $INPUT_CHANGED_FILES_CLEAN)"
+          elif [ -z "$INPUT_CHANGED_FILES_CLEAN" ] && [ -n "$MUSIC_CHANGED_FILES_CLEAN" ]; then
             # musicのみ変更
             echo "changed_type=UPDATE" >> $GITHUB_OUTPUT
-            echo "music_changed_files=$MUSIC_CHANGED_FILES" >> $GITHUB_OUTPUT
-            echo "changed_type has been set to UPDATE (music files were changed: $MUSIC_CHANGED_FILES)"
-          elif [ -n "$INPUT_CHANGED_FILES" ] && [ -n "$MUSIC_CHANGED_FILES" ]; then
+            echo "music_changed_files=$MUSIC_CHANGED_FILES_CLEAN" >> $GITHUB_OUTPUT
+            echo "changed_type has been set to UPDATE (music files were changed: $MUSIC_CHANGED_FILES_CLEAN)"
+          elif [ -n "$INPUT_CHANGED_FILES_CLEAN" ] && [ -n "$MUSIC_CHANGED_FILES_CLEAN" ]; then
             # inputもmusicも変更
             echo "changed_type=BOTH" >> $GITHUB_OUTPUT
-            echo "input_changed_files=$INPUT_CHANGED_FILES" >> $GITHUB_OUTPUT
-            echo "music_changed_files=$MUSIC_CHANGED_FILES" >> $GITHUB_OUTPUT
-            echo "changed_type has been set to BOTH (input and music files were changed: $INPUT_CHANGED_FILES, $MUSIC_CHANGED_FILES)"
+            echo "input_changed_files=$INPUT_CHANGED_FILES_CLEAN" >> $GITHUB_OUTPUT
+            echo "music_changed_files=$MUSIC_CHANGED_FILES_CLEAN" >> $GITHUB_OUTPUT
+            echo "changed_type has been set to BOTH (input and music files were changed: $INPUT_CHANGED_FILES_CLEAN, $MUSIC_CHANGED_FILES_CLEAN)"
           else
             # 該当ファイルなし
             echo "changed_type=NONE" >> $GITHUB_OUTPUT
             echo "changed_type has been set to NONE (no input or music files were changed)"
+            exit 0
           fi
 
       - name: Download musictl binary
