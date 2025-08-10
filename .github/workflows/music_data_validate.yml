@@ -26,44 +26,56 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # botは楽曲追加/編集を適用するPRを送るのでvalidateする必要はない
-      - name: Skip if PR author is a bot
-        if: github.event.pull_request.user.type == 'Bot'
-        run: |
-          echo "PR author is a bot. Skipping workflow."
-          exit 0
-
       - name: Detect changed files
-        id: changed
+        id: changes
         run: |
-          INPUT_CHANGED_FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | grep '^data/input' || true)
-          MUSIC_CHANGED_FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | grep '^data/music' || true)
+          BASE_COMMIT="${{ github.event.pull_request.base.sha }}"
+          HEAD_COMMIT="${{ github.sha }}"
+          INPUT_CHANGED_FILES=$(git diff --name-only $BASE_COMMIT $HEAD_COMMIT | grep '^data/input' || true)
+          INPUT_CHANGED_FILES=$(echo "$INPUT_CHANGED_FILES" | tr '\n' ' ')
+          MUSIC_CHANGED_FILES=$(git diff --name-only $BASE_COMMIT $HEAD_COMMIT | grep '^data/music' || true)
+          MUSIC_CHANGED_FILES=$(echo "$MUSIC_CHANGED_FILES" | tr '\n' ' ')
+          MUSIC_MIN_CHANGED_FILES=$(git diff --name-only $BASE_COMMIT $HEAD_COMMIT | grep '^public/music_data/.*\.json$' || true)
+          MUSIC_MIN_CHANGED_FILES=$(echo "$MUSIC_MIN_CHANGED_FILES" | tr '\n' ' ')
 
-          INPUT_CHANGED_FILES_CLEAN=$(echo "$INPUT_CHANGED_FILES" | tr '\n' ' ')
-          MUSIC_CHANGED_FILES_CLEAN=$(echo "$MUSIC_CHANGED_FILES" | tr '\n' ' ')
+          echo "input_changed_files=$INPUT_CHANGED_FILES" >> $GITHUB_OUTPUT
+          echo "music_changed_files=$MUSIC_CHANGED_FILES" >> $GITHUB_OUTPUT
+          echo "music_min_changed_files=$MUSIC_MIN_CHANGED_FILES" >> $GITHUB_OUTPUT
 
-          if [ -n "$INPUT_CHANGED_FILES_CLEAN" ] && [ -z "$MUSIC_CHANGED_FILES_CLEAN" ]; then
+      - name: Detect changed type
+        id: changed_type
+        run: |
+          INPUT_CHANGED_FILES="${{ steps.changes.outputs.input_changed_files }}"
+          MUSIC_CHANGED_FILES="${{ steps.changes.outputs.music_changed_files }}"
+          MUSIC_MIN_CHANGED_FILES="${{ steps.changes.outputs.music_min_changed_files }}"
+
+          if [ -n "$MUSIC_MIN_CHANGED_FILES" ]; then
+            # music関連のminファイルが変更されている場合はスキップ
+            echo "Push includes music-related min files. Skipping workflow."
+            SKIP_WORKFLOW=true
+          elif [ -n "$INPUT_CHANGED_FILES" ] && [ -z "$MUSIC_CHANGED_FILES" ]; then
             # inputのみ変更
             echo "changed_type=INPUT" >> $GITHUB_OUTPUT
-            echo "input_changed_files=$INPUT_CHANGED_FILES_CLEAN" >> $GITHUB_OUTPUT
-            echo "changed_type has been set to INPUT (input files were changed: $INPUT_CHANGED_FILES_CLEAN)"
-          elif [ -z "$INPUT_CHANGED_FILES_CLEAN" ] && [ -n "$MUSIC_CHANGED_FILES_CLEAN" ]; then
+            echo "input_changed_files=$INPUT_CHANGED_FILES" >> $GITHUB_OUTPUT
+            echo "changed_type has been set to INPUT (input files were changed: $INPUT_CHANGED_FILES)"
+          elif [ -z "$INPUT_CHANGED_FILES" ] && [ -n "$MUSIC_CHANGED_FILES" ]; then
             # musicのみ変更
             echo "changed_type=UPDATE" >> $GITHUB_OUTPUT
-            echo "music_changed_files=$MUSIC_CHANGED_FILES_CLEAN" >> $GITHUB_OUTPUT
-            echo "changed_type has been set to UPDATE (music files were changed: $MUSIC_CHANGED_FILES_CLEAN)"
-          elif [ -n "$INPUT_CHANGED_FILES_CLEAN" ] && [ -n "$MUSIC_CHANGED_FILES_CLEAN" ]; then
+            echo "music_changed_files=$MUSIC_CHANGED_FILES" >> $GITHUB_OUTPUT
+            echo "changed_type has been set to UPDATE (music files were changed: $MUSIC_CHANGED_FILES)"
+          elif [ -n "$INPUT_CHANGED_FILES" ] && [ -n "$MUSIC_CHANGED_FILES" ]; then
             # inputもmusicも変更
             echo "changed_type=BOTH" >> $GITHUB_OUTPUT
-            echo "input_changed_files=$INPUT_CHANGED_FILES_CLEAN" >> $GITHUB_OUTPUT
-            echo "music_changed_files=$MUSIC_CHANGED_FILES_CLEAN" >> $GITHUB_OUTPUT
-            echo "changed_type has been set to BOTH (input and music files were changed: $INPUT_CHANGED_FILES_CLEAN, $MUSIC_CHANGED_FILES_CLEAN)"
+            echo "input_changed_files=$INPUT_CHANGED_FILES" >> $GITHUB_OUTPUT
+            echo "music_changed_files=$MUSIC_CHANGED_FILES" >> $GITHUB_OUTPUT
+            echo "changed_type has been set to BOTH (input and music files were changed: $INPUT_CHANGED_FILES, $MUSIC_CHANGED_FILES)"
           else
             # 該当ファイルなし
             echo "changed_type=NONE" >> $GITHUB_OUTPUT
             echo "changed_type has been set to NONE (no input or music files were changed)"
-            exit 0
+            SKIP_WORKFLOW=true
           fi
+          echo "skip_workflow=$SKIP_WORKFLOW" >> $GITHUB_OUTPUT
 
       - name: Download musictl binary
         uses: actions/download-artifact@v4
@@ -77,17 +89,17 @@ jobs:
           ls -lR ../bin
 
       - name: Validate input
-        if: steps.changed.outputs.changed_type == 'INPUT'
-        run: ../bin/musictl validate input -i ${{ steps.changed.outputs.input_changed_files }} --file-tracing-level debug
+        if: steps.changed_type.outputs.changed_type == 'INPUT'
+        run: ../bin/musictl validate input -i ${{ steps.changes.outputs.input_changed_files }} --file-tracing-level debug
 
       - name: Validate update
-        if: steps.changed.outputs.changed_type == 'UPDATE'
+        if: steps.changed_type.outputs.changed_type == 'UPDATE'
         run: ../bin/musictl validate update --file-tracing-level debug
 
       - name: Validate input & update
-        if: steps.changed.outputs.changed_type == 'BOTH'
+        if: steps.changed_type.outputs.changed_type == 'BOTH'
         run: |
-          ../bin/musictl validate input -i "${{ steps.changed.outputs.input_changed_files }}" --file-tracing-level debug
+          ../bin/musictl validate input -i "${{ steps.changes.outputs.input_changed_files }}" --file-tracing-level debug
           ../bin/musictl validate update --file-tracing-level debug
 
       - name: Post logs
