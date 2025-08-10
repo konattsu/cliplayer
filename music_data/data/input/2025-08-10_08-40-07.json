@@ -72,8 +72,8 @@
         "artists": ["natsume-kurusu"],
         "externalArtists": null,
         "clippedVideoId": null,
-        "startTime": "PT49M2S",
         "endTime": "PT53M32S",
+        "startTime": "PT49M2S",
         "clipTags": null
       }
     ]
