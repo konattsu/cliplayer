@@ -106,18 +106,17 @@ jobs:
       - name: Make musictl executable
         if: steps.changed_type.outputs.skip_workflow != 'true'
         run: |
-          chmod +x ./bin/musictl
-          ls -lR ./bin
+          chmod +x ../bin/musictl
 
       - name: Apply input
         if: steps.changed_type.outputs.changed_type == 'INPUT'
         run: |
-          ./bin/musictl apply new -i "${{ steps.changed_type.outputs.input_changed_files }}" --file-tracing-level debug
+          ../bin/musictl apply new -i "${{ steps.changed_type.outputs.input_changed_files }}" --file-tracing-level debug
 
       - name: Apply update
         if: steps.changed_type.outputs.changed_type == 'UPDATE'
         run: |
-          ./bin/musictl apply update --file-tracing-level debug
+          ../bin/musictl apply update --file-tracing-level debug
           # TODO 実際の動作要確認
           rm ${{ steps.changed_type.outputs.input_changed_files }}
 
@@ -125,15 +124,14 @@ jobs:
         if: steps.changed_type.outputs.changed_type == 'BOTH'
         # inputだけでの実行でもいいが, どこで落ちたか分かり易くするためupdateを先に実行
         run: |
-          ./bin/musictl apply update --file-tracing-level debug
-          ./bin/musictl apply new -i "${{ steps.changed_type.outputs.input_changed_files }}" --file-tracing-level debug
+          ../bin/musictl apply update --file-tracing-level debug
+          ../bin/musictl apply new -i "${{ steps.changed_type.outputs.input_changed_files }}" --file-tracing-level debug
           # TODO 上と同様
           rm ${{ steps.changed_type.outputs.input_changed_files }}
 
       - name: Post musictl logs
         if: always() && steps.changed_type.outputs.skip_workflow != 'true'
         run: |
-          cd ./music_data
           ../tools/musictl_logs_to_stdout.sh
 
       - name: Commit and Push changes
@@ -141,9 +139,9 @@ jobs:
         run: |
           BRANCH="auto/apply-music_data-pr-${{ steps.prnum.outputs.pr_number }}-$(date +'%Y%m%d-%H%M%S')"
           git switch -c $BRANCH origin/main
-          git add ./music_data/data/input/
-          git add ./music_data/data/music/
-          git add ./public/music_data/
+          git add ../music_data/data/input/
+          git add ../music_data/data/music/
+          git add ../public/music_data/
           git commit -m "[music-apply] (PR #${{ steps.prnum.outputs.pr_number }}) Auto apply music_data and relative min.json after merge"
           git push origin HEAD
 
