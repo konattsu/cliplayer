@@ -115,13 +115,12 @@ jobs:
         if: steps.changed_type.outputs.changed_type == 'INPUT'
         run: |
           ../bin/musictl apply new -i "${{ steps.changed_type.outputs.input_changed_files }}" --file-tracing-level debug
+          rm ${{ steps.changed_type.outputs.input_changed_files }}
 
       - name: Apply update
         if: steps.changed_type.outputs.changed_type == 'UPDATE'
         run: |
           ../bin/musictl apply update --file-tracing-level debug
-          # TODO 実際の動作要確認
-          rm ${{ steps.changed_type.outputs.input_changed_files }}
 
       - name: Apply input & update
         if: steps.changed_type.outputs.changed_type == 'BOTH'
@@ -129,7 +128,6 @@ jobs:
         run: |
           ../bin/musictl apply update --file-tracing-level debug
           ../bin/musictl apply new -i "${{ steps.changed_type.outputs.input_changed_files }}" --file-tracing-level debug
-          # TODO 上と同様
           rm ${{ steps.changed_type.outputs.input_changed_files }}
 
       - name: Post musictl logs
