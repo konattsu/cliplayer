@@ -110,7 +110,7 @@ jobs:
         if: steps.changed_type.outputs.changed_type == 'INPUT'
         run: |
           cd ./music_data
-          ../bin/musictl apply new -i ${{ steps.changed_type.outputs.input_changed_files }} --file-tracing-level debug
+          ../bin/musictl apply new -i "${{ steps.changed_type.outputs.input_changed_files }}" --file-tracing-level debug
 
       - name: Apply update
         if: steps.changed_type.outputs.changed_type == 'UPDATE'
