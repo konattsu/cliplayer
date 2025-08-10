@@ -57,6 +57,9 @@ jobs:
           echo "music_changed_files=$MUSIC_CHANGED_FILES" >> $GITHUB_OUTPUT
           echo "music_min_changed_files=$MUSIC_MIN_CHANGED_FILES" >> $GITHUB_OUTPUT
 
+          ls . -lR 
+          ls .. -lR
+
       - name: Detect changed type
         id: changed_type
         run: |
@@ -109,7 +112,7 @@ jobs:
       - name: Apply input
         if: steps.changed_type.outputs.changed_type == 'INPUT'
         run: |
-          ./bin/musictl apply new -i "${{ steps.changed_type.outputs.input_changed_files }}"  --file-tracing-level debug
+          ./bin/musictl apply new -i "${{ steps.changed_type.outputs.input_changed_files }}" --file-tracing-level debug
 
       - name: Apply update
         if: steps.changed_type.outputs.changed_type == 'UPDATE'
