@@ -90,7 +90,10 @@ jobs:
 
       - name: Validate input
         if: steps.changed_type.outputs.changed_type == 'INPUT'
-        run: ../bin/musictl validate new -i ${{ steps.changes.outputs.input_changed_files }} --file-tracing-level debug
+        run: |
+          INPUT_CHANGED_FILES="${{ steps.changes.outputs.input_changed_files }}"
+          INPUT_CHANGED_FILES=$(echo "$INPUT_CHANGED_FILES" | sed 's/^music_data\///')
+          ../bin/musictl validate new -i "" --file-tracing-level debug
 
       - name: Validate update
         if: steps.changed_type.outputs.changed_type == 'UPDATE'
