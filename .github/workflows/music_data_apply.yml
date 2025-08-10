@@ -50,9 +50,9 @@ jobs:
           MUSIC_CHANGED_FILES=$(git diff --name-only $BASE_COMMIT $HEAD_COMMIT | grep '^music_data/data/music' || true)
           MUSIC_MIN_CHANGED_FILES=$(git diff --name-only $BASE_COMMIT $HEAD_COMMIT | grep '^public/music_data/.*\.json$' || true)
 
-          echo "input_changed_files=$INPUT_CHANGED_FILES" >> $GITHUB_OUTPUT
-          echo "music_changed_files=$MUSIC_CHANGED_FILES" >> $GITHUB_OUTPUT
-          echo "music_min_changed_files=$MUSIC_MIN_CHANGED_FILES" >> $GITHUB_OUTPUT
+          echo "input_changed_files=$(echo "$INPUT_CHANGED_FILES" | tr '\n' ' ')" >> $GITHUB_OUTPUT
+          echo "music_changed_files=$(echo "$MUSIC_CHANGED_FILES" | tr '\n' ' ')" >> $GITHUB_OUTPUT
+          echo "music_min_changed_files=$(echo "$MUSIC_MIN_CHANGED_FILES" | tr '\n' ' ')" >> $GITHUB_OUTPUT
 
       - name: Skip if push includes music-related min files
         if: steps.changed.outputs.music_min_changed_files != ''
