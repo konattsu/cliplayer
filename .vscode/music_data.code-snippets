@@ -16,7 +16,7 @@
       "    $2",
       "  ],",
       "  \"externalArtists\": ${3:null},",
-      "  \"isClipped\": ${4|false,true|},",
+      "  \"clippedVideoId\": ${4:null},",
       "  \"startTime\": \"PT$5\",",
       "  \"endTime\": \"PT$6\",",
       "  \"clipTags\": ${7:null}",
@@ -28,7 +28,7 @@
     "scope": "json"
   },
   "Video Tags Snippet": {
-    "body": ["\"${1|karaoke,2d,3d,nmf,sitr,3d-debut|}\",", ""],
+    "body": ["\"${1|karaoke,2d,3d,nmf,sitr,3d-debut,niji-3d|}\",", ""],
     "description": "Array of tags for video data",
     "prefix": "vtag",
     "scope": "json"

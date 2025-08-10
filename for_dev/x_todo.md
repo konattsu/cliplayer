@@ -2,11 +2,9 @@
 
 ## back
 
-色んなreadme書く
-logを綺麗に吐くようにしてさっさとactions作って運用見ながらバグ修正する.
-actionsで最後に全てのlog出力するような処理追加. これを行うbash scriptを/tools/\*に配置よさげ
+musictl summary 的なもので.mdとかに登録済みの配信一覧出力機能作ったりしたい. inputに対してはactionsで米欄に表にして出力したい
+
 この感じのプロジェクトに対してe2eはちょっとめんどい, 気分良かったら書くかも
-musictl summary 的なもので.mdとかに登録済みの配信一覧出力機能作ったりしたい
 
 - e2e
   - testcontainers-rs + mockserver(wiremock)
@@ -41,7 +39,9 @@ musictl summary 的なもので.mdとかに登録済みの配信一覧出力機�
 
 ## else
 
-- github actionsのtimeoutを追加, defaultは6hらしい, 逆に言えばWebApi用いた既存の楽曲情報の更新に多少時間がかかっても大丈夫
+3dお披露目はデータ追加してもfront側で再生/検索しないようにしようかと. 部分的に見るのはもったなすぎる, 各人のストーリーが凄いからね. 歌謡祭とかは入れたい
+
+限定公開はurl/idを入力すれば見られるように(リストに追加できるように)
 
 たぐ
 
