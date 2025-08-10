@@ -1,1 +1,90 @@
-[]
+[
+  {
+    "videoId": "GSfgr5A4kyc",
+    "title": "【歌枠】2月のお歌枠っ!!懐かしい曲もあるよううっ！✨️【倉持めると/にじさんじ】",
+    "channelId": "UCiA-trSZfB0i92V_-dyDqBw",
+    "publishedAt": "2025-02-16T10:31:42Z",
+    "modifiedAt": "2025-08-10T07:42:47Z",
+    "duration": "PT1H19M29S",
+    "privacyStatus": "public",
+    "embeddable": true,
+    "videoTags": [
+      "2d",
+      "karaoke"
+    ],
+    "clips": [
+      {
+        "songTitle": "愛を伝えたいだとか",
+        "artists": [
+          "meruto-kuramochi"
+        ],
+        "startTime": "PT5M31S",
+        "endTime": "PT9M22S",
+        "uuid": "a0a68c14-243d-42b4-8953-af8d7b2eeb82"
+      },
+      {
+        "songTitle": "ノーダウト",
+        "artists": [
+          "meruto-kuramochi"
+        ],
+        "startTime": "PT13M58S",
+        "endTime": "PT17M16S",
+        "uuid": "8fb5030c-61a6-4e71-ac01-e899c52c1fc1"
+      },
+      {
+        "songTitle": "シャッター",
+        "artists": [
+          "meruto-kuramochi"
+        ],
+        "startTime": "PT22M16S",
+        "endTime": "PT26M21S",
+        "uuid": "b2abb4d3-db66-43c9-a5fd-40a33ee08206"
+      },
+      {
+        "songTitle": "瞳をとじて",
+        "artists": [
+          "meruto-kuramochi"
+        ],
+        "startTime": "PT33M20S",
+        "endTime": "PT38M54S",
+        "uuid": "8e67e955-408b-49b0-a23d-a882dc26101c"
+      },
+      {
+        "songTitle": "君に届け",
+        "artists": [
+          "meruto-kuramochi"
+        ],
+        "startTime": "PT42M",
+        "endTime": "PT47M20S",
+        "uuid": "2be3654f-f7ee-4393-8f09-6379ddeb6e4c"
+      },
+      {
+        "songTitle": "ギターと孤独と蒼い惑星",
+        "artists": [
+          "meruto-kuramochi"
+        ],
+        "startTime": "PT50M43S",
+        "endTime": "PT54M30S",
+        "uuid": "50864b0f-04b3-48d5-b66c-73f3888b8dc9"
+      },
+      {
+        "songTitle": "晴る",
+        "artists": [
+          "meruto-kuramochi"
+        ],
+        "startTime": "PT1H3M39S",
+        "endTime": "PT1H8M9S",
+        "uuid": "1a02213c-a602-4bc6-a59c-f8ea273a6d04"
+      },
+      {
+        "songTitle": "ケセラセラ",
+        "artists": [
+          "meruto-kuramochi"
+        ],
+        "startTime": "PT1H13M26S",
+        "endTime": "PT1H18M2S",
+        "uuid": "a60730a2-ecef-4045-bf47-7b973053ad71"
+      }
+    ]
+  }
+]
