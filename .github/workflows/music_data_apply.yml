@@ -109,14 +109,12 @@ jobs:
       - name: Apply input
         if: steps.changed_type.outputs.changed_type == 'INPUT'
         run: |
-          cd ./music_data
-          ../bin/musictl apply new -i "${{ steps.changed_type.outputs.input_changed_files }}" --file-tracing-level debug
+          ./bin/musictl apply new -i "${{ steps.changed_type.outputs.input_changed_files }}" --music_root ./music_data/data/music --output-min-file ./public/music_data/music.min.json --output-min-clips-file ./public/music_data/clips.min.json --file-tracing-level debug
 
       - name: Apply update
         if: steps.changed_type.outputs.changed_type == 'UPDATE'
         run: |
-          cd ./music_data
-          ../bin/musictl apply update --file-tracing-level debug
+          ./bin/musictl apply update --music_root ./music_data/data/music --output-min-file ./public/music_data/music.min.json --output-min-clips-file ./public/music_data/clips.min.json --file-tracing-level debug
           # TODO 実際の動作要確認
           rm ${{ steps.changed_type.outputs.input_changed_files }}
 
@@ -124,9 +122,8 @@ jobs:
         if: steps.changed_type.outputs.changed_type == 'BOTH'
         # inputだけでの実行でもいいが, どこで落ちたか分かり易くするためupdateを先に実行
         run: |
-          cd ./music_data
-          ../bin/musictl apply update --file-tracing-level debug
-          ../bin/musictl apply new -i "${{ steps.changed_type.outputs.input_changed_files }}" --file-tracing-level debug
+          ./bin/musictl apply update --music_root ./music_data/data/music --output-min-file ./public/music_data/music.min.json --output-min-clips-file ./public/music_data/clips.min.json --file-tracing-level debug
+          ./bin/musictl apply new -i "${{ steps.changed_type.outputs.input_changed_files }}" --music_root ./music_data/data/music --output-min-file ./public/music_data/music.min.json --output-min-clips-file ./public/music_data/clips.min.json --file-tracing-level debug
           # TODO 上と同様
           rm ${{ steps.changed_type.outputs.input_changed_files }}
 
