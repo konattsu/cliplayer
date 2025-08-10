@@ -1,1 +1,144 @@
-[]
+[
+  {
+    "videoId": "MgoKrnL-hhg",
+    "title": "【歌枠】フレンさんと！夏バテ吹き飛ばし元気歌枠🎶【フレン・E・ルスタリオさん/七瀬すず菜/にじさんじ】",
+    "channelId": "UCtC3B1n4XMiJmrDtu1Ni5qw",
+    "publishedAt": "2025-08-09T14:53:45Z",
+    "modifiedAt": "2025-08-10T07:42:47Z",
+    "duration": "PT1H31M28S",
+    "privacyStatus": "public",
+    "embeddable": true,
+    "videoTags": [
+      "2d",
+      "karaoke"
+    ],
+    "clips": [
+      {
+        "songTitle": "Mela!",
+        "artists": [
+          "furen-e-lustario",
+          "suzuna-nanase"
+        ],
+        "startTime": "PT1M57S",
+        "endTime": "PT5M58S",
+        "uuid": "fd4adf82-492c-450a-b72e-a510dc5a32ce"
+      },
+      {
+        "songTitle": "はなまるぴっぴはよいこだけ",
+        "artists": [
+          "furen-e-lustario",
+          "suzuna-nanase"
+        ],
+        "startTime": "PT9M12S",
+        "endTime": "PT12M21S",
+        "uuid": "af8bfaec-3165-4c70-9618-9d79acddf505"
+      },
+      {
+        "songTitle": "君と夏フェス",
+        "artists": [
+          "furen-e-lustario",
+          "suzuna-nanase"
+        ],
+        "startTime": "PT15M41S",
+        "endTime": "PT19M23S",
+        "uuid": "f13bdf5d-bbc9-47de-9b11-0700669f1048"
+      },
+      {
+        "songTitle": "ノーダウト",
+        "artists": [
+          "furen-e-lustario",
+          "suzuna-nanase"
+        ],
+        "startTime": "PT22M26S",
+        "endTime": "PT25M45S",
+        "uuid": "26db9a63-f807-4cb2-8512-e811028bd963"
+      },
+      {
+        "songTitle": "sabotage",
+        "artists": [
+          "furen-e-lustario"
+        ],
+        "startTime": "PT28M25S",
+        "endTime": "PT32M22S",
+        "uuid": "a265c2c3-5a64-4c44-b0a4-9c2accb2cc9e"
+      },
+      {
+        "songTitle": "心絵",
+        "artists": [
+          "suzuna-nanase"
+        ],
+        "startTime": "PT34M22S",
+        "endTime": "PT38M39S",
+        "uuid": "fe0208fa-9bf5-444d-834b-36a709acc602"
+      },
+      {
+        "songTitle": "ようこそジャパリパークへ",
+        "artists": [
+          "furen-e-lustario",
+          "suzuna-nanase"
+        ],
+        "startTime": "PT44M20S",
+        "endTime": "PT47M39S",
+        "uuid": "84d7f743-5935-4111-babe-f1c17bee1188"
+      },
+      {
+        "songTitle": "シュガーソングとビターステップ",
+        "artists": [
+          "furen-e-lustario",
+          "suzuna-nanase"
+        ],
+        "startTime": "PT50M59S",
+        "endTime": "PT55M10S",
+        "uuid": "14b68459-3bb3-4013-9454-3a57e2bab98f"
+      },
+      {
+        "songTitle": "新時代",
+        "artists": [
+          "furen-e-lustario"
+        ],
+        "startTime": "PT57M30S",
+        "endTime": "PT1H1M13S",
+        "uuid": "c59e716f-9196-4084-8fec-38b24774c1e2"
+      },
+      {
+        "songTitle": "笑ってたいんだ",
+        "artists": [
+          "suzuna-nanase"
+        ],
+        "startTime": "PT1H7M1S",
+        "endTime": "PT1H13M8S",
+        "uuid": "a0f3d4a2-d2ff-4a10-bf6f-324fe0e15fea"
+      },
+      {
+        "songTitle": "StaRt",
+        "artists": [
+          "furen-e-lustario",
+          "suzuna-nanase"
+        ],
+        "startTime": "PT1H14M44S",
+        "endTime": "PT1H18M16S",
+        "uuid": "ac0c971b-e40e-4268-b811-2ca35732c679"
+      },
+      {
+        "songTitle": "うまぴょい伝説",
+        "artists": [
+          "furen-e-lustario",
+          "suzuna-nanase"
+        ],
+        "startTime": "PT1H19M50S",
+        "endTime": "PT1H24M13S",
+        "uuid": "22d92aac-4554-475b-b053-72546a93a086"
+      },
+      {
+        "songTitle": "怪獣の花唄",
+        "artists": [
+          "furen-e-lustario",
+          "suzuna-nanase"
+        ],
+        "startTime": "PT1H26M55S",
+        "endTime": "PT1H30M37S",
+        "uuid": "491c1fec-bd2a-4b6c-83c4-d2bc4e584f9d"
+      }
+    ]
+  }
+]

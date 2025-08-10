@@ -155,5 +155,111 @@
         "uuid": "cce59f03-deff-4d35-bcac-33ad64e30b57"
       }
     ]
+  },
+  {
+    "videoId": "-uUrSzaxThA",
+    "title": "【歌枠】好きな歌を好きなだけ歌うチルめのお歌枠 ☽【倉持めると/にじさんじ】",
+    "channelId": "UCiA-trSZfB0i92V_-dyDqBw",
+    "publishedAt": "2025-01-29T11:00:09Z",
+    "modifiedAt": "2025-08-10T07:42:47Z",
+    "duration": "PT1H21M29S",
+    "privacyStatus": "public",
+    "embeddable": true,
+    "videoTags": [
+      "2d",
+      "karaoke"
+    ],
+    "clips": [
+      {
+        "songTitle": "ねむるまち",
+        "artists": [
+          "meruto-kuramochi"
+        ],
+        "startTime": "PT1M3S",
+        "endTime": "PT4M23S",
+        "uuid": "5b7c7074-698c-4090-abcd-7f7050c95f7f"
+      },
+      {
+        "songTitle": "フライデー・ナイト",
+        "artists": [
+          "meruto-kuramochi"
+        ],
+        "startTime": "PT12M2S",
+        "endTime": "PT14M59S",
+        "uuid": "4d839657-0a4a-466d-8d11-21a5e93db7c1"
+      },
+      {
+        "songTitle": "春ひさぎ",
+        "artists": [
+          "meruto-kuramochi"
+        ],
+        "startTime": "PT19M25S",
+        "endTime": "PT23M1S",
+        "uuid": "0af87768-30e5-4927-97e2-a3e0387cb054"
+      },
+      {
+        "songTitle": "君が好き",
+        "artists": [
+          "meruto-kuramochi"
+        ],
+        "startTime": "PT25M47S",
+        "endTime": "PT30M13S",
+        "uuid": "62bf37a6-d3bb-4126-aec1-010e338ad6b4"
+      },
+      {
+        "songTitle": "ウミウサギ",
+        "artists": [
+          "meruto-kuramochi"
+        ],
+        "startTime": "PT35M34S",
+        "endTime": "PT41M37S",
+        "uuid": "bd872198-02a4-4c37-bddf-5844d224fde3"
+      },
+      {
+        "songTitle": "一寸の赤",
+        "artists": [
+          "meruto-kuramochi"
+        ],
+        "startTime": "PT46M28S",
+        "endTime": "PT50M17S",
+        "uuid": "ae64241d-928b-4cef-a392-99ee8b9287a2"
+      },
+      {
+        "songTitle": "夏風に溶ける",
+        "artists": [
+          "meruto-kuramochi"
+        ],
+        "startTime": "PT52M51S",
+        "endTime": "PT56M33S",
+        "uuid": "da756728-85ba-4aa3-9bca-c37bec93d1da"
+      },
+      {
+        "songTitle": "メロドラマ",
+        "artists": [
+          "meruto-kuramochi"
+        ],
+        "startTime": "PT58M5S",
+        "endTime": "PT1H1M50S",
+        "uuid": "459495f9-8941-42c7-a4df-4b1fed542cd3"
+      },
+      {
+        "songTitle": "シンデレラボーイ",
+        "artists": [
+          "meruto-kuramochi"
+        ],
+        "startTime": "PT1H5M4S",
+        "endTime": "PT1H8M53S",
+        "uuid": "f3979ebd-dc7d-4106-b104-8cb73fc138d4"
+      },
+      {
+        "songTitle": "Bunny Girl",
+        "artists": [
+          "meruto-kuramochi"
+        ],
+        "startTime": "PT1H16M47S",
+        "endTime": "PT1H20M25S",
+        "uuid": "f7005fd2-e96a-454e-833c-15bdff618a8d"
+      }
+    ]
   }
 ]
