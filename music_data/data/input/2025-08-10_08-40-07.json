@@ -1,0 +1,81 @@
+[
+  {
+    "videoId": "5m3dY4mNgWk",
+    "uploaderName": null,
+    "videoTags": ["2d", "karaoke"],
+    "clips": [
+      {
+        "songTitle": "花の塔",
+        "artists": ["natsume-kurusu"],
+        "externalArtists": null,
+        "clippedVideoId": null,
+        "startTime": "PT5M2S",
+        "endTime": "PT9M35S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "Catch You Catch Me",
+        "artists": ["natsume-kurusu"],
+        "externalArtists": null,
+        "clippedVideoId": null,
+        "startTime": "PT12M50S",
+        "endTime": "PT16M31S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "ヴィーナスとジーザス",
+        "artists": ["natsume-kurusu"],
+        "externalArtists": null,
+        "clippedVideoId": null,
+        "startTime": "PT18M27S",
+        "endTime": "PT21M33S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "adrenaline!!!",
+        "artists": ["natsume-kurusu"],
+        "externalArtists": null,
+        "clippedVideoId": null,
+        "startTime": "PT22M56S",
+        "endTime": "PT27M26S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "廻廻奇譚",
+        "artists": ["natsume-kurusu"],
+        "externalArtists": null,
+        "clippedVideoId": null,
+        "startTime": "PT31M11S",
+        "endTime": "PT34M49S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "残響散歌",
+        "artists": ["natsume-kurusu"],
+        "externalArtists": null,
+        "clippedVideoId": null,
+        "startTime": "PT36M31S",
+        "endTime": "PT39M33S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "夜・逃・げでリセット！",
+        "artists": ["natsume-kurusu"],
+        "externalArtists": null,
+        "clippedVideoId": null,
+        "startTime": "PT43M8S",
+        "endTime": "PT47M35S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "風になる",
+        "artists": ["natsume-kurusu"],
+        "externalArtists": null,
+        "clippedVideoId": null,
+        "startTime": "PT49M2S",
+        "endTime": "PT53M32S",
+        "clipTags": null
+      }
+    ]
+  }
+]
