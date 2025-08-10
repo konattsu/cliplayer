@@ -1,0 +1,81 @@
+[
+  {
+    "videoId": "GSfgr5A4kyc",
+    "uploaderName": null,
+    "videoTags": ["2d", "karaoke"],
+    "clips": [
+      {
+        "songTitle": "愛を伝えたいだとか",
+        "artists": ["meruto-kuramochi"],
+        "externalArtists": null,
+        "clippedVideoId": null,
+        "startTime": "PT5M31S",
+        "endTime": "PT9M22S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "ノーダウト",
+        "artists": ["meruto-kuramochi"],
+        "externalArtists": null,
+        "clippedVideoId": null,
+        "startTime": "PT13M58S",
+        "endTime": "PT17M16S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "シャッター",
+        "artists": ["meruto-kuramochi"],
+        "externalArtists": null,
+        "clippedVideoId": null,
+        "startTime": "PT22M16S",
+        "endTime": "PT26M21S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "瞳をとじて",
+        "artists": ["meruto-kuramochi"],
+        "externalArtists": null,
+        "clippedVideoId": null,
+        "startTime": "PT33M20S",
+        "endTime": "PT38M54S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "君に届け",
+        "artists": ["meruto-kuramochi"],
+        "externalArtists": null,
+        "clippedVideoId": null,
+        "startTime": "PT42M",
+        "endTime": "PT47M20S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "ギターと孤独と蒼い惑星",
+        "artists": ["meruto-kuramochi"],
+        "externalArtists": null,
+        "clippedVideoId": null,
+        "startTime": "PT50M43S",
+        "endTime": "PT54M30S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "晴る",
+        "artists": ["meruto-kuramochi"],
+        "externalArtists": null,
+        "clippedVideoId": null,
+        "startTime": "PT1H3M39S",
+        "endTime": "PT1H8M9S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "ケセラセラ",
+        "artists": ["meruto-kuramochi"],
+        "externalArtists": null,
+        "clippedVideoId": null,
+        "startTime": "PT1H13M26S",
+        "endTime": "PT1H18M2S",
+        "clipTags": null
+      }
+    ]
+  }
+]
