@@ -42,30 +42,34 @@ jobs:
           echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
 
       - name: Detect changed files
-        id: changed
+        id: changes
         run: |
           BASE_COMMIT="${{ github.event.before }}"
           HEAD_COMMIT="${{ github.event.after }}"
           INPUT_CHANGED_FILES=$(git diff --name-only $BASE_COMMIT $HEAD_COMMIT | grep '^music_data/data/input' || true)
+          INPUT_CHANGED_FILES=$(echo "$INPUT_CHANGED_FILES" | tr '\n' ' ')
           MUSIC_CHANGED_FILES=$(git diff --name-only $BASE_COMMIT $HEAD_COMMIT | grep '^music_data/data/music' || true)
+          MUSIC_CHANGED_FILES=$(echo "$MUSIC_CHANGED_FILES" | tr '\n' ' ')
           MUSIC_MIN_CHANGED_FILES=$(git diff --name-only $BASE_COMMIT $HEAD_COMMIT | grep '^public/music_data/.*\.json$' || true)
+          MUSIC_MIN_CHANGED_FILES=$(echo "$MUSIC_MIN_CHANGED_FILES" | tr '\n' ' ')
 
-          echo "input_changed_files=$(echo "$INPUT_CHANGED_FILES" | tr '\n' ' ')" >> $GITHUB_OUTPUT
-          echo "music_changed_files=$(echo "$MUSIC_CHANGED_FILES" | tr '\n' ' ')" >> $GITHUB_OUTPUT
-          echo "music_min_changed_files=$(echo "$MUSIC_MIN_CHANGED_FILES" | tr '\n' ' ')" >> $GITHUB_OUTPUT
-
-      - name: Skip if push includes music-related min files
-        if: steps.changed.outputs.music_min_changed_files != ''
-        run: |
-          echo "Push includes music-related min files. Skipping workflow."
-          exit 0
+          echo "input_changed_files=$INPUT_CHANGED_FILES" >> $GITHUB_OUTPUT
+          echo "music_changed_files=$MUSIC_CHANGED_FILES" >> $GITHUB_OUTPUT
+          echo "music_min_changed_files=$MUSIC_MIN_CHANGED_FILES" >> $GITHUB_OUTPUT
 
       - name: Detect changed type
+        id: changed_type
         run: |
-          INPUT_CHANGED_FILES="${{ steps.changed.outputs.input_changed_files }}"
-          MUSIC_CHANGED_FILES="${{ steps.changed.outputs.music_changed_files }}"
+          INPUT_CHANGED_FILES="${{ steps.changes.outputs.input_changed_files }}"
+          MUSIC_CHANGED_FILES="${{ steps.changes.outputs.music_changed_files }}"
+          MUSIC_MIN_CHANGED_FILES="${{ steps.changes.outputs.music_min_changed_files }}"
+          SKIP_WORKFLOW=false
 
-          if [ -n "$INPUT_CHANGED_FILES" ] && [ -z "$MUSIC_CHANGED_FILES" ]; then
+          if [ -n "$MUSIC_MIN_CHANGED_FILES" ]; then
+            # music関連のminファイルが変更されている場合はスキップ
+            echo "Push includes music-related min files. Skipping workflow."
+            SKIP_WORKFLOW=true
+          elif [ -n "$INPUT_CHANGED_FILES" ] && [ -z "$MUSIC_CHANGED_FILES" ]; then
             # inputのみ変更
             echo "changed_type=INPUT" >> $GITHUB_OUTPUT
             echo "input_changed_files=$INPUT_CHANGED_FILES" >> $GITHUB_OUTPUT
@@ -85,52 +89,55 @@ jobs:
             # 該当ファイルなし
             echo "changed_type=NONE" >> $GITHUB_OUTPUT
             echo "changed_type has been set to NONE (no input or music files were changed)"
-            exit 0
+            SKIP_WORKFLOW=true
           fi
+          echo "skip_workflow=$SKIP_WORKFLOW" >> $GITHUB_OUTPUT
 
       - name: Download musictl binary
+        if: steps.changed_type.outputs.skip_workflow != 'true'
         uses: actions/download-artifact@v4
         with:
           name: musictl-binary
           path: ./bin
 
       - name: Make musictl executable
+        if: steps.changed_type.outputs.skip_workflow != 'true'
         run: |
           chmod +x ./bin/musictl
           ls -lR ./bin
 
       - name: Apply input
-        if: steps.changed.outputs.changed_type == 'INPUT'
+        if: steps.changed_type.outputs.changed_type == 'INPUT'
         run: |
           cd ./music_data
-          ../bin/musictl apply input -i ${{ steps.changed.outputs.input_changed_files }} --file-tracing-level debug
+          ../bin/musictl apply input -i ${{ steps.changed_type.outputs.input_changed_files }} --file-tracing-level debug
 
       - name: Apply update
-        if: steps.changed.outputs.changed_type == 'UPDATE'
+        if: steps.changed_type.outputs.changed_type == 'UPDATE'
         run: |
           cd ./music_data
           ../bin/musictl apply update --file-tracing-level debug
           # TODO 実際の動作要確認
-          rm ${{ steps.changed.outputs.input_changed_files }}
+          rm ${{ steps.changed_type.outputs.input_changed_files }}
 
       - name: Apply input & update
-        if: steps.changed.outputs.changed_type == 'BOTH'
+        if: steps.changed_type.outputs.changed_type == 'BOTH'
         # inputだけでの実行でもいいが, どこで落ちたか分かり易くするためupdateを先に実行
         run: |
           cd ./music_data
           ../bin/musictl apply update --file-tracing-level debug
-          ../bin/musictl apply input -i "${{ steps.changed.outputs.input_changed_files }}" --file-tracing-level debug
+          ../bin/musictl apply input -i "${{ steps.changed_type.outputs.input_changed_files }}" --file-tracing-level debug
           # TODO 上と同様
-          rm ${{ steps.changed.outputs.input_changed_files }}
+          rm ${{ steps.changed_type.outputs.input_changed_files }}
 
       - name: Post musictl logs
-        if: always()
-        # いつかきれいにする
+        if: always() && steps.changed_type.outputs.skip_workflow != 'true'
         run: |
           cd ./music_data
           ../tools/musictl_logs_to_stdout.sh
 
       - name: Commit and Push changes
+        if: steps.changed_type.outputs.skip_workflow != 'true'
         run: |
           BRANCH="auto/apply-music_data-pr-${{ steps.prnum.outputs.pr_number }}-$(date +'%Y%m%d-%H%M%S')"
           git switch -c $BRANCH origin/main
@@ -141,6 +148,7 @@ jobs:
           git push origin HEAD
 
       - name: Create PR
+        if: steps.changed_type.outputs.skip_workflow != 'true'
         run: |
           gh pr create --base main --head $(git rev-parse --abbrev-ref HEAD) \
             --title "(from PR #${{ steps.prnum.outputs.pr_number }}) Auto apply music_data and relative min.json" \
