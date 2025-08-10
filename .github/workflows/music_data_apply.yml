@@ -50,15 +50,18 @@ jobs:
           BASE_COMMIT="${{ github.event.before }}"
           HEAD_COMMIT="${{ github.event.after }}"
           INPUT_CHANGED_FILES=$(git diff --name-only $BASE_COMMIT $HEAD_COMMIT | grep '^music_data/data/input' || true)
-          INPUT_CHANGED_FILES=$(echo "$INPUT_CHANGED_FILES" | sed 's/^music_data\///' | xargs)
+          INPUT_CHANGED_FILES=$(echo "$INPUT_CHANGED_FILES" | xargs)
           MUSIC_CHANGED_FILES=$(git diff --name-only $BASE_COMMIT $HEAD_COMMIT | grep '^music_data/data/music' || true)
-          MUSIC_CHANGED_FILES=$(echo "$MUSIC_CHANGED_FILES" | sed 's/^music_data\///' | xargs)
+          MUSIC_CHANGED_FILES=$(echo "$MUSIC_CHANGED_FILES" | xargs)
           MUSIC_MIN_CHANGED_FILES=$(git diff --name-only $BASE_COMMIT $HEAD_COMMIT | grep '^public/music_data/.*\.json$' || true)
-          MUSIC_MIN_CHANGED_FILES=$(echo "$MUSIC_MIN_CHANGED_FILES" | sed 's/^music_data\///' | xargs)
+          MUSIC_MIN_CHANGED_FILES=$(echo "$MUSIC_MIN_CHANGED_FILES" | xargs)
 
           echo "input_changed_files=$INPUT_CHANGED_FILES" >> $GITHUB_OUTPUT
           echo "music_changed_files=$MUSIC_CHANGED_FILES" >> $GITHUB_OUTPUT
           echo "music_min_changed_files=$MUSIC_MIN_CHANGED_FILES" >> $GITHUB_OUTPUT
+
+          ls . -lR
+          ls .. -lR
 
       - name: Detect changed type
         id: changed_type

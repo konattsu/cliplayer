@@ -7,8 +7,8 @@
       {
         "songTitle": "花の塔",
         "artists": ["natsume-kurusu"],
-        "externalArtists": null,
         "clippedVideoId": null,
+        "externalArtists": null,
         "startTime": "PT5M2S",
         "endTime": "PT9M35S",
         "clipTags": null
