@@ -16,7 +16,7 @@
       "    $2",
       "  ],",
       "  \"externalArtists\": ${3:null},",
-      "  \"isClipped\": ${4|false,true|},",
+      "  \"clippedVideoId\": ${4:null},",
       "  \"startTime\": \"PT$5\",",
       "  \"endTime\": \"PT$6\",",
       "  \"clipTags\": ${7:null}",
