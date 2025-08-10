@@ -70,8 +70,8 @@
       {
         "songTitle": "風になる",
         "artists": ["natsume-kurusu"],
-        "externalArtists": null,
         "clippedVideoId": null,
+        "externalArtists": null,
         "endTime": "PT53M32S",
         "startTime": "PT49M2S",
         "clipTags": null
