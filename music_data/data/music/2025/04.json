@@ -1,1 +1,98 @@
-[]
+[
+  {
+    "videoId": "QHRSH-MoM_A",
+    "title": "【歌枠】共通衣装にじ3Dで歌います！！【 ソフィア・ヴァレンタイン/にじさんじ 】",
+    "channelId": "UCivwPlOp0ojnMPZj5pNOPPA",
+    "publishedAt": "2025-04-17T11:18:08Z",
+    "modifiedAt": "2025-08-10T07:42:47Z",
+    "duration": "PT1H8M10S",
+    "privacyStatus": "public",
+    "embeddable": true,
+    "videoTags": [
+      "niji-3d"
+    ],
+    "clips": [
+      {
+        "songTitle": "ムーンライト伝説",
+        "artists": [
+          "sophia-valentine"
+        ],
+        "startTime": "PT1M38S",
+        "endTime": "PT4M30S",
+        "uuid": "efa6ae64-bc4a-4513-bd1a-24c6ff1df481"
+      },
+      {
+        "songTitle": "ヒトリゴト",
+        "artists": [
+          "sophia-valentine"
+        ],
+        "startTime": "PT8M11S",
+        "endTime": "PT12M2S",
+        "uuid": "6057c101-f133-4ce0-95b7-15e26a9a8806"
+      },
+      {
+        "songTitle": "フォニイ",
+        "artists": [
+          "sophia-valentine"
+        ],
+        "startTime": "PT15M14S",
+        "endTime": "PT18M24S",
+        "uuid": "dc7d85a9-6fe5-4ac6-8d8e-f161a86de849"
+      },
+      {
+        "songTitle": "愛を伝えたいだとか",
+        "artists": [
+          "sophia-valentine"
+        ],
+        "startTime": "PT22M29S",
+        "endTime": "PT26M18S",
+        "uuid": "d52df223-399e-42f6-835d-7445f2154a37"
+      },
+      {
+        "songTitle": "モエチャッカファイア",
+        "artists": [
+          "sophia-valentine"
+        ],
+        "startTime": "PT28M21S",
+        "endTime": "PT30M56S",
+        "uuid": "d540cf88-8039-4245-b713-fcd7fe043f06"
+      },
+      {
+        "songTitle": "貴方の恋人になりたい",
+        "artists": [
+          "sophia-valentine"
+        ],
+        "startTime": "PT33M53S",
+        "endTime": "PT37M46S",
+        "uuid": "59bb2a9b-f1c8-46e2-88be-5ca5631b04cc"
+      },
+      {
+        "songTitle": "世界は恋に落ちている",
+        "artists": [
+          "sophia-valentine"
+        ],
+        "startTime": "PT40M48S",
+        "endTime": "PT45M59S",
+        "uuid": "d903a86e-267d-44fb-baf0-4be4667803b9"
+      },
+      {
+        "songTitle": "たばこ",
+        "artists": [
+          "sophia-valentine"
+        ],
+        "startTime": "PT48M2S",
+        "endTime": "PT54M9S",
+        "uuid": "8b99c686-c0e1-4853-88a3-8812d27bc059"
+      },
+      {
+        "songTitle": "ファンサ",
+        "artists": [
+          "sophia-valentine"
+        ],
+        "startTime": "PT57M54S",
+        "endTime": "PT1H2M3S",
+        "uuid": "83f8e299-3708-4e4b-8c95-ed8cfd5b571a"
+      }
+    ]
+  }
+]
