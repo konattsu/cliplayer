@@ -31,9 +31,9 @@ jobs:
         run: |
           BASE_COMMIT="${{ github.event.pull_request.base.sha }}"
           HEAD_COMMIT="${{ github.sha }}"
-          INPUT_CHANGED_FILES=$(git diff --name-only $BASE_COMMIT $HEAD_COMMIT | grep '^data/input' || true)
+          INPUT_CHANGED_FILES=$(git diff --name-only $BASE_COMMIT $HEAD_COMMIT | grep '^music_data/data/input' || true)
           INPUT_CHANGED_FILES=$(echo "$INPUT_CHANGED_FILES" | xargs)
-          MUSIC_CHANGED_FILES=$(git diff --name-only $BASE_COMMIT $HEAD_COMMIT | grep '^data/music' || true)
+          MUSIC_CHANGED_FILES=$(git diff --name-only $BASE_COMMIT $HEAD_COMMIT | grep '^music_data/data/music' || true)
           MUSIC_CHANGED_FILES=$(echo "$MUSIC_CHANGED_FILES" | xargs)
           MUSIC_MIN_CHANGED_FILES=$(git diff --name-only $BASE_COMMIT $HEAD_COMMIT | grep '^public/music_data/.*\.json$' || true)
           MUSIC_MIN_CHANGED_FILES=$(echo "$MUSIC_MIN_CHANGED_FILES" | xargs)
@@ -90,7 +90,7 @@ jobs:
 
       - name: Validate input
         if: steps.changed_type.outputs.changed_type == 'INPUT'
-        run: ../bin/musictl validate input -i ${{ steps.changes.outputs.input_changed_files }} --file-tracing-level debug
+        run: ../bin/musictl validate new -i ${{ steps.changes.outputs.input_changed_files }} --file-tracing-level debug
 
       - name: Validate update
         if: steps.changed_type.outputs.changed_type == 'UPDATE'
@@ -99,7 +99,7 @@ jobs:
       - name: Validate input & update
         if: steps.changed_type.outputs.changed_type == 'BOTH'
         run: |
-          ../bin/musictl validate input -i "${{ steps.changes.outputs.input_changed_files }}" --file-tracing-level debug
+          ../bin/musictl validate new -i "${{ steps.changes.outputs.input_changed_files }}" --file-tracing-level debug
           ../bin/musictl validate update --file-tracing-level debug
 
       - name: Post logs
