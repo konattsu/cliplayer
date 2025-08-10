@@ -34,7 +34,6 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           BRANCH="auto/update-music_data-sync-$(date +'%Y%m%d-%H%M%S')"
-          git fetch origin --depth=1
           git switch -c $BRANCH origin/main
 
       - name: Download musictl binary
