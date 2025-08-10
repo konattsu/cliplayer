@@ -95,13 +95,13 @@ jobs:
 
       - name: Validate update
         if: steps.changed_type.outputs.changed_type == 'UPDATE'
-        run: ./bin/musictl validate update --music_root ./music_data/data/music --output-min-file ./public/music_data/music.min.json --output-min-clips-file ./public/music_data/clips.min.json --file-tracing-level debug
+        run: ./bin/musictl validate update --music-root ./music_data/data/music --output-min-file ./public/music_data/music.min.json --output-min-clips-file ./public/music_data/clips.min.json --file-tracing-level debug
 
       - name: Validate input & update
         if: steps.changed_type.outputs.changed_type == 'BOTH'
         run: |
           ./bin/musictl validate new -i "${{ steps.changes.outputs.input_changed_files }}" --file-tracing-level debug
-          ./bin/musictl validate update --music_root ./music_data/data/music --output-min-file ./public/music_data/music.min.json --output-min-clips-file ./public/music_data/clips.min.json --file-tracing-level debug
+          ./bin/musictl validate update --music-root ./music_data/data/music --output-min-file ./public/music_data/music.min.json --output-min-clips-file ./public/music_data/clips.min.json --file-tracing-level debug
 
       - name: Post logs
         if: always()
