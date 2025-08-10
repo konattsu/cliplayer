@@ -109,8 +109,7 @@ jobs:
       - name: Make musictl executable
         if: steps.changed_type.outputs.skip_workflow != 'true'
         run: |
-          chmod +x ./bin/musictl
-          ls -lR ./bin
+          chmod +x ../bin/musictl
 
       - name: Apply input
         if: steps.changed_type.outputs.changed_type == 'INPUT'
@@ -136,7 +135,6 @@ jobs:
       - name: Post musictl logs
         if: always() && steps.changed_type.outputs.skip_workflow != 'true'
         run: |
-          cd ./music_data
           ../tools/musictl_logs_to_stdout.sh
 
       - name: Commit and Push changes
@@ -144,9 +142,9 @@ jobs:
         run: |
           BRANCH="auto/apply-music_data-pr-${{ steps.prnum.outputs.pr_number }}-$(date +'%Y%m%d-%H%M%S')"
           git switch -c $BRANCH origin/main
-          git add ./music_data/data/input/
-          git add ./music_data/data/music/
-          git add ./public/music_data/
+          git add ../music_data/data/input/
+          git add ../music_data/data/music/
+          git add ../public/music_data/
           git commit -m "[music-apply] (PR #${{ steps.prnum.outputs.pr_number }}) Auto apply music_data and relative min.json after merge"
           git push origin HEAD
 
