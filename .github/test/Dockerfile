@@ -1,6 +1,6 @@
 FROM ubuntu:latest
 
-# @wsl
+# @wsl (host)
 #   ~/cliplayer$ docker build -t my-act-container-image -f ./.devcontainer/Dockerfile.act .
 #   ~/cliplayer$ act -P ubuntu-latest=my-act-container-image --pull=false -j (任意)
 
