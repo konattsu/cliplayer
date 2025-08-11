@@ -14,18 +14,13 @@
   "features": {
     // ref: https://containers.dev/features
     "ghcr.io/devcontainers/features/rust:1": {
-      "version": "1.88",
+      "version": "1.89",
       "profile": "default"
     }
   },
 
   "customizations": {
     "vscode": {
-      "settings": {
-        // https://github.com/microsoft/vscode/issues/179827
-        // 新しく拡張機能を加える際に注意が必要
-        "extensions.verifySignature": false
-      },
       "extensions": [
         // ts/css
         "bradlc.vscode-tailwindcss",
