@@ -94,6 +94,7 @@ jobs:
         if: steps.changed_type.outputs.changed_type == 'INPUT'
         run: |
           ../bin/musictl validate new -i "${{ steps.changes.outputs.input_changed_files }}" --file-tracing-level debug
+          ../bin/musictl validate new-md -i "${{ steps.changes.outputs.input_changed_files }}" --file-tracing-level debug > ../validate_output.md
 
       - name: Validate update
         if: steps.changed_type.outputs.changed_type == 'UPDATE'
@@ -104,6 +105,15 @@ jobs:
         run: |
           ../bin/musictl validate new -i "${{ steps.changes.outputs.input_changed_files }}" --file-tracing-level debug
           ../bin/musictl validate update --file-tracing-level debug
+          ../bin/musictl validate new-md -i "${{ steps.changes.outputs.input_changed_files }}" --file-tracing-level debug > ../validate_output.md
+
+      - name: Post validation result as PR comment
+        if: steps.changed_type.outputs.changed_type == 'INPUT' || steps.changed_type.outputs.changed_type == 'BOTH'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_URL: ${{ github.event.pull_request.html_url}}
+        run: |
+          gh pr comment "$PR_URL" --body-file ../validate_output.md
 
       - name: Post logs
         if: always()
