@@ -1,3 +1,5 @@
+// TODO handler分離したい
+
 #[tokio::main]
 async fn main() {
     use clap::Parser;
@@ -127,14 +129,17 @@ fn handle_validate(validate_cmd: musictl::cli::ValidateCommands) -> Result<(), S
             output_min_clips_file,
             ..
         } => handle_validate_update(music_root, output_min_file, output_min_clips_file),
+        musictl::cli::ValidateCommands::NewMd { input, .. } => {
+            handle_validate_new_md(input)
+        }
     }
 }
 
 fn handle_validate_new(
     input_file: musictl::cli::FilePathsFromCli,
 ) -> Result<(), String> {
-    let file = input_file.try_into_file_paths()?;
-    musictl::validate::validate_new_input(&file)
+    let files = input_file.try_into_file_paths()?;
+    musictl::validate::validate_new_input(&files)
 }
 
 fn handle_validate_update(
@@ -147,11 +152,24 @@ fn handle_validate_update(
     musictl::apply::apply_update(music_lib)
 }
 
+fn handle_validate_new_md(input_file: musictl::cli::FilePathsFromCli) -> ! {
+    let files = match input_file.try_into_file_paths() {
+        Ok(f) => f,
+        Err(_e) => std::process::exit(1),
+    };
+
+    match musictl::validate::validate_new_input_md(&files) {
+        Ok(md_str) => {
+            println!("{md_str}");
+            std::process::exit(0)
+        }
+        Err(_e) => std::process::exit(1),
+    }
+}
+
 // MARK: dev
 
 fn handle_dev(dev_cmd: musictl::cli::UtilCommands) -> Result<(), String> {
-    // TODO 修正. またparser.rsでapplyなどの引数を独自で無くてStringに変更. 入力ファイルはinput.json固定だとconflictの原因なので
-    // utilコマンドのmergeで出力後に(timestamp).jsonとかにする. 別にPRの時刻と一致させる必要はない
     match dev_cmd {
         musictl::cli::UtilCommands::GenerateArtist {
             input_artists_data_path,

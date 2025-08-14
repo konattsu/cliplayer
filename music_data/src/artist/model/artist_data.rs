@@ -11,7 +11,7 @@ pub(in crate::artist) struct Artist {
     pub(in crate::artist) en: crate::artist::model::StringNonEmpty,
     pub(in crate::artist) aliases: Vec<crate::artist::model::StringNonEmpty>,
     pub(in crate::artist) channel_id: crate::model::ChannelId,
-    pub(in crate::artist) color: crate::artist::model::Color,
+    pub(in crate::artist) color: crate::model::Color,
     pub(in crate::artist) is_graduated: bool,
 }
 
@@ -34,7 +34,7 @@ impl<'de> serde::Deserialize<'de> for Artists {
             en: crate::artist::model::StringNonEmpty,
             aliases: Vec<crate::artist::model::StringNonEmpty>,
             channel_id: crate::model::ChannelId,
-            color: crate::artist::model::Color,
+            color: crate::model::Color,
             is_graduated: Option<bool>,
         }
 
