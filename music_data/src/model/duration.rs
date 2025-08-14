@@ -22,6 +22,21 @@ impl Duration {
         u32::try_from(self.inner.num_seconds()).expect("Duration.as_secs() overflowed")
     }
 
+    pub(crate) fn to_short_str(&self) -> String {
+        let total_secs = self.inner.num_seconds();
+        let hours = total_secs / 3600;
+        let mins = (total_secs % 3600) / 60;
+        let secs = total_secs % 60;
+
+        if hours == 0 && mins == 0 {
+            format!("{secs}")
+        } else if hours == 0 {
+            format!("{mins}:{secs:02}")
+        } else {
+            format!("{hours}:{mins:02}:{secs:02}")
+        }
+    }
+
     fn validate_within_24_hours(
         duration: &chrono::Duration,
     ) -> Result<(), &'static str> {
@@ -307,3 +322,5 @@ mod tests {
         );
     }
 }
+
+// TODO テスト追加した分かく

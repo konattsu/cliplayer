@@ -9,7 +9,7 @@ struct OutputArtist {
     ja: crate::artist::model::StringNonEmpty,
     jah: crate::artist::model::StringNonEmpty,
     en: crate::artist::model::StringNonEmpty,
-    color: crate::artist::model::Color,
+    color: crate::model::Color,
     #[serde(skip_serializing_if = "is_false")]
     is_graduated: bool,
 }
@@ -52,7 +52,8 @@ impl OutputArtists {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::artist::model::{ArtistId, Color, StringNonEmpty};
+    use crate::artist::model::{ArtistId, StringNonEmpty};
+    use crate::model::Color;
     use std::collections::HashMap;
 
     #[test]

@@ -19,6 +19,10 @@ impl<'de> serde::Deserialize<'de> for VideoTags {
 }
 
 impl VideoTags {
+    pub(crate) fn to_vec(&self) -> Vec<&str> {
+        self.0.0.iter().map(|tag| tag.0.as_str()).collect()
+    }
+
     fn from_tags(tags: Tags) -> Self {
         VideoTags(tags)
     }
@@ -43,6 +47,10 @@ impl<'de> serde::Deserialize<'de> for ClipTags {
 }
 
 impl ClipTags {
+    pub(crate) fn to_vec(&self) -> Vec<&str> {
+        self.0.0.iter().map(|tag| tag.0.as_str()).collect()
+    }
+
     fn from_tags(tags: Tags) -> Self {
         ClipTags(tags)
     }

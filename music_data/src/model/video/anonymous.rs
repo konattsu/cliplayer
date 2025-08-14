@@ -34,6 +34,8 @@ pub(crate) enum AnonymousVideoValidateError {
     },
 }
 
+// MARK: Video impl
+
 // `Self`の存在条件を検証するためのカスタムデシリアライザ
 impl<'de> serde::Deserialize<'de> for AnonymousVideo {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
@@ -111,6 +113,40 @@ impl AnonymousVideo {
         })
     }
 
+    /// md形式に変換
+    pub(crate) fn to_markdown(&self) -> String {
+        let video_id = self.local_record.get_video_id();
+        let uploader_name = self
+            .local_record
+            .get_uploader_name()
+            .map(|s| s.to_string())
+            .unwrap_or("(None)".to_string());
+        let video_tags = self.local_record.get_video_tags().to_vec().join(", ");
+        let total_clips = self.clips.len();
+
+        let clips_info =
+            crate::model::AnonymousClip::vec_to_markdown(&self.to_sorted_clips());
+
+        let md_str = format!(
+            r#"
+## Video ID: {video_id}
+
+### Video info:
+
+- Link: [Watch on YouTube](https://youtu.be/{video_id})
+- Uploader Name: {uploader_name}
+- Video Tags: {video_tags}
+
+### Clips info:
+
+- total clips: {total_clips}
+
+{clips_info}"#,
+        );
+
+        md_str
+    }
+
     /// 動画のクリップの整合性を検証
     ///
     /// - クリップに指定した範囲が重複していないか
@@ -154,6 +190,8 @@ impl AnonymousVideo {
         vec
     }
 }
+
+// MARK: Videos impl
 
 // `Self`の存在条件を検証するためのカスタムデシリアライザ
 impl<'de> serde::Deserialize<'de> for AnonymousVideos {
