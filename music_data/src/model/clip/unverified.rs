@@ -211,7 +211,7 @@ mod tests {
     const UNVERIFIED_CLIP_JSON_VALID: &str = r#"
     {
         "songTitle": "Test Song 1",
-        "artists": ["Aimer Test"],
+        "artists": ["aimer-test"],
         "externalArtists": ["Apple Mike"],
         "clippedVideoId": null,
         "startTime": "PT12H12M12S",
@@ -224,7 +224,7 @@ mod tests {
     const UNVERIFIED_CLIP_JSON_INVALID: &str = r#"
     {
         "songTitle": "Test Song 2",
-        "artists": ["Aimer Test"],
+        "artists": ["aimer-test"],
         "externalArtists": ["Apple Mike"],
         "isClipped": null,
         "startTime": "PT12H12M12S",
@@ -252,10 +252,10 @@ mod tests {
         let clip: UnverifiedClip = serde_json::from_str(UNVERIFIED_CLIP_JSON_VALID)
             .expect("Failed to deserialize valid UnverifiedClip JSON");
         assert_eq!(clip.song_title, "Test Song 1");
-        assert_eq!(clip.artists, crate::model::InternalArtists::test_name_1());
+        assert_eq!(clip.artists, crate::model::InternalArtists::self_1());
         assert_eq!(
             clip.external_artists,
-            Some(crate::model::ExternalArtists::test_name_1())
+            Some(crate::model::ExternalArtists::self_1())
         );
         assert!(clip.clipped_video_id.is_none());
         assert_eq!(clip.start_time, dur_12h_12m_12s());
@@ -275,8 +275,8 @@ mod tests {
         // 正常
         let initializer = UnverifiedClipInitializer {
             song_title: "Test Song 1".to_string(),
-            artists: crate::model::InternalArtists::test_name_1(),
-            external_artists: Some(crate::model::ExternalArtists::test_name_1()),
+            artists: crate::model::InternalArtists::self_1(),
+            external_artists: Some(crate::model::ExternalArtists::self_1()),
             clipped_video_id: None,
             start_time: dur_12h_12m_12s(),
             end_time: dur_12h_12m_12s_plus(8),
@@ -288,8 +288,8 @@ mod tests {
         // 異常, start_time < end_time でない
         let initializer = UnverifiedClipInitializer {
             song_title: "Test Song 2".to_string(),
-            artists: crate::model::InternalArtists::test_name_1(),
-            external_artists: Some(crate::model::ExternalArtists::test_name_1()),
+            artists: crate::model::InternalArtists::self_1(),
+            external_artists: Some(crate::model::ExternalArtists::self_1()),
             clipped_video_id: None,
             start_time: dur_12h_12m_12s(),
             end_time: dur_12h_12m_12s_plus(-5),

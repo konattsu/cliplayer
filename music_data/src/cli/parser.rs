@@ -101,6 +101,15 @@ pub enum ValidateCommands {
         #[clap(flatten)]
         trace_level: TraceLevel,
     },
+    /// Validate new music data input files and output parsed info
+    NewMd {
+        /// Comma-separated file paths containing new music data to validate
+        #[arg(short, long, value_name = "FILES")]
+        input: crate::cli::FilePathsFromCli,
+
+        #[clap(flatten)]
+        trace_level: TraceLevel,
+    },
 }
 
 #[derive(Debug, clap::Subcommand)]
@@ -225,6 +234,9 @@ impl Cli {
                 ValidateCommands::Update { trace_level, .. } => {
                     &trace_level.file_tracing_level
                 }
+                ValidateCommands::NewMd { trace_level, .. } => {
+                    &trace_level.file_tracing_level
+                }
             },
             Commands::Dev(ref util_cmd) => match util_cmd {
                 UtilCommands::GenerateArtist { trace_level, .. } => {
@@ -259,6 +271,9 @@ impl Cli {
                     &trace_level.stdout_tracing_level
                 }
                 ValidateCommands::Update { trace_level, .. } => {
+                    &trace_level.stdout_tracing_level
+                }
+                ValidateCommands::NewMd { trace_level, .. } => {
                     &trace_level.stdout_tracing_level
                 }
             },
