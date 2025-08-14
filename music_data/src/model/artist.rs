@@ -1,13 +1,45 @@
-#[derive(serde::Deserialize, Debug)]
-struct InputArtist(std::collections::HashMap<String, serde_json::Value>);
+#[derive(serde::Deserialize, serde::Serialize, Debug)]
+pub(crate) struct ArtistDefinitions(
+    std::collections::HashMap<String, ArtistDefinition>,
+);
 
-impl InputArtist {
-    fn from_json_to_hash_set(content: &str) -> std::collections::HashSet<String> {
-        serde_json::from_str::<InputArtist>(content)
-            .expect("")
-            .0
-            .into_keys()
-            .collect()
+#[derive(serde::Deserialize, serde::Serialize, Debug)]
+#[serde(rename_all = "camelCase")]
+#[serde(deny_unknown_fields)]
+pub(crate) struct ArtistDefinition {
+    /// 日本語での名前
+    ja: String,
+    /// 平仮名での名前
+    jah: String,
+    /// 英語での名前
+    en: String,
+    /// alias
+    aliases: Vec<String>,
+    /// チャンネルid
+    channel_id: crate::model::ChannelId,
+    /// カラー
+    color: crate::model::Color,
+    #[serde(skip_serializing_if = "is_false")]
+    #[serde(default = "default_for_is_graduate")]
+    /// 卒業したか
+    is_graduated: bool,
+}
+
+fn is_false(val: &bool) -> bool {
+    !*val
+}
+
+fn default_for_is_graduate() -> bool {
+    false
+}
+
+impl ArtistDefinitions {
+    fn len(&self) -> usize {
+        self.0.len()
+    }
+
+    fn contains_as_key(&self, key: &str) -> bool {
+        self.0.contains_key(key)
     }
 }
 
@@ -18,34 +50,58 @@ impl InputArtist {
 /// - `ARTIST_SET_PATH` 環境変数で指定されたファイルから読み込む
 ///   - 先ほどの環境変数が指定されていないと `./data/artists_data.json` を読み込む
 #[cfg(not(test))]
-static ARTIST_SET: once_cell::sync::Lazy<std::collections::HashSet<String>> =
+static LOADED_ARTISTS_DATA: once_cell::sync::Lazy<ArtistDefinitions> =
     once_cell::sync::Lazy::new(|| {
         const ARTIST_SET_PATH: &str = "./data/artists_data.json";
 
         let path_str = std::env::var("ARTIST_SET_PATH")
             .unwrap_or_else(|_| ARTIST_SET_PATH.to_string());
-        let data = std::fs::read_to_string(path_str.clone()).unwrap_or_else(|_| {
+        let data = std::fs::read_to_string(path_str.clone()).unwrap_or_else(|e| {
             panic!(
                 "Failed to read artists data from {path_str}. \
-                This value is read from the env value, or default to {ARTIST_SET_PATH}."
+                This value is read from the env value, or default to {ARTIST_SET_PATH}. \
+                reason: {e}"
             )
         });
-        let hash_set = InputArtist::from_json_to_hash_set(&data);
-        tracing::debug!("Loaded {} artists from {}", hash_set.len(), path_str);
-        hash_set
+        let data: ArtistDefinitions = serde_json::from_str(&data).unwrap();
+        tracing::debug!("Loaded {} artists from {}", data.len(), path_str);
+        data
     });
 
 #[cfg(test)]
-static ARTIST_SET: once_cell::sync::Lazy<std::collections::HashSet<String>> =
+static LOADED_ARTISTS_DATA: once_cell::sync::Lazy<ArtistDefinitions> =
     once_cell::sync::Lazy::new(|| {
         const ARTIST_DATA: &str = r#"
         {
-            "Aimer Test": { "foo": "bar" },
-            "Eir Aoi Test": 42,
-            "Lisa Test": null
+            "aimer-test": {
+                "ja": "エイマーテスト",
+                "jah": "えいまーてすと",
+                "en": "Aimer Test",
+                "aliases": ["aim"],
+                "channelId": "UC1111111111111111111111",
+                "color": "111111"
+            },
+            "eir-aoi-test": {
+                "ja": "エイラアオイテスト",
+                "jah": "えいらあおいてすと",
+                "en": "Eir Aoi Test",
+                "aliases": [],
+                "channelId": "UC2222222222222222222222",
+                "color": "222222"
+            },
+            "lisa-test": {
+                "ja": "リサテスト",
+                "jah": "りさてすと",
+                "en": "Lisa Test",
+                "aliases": ["ls"],
+                "channelId": "UC3333333333333333333333",
+                "color": "333333",
+                "isGraduated": true
+            }
         }"#;
-        let hash_set = InputArtist::from_json_to_hash_set(ARTIST_DATA);
-        tracing::debug!("Loaded {} artists. (for tests)", hash_set.len(),);
+        let hash_set: ArtistDefinitions =
+            serde_json::from_str(ARTIST_DATA).expect("will not fail");
+        tracing::debug!("Loaded {} artists. (for tests)", hash_set.len());
         hash_set
     });
 
@@ -79,7 +135,7 @@ impl InternalArtist {
 
     /// 有効な内部アーティストIDかどうか
     fn is_valid_internal_artist(id: &str) -> bool {
-        ARTIST_SET.contains(id)
+        LOADED_ARTISTS_DATA.contains_as_key(id)
     }
 }
 
@@ -95,6 +151,19 @@ impl<'de> serde::Deserialize<'de> for InternalArtist {
 }
 
 impl InternalArtists {
+    pub(crate) fn to_artists_ja_name(&self) -> Vec<String> {
+        let mut artists_name = Vec::new();
+        for artist in &self.0 {
+            if let Some(matched_artist) = LOADED_ARTISTS_DATA.0.get(&artist.0) {
+                artists_name.push(matched_artist.ja.clone());
+            } else {
+                tracing::debug!("artist(id: {}) is not matched", artist.0);
+            }
+        }
+
+        artists_name
+    }
+
     fn sort_artists(artists: &mut [InternalArtist]) {
         artists.sort();
     }
@@ -122,17 +191,17 @@ impl<'de> serde::Deserialize<'de> for InternalArtists {
 
 #[cfg(test)]
 impl InternalArtist {
-    /// `Aimer Test`
-    pub(crate) fn test_name1() -> Self {
-        Self::new("Aimer Test").unwrap()
+    /// `aimer-test`
+    pub(crate) fn self_1() -> Self {
+        Self::new("aimer-test").unwrap()
     }
-    /// `Eir Aoi Test`
-    pub(crate) fn test_name2() -> Self {
-        Self::new("Eir Aoi Test").unwrap()
+    /// `eir-aoi-test`
+    pub(crate) fn self_2() -> Self {
+        Self::new("eir-aoi-test").unwrap()
     }
-    /// `Lisa Test`
-    pub(crate) fn test_name3() -> Self {
-        Self::new("Lisa Test").unwrap()
+    /// `lisa-test`
+    pub(crate) fn self_3() -> Self {
+        Self::new("lisa-test").unwrap()
     }
 }
 
@@ -147,17 +216,26 @@ impl InternalArtists {
         }
     }
 
-    /// Vec `Aimer Test`
-    pub(crate) fn test_name_1() -> Self {
-        Self::new_for_test(vec![InternalArtist::test_name1()]).unwrap()
+    /// Vec `aimer-test`
+    pub(crate) fn self_1() -> Self {
+        Self::new_for_test(vec![InternalArtist::self_1()]).unwrap()
     }
-    /// Vec `Eir Aoi Test`
-    pub(crate) fn test_name_2() -> Self {
-        Self::new_for_test(vec![InternalArtist::test_name2()]).unwrap()
+    /// Vec `eir-aoi-test`
+    pub(crate) fn self_2() -> Self {
+        Self::new_for_test(vec![InternalArtist::self_2()]).unwrap()
     }
-    /// Vec `Lisa Test`
-    pub(crate) fn test_name_3() -> Self {
-        Self::new_for_test(vec![InternalArtist::test_name3()]).unwrap()
+    /// Vec `lisa-test`
+    pub(crate) fn self_3() -> Self {
+        Self::new_for_test(vec![InternalArtist::self_3()]).unwrap()
+    }
+    /// Vec `aimer-test`, `eir-aoi-test`, `lisa-test`
+    pub(crate) fn self_4() -> Self {
+        Self::new_for_test(vec![
+            InternalArtist::self_1(),
+            InternalArtist::self_2(),
+            InternalArtist::self_3(),
+        ])
+        .unwrap()
     }
 }
 
@@ -215,6 +293,10 @@ impl<'de> serde::Deserialize<'de> for ExternalArtist {
 }
 
 impl ExternalArtists {
+    pub(crate) fn to_vec(&self) -> Vec<&str> {
+        self.0.iter().map(|artist| artist.0.as_str()).collect()
+    }
+
     /// 外部アーティストのリストをソート
     fn sort_artists(artists: &mut [ExternalArtist]) {
         artists.sort();
@@ -245,15 +327,15 @@ impl<'de> serde::Deserialize<'de> for ExternalArtists {
 #[cfg(test)]
 impl ExternalArtist {
     /// `Apple Mike`
-    pub(crate) fn test_name1() -> Self {
+    pub(crate) fn self_1() -> Self {
         Self::new("Apple Mike").unwrap()
     }
     /// `Milk Mike`
-    pub(crate) fn test_name2() -> Self {
+    pub(crate) fn self_2() -> Self {
         Self::new("Milk Mike").unwrap()
     }
     /// `Banana Mike`
-    pub(crate) fn test_name3() -> Self {
+    pub(crate) fn self_3() -> Self {
         Self::new("Banana Mike").unwrap()
     }
 }
@@ -270,16 +352,16 @@ impl ExternalArtists {
     }
 
     /// Vec `Apple Mike`
-    pub(crate) fn test_name_1() -> Self {
-        Self::new_for_test(vec![ExternalArtist::test_name1()]).unwrap()
+    pub(crate) fn self_1() -> Self {
+        Self::new_for_test(vec![ExternalArtist::self_1()]).unwrap()
     }
     /// Vec `Milk Mike`
-    pub(crate) fn test_name_2() -> Self {
-        Self::new_for_test(vec![ExternalArtist::test_name2()]).unwrap()
+    pub(crate) fn self_2() -> Self {
+        Self::new_for_test(vec![ExternalArtist::self_2()]).unwrap()
     }
     /// Vec `Banana Mike`
-    pub(crate) fn test_name_3() -> Self {
-        Self::new_for_test(vec![ExternalArtist::test_name3()]).unwrap()
+    pub(crate) fn self_3() -> Self {
+        Self::new_for_test(vec![ExternalArtist::self_3()]).unwrap()
     }
 }
 
@@ -291,20 +373,20 @@ mod tests {
 
     #[test]
     fn test_artist_function_for_test_works() {
-        assert_eq!(InternalArtist::test_name1().0, "Aimer Test");
-        assert_eq!(InternalArtist::test_name2().0, "Eir Aoi Test");
-        assert_eq!(InternalArtist::test_name3().0, "Lisa Test");
+        assert_eq!(InternalArtist::self_1().0, "aimer-test");
+        assert_eq!(InternalArtist::self_2().0, "eir-aoi-test");
+        assert_eq!(InternalArtist::self_3().0, "lisa-test");
 
-        assert_eq!(ExternalArtist::test_name1().0, "Apple Mike");
-        assert_eq!(ExternalArtist::test_name2().0, "Milk Mike");
-        assert_eq!(ExternalArtist::test_name3().0, "Banana Mike");
+        assert_eq!(ExternalArtist::self_1().0, "Apple Mike");
+        assert_eq!(ExternalArtist::self_2().0, "Milk Mike");
+        assert_eq!(ExternalArtist::self_3().0, "Banana Mike");
     }
 
     #[test]
     fn test_artist_new_valid() {
-        assert!(InternalArtist::new("Aimer Test").is_ok());
-        assert!(InternalArtist::new("Eir Aoi Test").is_ok());
-        assert!(InternalArtist::new("Lisa Test").is_ok());
+        assert!(InternalArtist::new("aimer-test").is_ok());
+        assert!(InternalArtist::new("eir-aoi-test").is_ok());
+        assert!(InternalArtist::new("lisa-test").is_ok());
     }
 
     #[test]
@@ -321,22 +403,22 @@ mod tests {
 
     #[test]
     fn test_external_artist_new_invalid() {
-        assert!(ExternalArtist::new("Aimer Test").is_err());
-        assert!(ExternalArtist::new("Eir Aoi Test").is_err());
-        assert!(ExternalArtist::new("Lisa Test").is_err());
+        assert!(ExternalArtist::new("aimer-test").is_err());
+        assert!(ExternalArtist::new("eir-aoi-test").is_err());
+        assert!(ExternalArtist::new("lisa-test").is_err());
         assert!(ExternalArtist::new("").is_err());
     }
 
     #[test]
     fn test_internal_artist_deserialize_valid() {
-        let json = r#""Aimer Test""#;
+        let json = r#""aimer-test""#;
         let artist: InternalArtist =
             serde_json::from_str(json).expect("Failed to deserialize internal artist");
-        assert_eq!(artist.0, "Aimer Test");
-        let json = r#""Eir Aoi Test""#;
+        assert_eq!(artist.0, "aimer-test");
+        let json = r#""eir-aoi-test""#;
         let artist: InternalArtist =
             serde_json::from_str(json).expect("Failed to deserialize internal artist");
-        assert_eq!(artist.0, "Eir Aoi Test");
+        assert_eq!(artist.0, "eir-aoi-test");
     }
 
     #[test]
@@ -370,7 +452,7 @@ mod tests {
     #[test]
     fn test_external_artist_deserialize_invalid() {
         // 内部アーティストIDと重複する
-        let json = r#""Aimer Test""#;
+        let json = r#""aimer-test""#;
         let result: Result<ExternalArtist, _> = serde_json::from_str(json);
         assert!(
             result.is_err(),
@@ -384,13 +466,13 @@ mod tests {
 
     #[test]
     fn test_internal_artists_deserialize_valid() {
-        let json = r#"["Eir Aoi Test", "Lisa Test", "Aimer Test"]"#;
+        let json = r#"["eir-aoi-test", "lisa-test", "aimer-test"]"#;
         let artists: InternalArtists =
             serde_json::from_str(json).expect("Failed to deserialize internal artists");
-        // 54できているか
-        assert_eq!(artists.0[0].0, "Aimer Test");
-        assert_eq!(artists.0[1].0, "Eir Aoi Test");
-        assert_eq!(artists.0[2].0, "Lisa Test");
+        // ソートできているか
+        assert_eq!(artists.0[0].0, "aimer-test");
+        assert_eq!(artists.0[1].0, "eir-aoi-test");
+        assert_eq!(artists.0[2].0, "lisa-test");
     }
 
     #[test]

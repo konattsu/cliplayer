@@ -83,7 +83,7 @@ mod tests {
         let clip1 = FlatClip {
             uuid: crate::model::UuidVer4::self_1(),
             song_title: "Song A".to_string(),
-            artists: crate::model::InternalArtists::test_name_1(),
+            artists: crate::model::InternalArtists::self_1(),
             external_artists: None,
             clips_tags: None,
             clipped_video_id: None,
@@ -94,7 +94,7 @@ mod tests {
         let clip2 = FlatClip {
             uuid: crate::model::UuidVer4::self_2(),
             song_title: "Song B".to_string(),
-            artists: crate::model::InternalArtists::test_name_2(),
+            artists: crate::model::InternalArtists::self_2(),
             external_artists: None,
             clips_tags: None,
             clipped_video_id: None,
