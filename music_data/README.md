@@ -38,6 +38,7 @@ Usage: musictl validate <COMMAND>
 Commands:
   new     Validate new music data input files
   update  Validate existing music data input files
+  new-md  Validate new music data input files and output parsed info
   help    Print this message or the help of the given subcommand(s)
 ```
 

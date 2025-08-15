@@ -56,7 +56,7 @@ impl YouTubeApiItem {
             video_id: self.id,
             title: self.snippet.title,
             published_at: self.snippet.published_at,
-            modified_at: chrono::Utc::now(),
+            synced_at: chrono::Utc::now(),
             duration: self.content_details.duration,
             privacy_status: self.status.privacy_status,
             embeddable: self.status.embeddable,

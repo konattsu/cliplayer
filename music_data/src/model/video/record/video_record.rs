@@ -1,10 +1,15 @@
+/// 動画自体の情報
 #[derive(Debug, Clone, PartialEq)]
 pub(crate) struct VideoRecord {
+    /// 動画id
     video_id: crate::model::VideoId,
+    /// 手動で見て設定する情報. 概要情報
     local: crate::model::video::record::local::LocalVideoInfo,
+    /// apiから得られる動画の情報
     api: crate::model::video::record::api::ApiVideoInfo,
 }
 
+/// `VideoRecord`に関するエラー
 #[derive(Debug, PartialEq)]
 pub(crate) struct VideoRecordError {
     pub(crate) local: crate::model::VideoId,
@@ -12,6 +17,8 @@ pub(crate) struct VideoRecordError {
 }
 
 /// この子にserde担当してもらう
+///
+/// #[serde(flatten)]使った時のvideo_idの重複を避けるため
 #[derive(serde::Deserialize, serde::Serialize, Debug)]
 #[serde(rename_all = "camelCase")]
 #[serde(deny_unknown_fields)]
@@ -28,7 +35,7 @@ struct RawVideoRecord {
     published_at: crate::model::VideoPublishedAt,
     /// この情報を取得した日時
     #[serde(with = "crate::util::datetime_serde")]
-    modified_at: chrono::DateTime<chrono::Utc>,
+    synced_at: chrono::DateTime<chrono::Utc>,
     /// 動画の長さ
     duration: crate::model::Duration,
     /// 動画のプライバシー設定
@@ -52,7 +59,7 @@ impl From<VideoRecord> for RawVideoRecord {
             title: value.api.title,
             channel_id: value.api.channel_id,
             published_at: value.api.published_at,
-            modified_at: value.api.modified_at,
+            synced_at: value.api.synced_at,
             duration: value.api.duration,
             privacy_status: value.api.privacy_status,
             embeddable: value.api.embeddable,
@@ -79,7 +86,7 @@ impl<'de> serde::Deserialize<'de> for VideoRecord {
             title: raw.title,
             channel_id: raw.channel_id,
             published_at: raw.published_at,
-            modified_at: raw.modified_at,
+            synced_at: raw.synced_at,
             duration: raw.duration,
             privacy_status: raw.privacy_status,
             embeddable: raw.embeddable,
@@ -105,6 +112,11 @@ impl VideoRecord {
     pub(crate) fn get_video_id(&self) -> &crate::model::VideoId {
         &self.video_id
     }
+    pub(crate) fn get_local(
+        &self,
+    ) -> &crate::model::video::record::local::LocalVideoInfo {
+        &self.local
+    }
     pub(crate) fn get_api(&self) -> &super::ApiVideoInfo {
         &self.api
     }
@@ -128,28 +140,29 @@ impl VideoRecord {
     /// 新しいapiから取得した動画の詳細情報を適用
     ///
     /// # Returns:
-    /// - Ok(true): 動画idが一致し, modified_at以外に変更点が無かったとき
-    /// - Ok(false): 動画idが一致し, modified_at以外にも変更があったとき
+    /// - Ok(true): 動画idが一致し, synced_at以外に変更点が無かったとき
+    /// - Ok(false): 動画idが一致し, synced_at以外にも変更があったとき
     /// - Err(VideoRecordError): 動画idが一致しなかったとき
     pub(crate) fn with_new_api_info(
         &mut self,
         api: crate::model::video::record::api::ApiVideoInfo,
     ) -> Result<bool, VideoRecordError> {
-        if self.api.is_same_except_modified_at(&api) {
-            // modified_at以外に変更点が無かったとき(動画idも一致していることを確認できる)
-            // modified_atを更新
+        if self.api.is_same_except_synced_at(&api) {
+            // synced_at以外に変更点が無かったとき(動画idも一致していることを確認できる)
+            // synced_atを更新
             self.api = api;
             Ok(true)
         } else {
-            // modified_at以外にも変更があったとき
+            // synced_at以外にも変更があったとき
             // 動画idが一致していないとErr
             Self::ensure_same_video_id(&self.local, &api)?;
-            // 動画idが一致しているが, modified_at以外にも変更があったとき
+            // 動画idが一致しているが, synced_at以外にも変更があったとき
             self.api = api;
             Ok(false)
         }
     }
 
+    /// `local`, `api`が同じ動画idを持つことを確認
     fn ensure_same_video_id(
         local: &crate::model::video::record::local::LocalVideoInfo,
         api: &crate::model::video::record::api::ApiVideoInfo,
@@ -166,6 +179,7 @@ impl VideoRecord {
 }
 
 impl VideoRecordError {
+    /// 整形した文字列に変換
     pub(crate) fn to_pretty_string(&self) -> String {
         format!(
             "Failed to create Video Record: no match video_id: local:{}, api:{}",
@@ -189,14 +203,18 @@ impl VideoRecord {
         Self::new(local, api).unwrap()
     }
 
-    pub(crate) fn update_modified_at(self, new: chrono::DateTime<chrono::Utc>) -> Self {
-        let api = self.api.clone().update_modified_at(new);
-        Self { api, ..self }
+    pub(crate) fn update_synced_at(self, new: chrono::DateTime<chrono::Utc>) -> Self {
+        Self {
+            api: self.api.update_synced_at(new),
+            ..self
+        }
     }
 
     pub(crate) fn set_duration(self, duration: crate::model::Duration) -> Self {
-        let api = self.api.clone().set_duration(duration);
-        Self { api, ..self }
+        Self {
+            api: self.api.set_duration(duration),
+            ..self
+        }
     }
 }
 
@@ -264,11 +282,11 @@ mod tests {
     }
 
     #[test]
-    fn test_video_record_update_modified_at() {
+    fn test_video_record_update_synced_at() {
         let record = VideoRecord::self_a();
         let new_time = chrono::Utc::now();
-        let updated = record.update_modified_at(new_time);
-        assert_eq!(updated.api.modified_at, new_time);
+        let updated = record.update_synced_at(new_time);
+        assert_eq!(updated.api.synced_at, new_time);
     }
 
     #[test]

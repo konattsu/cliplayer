@@ -165,7 +165,7 @@ impl UnverifiedClip {
         self,
         video_duration: &crate::model::Duration,
     ) -> Result<super::VerifiedClip, super::VerifiedClipError> {
-        super::VerifiedClipInitializer {
+        super::verified::VerifiedClipInitializer {
             song_title: self.song_title,
             artists: self.artists,
             external_artists: self.external_artists,

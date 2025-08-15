@@ -1,22 +1,15 @@
 /// 内部のclipsの整合性が全て取れている動画
 ///
-/// clipsの`start_time`順にソートされていることを保証
-#[derive(serde::Serialize, Debug, Clone, PartialEq)]
-#[serde(rename_all = "camelCase")]
-#[serde(deny_unknown_fields)]
+/// serialize時, clipsの`start_time`順にソートされていることを保証
+#[derive(Debug, Clone, PartialEq)]
 pub(crate) struct VerifiedVideo {
     /// 動画の詳細情報
-    #[serde(flatten)]
     record: crate::model::VideoRecord,
     /// クリップ
-    ///
-    /// `start_time`順にソートされていることを保証
     clips: Vec<crate::model::VerifiedClip>,
 }
 
-// 以下をデシリアライズ時に行うためのカスタムデシリアライザ
-// - recordの情報を基にVerifiedClipを作成する必要がある
-// - clipsをソート
+// recordの情報を基にVerifiedClipを作成する必要があるため, カスタムデシリアライザ実装
 impl<'de> serde::Deserialize<'de> for VerifiedVideo {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
@@ -32,39 +25,84 @@ impl<'de> serde::Deserialize<'de> for VerifiedVideo {
         }
         let raw = RawVerifiedVideo::deserialize(deserializer)?;
         // ここでrecordの情報を基にVerifiedClipを作成
-        // TODO 下の処理共通化できそう
-        let mut verified_clips = raw
-            .clips
-            .into_iter()
-            .map(|clip| {
-                clip.try_into_verified_clip(raw.record.get_api().get_duration())
-            })
-            .collect::<Result<Vec<_>, _>>()
-            .map_err(serde::de::Error::custom)?;
-        // ソートして返す
-        // TODO ここ以外で作成したものはソートできてない, 要修正, serialize手動安定
-        verified_clips.sort_by_key(|clip| clip.get_start_time().as_secs());
+        let verified_clips = Self::verify_clips_from_unverified(
+            raw.clips,
+            raw.record.get_api().get_duration(),
+        )
+        .map_err(|e| serde::de::Error::custom(e.to_pretty_string()))?;
         Self::new(raw.record, verified_clips)
             .map_err(|e| serde::de::Error::custom(e.to_pretty_string()))
     }
 }
 
+impl serde::Serialize for VerifiedVideo {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        // clipsのstart_time順にソートしてからserialize
+        let mut sorted_clips = self.clips.clone();
+        sorted_clips.sort_by_key(|clip| clip.get_start_time().as_secs());
+
+        #[derive(serde::Serialize)]
+        #[serde(rename_all = "camelCase")]
+        #[serde(deny_unknown_fields)]
+        struct RawVerifiedVideo<'a> {
+            #[serde(flatten)]
+            record: &'a crate::model::VideoRecord,
+            clips: Vec<crate::model::VerifiedClip>,
+        }
+
+        let raw = RawVerifiedVideo {
+            record: &self.record,
+            clips: sorted_clips,
+        };
+        raw.serialize(serializer)
+    }
+}
+
 impl VerifiedVideo {
+    pub(crate) fn get_video_id(&self) -> &crate::model::VideoId {
+        self.record.get_video_id()
+    }
+    // local
+    pub(crate) fn get_uploader_name(&self) -> Option<&crate::model::UploaderName> {
+        self.record.get_local().get_uploader_name()
+    }
+    pub(crate) fn get_video_tags(&self) -> &crate::model::VideoTags {
+        self.record.get_local().get_video_tags()
+    }
+    // api
+    pub(crate) fn get_title(&self) -> &str {
+        self.record.get_api().get_title()
+    }
+    pub(crate) fn get_channel_id(&self) -> &crate::model::ChannelId {
+        self.record.get_api().get_channel_id()
+    }
+    pub(crate) fn get_published_at(&self) -> &crate::model::VideoPublishedAt {
+        self.record.get_api().get_published_at()
+    }
+    pub(crate) fn get_synced_at(&self) -> &chrono::DateTime<chrono::Utc> {
+        self.record.get_api().get_synced_at()
+    }
+    pub(crate) fn get_duration(&self) -> &crate::model::Duration {
+        self.record.get_api().get_duration()
+    }
+    pub(crate) fn get_privacy_status(&self) -> &crate::model::PrivacyStatus {
+        self.record.get_api().get_privacy_status()
+    }
+    pub(crate) fn is_embeddable(&self) -> bool {
+        self.record.get_api().is_embeddable()
+    }
+
     pub(crate) fn get_year(&self) -> usize {
         self.record.get_api().get_published_at().get_year()
     }
     pub(crate) fn get_month(&self) -> usize {
         self.record.get_api().get_published_at().get_month()
     }
-    pub(crate) fn get_video_id(&self) -> &crate::model::VideoId {
-        self.record.get_video_id()
-    }
-    pub(crate) fn get_published_at(&self) -> &crate::model::VideoPublishedAt {
-        self.record.get_api().get_published_at()
-    }
-
-    pub(crate) fn into_clips(self) -> Vec<crate::model::VerifiedClip> {
-        self.clips
+    pub(crate) fn to_clips(&self) -> Vec<&crate::model::VerifiedClip> {
+        self.clips.iter().collect()
     }
 
     /// `AnonymousVideo`と`ApiVideoInfo`から`VerifiedVideo`を作成
@@ -133,20 +171,12 @@ impl VerifiedVideo {
             .map(crate::model::UnverifiedClip::from_verified_clip)
             .collect();
 
-        let (oks, errs): (Vec<_>, Vec<_>) = unverified_clips
-            .into_iter()
-            .map(|clip| clip.try_into_verified_clip(record.get_api().get_duration()))
-            // ここでoks, errsに分割しているため後方の処理では
-            // それぞれunwrapを使用. パニックしない.
-            .partition(Result::is_ok);
-
-        if !errs.is_empty() {
-            Err(super::VerifiedVideoError::InvalidClip(
-                errs.into_iter().map(Result::unwrap_err).collect(),
-            ))
-        } else {
-            let clips = oks.into_iter().map(Result::unwrap).collect();
-            Self::new(record, clips)
+        match Self::verify_clips_from_unverified(
+            unverified_clips,
+            record.get_api().get_duration(),
+        ) {
+            Ok(verified_clips) => Self::new(record, verified_clips),
+            Err(e) => Err(e),
         }
     }
 
@@ -203,6 +233,30 @@ impl VerifiedVideo {
             })
         }
     }
+
+    /// 動画を認証
+    ///
+    /// - Err(e): クリップの情報が不正なとき(動画の長さに対してclipが不正)
+    /// - Ok(verified_clips): 認証されたクリップのリスト
+    fn verify_clips_from_unverified(
+        clips: Vec<crate::model::UnverifiedClip>,
+        video_duration: &crate::model::Duration,
+    ) -> Result<Vec<crate::model::VerifiedClip>, super::VerifiedVideoError> {
+        let (oks, errs): (Vec<_>, Vec<_>) = clips
+            .into_iter()
+            .map(|clip| clip.try_into_verified_clip(video_duration))
+            // ここでoks, errsに分割しているため後方の処理では
+            // それぞれunwrapを使用. パニックしない.
+            .partition(Result::is_ok);
+
+        if !errs.is_empty() {
+            Err(super::VerifiedVideoError::InvalidClip(
+                errs.into_iter().map(Result::unwrap_err).collect(),
+            ))
+        } else {
+            Ok(oks.into_iter().map(Result::unwrap).collect())
+        }
+    }
 }
 
 // MARK: For Tests
@@ -241,31 +295,6 @@ mod tests {
     }
 
     #[test]
-    fn test_verified_video_from_anonymous_video_valid() {
-        let local = crate::model::LocalVideoInfo::self_a();
-        let anonymous_clips = vec![
-            // ソートされてない
-            crate::model::AnonymousClip::self_a_3(),
-            crate::model::AnonymousClip::self_a_1(),
-            crate::model::AnonymousClip::self_a_2(),
-        ];
-        let anonymous_video = crate::model::AnonymousVideo::new(local, anonymous_clips)
-            .expect("should create valid AnonymousVideo");
-        let created_verified_video = VerifiedVideo::from_anonymous_video(
-            anonymous_video,
-            crate::model::VideoRecord::self_a().get_api().clone(),
-        )
-        .expect("should create valid VerifiedVideo");
-
-        let clips = created_verified_video.into_clips();
-        assert_eq!(clips.len(), 3);
-        // ソートできているか確認. uuidは自動生成なので比較対象には含めない
-        assert_eq!(clips[0].get_start_time().as_secs(), 5);
-        assert_eq!(clips[1].get_start_time().as_secs(), 15);
-        assert_eq!(clips[2].get_start_time().as_secs(), 25);
-    }
-
-    #[test]
     fn test_verified_video_from_anonymous_video_invalid() {
         let local = crate::model::LocalVideoInfo::self_a();
         let anonymous_clips = vec![
@@ -299,9 +328,9 @@ mod tests {
                 crate::model::VerifiedClip::self_a_2(),
             ],
         };
-        let modified_at = chrono::Utc.with_ymd_and_hms(2025, 8, 8, 8, 8, 8).unwrap();
+        let synced_at = chrono::Utc.with_ymd_and_hms(2025, 8, 8, 8, 8, 8).unwrap();
         let new_record =
-            crate::model::VideoRecord::self_a().update_modified_at(modified_at);
+            crate::model::VideoRecord::self_a().update_synced_at(synced_at);
         let updated_video = verified_video
             .with_new_api_info(new_record.get_api().clone())
             .expect("should update video detail");
@@ -310,7 +339,6 @@ mod tests {
         assert_eq!(updated_video.clips.len(), 2);
     }
 
-    // TODO 落ちる
     #[test]
     fn test_verified_video_with_new_video_detail_modified() {
         use chrono::TimeZone;
@@ -321,9 +349,9 @@ mod tests {
                 crate::model::VerifiedClip::self_a_2(),
             ],
         };
-        let modified_at = chrono::Utc.with_ymd_and_hms(2025, 8, 8, 8, 8, 8).unwrap();
+        let synced_at = chrono::Utc.with_ymd_and_hms(2025, 8, 8, 8, 8, 8).unwrap();
         let new_record = crate::model::VideoRecord::self_a()
-            .update_modified_at(modified_at)
+            .update_synced_at(synced_at)
             // 変更を加える
             .set_duration(crate::model::Duration::from_secs_u16(1));
         // 変更を加えて動画時間が短くなり, クリップが無効になったとき

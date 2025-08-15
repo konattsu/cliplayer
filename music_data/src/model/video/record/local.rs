@@ -12,15 +12,6 @@ pub(crate) struct LocalVideoInfo {
     pub(super) video_tags: crate::model::VideoTags,
 }
 
-// TODO 本当に消すか確認
-// /// `LocalVideoInfo`のリスト
-// ///
-// /// 各`LocalVideoInfo`に含まれる動画idが一意であることを保証
-// #[derive(Debug, Clone)]
-// pub(crate) struct LocalVideoInfoList {
-//     pub(crate) inner: std::collections::HashMap<crate::model::VideoId, LocalVideoInfo>,
-// }
-
 impl LocalVideoInfo {
     pub(crate) fn get_video_id(&self) -> &crate::model::VideoId {
         &self.video_id
@@ -32,6 +23,7 @@ impl LocalVideoInfo {
         &self.video_tags
     }
 
+    /// 新規作成
     pub(crate) fn new(
         video_id: crate::model::VideoId,
         uploader_name: Option<crate::model::UploaderName>,

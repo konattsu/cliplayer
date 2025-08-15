@@ -129,19 +129,17 @@ impl AnonymousVideo {
 
         let md_str = format!(
             r#"
-## Video ID: {video_id}
+<details>
+<summary>{video_id} | Clips: {total_clips} | {video_tags}</summary>
 
-### Video info:
-
-- Link: [Watch on YouTube](https://youtu.be/{video_id})
+- [Watch on YouTube](https://youtu.be/{video_id})
 - Uploader Name: {uploader_name}
-- Video Tags: {video_tags}
 
-### Clips info:
+Clips list:
 
-- total clips: {total_clips}
-
-{clips_info}"#,
+{clips_info}
+</details>
+"#,
         );
 
         md_str

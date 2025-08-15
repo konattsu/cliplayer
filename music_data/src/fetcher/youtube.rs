@@ -14,16 +14,19 @@ mod network_cfg {
         tokio::time::Duration::from_millis(500);
 }
 
+/// YouTube Apiを呼び出すための構造体
 #[derive(Debug)]
 pub(crate) struct YouTubeApi {
     api_key: crate::fetcher::YouTubeApiKey,
 }
 
 impl YouTubeApi {
+    /// 新規作成
     pub(crate) fn new(api_key: crate::fetcher::YouTubeApiKey) -> Self {
         Self { api_key }
     }
 
+    /// 実際にfetch/parseなどを実行
     #[tracing::instrument(skip(self, video_ids), level = tracing::Level::DEBUG)]
     pub(crate) async fn run(
         &self,

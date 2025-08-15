@@ -1,12 +1,10 @@
 mod anonymous;
-mod flat;
 mod unverified;
 mod verified;
 
 pub(crate) use anonymous::AnonymousClip;
-pub(crate) use flat::FlatClips;
 pub(crate) use unverified::UnverifiedClip;
-pub(crate) use verified::{VerifiedClip, VerifiedClipError, VerifiedClipInitializer};
+pub(crate) use verified::{VerifiedClip, VerifiedClipError};
 
 /// `start_time` < `end_time` の検証
 ///

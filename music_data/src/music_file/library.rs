@@ -2,8 +2,6 @@
 #[derive(Debug, Clone)]
 pub struct MusicLibrary {
     root_dir: crate::util::DirPath,
-    min_videos_path: crate::util::FilePath,
-    min_flat_clips_path: crate::util::FilePath,
     /// (year, month)
     video_files:
         std::collections::HashMap<(usize, usize), crate::music_file::MusicFile>,
@@ -29,71 +27,59 @@ impl MusicLibrary {
     ///
     /// # Arguments
     /// - `dir`: 楽曲情報のルートディレクトリ
-    /// - `min_videos_path`: 最小限の動画情報を保持するファイルパス
-    /// - `min_flat_clips_path`: 最小限のフラットクリップ情報を保持するファイルパス
     #[tracing::instrument(level = tracing::Level::DEBUG)]
-    pub fn load(
-        dir: &crate::util::DirPath,
-        min_videos_path: &crate::util::FilePath,
-        min_flat_clips_path: &crate::util::FilePath,
-    ) -> Result<Self, super::MusicFileErrors> {
+    pub fn load(dir: &crate::util::DirPath) -> Result<Self, super::MusicFileErrors> {
         tracing::debug!("Loading music files from directory: `{dir}`",);
         Self::collect_music_file_paths(dir).map(|file| Self {
             root_dir: dir.clone(),
-            min_videos_path: min_videos_path.clone(),
-            min_flat_clips_path: min_flat_clips_path.clone(),
             video_files: file,
         })
     }
 
     /// 楽曲情報をファイルに保存する
     ///
-    /// 単一のファイルたちとmin2種
+    /// 単一のファイルたちのみ
     #[tracing::instrument(
         skip(self),
         fields(
             root_dir = %self.root_dir,
-            min_videos_path = %self.min_videos_path,
-            min_flat_clips_path = %self.min_flat_clips_path
         ),
         level = tracing::Level::DEBUG
     )]
-    pub(crate) fn save(self) -> Result<(), super::MusicFileError> {
-        println!("Saving music files to disk...");
+    pub(crate) fn save_month_files(&self) -> Result<(), super::MusicFileError> {
+        println!("Saving music month files to disk...");
         self.save_music_files()?;
-
-        self.save_only_min()?;
-
-        println!("Music files saved successfully.");
+        println!("Music month files saved successfully.");
         Ok(())
     }
 
-    #[tracing::instrument(
-        skip(self),
-        fields(
-            root_dir = %self.root_dir,
-            min_videos_path = %self.min_videos_path,
-            min_flat_clips_path = %self.min_flat_clips_path
-        ),
-        level = tracing::Level::DEBUG
-    )]
-    pub(crate) fn save_only_min(self) -> Result<(), super::MusicFileError> {
-        tracing::debug!(
-            "Saving min files to disk: `{}` and `{}`",
-            self.min_videos_path,
-            self.min_flat_clips_path
-        );
+    pub(crate) fn into_videos(
+        self,
+    ) -> Result<crate::model::VerifiedVideos, super::MusicFileError> {
+        let videos = self
+            .video_files
+            .into_values()
+            .flat_map(|file| file.into_videos().into_sorted_vec())
+            .collect::<Vec<_>>();
+        crate::model::VerifiedVideos::try_from_vec(videos).map_err(|ids| {
+            let msg = format!(
+                "video_id(s) are duplicated ({ids:?}).\n\
+                Each individual file guarantees no duplicate video_id, \
+                but duplication occurred when integrating all files together. \
+                Since videos are split by upload time, there should not be multiple instances of the same video_id. \
+                This indicates either an implementation error or internal data inconsistency.",
+            );
+            tracing::error!("{msg}");
+            super::MusicFileError::ImplementationErr { msg }
+        })
+    }
 
-        let min_videos_path = self.min_videos_path.clone();
-        let min_flat_clips_path = self.min_flat_clips_path.clone();
-
-        let videos = self.into_videos()?;
-        super::fs_util::serialize_to_file(&min_videos_path, &videos, true)?;
-
-        let clips = crate::model::FlatClips::from_verified_videos(videos);
-        super::fs_util::serialize_to_file(&min_flat_clips_path, &clips, true)?;
-
-        Ok(())
+    /// minファイルを保存する
+    pub(crate) fn save_min_file<T: serde::Serialize>(
+        value: &T,
+        save_path: &crate::util::FilePath,
+    ) -> Result<(), super::MusicFileError> {
+        super::fs_util::serialize_to_file(save_path, value, true)
     }
 
     /// 楽曲情報を追加する
@@ -236,26 +222,5 @@ impl MusicLibrary {
             }
         }
         Ok(())
-    }
-
-    fn into_videos(
-        self,
-    ) -> Result<crate::model::VerifiedVideos, super::MusicFileError> {
-        let videos = self
-            .video_files
-            .into_values()
-            .flat_map(|file| file.into_videos().into_sorted_vec())
-            .collect::<Vec<_>>();
-        crate::model::VerifiedVideos::try_from_vec(videos).map_err(|ids| {
-            let msg = format!(
-                "video_id(s) are duplicated ({ids:?}).\n\
-                Each individual file guarantees no duplicate video_id, \
-                but duplication occurred when integrating all files together. \
-                Since videos are split by upload time, there should not be multiple instances of the same video_id. \
-                This indicates either an implementation error or internal data inconsistency.",
-            );
-            tracing::error!("{msg}");
-            super::MusicFileError::ImplementationErr { msg }
-        })
     }
 }

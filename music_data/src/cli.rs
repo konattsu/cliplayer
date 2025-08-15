@@ -1,9 +1,11 @@
+mod file_path;
 mod file_paths;
 mod music_root;
 mod parser;
 mod tracing_level;
 mod video_ids;
 
+pub use file_path::FilePathFromCli;
 pub use file_paths::FilePathsFromCli;
 pub use music_root::MusicLibraryCli;
 pub use parser::{

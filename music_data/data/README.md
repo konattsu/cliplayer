@@ -3,18 +3,16 @@
 ## 動画のデータ
 
 - 手動で記述
-  - `input.json`: 動画の情報を一時的に記述
+  - `input/foo.json`: 動画の情報を一時的に記述
 - 一次生成
   - `(年)/(月).json`: 年月ごとに動画の情報をまとめたもの
 - 二次生成, 頻繁に変更されるのでpublic/に配置
-  - `videos.min.json`: 一次生成を全てまとめたもの
-  - `flat_clips.min.json`: 一次生成のclipsをflattenして, 検索/フィルタetc.に使えそうなもののみ抽出したもの
+  - `clips.min.json`: クリップの情報をまとめたもの
+  - `videos.min.json`: 動画の情報をまとめたもの
 
-### `input.json`
+### `input/foo.json`
 
 新規動画(楽曲)データを追加する
-
-初回追加時は入力ファイル(input.json)を作成し, プルリク出してactionsが動作すると一次生成に追加され, 自動的に入力ファイル(input.json)は消える. その後マージする.
 
 [スキーマ](/tools/music_data.schema.json)を[設定](/.vscode/settings.json)済み
 
@@ -29,7 +27,7 @@
         "songTitle": "おねがいダーリン",
         "artists": ["ruri-shioriha"],
         "externalArtists": ["(例示用)"],
-        "clippedVideoId": null,
+        "clippedVideoId": "(例示用)",
         "startTime": "PT1M10S",
         "endTime": "PT4M21S",
         "clipTags": ["(例示用)"]
@@ -84,7 +82,7 @@
     "channelId": "UC7_MFM9b8hp5kuTSpa8WyOQ",
     "uploaderName": "(例示用)",
     "publishedAt": "2023-12-10Z21:00:00Z",
-    "modifiedAt": "2025-05-10T12:00:00Z",
+    "syncedAt": "2025-05-10T12:00:00Z",
     "duration": "PT59M22S",
     "privacyStatus": "public",
     "embeddable": true,
@@ -99,6 +97,7 @@
         // uuid version 4
         "uuid": "d5cb8a6b-fb40-424d-9079-c62bd76b92a5",
         "clipTags": ["(例示用)"],
+        "clippedVideoId": "(例示用)",
         // 今は未実装. 実装しても, actionsで直接付与できるものではなくローカルからのPRになりそう
         "volumePercent": 50
       },
@@ -114,42 +113,74 @@
 ]
 ```
 
-### `videos.min.json`
+### `clips.min.json`
 
-`(年)/(月).json`を全てまとめてmin化したもの
-
-### `flat_clips.min.json`
-
-`(年)/(月).json`のclipsをflattenして, 検索/フィルタetc.に使えそうなもののみ抽出したもの
+主にクリップの情報
 
 ```json
-[
-  {
-    "uuid": "d5cb8a6b-fb40-424d-9079-c62bd76b92a5",
+{
+  "d5cb8a6b-fb40-424d-9079-c62bd76b92a5": {
+    // このクリップが含まれる動画id
+    "videoId": "ZeFvqdvutb4",
+    // secsに変換
+    "startTimeSecs": 70,
+    "endTimeSecs": 261,
+
+    // 後は一緒
     "songTitle": "おねがいダーリン",
     "artists": ["ruri-shioriha"],
     "externalArtists": ["(例示用)"],
+    "clippedVideoId": "(例示用)",
     "clipTags": ["(例示用)"],
-    "startTime": "PT1M10S",
-    "endTime": "PT4M21S"
-    // volumePercentは含めない
-    // clippedVideoIdは含める
+    "volumePercent": 50
   },
-  {
-    "uuid": "6af3a9fb-05ab-4e53-8cdf-9e63869c4246",
+  "6af3a9fb-05ab-4e53-8cdf-9e63869c4246": {
+    "videoId": "ZeFvqdvutb4",
+    "startTimeSecs": 432,
+    "endTimeSecs": 694,
+
     "songTitle": "命に嫌われている。",
     "artists": ["ruri-shioriha"],
-    "startTime": "PT7M12S",
-    "endTime": "PT11M34S"
   }
-]
+}
+```
+
+### `videos.min.json`
+
+主に動画情報
+
+```json
+{
+  "ZeFvqdvutb4": {
+    // 順番は保証しない
+    "clipUuids": [
+      "d5cb8a6b-fb40-424d-9079-c62bd76b92a5",
+      "6af3a9fb-05ab-4e53-8cdf-9e63869c4246"
+    ],
+    // 少なくとも1回クリップに含まれる
+    // externalArtistsは含まない
+    "artists": ["ruri-shioriha"],
+    // secsに変換
+    "durationSecs": "3562",
+
+    // 後は一緒
+    "title": "【収益化記念】イ　ン　タ　ー　ネ　ッ　ト　カ　ラ　オ　ケ　T　I　M　E【栞葉るり/にじさんじ】",
+    "channelId": "UC7_MFM9b8hp5kuTSpa8WyOQ",
+    "uploaderName": "(例示用)",
+    "publishedAt": "2023-12-10Z21:00:00Z",
+    "syncedAt": "2025-05-10T12:00:00Z",
+    "privacyStatus": "public",
+    "embeddable": true,
+    "videoTags": ["karaoke", "2d"]
+  }
+}
 ```
 
 ## 動画以外のデータ
 
 - 手動で記述
   - `artists_data.json`: アーティストの全ての情報
-- 自動で生成, 変更頻度が低いのでsrc/に配置
+- 自動で生成, 変更頻度が低いので`src/`に配置
   - `artist_search_index.json`: アーティスト名の検索インデックス
   - `artists.json`: アーティストの一部の情報をflattenしてまとめたもの
   - `channels.json`: チャンネルidからアーティストidの対応

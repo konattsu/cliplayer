@@ -35,6 +35,11 @@ impl<'de> serde::Deserialize<'de> for VolumePercent {
 
 #[cfg(test)]
 impl VolumePercent {
+    pub(crate) fn new(value: u8) -> Result<Self, String> {
+        VolumePercent::validate_range(value)?;
+        Ok(VolumePercent(std::num::NonZeroU8::new(value).unwrap()))
+    }
+
     fn get(&self) -> u8 {
         self.0.get()
     }
