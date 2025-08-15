@@ -4,14 +4,15 @@
 #[derive(serde::Serialize, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(in crate::artist) struct ArtistId(String);
 
-const ALLOWED_CHARS: &str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-";
+const ALLOWED_CHARS: &str =
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-";
 
 impl ArtistId {
     pub(in crate::artist) fn new(id: String) -> Result<Self, &'static str> {
         if id.is_empty() {
             return Err("ArtistId cannot be empty");
         } else if id.chars().any(|c| !ALLOWED_CHARS.contains(c)) {
-            return Err("ArtistId can only contain letters and hyphens");
+            return Err("ArtistId can only contain letters, digits and hyphens");
         }
         Ok(Self(id))
     }

@@ -1,8 +1,12 @@
+/// アーティストとその周辺情報のhashmap
+///
+/// (artist_id, ArtistDefinition)
 #[derive(serde::Deserialize, serde::Serialize, Debug)]
 pub(crate) struct ArtistDefinitions(
     std::collections::HashMap<String, ArtistDefinition>,
 );
 
+/// アーティストとその周辺情報
 #[derive(serde::Deserialize, serde::Serialize, Debug)]
 #[serde(rename_all = "camelCase")]
 #[serde(deny_unknown_fields)]
@@ -28,7 +32,6 @@ pub(crate) struct ArtistDefinition {
 fn is_false(val: &bool) -> bool {
     !*val
 }
-
 fn default_for_is_graduate() -> bool {
     false
 }
@@ -38,14 +41,15 @@ impl ArtistDefinitions {
         self.0.len()
     }
 
-    fn contains_as_key(&self, key: &str) -> bool {
-        self.0.contains_key(key)
+    /// アーティストIDが定義されているかどうか
+    fn is_defined_artist_id(&self, artist_id: &str) -> bool {
+        self.0.contains_key(artist_id)
     }
 }
 
 // テストでは静的に値を定義
 // rust-analyzerがこれ(本番用)をinactiveにするが無視していい
-/// 有効なアーティストIDのセット
+/// アーティストidとその周辺情報
 ///
 /// - `ARTIST_SET_PATH` 環境変数で指定されたファイルから読み込む
 ///   - 先ほどの環境変数が指定されていないと `./data/artists_data.json` を読み込む
@@ -68,6 +72,7 @@ static LOADED_ARTISTS_DATA: once_cell::sync::Lazy<ArtistDefinitions> =
         data
     });
 
+/// アーティストidとその周辺情報
 #[cfg(test)]
 static LOADED_ARTISTS_DATA: once_cell::sync::Lazy<ArtistDefinitions> =
     once_cell::sync::Lazy::new(|| {
@@ -135,7 +140,7 @@ impl InternalArtist {
 
     /// 有効な内部アーティストIDかどうか
     fn is_valid_internal_artist(id: &str) -> bool {
-        LOADED_ARTISTS_DATA.contains_as_key(id)
+        LOADED_ARTISTS_DATA.is_defined_artist_id(id)
     }
 }
 
@@ -151,7 +156,21 @@ impl<'de> serde::Deserialize<'de> for InternalArtist {
 }
 
 impl InternalArtists {
-    pub(crate) fn to_artists_ja_name(&self) -> Vec<String> {
+    pub(crate) fn new(artists: Vec<&str>) -> Result<Self, String> {
+        if artists.is_empty() {
+            Err("artists list cannot be empty".to_string())
+        } else {
+            let mut internal_artists: Vec<InternalArtist> = artists
+                .into_iter()
+                .map(InternalArtist::new)
+                .collect::<Result<Vec<_>, _>>()?;
+            Self::sort_artists(&mut internal_artists);
+            Ok(InternalArtists(internal_artists))
+        }
+    }
+
+    /// アーティストの日本語名を取得
+    pub(crate) fn get_artists_ja_name(&self) -> Vec<String> {
         let mut artists_name = Vec::new();
         for artist in &self.0 {
             if let Some(matched_artist) = LOADED_ARTISTS_DATA.0.get(&artist.0) {
@@ -160,8 +179,11 @@ impl InternalArtists {
                 tracing::debug!("artist(id: {}) is not matched", artist.0);
             }
         }
-
         artists_name
+    }
+
+    pub(crate) fn to_vec(&self) -> Vec<&str> {
+        self.0.iter().map(|artist| artist.0.as_str()).collect()
     }
 
     fn sort_artists(artists: &mut [InternalArtist]) {
@@ -186,56 +208,6 @@ impl<'de> serde::Deserialize<'de> for InternalArtists {
             Self::sort_artists(&mut raw.0);
             Ok(InternalArtists(raw.0))
         }
-    }
-}
-
-#[cfg(test)]
-impl InternalArtist {
-    /// `aimer-test`
-    pub(crate) fn self_1() -> Self {
-        Self::new("aimer-test").unwrap()
-    }
-    /// `eir-aoi-test`
-    pub(crate) fn self_2() -> Self {
-        Self::new("eir-aoi-test").unwrap()
-    }
-    /// `lisa-test`
-    pub(crate) fn self_3() -> Self {
-        Self::new("lisa-test").unwrap()
-    }
-}
-
-#[cfg(test)]
-impl InternalArtists {
-    fn new_for_test(mut artists: Vec<InternalArtist>) -> Result<Self, &'static str> {
-        if artists.is_empty() {
-            Err("artists list cannot be empty")
-        } else {
-            Self::sort_artists(&mut artists);
-            Ok(InternalArtists(artists))
-        }
-    }
-
-    /// Vec `aimer-test`
-    pub(crate) fn self_1() -> Self {
-        Self::new_for_test(vec![InternalArtist::self_1()]).unwrap()
-    }
-    /// Vec `eir-aoi-test`
-    pub(crate) fn self_2() -> Self {
-        Self::new_for_test(vec![InternalArtist::self_2()]).unwrap()
-    }
-    /// Vec `lisa-test`
-    pub(crate) fn self_3() -> Self {
-        Self::new_for_test(vec![InternalArtist::self_3()]).unwrap()
-    }
-    /// Vec `aimer-test`, `eir-aoi-test`, `lisa-test`
-    pub(crate) fn self_4() -> Self {
-        Self::new_for_test(vec![
-            InternalArtist::self_1(),
-            InternalArtist::self_2(),
-            InternalArtist::self_3(),
-        ])
-        .unwrap()
     }
 }
 
@@ -323,6 +295,56 @@ impl<'de> serde::Deserialize<'de> for ExternalArtists {
 }
 
 // MARK: For Tests
+
+#[cfg(test)]
+impl InternalArtist {
+    /// `aimer-test`
+    pub(crate) fn self_1() -> Self {
+        Self::new("aimer-test").unwrap()
+    }
+    /// `eir-aoi-test`
+    pub(crate) fn self_2() -> Self {
+        Self::new("eir-aoi-test").unwrap()
+    }
+    /// `lisa-test`
+    pub(crate) fn self_3() -> Self {
+        Self::new("lisa-test").unwrap()
+    }
+}
+
+#[cfg(test)]
+impl InternalArtists {
+    fn new_for_test(mut artists: Vec<InternalArtist>) -> Result<Self, &'static str> {
+        if artists.is_empty() {
+            Err("artists list cannot be empty")
+        } else {
+            Self::sort_artists(&mut artists);
+            Ok(InternalArtists(artists))
+        }
+    }
+
+    /// Vec `aimer-test`
+    pub(crate) fn self_1() -> Self {
+        Self::new_for_test(vec![InternalArtist::self_1()]).unwrap()
+    }
+    /// Vec `eir-aoi-test`
+    pub(crate) fn self_2() -> Self {
+        Self::new_for_test(vec![InternalArtist::self_2()]).unwrap()
+    }
+    /// Vec `lisa-test`
+    pub(crate) fn self_3() -> Self {
+        Self::new_for_test(vec![InternalArtist::self_3()]).unwrap()
+    }
+    /// Vec `aimer-test`, `eir-aoi-test`, `lisa-test`
+    pub(crate) fn self_4() -> Self {
+        Self::new_for_test(vec![
+            InternalArtist::self_1(),
+            InternalArtist::self_2(),
+            InternalArtist::self_3(),
+        ])
+        .unwrap()
+    }
+}
 
 #[cfg(test)]
 impl ExternalArtist {
@@ -498,5 +520,24 @@ mod tests {
         let json = r#"[]"#; // 空の配列は許容されない
         let result: Result<ExternalArtists, _> = serde_json::from_str(json);
         assert!(result.is_err(), "Expected error for empty artists list");
+    }
+
+    #[test]
+    fn test_internal_artists_new_valid() {
+        let artists = InternalArtists::new(vec!["aimer-test", "eir-aoi-test"])
+            .expect("should create valid InternalArtists");
+        assert_eq!(artists.0.len(), 2);
+        assert_eq!(artists.0[0].0, "aimer-test");
+        assert_eq!(artists.0[1].0, "eir-aoi-test");
+    }
+
+    #[test]
+    fn test_internal_artists_new_invalid() {
+        let result = InternalArtists::new(vec![]);
+        assert!(result.is_err(), "Expected error for empty artists list");
+        let result = InternalArtists::new(vec!["invalid-artist"]);
+        assert!(result.is_err(), "Expected error for invalid artist ID");
+        let result = InternalArtists::new(vec!["aimer-test", "invalid-artist"]);
+        assert!(result.is_err(), "Expected error for invalid artist ID");
     }
 }

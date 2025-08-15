@@ -1,3 +1,4 @@
+mod min_file;
 mod new;
 mod sync;
 mod update;
