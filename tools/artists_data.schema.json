@@ -21,9 +21,10 @@
           "type": "string",
           "pattern": "^[A-Fa-f0-9]{6}$"
         },
-        "isGraduated": { "type": "boolean" }
+        "isGraduated": { "type": "boolean" },
+        "intId": { "type": "integer", "minimum": 0 }
       },
-      "required": ["ja", "jah", "en", "aliases", "channelId", "color"],
+      "required": ["ja", "jah", "en", "aliases", "channelId", "color", "intId"],
       "additionalProperties": false
     }
   },

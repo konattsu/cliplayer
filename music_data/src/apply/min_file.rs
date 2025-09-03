@@ -141,9 +141,6 @@ struct FlatVideoValue<'a> {
     /// この動画に紐づくクリップのuuidの一覧
     clip_uuids: Vec<&'a crate::model::UuidVer4>,
 
-    // 少なくとも1回クリップに出演している内部アーティスト
-    artists: crate::model::InternalArtists,
-
     // api
     /// 動画のタイトル
     title: &'a str,
@@ -176,7 +173,6 @@ impl serde::Serialize for FlatVideoValue<'_> {
         #[serde(rename_all = "camelCase")]
         struct RawFlatVideoValue<'a> {
             clip_uuids: &'a Vec<&'a crate::model::UuidVer4>,
-            artists: &'a crate::model::InternalArtists,
             title: &'a str,
             channel_id: &'a crate::model::ChannelId,
             published_at: &'a crate::model::VideoPublishedAt,
@@ -192,7 +188,6 @@ impl serde::Serialize for FlatVideoValue<'_> {
         }
         let value = RawFlatVideoValue {
             clip_uuids: &self.clip_uuids,
-            artists: &self.artists,
             title: self.title,
             channel_id: self.channel_id,
             published_at: self.published_at,
@@ -214,13 +209,11 @@ impl<'a> FlatVideos<'a> {
         let mut flat_videos = std::collections::HashMap::new();
         for video in videos.to_vec() {
             let video_id = video.get_video_id();
-            let artists = Self::collect_artists(video);
 
             flat_videos.insert(
                 video_id,
                 FlatVideoValue {
                     clip_uuids: video.to_clips().iter().map(|c| c.get_uuid()).collect(),
-                    artists,
                     title: video.get_title(),
                     channel_id: video.get_channel_id(),
                     published_at: video.get_published_at(),
@@ -234,20 +227,6 @@ impl<'a> FlatVideos<'a> {
             );
         }
         FlatVideos(flat_videos)
-    }
-
-    /// 動画に1回でも出演している内部アーティストの一覧を返却
-    ///
-    /// 重複はしない
-    fn collect_artists(
-        video: &'a crate::model::VerifiedVideo,
-    ) -> crate::model::InternalArtists {
-        let mut artists = std::collections::HashSet::new();
-        for clip in video.to_clips() {
-            artists.extend(clip.get_artists().to_vec());
-        }
-        crate::model::InternalArtists::new(artists.into_iter().collect())
-            .expect("will not fail")
     }
 }
 
@@ -411,10 +390,8 @@ mod tests {
         let uploader_name = Some(crate::model::UploaderName::test_uploader_name_1());
         let video_tags = crate::model::VideoTags::self_1();
 
-        let artists = crate::model::InternalArtists::self_1();
         let val = FlatVideoValue {
             clip_uuids: vec![&uuid1, &uuid2],
-            artists,
             title: "dummy",
             channel_id: &channel_id,
             published_at: &published_at,
@@ -428,7 +405,6 @@ mod tests {
         let ser = to_value(&val).unwrap();
         let expected = json!({
             "clipUuids": [uuid1, uuid2],
-            "artists": val.artists.clone(),
             "title": "dummy",
             "channelId": channel_id,
             "publishedAt": published_at,
@@ -454,10 +430,8 @@ mod tests {
         let uploader_name = Some(crate::model::UploaderName::test_uploader_name_3());
         let video_tags = crate::model::VideoTags::self_2();
 
-        let artists = crate::model::InternalArtists::self_2();
         let val = FlatVideoValue {
             clip_uuids: vec![&uuid1, &uuid2],
-            artists,
             title: "video2",
             channel_id: &channel_id,
             published_at: &published_at,
@@ -471,7 +445,6 @@ mod tests {
         let ser = to_value(&val).unwrap();
         let expected = json!({
             "clipUuids": [uuid1, uuid2],
-            "artists": val.artists.clone(),
             "title": "video2",
             "channelId": channel_id,
             "publishedAt": published_at,
@@ -495,10 +468,8 @@ mod tests {
         let privacy_status = crate::model::PrivacyStatus::Unlisted;
         let video_tags = crate::model::VideoTags::self_1();
 
-        let artists = crate::model::InternalArtists::self_1();
         let val = FlatVideoValue {
             clip_uuids: vec![&uuid1],
-            artists,
             title: "dummy",
             channel_id: &channel_id,
             published_at: &published_at,
@@ -512,7 +483,6 @@ mod tests {
         let ser = to_value(&val).unwrap();
         let expected = json!({
             "clipUuids": [uuid1],
-            "artists": val.artists.clone(),
             "title": "dummy",
             "channelId": channel_id,
             "publishedAt": published_at,
@@ -535,10 +505,8 @@ mod tests {
         let privacy_status = crate::model::PrivacyStatus::Public;
         let video_tags = crate::model::VideoTags::self_2();
 
-        let artists = crate::model::InternalArtists::self_2();
         let val = FlatVideoValue {
             clip_uuids: vec![&uuid1],
-            artists,
             title: "none_case",
             channel_id: &channel_id,
             published_at: &published_at,
@@ -552,7 +520,6 @@ mod tests {
         let ser = to_value(&val).unwrap();
         let expected = json!({
             "clipUuids": [uuid1],
-            "artists": val.artists.clone(),
             "title": "none_case",
             "channelId": channel_id,
             "publishedAt": published_at,

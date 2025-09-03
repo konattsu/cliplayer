@@ -1,1 +1,15 @@
 @import "tailwindcss";
+
+@layer base {
+  html,
+  body {
+    @apply bg-white text-black dark:bg-zinc-900 dark:text-gray-200;
+    font-family: "Roboto", sans-serif;
+  }
+
+  /* ref: https://tailwindcss.com/docs/upgrade-guide#buttons-use-the-default-cursor */
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}

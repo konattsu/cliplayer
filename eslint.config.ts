@@ -63,9 +63,18 @@ export default [
       "@typescript-eslint/consistent-type-definitions": ["error", "interface"],
       "@typescript-eslint/explicit-function-return-type": ["error"],
       "@typescript-eslint/no-explicit-any": "error",
+      // ref: https://stackoverflow.com/questions/64052318#answer-64067915
+      // それでもなぜかwarnでる. またdisable-next-lineしたらwarnになるので別の何かがwarn出してるっぽい
+      "no-unused-vars": "off",
       "@typescript-eslint/no-unused-vars": [
         "error",
-        { argsIgnorePattern: "^_" },
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+          destructuredArrayIgnorePattern: "^_",
+          // ignoreRestSiblings: true,
+        },
       ],
       "@typescript-eslint/ban-ts-comment": [
         "error",

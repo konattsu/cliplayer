@@ -61,10 +61,12 @@
     "Deque",
     "dialoguer",
     "musictl",
+    "ofetch",
     "reqwest",
     "rustls",
     "serde",
     "thiserror",
+    "uuidv4",
     "vitest",
     "walkdir"
   ]

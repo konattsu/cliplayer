@@ -1,6 +1,10 @@
 # データの扱われ方
 
+preview用に`jsonc`使ってるが実際は全て`json`
+
 ## 動画のデータ
+
+public/に配置. フロントのビルドとは関係ない
 
 - 手動で記述
   - `input/foo.json`: 動画の情報を一時的に記述
@@ -16,7 +20,7 @@
 
 [スキーマ](/tools/music_data.schema.json)を[設定](/.vscode/settings.json)済み
 
-```json
+```jsonc
 [
   {
     "videoId": "ZeFvqdvutb4",
@@ -74,7 +78,7 @@
 
 `publishedAt`の日付を基にフォルダを決定. 先ほどの日付(`publishedAt`)の古いほうが先頭になるように記述. また, 同じ動画(videoIdが同一)は同時に存在しないことを保証
 
-```json
+```jsonc
 [
   {
     "videoId": "ZeFvqdvutb4",
@@ -117,7 +121,7 @@
 
 主にクリップの情報
 
-```json
+```jsonc
 {
   "d5cb8a6b-fb40-424d-9079-c62bd76b92a5": {
     // このクリップが含まれる動画id
@@ -149,7 +153,7 @@
 
 主に動画情報
 
-```json
+```jsonc
 {
   "ZeFvqdvutb4": {
     // 順番は保証しない
@@ -157,9 +161,6 @@
       "d5cb8a6b-fb40-424d-9079-c62bd76b92a5",
       "6af3a9fb-05ab-4e53-8cdf-9e63869c4246"
     ],
-    // 少なくとも1回クリップに含まれる
-    // externalArtistsは含まない
-    "artists": ["ruri-shioriha"],
     // secsに変換
     "durationSecs": "3562",
 
@@ -176,14 +177,50 @@
 }
 ```
 
+### `clip_docs.min.json`
+
+```jsonc
+[
+  {
+    "docId": 0,  // auto-inc
+    "videoId": 0, // 対応表は別で保持
+    "artistIntIds": [6, 42],  // artists_data.jsonを参照して整数化
+    "tagIds": [0, 1],  // 対応表は別で保持
+    "channelIntId": 0, // Option<int>, artists_data.jsonを参照して整数化
+    "publishedAtSec":  0  // unix timestamp
+  }
+]
+```
+
+### `video_id_record.min.json`
+
+```jsonc
+{
+  "ZeFvqdvutb4": 0,  // auto-inc
+  "6gKIA3_ihCY": 1
+}
+```
+
+### `tag_id_record.min.json`
+
+```jsonc
+{
+  "karaoke": 0,  // auto-inc
+  "3d": 1,
+  "sitr-nagoya": 2
+}
+```
+
 ## 動画以外のデータ
+
+フロントのビルド時に埋め込み
 
 - 手動で記述
   - `artists_data.json`: アーティストの全ての情報
 - 自動で生成, 変更頻度が低いので`src/`に配置
-  - `artist_search_index.json`: アーティスト名の検索インデックス
-  - `artists.json`: アーティストの一部の情報をflattenしてまとめたもの
-  - `channels.json`: チャンネルidからアーティストidの対応
+  - `artist_search_index.min.json`: アーティスト名の検索インデックス
+  - `artists.min.json`: アーティストの一部の情報をflattenしてまとめたもの
+  - `channels.min.json`: チャンネルidからアーティストidの対応
 
 ### `artists_data.json`
 
@@ -195,7 +232,7 @@
 
 一旦jpのみ
 
-```json
+```jsonc
 {
   "ruri-shioriha": {
     // 日本語での名前
@@ -209,8 +246,9 @@
     // YouTubeチャンネルID. ハンドルネームではない
     "channelId": "UC7_MFM9b8hp5kuTSpa8WyOQ",
     // モチーフカラー. 公式ページか非公式wiki参照
-    "color": "2887FF"
+    "color": "2887FF",
     // "isGraduated": false  // 卒業済みかどうか, falseは記述しなくてよい
+    "intId": 133  // 整数idも欲しいので手動で付与. 重複しないように
   },
   "meruto-kuramochi": {
     "ja": "倉持めると",
@@ -218,7 +256,8 @@
     "aliases": ["めるち"],
     "en": "Kuramochi Meruto",
     "channelId": "UCiA-trSZfB0i92V_-dyDqBw",
-    "color": "EB4682"
+    "color": "EB4682",
+    "intId": 123
   }
 }
 ```
@@ -229,7 +268,7 @@
 
 `artist_data.json`にある, `ja`, `jah`, `en`, `aliases`全ての値をキーにし, アーティストidを値にした配列. アーティスト名からアーティストidをO(n)で抽出できる
 
-```json
+```jsonc
 [
   { "key": "栞葉るり", "artistId": "ruri-shioriha" },
   { "key": "しおりはるり", "artistId": "ruri-shioriha" },
@@ -248,33 +287,41 @@
 
 `artists_data.json`の一部を抜粋して, フロントエンドでの表示に必要な情報のみを含む.
 
-```json
+```jsonc
 {
   "ruri-shioriha": {
     "ja": "栞葉るり",
     "jah": "しおりはるり",
     "en": "Shioriha Ruri",
-    "color": "2887FF"
+    "color": "2887FF",
     // "isGraduated": false  // 卒業済みかどうか, falseは記述されない
+    "intId": 133
   },
   "meruto-kuramochi": {
     "ja": "倉持めると",
     "jah": "くらもちめると",
     "en": "Kuramochi Meruto",
-    "color": "EB4682"
+    "color": "EB4682",
+    "intId": 123
   }
 }
 ```
 
 ### `channels.min.json`
 
-YouTubeチャンネルIDとアーティストidの対応リスト
+YouTubeチャンネルIDとアーティストidの対応hashmap
 
 O(1)で引くため, 辞書形式を使用.
 
-```json
+```jsonc
 {
-  "UC7_MFM9b8hp5kuTSpa8WyOQ": "ruri-shioriha",
-  "UCiA-trSZfB0i92V_-dyDqBw": "meruto-kuramochi"
+  "UC7_MFM9b8hp5kuTSpa8WyOQ": {
+    "artistId": "ruri-shioriha",
+    "intId": 133
+  },
+  "UCiA-trSZfB0i92V_-dyDqBw": {
+    "artistId": "meruto-kuramochi",
+    "intId": 123
+  }
 }
 ```
