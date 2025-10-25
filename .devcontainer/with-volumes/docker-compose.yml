@@ -1,10 +1,10 @@
 services:
-  ts_react_dev:
+  cliplayer-dev:
     build:
       context: .
       dockerfile: Dockerfile
 
-    container_name: ts_react_dev
+    container_name: cliplayer-dev
     working_dir: /workspaces
 
     ports:
