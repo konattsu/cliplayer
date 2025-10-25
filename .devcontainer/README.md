@@ -39,13 +39,3 @@ Alternatively, you can:
 1. Use the Command Palette (Ctrl+Shift+P / Cmd+Shift+P)
 2. Type "Dev Containers: Reopen in Container"
 3. Select your preferred configuration from the list
-
-**Note:** If you want to set a default configuration, you can create a symlink or move one of the configurations to `.devcontainer/devcontainer.json` at the repository root, though this is not recommended as it may cause conflicts.
-
-## Changes from Original
-
-Both configurations include the following improvements:
-
-- Renamed service from `ts_react_dev` to `cliplayer-dev` for clarity
-- Removed unused extensions: `mtxr.sqltools` and `ritwickdey.liveserver`
-- Fixed English comment formatting in the rust extensions section
