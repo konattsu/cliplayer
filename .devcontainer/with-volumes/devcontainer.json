@@ -1,0 +1,78 @@
+// wslからの起動が安定しない問題の解決方法
+// wsl> `code .`
+// vscodeが立ち上がるので, その上でrebuild and reopen in container
+// wsl> `sudo systemctl restart docker`
+// vscode側で接続が切れた旨の通知, reload windowsを促されるので従う
+// vscodeで`rebuild`, 直る
+
+{
+  "name": "cliplayer-dev (with volumes)",
+  "service": "cliplayer-dev",
+  "workspaceFolder": "/workspaces",
+  "dockerComposeFile": "./docker-compose.yml",
+
+  "features": {
+    // ref: https://containers.dev/features
+    "ghcr.io/devcontainers/features/rust:1": {
+      "version": "1.89",
+      "profile": "default"
+    }
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        // ts/css
+        "bradlc.vscode-tailwindcss",
+        "christian-kohler.npm-intellisense",
+        "dbaeumer.vscode-eslint",
+        "ecmel.vscode-html-css",
+        "kisstkondoros.vscode-gutter-preview",
+        "wallabyjs.quokka-vscode",
+        "zignd.html-css-class-completion",
+
+        // rust
+        // Main extensions are enabled by devcontainer feature
+        "fill-labs.dependi",
+
+        // markdown
+        "davidanson.vscode-markdownlint",
+        // "bierner.markdown-mermaid",
+        // "corschenzi.mermaid-graphical-editor",
+        // "shd101wyy.markdown-preview-enhanced",
+        // "yzane.markdown-pdf",
+        // "yzhang.markdown-all-in-one",
+
+        // git/github
+        "donjayamanne.githistory",
+        "eamodio.gitlens",
+        "github.copilot",
+        "github.vscode-github-actions",
+        "mhutchie.git-graph",
+
+        // others
+        "asuka.insertnumbers",
+        "christian-kohler.path-intellisense",
+        "editorconfig.editorconfig",
+        "esbenp.prettier-vscode",
+        "gruntfuggly.todo-tree",
+        "mosapride.zenkaku",
+        "ms-azuretools.vscode-docker",
+        "redhat.vscode-yaml",
+        "shardulm94.trailing-spaces",
+        "streetsidesoftware.code-spell-checker",
+        "wmaurer.change-case"
+      ],
+
+      "mcp": {
+        "servers": {
+          "context7": {
+            "type": "stdio",
+            "command": "npx",
+            "args": ["-y", "@upstash/context7-mcp"]
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,25 @@
+services:
+  cliplayer-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: cliplayer-dev-portable
+    working_dir: /workspaces/${localWorkspaceFolderBasename}
+
+    ports:
+      - 5173:5173
+
+    volumes:
+      - ../..:/workspaces:cached
+
+    environment:
+      # NODE_ENV: development
+      # CHOKIDAR_USEPOLLING: true
+
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
+
+    command: sleep infinity
