@@ -28,11 +28,14 @@ This configuration works in any environment without hardcoded paths:
 
 ## How to Use
 
-1. Copy the contents of your preferred configuration to `.devcontainer/` at the repository root
-2. Open the repository in VS Code
-3. Run "Reopen in Container" from the command palette
+When you open this repository in VS Code with the Dev Containers extension installed, VS Code will detect multiple devcontainer configurations and prompt you to select which one to use.
 
-Or, VS Code should allow you to select which devcontainer to use directly if it detects multiple configurations.
+Alternatively, you can:
+1. Use the Command Palette (Ctrl+Shift+P / Cmd+Shift+P)
+2. Type "Dev Containers: Reopen in Container"
+3. Select your preferred configuration from the list
+
+**Note:** If you want to set a default configuration, you can create a symlink or move one of the configurations to `.devcontainer/devcontainer.json` at the repository root, though this is not recommended as it may cause conflicts.
 
 ## Changes from Original
 
