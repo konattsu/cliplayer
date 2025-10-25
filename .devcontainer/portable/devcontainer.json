@@ -1,14 +1,10 @@
-// wslからの起動が安定しない問題の解決方法
-// wsl> `code .`
-// vscodeが立ち上がるので, その上でrebuild and reopen in container
-// wsl> `sudo systemctl restart docker`
-// vscode側で接続が切れた旨の通知, reload windowsを促されるので従う
-// vscodeで`rebuild`, 直る
+// Portable devcontainer configuration
+// This version uses generic volume mounts and works in any environment
 
 {
-  "name": "TypeScript",
-  "service": "ts_react_dev",
-  "workspaceFolder": "/workspaces",
+  "name": "cliplayer-dev (portable)",
+  "service": "cliplayer-dev",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
   "dockerComposeFile": "./docker-compose.yml",
 
   "features": {
@@ -32,7 +28,7 @@
         "zignd.html-css-class-completion",
 
         // rust
-        //   main extensions are enabled by devcontainer feature
+        // Main extensions are enabled by devcontainer feature
         "fill-labs.dependi",
 
         // markdown
@@ -58,9 +54,7 @@
         "gruntfuggly.todo-tree",
         "mosapride.zenkaku",
         "ms-azuretools.vscode-docker",
-        "mtxr.sqltools",
         "redhat.vscode-yaml",
-        "ritwickdey.liveserver",
         "shardulm94.trailing-spaces",
         "streetsidesoftware.code-spell-checker",
         "wmaurer.change-case"
