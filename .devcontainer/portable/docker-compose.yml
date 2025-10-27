@@ -13,7 +13,7 @@ services:
     volumes:
       - ../..:/workspaces:cached
 
-    environment:
+    # environment:
       # NODE_ENV: development
       # CHOKIDAR_USEPOLLING: true
 
