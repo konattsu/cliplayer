@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile
 
     container_name: cliplayer-dev-portable
-    working_dir: /workspaces/${localWorkspaceFolderBasename}
+    working_dir: /workspaces
 
     ports:
       - 5173:5173
