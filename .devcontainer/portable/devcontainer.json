@@ -4,13 +4,13 @@
 {
   "name": "cliplayer-dev (portable)",
   "service": "cliplayer-dev",
-  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  "workspaceFolder": "/workspaces",
   "dockerComposeFile": "./docker-compose.yml",
 
   "features": {
     // ref: https://containers.dev/features
     "ghcr.io/devcontainers/features/rust:1": {
-      "version": "1.89",
+      "version": "1.90",
       "profile": "default"
     }
   },

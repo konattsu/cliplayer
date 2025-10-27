@@ -29,6 +29,9 @@ This configuration works in any environment without hardcoded paths:
 - You've cloned the repository in any directory
 - You're working in a different environment where the specific paths don't exist
 - You want a simpler, more portable setup
+- You are using GitHub Codespaces
+
+(portable is recommended for most use cases.)
 
 ## How to Use
 
@@ -39,3 +42,7 @@ Alternatively, you can:
 1. Use the Command Palette (Ctrl+Shift+P / Cmd+Shift+P)
 2. Type "Dev Containers: Reopen in Container"
 3. Select your preferred configuration from the list
+
+Note for GitHub Codespaces:
+
+- When using Codespaces you must explicitly choose the devcontainer configuration. Click the three-dot menu and select "New with options", then pick the desired devcontainer configuration before creating the codespace.
