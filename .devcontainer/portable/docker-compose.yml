@@ -7,15 +7,14 @@ services:
     container_name: cliplayer-dev-portable
     working_dir: /workspaces
 
-    ports:
-      - 5173:5173
+    # ports:
 
     volumes:
       - ../..:/workspaces:cached
 
     # environment:
-      # NODE_ENV: development
-      # CHOKIDAR_USEPOLLING: true
+    # NODE_ENV: development
+    # CHOKIDAR_USEPOLLING: true
 
     cap_add:
       - SYS_PTRACE

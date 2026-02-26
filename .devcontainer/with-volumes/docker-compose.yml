@@ -7,12 +7,10 @@ services:
     container_name: cliplayer-dev
     working_dir: /workspaces
 
-    ports:
-      - 5173:5173
+    # ports:
 
     volumes:
       - ~/cliplayer:/workspaces:cached
-      - ~/.npm:/home/node/.npm:cached
       - ${SSH_AUTH_SOCK}:/ssh-agent
 
     environment:
