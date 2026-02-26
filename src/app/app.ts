@@ -1,49 +1,36 @@
-import { Component, signal, computed, inject } from "@angular/core";
-import { RouterOutlet } from "@angular/router";
+import { Dialog } from "@angular/cdk/dialog";
+import { DragDropModule, moveItemInArray } from "@angular/cdk/drag-drop";
+import { ScrollingModule } from "@angular/cdk/scrolling";
 import {
   CommonModule,
   DatePipe,
   UpperCasePipe,
   CurrencyPipe,
 } from "@angular/common";
-import {
-  FormBuilder,
-  FormGroup,
-  Validators,
-  ReactiveFormsModule,
-} from "@angular/forms";
-import {
-  CdkDragDrop,
-  DragDropModule,
-  moveItemInArray,
-} from "@angular/cdk/drag-drop";
-import { ScrollingModule } from "@angular/cdk/scrolling";
-import { Dialog } from "@angular/cdk/dialog";
-
+import { Component, signal, computed, inject } from "@angular/core";
+import { FormBuilder, Validators, ReactiveFormsModule } from "@angular/forms";
 // Angular Material imports
+import { MatBadgeModule } from "@angular/material/badge";
 import { MatButtonModule } from "@angular/material/button";
 import { MatCardModule } from "@angular/material/card";
-import { MatInputModule } from "@angular/material/input";
-import { MatFormFieldModule } from "@angular/material/form-field";
-import { MatSelectModule } from "@angular/material/select";
 import { MatCheckboxModule } from "@angular/material/checkbox";
-import { MatTableModule } from "@angular/material/table";
 import { MatChipsModule } from "@angular/material/chips";
-import { MatIconModule } from "@angular/material/icon";
-import { MatTabsModule } from "@angular/material/tabs";
 import { MatExpansionModule } from "@angular/material/expansion";
-import { MatBadgeModule } from "@angular/material/badge";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatIconModule } from "@angular/material/icon";
+import { MatInputModule } from "@angular/material/input";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { MatSelectModule } from "@angular/material/select";
 import { MatSlideToggleModule } from "@angular/material/slide-toggle";
+import { MatTableModule } from "@angular/material/table";
+import { MatTabsModule } from "@angular/material/tabs";
+import { RouterOutlet } from "@angular/router";
 
 // Arktype schemas
-import {
-  UserSchema,
-  TaskSchema,
-  ContactFormSchema,
-  type User,
-  type Task,
-} from "./schema";
+import { UserSchema, ContactFormSchema, type User, type Task } from "./schema";
+
+import type { CdkDragDrop } from "@angular/cdk/drag-drop";
+import type { FormGroup } from "@angular/forms";
 
 @Component({
   selector: "app-root",

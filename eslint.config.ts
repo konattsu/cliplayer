@@ -27,6 +27,7 @@ export default [
         process: "readonly",
         module: "readonly",
         require: "readonly",
+        alert: "readonly",
       },
       ecmaVersion: "latest",
       sourceType: "module",
@@ -34,8 +35,24 @@ export default [
   },
   js.configs.recommended,
   prettierConfig,
+
+  // For test
   {
-    files: ["src/**/*.ts", "src/**/*.tsx", "vite.config.ts"],
+    files: ["**/*.spec.ts", "**/*.spec.tsx", "tests/**/*.ts"],
+    languageOptions: {
+      globals: {
+        describe: "readonly",
+        it: "readonly",
+        expect: "readonly",
+        beforeEach: "readonly",
+        afterEach: "readonly",
+        spyOn: "readonly",
+      },
+    },
+  },
+
+  {
+    files: ["src/**/*.ts"],
     languageOptions: {
       parser: tseslintParser,
       parserOptions: {
