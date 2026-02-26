@@ -2,12 +2,8 @@ import importPlugin from "eslint-plugin-import";
 import jsxA11y from "eslint-plugin-jsx-a11y";
 import prettierConfig from "eslint-config-prettier";
 import prettierPlugin from "eslint-plugin-prettier";
-import react from "eslint-plugin-react";
-import reactHooks from "eslint-plugin-react-hooks";
-import stylistic from "@stylistic/eslint-plugin";
 import tseslintParser from "@typescript-eslint/parser";
 import tseslintPlugin from "@typescript-eslint/eslint-plugin";
-import unusedImports from "eslint-plugin-unused-imports";
 
 // ref: https://eslint.org/docs/latest/use/configure/ignore#including-gitignore-files
 import js from "@eslint/js";
@@ -52,11 +48,8 @@ export default [
     plugins: {
       "@typescript-eslint": tseslintPlugin,
       prettier: prettierPlugin,
-      react,
-      "react-hooks": reactHooks,
       "jsx-a11y": jsxA11y,
       import: importPlugin,
-      "unused-imports": unusedImports,
     },
     rules: {
       // TypeScript
@@ -100,16 +93,6 @@ export default [
       "@typescript-eslint/switch-exhaustiveness-check": "error",
       "@typescript-eslint/method-signature-style": "error",
 
-      // React
-      "react/jsx-uses-react": "off",
-      "react/react-in-jsx-scope": "off",
-      "react/jsx-key": "error",
-      "react/prop-types": "off",
-
-      // hooks
-      "react-hooks/rules-of-hooks": "error",
-      "react-hooks/exhaustive-deps": "warn",
-
       // import
       "import/order": [
         "error",
@@ -126,7 +109,6 @@ export default [
           ],
           pathGroups: [
             {
-              pattern: "{react,react-dom/**,react-router-dom}",
               group: "builtin",
               position: "before",
             },

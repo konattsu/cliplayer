@@ -27,8 +27,11 @@
         "wallabyjs.quokka-vscode",
         "zignd.html-css-class-completion",
 
+        // angular
+        "Angular.ng-template",
+
         // rust
-        // Main extensions are enabled by devcontainer feature
+        // main extensions are enabled by the devcontainer feature
         "fill-labs.dependi",
 
         // markdown
@@ -58,17 +61,7 @@
         "shardulm94.trailing-spaces",
         "streetsidesoftware.code-spell-checker",
         "wmaurer.change-case"
-      ],
-
-      "mcp": {
-        "servers": {
-          "context7": {
-            "type": "stdio",
-            "command": "npx",
-            "args": ["-y", "@upstash/context7-mcp"]
-          }
-        }
-      }
+      ]
     }
   }
 }
