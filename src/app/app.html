@@ -1,0 +1,338 @@
+<div class="app-container">
+  <!-- ヘッダー -->
+  <header class="app-header">
+    <h1>{{ title() | uppercase }}</h1>
+    <p class="subtitle">Angular Material + CDK + Arktype デモ</p>
+
+    <!-- ステータスバッジ -->
+    <div class="status-badges">
+      <button
+        mat-raised-button
+        [matBadge]="completedTasks()"
+        matBadgeColor="accent"
+      >
+        完了タスク
+      </button>
+      <button mat-raised-button [matBadge]="totalTasks()" matBadgeColor="warn">
+        総タスク数
+      </button>
+      <button
+        mat-raised-button
+        [matBadge]="completionRate() + '%'"
+        matBadgeColor="primary"
+      >
+        達成率
+      </button>
+    </div>
+  </header>
+
+  <!-- メインコンテンツ：タブで分割 -->
+  <mat-tab-group class="demo-tabs">
+    <!-- タブ1: タスク管理（Drag & Drop） -->
+    <mat-tab label="タスク管理 (CDK Drag & Drop)">
+      <div class="tab-content">
+        <h2>ドラッグ＆ドロップでタスクを並び替え</h2>
+
+        <div
+          cdkDropList
+          (cdkDropListDropped)="onDrop($event)"
+          class="task-list"
+        >
+          @for (task of tasks(); track task.id) {
+            <mat-card
+              cdkDrag
+              class="task-card"
+              [class.completed]="task.completed"
+            >
+              <mat-card-header>
+                <mat-card-title>
+                  <mat-checkbox
+                    [checked]="task.completed"
+                    (change)="toggleTask(task.id)"
+                    color="primary"
+                  >
+                    {{ task.title }}
+                  </mat-checkbox>
+                </mat-card-title>
+              </mat-card-header>
+
+              <mat-card-content>
+                <p>{{ task.description }}</p>
+                <div class="task-meta">
+                  <mat-chip-set>
+                    <mat-chip [highlighted]="true">
+                      {{ task.priority | uppercase }}
+                    </mat-chip>
+                    @if (task.dueDate) {
+                      <mat-chip>
+                        期限: {{ task.dueDate | date: "yyyy/MM/dd" }}
+                      </mat-chip>
+                    }
+                  </mat-chip-set>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          }
+        </div>
+      </div>
+    </mat-tab>
+
+    <!-- タブ2: ユーザー一覧（Material Table + Common Pipes） -->
+    <mat-tab label="ユーザー一覧 (Material Table)">
+      <div class="tab-content">
+        <div class="table-header">
+          <h2>ユーザー管理テーブル</h2>
+          <button mat-raised-button color="primary" (click)="addUser()">
+            <mat-icon>add</mat-icon>
+            ユーザー追加
+          </button>
+        </div>
+
+        <table mat-table [dataSource]="users()" class="user-table">
+          <!-- Name Column -->
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>名前</th>
+            <td mat-cell *matCellDef="let user">{{ user.name }}</td>
+          </ng-container>
+
+          <!-- Email Column -->
+          <ng-container matColumnDef="email">
+            <th mat-header-cell *matHeaderCellDef>メール</th>
+            <td mat-cell *matCellDef="let user">{{ user.email }}</td>
+          </ng-container>
+
+          <!-- Age Column -->
+          <ng-container matColumnDef="age">
+            <th mat-header-cell *matHeaderCellDef>年齢</th>
+            <td mat-cell *matCellDef="let user">{{ user.age }}歳</td>
+          </ng-container>
+
+          <!-- Role Column -->
+          <ng-container matColumnDef="role">
+            <th mat-header-cell *matHeaderCellDef>役割</th>
+            <td mat-cell *matCellDef="let user">
+              <mat-chip [highlighted]="user.role === 'admin'">
+                {{ user.role | uppercase }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- CreatedAt Column (using DatePipe) -->
+          <ng-container matColumnDef="createdAt">
+            <th mat-header-cell *matHeaderCellDef>作成日</th>
+            <td mat-cell *matCellDef="let user">
+              {{ user.createdAt | date: "yyyy年MM月dd日" }}
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+
+        <!-- Currency Pipe Demo -->
+        <mat-card class="demo-card">
+          <mat-card-content>
+            <strong>CurrencyPipe デモ:</strong>
+            {{ price() | currency: "JPY" : "symbol-narrow" : "1.0-0" }}
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <!-- タブ3: フォーム（Reactive Forms + Arktype） -->
+    <mat-tab label="お問い合わせフォーム (Forms + Arktype)">
+      <div class="tab-content">
+        <h2>Reactive Forms + Arktype バリデーション</h2>
+
+        <mat-card class="form-card">
+          <mat-card-content>
+            <form [formGroup]="contactForm" (ngSubmit)="submitForm()">
+              <!-- Name Field -->
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>お名前</mat-label>
+                <input matInput formControlName="name" placeholder="山田太郎" />
+                <mat-icon matPrefix>person</mat-icon>
+                @if (contactForm.get("name")?.hasError("required")) {
+                  <mat-error>名前は必須です</mat-error>
+                }
+              </mat-form-field>
+
+              <!-- Email Field -->
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>メールアドレス</mat-label>
+                <input
+                  matInput
+                  formControlName="email"
+                  type="email"
+                  placeholder="example@email.com"
+                />
+                <mat-icon matPrefix>email</mat-icon>
+                @if (contactForm.get("email")?.hasError("required")) {
+                  <mat-error>メールアドレスは必須です</mat-error>
+                } @else if (contactForm.get("email")?.hasError("email")) {
+                  <mat-error>有効なメールアドレスを入力してください</mat-error>
+                }
+              </mat-form-field>
+
+              <!-- Phone Field (Optional) -->
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>電話番号（任意）</mat-label>
+                <input
+                  matInput
+                  formControlName="phone"
+                  placeholder="090-1234-5678"
+                />
+                <mat-icon matPrefix>phone</mat-icon>
+              </mat-form-field>
+
+              <!-- Message Field -->
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>メッセージ</mat-label>
+                <textarea
+                  matInput
+                  formControlName="message"
+                  rows="4"
+                  placeholder="お問い合わせ内容を入力してください（10文字以上）"
+                ></textarea>
+                @if (contactForm.get("message")?.hasError("required")) {
+                  <mat-error>メッセージは必須です</mat-error>
+                } @else if (contactForm.get("message")?.hasError("minlength")) {
+                  <mat-error>メッセージは10文字以上入力してください</mat-error>
+                }
+              </mat-form-field>
+
+              <!-- Validation Errors from Arktype -->
+              @if (validationErrors().length > 0) {
+                <mat-card class="error-card">
+                  <mat-card-content>
+                    @for (error of validationErrors(); track $index) {
+                      <p class="error-text">❌ {{ error }}</p>
+                    }
+                  </mat-card-content>
+                </mat-card>
+              }
+
+              <!-- Submit Button -->
+              <div class="form-actions">
+                <button
+                  mat-raised-button
+                  color="primary"
+                  type="submit"
+                  [disabled]="contactForm.invalid"
+                >
+                  送信
+                </button>
+                <button
+                  mat-raised-button
+                  type="button"
+                  (click)="contactForm.reset()"
+                >
+                  リセット
+                </button>
+              </div>
+            </form>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <!-- タブ4: CDK Virtual Scroll -->
+    <mat-tab label="Virtual Scroll (CDK)">
+      <div class="tab-content">
+        <h2>CDK Virtual Scrolling デモ</h2>
+        <p>大量のアイテムを効率的にレンダリング</p>
+
+        <cdk-virtual-scroll-viewport
+          itemSize="50"
+          class="virtual-scroll-viewport"
+        >
+          @for (item of [].constructor(100); track $index) {
+            <div class="virtual-item">
+              <mat-icon>folder</mat-icon>
+              アイテム #{{ $index + 1 }} - {{ "item_" + $index | uppercase }}
+            </div>
+          }
+        </cdk-virtual-scroll-viewport>
+      </div>
+    </mat-tab>
+
+    <!-- タブ5: その他のコンポーネント -->
+    <mat-tab label="その他機能">
+      <div class="tab-content">
+        <h2>その他の Material コンポーネント</h2>
+
+        <!-- Expansion Panel -->
+        <mat-accordion class="demo-accordion">
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <mat-icon>info</mat-icon>
+                &nbsp;Expansion Panel デモ
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <p>これは展開可能なパネルです。クリックして開閉できます。</p>
+            <p>
+              Angular Material の Expansion Panel
+              コンポーネントを使用しています。
+            </p>
+          </mat-expansion-panel>
+
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <mat-icon>settings</mat-icon>
+                &nbsp;設定パネル
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <mat-slide-toggle color="primary">ダークモード</mat-slide-toggle>
+            <br /><br />
+            <mat-slide-toggle color="accent">通知を有効化</mat-slide-toggle>
+          </mat-expansion-panel>
+        </mat-accordion>
+
+        <!-- Progress Spinner -->
+        <mat-card class="demo-card">
+          <mat-card-header>
+            <mat-card-title>プログレススピナー</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <button mat-raised-button color="accent" (click)="toggleLoading()">
+              ローディング切替
+            </button>
+            <br /><br />
+            @if (loading()) {
+              <mat-progress-spinner
+                mode="indeterminate"
+                diameter="50"
+                color="primary"
+              >
+              </mat-progress-spinner>
+            }
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Icon Showcase -->
+        <mat-card class="demo-card">
+          <mat-card-header>
+            <mat-card-title>Material Icons</mat-card-title>
+          </mat-card-header>
+          <mat-card-content class="icon-showcase">
+            <mat-icon color="primary">home</mat-icon>
+            <mat-icon color="accent">favorite</mat-icon>
+            <mat-icon color="warn">delete</mat-icon>
+            <mat-icon>search</mat-icon>
+            <mat-icon>shopping_cart</mat-icon>
+            <mat-icon>account_circle</mat-icon>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+
+  <!-- フッター -->
+  <footer class="app-footer">
+    <p>Powered by Angular {{ "21.2.0" }} + Material + CDK + Arktype</p>
+  </footer>
+</div>
+
+<router-outlet />

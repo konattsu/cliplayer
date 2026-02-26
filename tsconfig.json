@@ -1,28 +1,31 @@
 {
+  "compileOnSave": false,
   "compilerOptions": {
-    "allowImportingTsExtensions": true,
-    "baseUrl": ".",
-    "erasableSyntaxOnly": true,
-    "esModuleInterop": true,
-    "jsx": "react-jsx",
-    "lib": ["ES2024", "DOM", "DOM.Iterable"],
-    "module": "ESNext",
-    "moduleDetection": "force",
-    "moduleResolution": "bundler",
-    "noEmit": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "isolatedModules": true,
+    "module": "preserve",
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "paths": {
-      "@/*": ["src/*"]
-    },
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noPropertyAccessFromIndexSignature": true,
     "skipLibCheck": true,
     "strict": true,
-    "target": "ES2024",
-    "types": ["vitest/globals", "@testing-library/jest-dom"],
-    "useDefineForClassFields": true,
-    "verbatimModuleSyntax": true
+    "target": "ES2022"
   },
-  "include": ["src"]
+  "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
+  },
+  "files": [],
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.spec.json"
+    }
+  ]
 }

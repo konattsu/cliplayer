@@ -50,7 +50,6 @@
 - `videoId`: YouTubeの動画ID
 - `uploaderName`: 動画のアップロード者名. 箱外のチャンネルのときのみ任意の適切な名称を付与する. 空文字列は絶対にno
 - `videoTags`: 動画のタグ
-
   - e.g. "karaoke", "3d", "sitr-nagoya"
   - 命名規則
     - lower kebab-case

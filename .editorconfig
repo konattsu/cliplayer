@@ -16,3 +16,9 @@ indent_size = 4
 
 [**/*.rs]
 indent_size = 4
+
+[**/*.ts]
+quote_type = double
+
+[**/*.md]
+max_line_length = off

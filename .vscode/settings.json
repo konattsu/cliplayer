@@ -1,13 +1,16 @@
 {
   "editor.formatOnSave": true,
-  "files.associations": {
-    "*.css": "tailwindcss"
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.quickSuggestions": {
+    // allow autocomplete for ArkType expressions like "string | num"
+    // ref: https://arktype.io/docs/intro/setup#vscode
+    "strings": "on"
   },
-  // "gitlens.codeLens.authors.enabled": false,
-  // "gitlens.codeLens.recentChange.enabled": false,
+
+  // prioritize ArkType's "type" for autoimports
+  "typescript.preferences.autoImportSpecifierExcludeRegexes": ["^(node:)?os$"],
 
   // Prettier
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
   "prettier.requireConfig": true,
 
   // ESLint
@@ -20,11 +23,6 @@
     "typescript",
     "typescriptreact"
   ],
-
-  // Tailwind CSS
-  "editor.quickSuggestions": {
-    "strings": true
-  },
 
   // Rust
   "rust-analyzer.linkedProjects": ["music_data/Cargo.toml"],
@@ -56,6 +54,7 @@
   // spell checking
   "cSpell.words": [
     "appender",
+    "arktype",
     "chrono",
     "cliplayer",
     "Deque",
