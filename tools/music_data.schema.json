@@ -49,13 +49,11 @@
             },
             "startTime": {
               "type": "string",
-              "NOTE": "To prevent using default values(PT), the 'M' (minutes) designator must be present in the duration string.",
-              "pattern": "^PT([0-9]+H)?([0-9]+)M?([0-9]+S)?$"
+              "pattern": "^PT([0-9]+H)?([0-9]+M)?([0-9]+S)?$"
             },
             "endTime": {
               "type": "string",
-              "NOTE": "To prevent using default values(PT), the 'M' (minutes) designator must be present in the duration string.",
-              "pattern": "^PT([0-9]+H)?([0-9]+)M?([0-9]+S)?$"
+              "pattern": "^PT([0-9]+H)?([0-9]+M)?([0-9]+S)?$"
             },
             "clipTags": {
               "type": ["array", "null"],

@@ -1,6 +1,8 @@
 pub async fn apply_sync(
     mut music_lib: crate::music_file::MusicLibrary,
     api_key: crate::fetcher::YouTubeApiKey,
+    min_clips_path: &crate::util::FilePath,
+    min_videos_path: &crate::util::FilePath,
 ) -> Result<(), String> {
     let youtube_api = crate::fetcher::YouTubeApi::new(api_key);
 
@@ -25,10 +27,8 @@ pub async fn apply_sync(
         music_file.save().map_err(|e| e.to_pretty_string())?;
     }
 
-    music_lib
-        .save_only_min()
-        .map_err(|e| e.to_pretty_string())?;
-    Ok(())
+    super::min_file::save_min_files(music_lib, min_clips_path, min_videos_path)
+        .map_err(|e| e.to_pretty_string())
 }
 
 // cloneやりすぎかもしれんけど一旦無視

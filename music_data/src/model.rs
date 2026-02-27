@@ -15,9 +15,7 @@ pub mod clip;
 
 pub(crate) use artist::{ExternalArtists, InternalArtists};
 pub(crate) use channel_id::ChannelId;
-pub(crate) use clip::{
-    AnonymousClip, FlatClips, UnverifiedClip, VerifiedClip, VerifiedClipError,
-};
+pub(crate) use clip::{AnonymousClip, UnverifiedClip, VerifiedClip, VerifiedClipError};
 pub(crate) use color::Color;
 pub(crate) use duration::Duration;
 pub(crate) use privacy_status::PrivacyStatus;

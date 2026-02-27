@@ -79,25 +79,25 @@ pub(super) struct VerifiedClipInner {
     pub(super) volume_percent: Option<crate::model::VolumePercent>,
 }
 
-pub(crate) struct VerifiedClipInitializer {
+pub(super) struct VerifiedClipInitializer {
     /// 曲名
-    pub(crate) song_title: String,
+    pub(super) song_title: String,
     /// 内部アーティストの一覧
-    pub(crate) artists: crate::model::InternalArtists,
+    pub(super) artists: crate::model::InternalArtists,
     /// 外部アーティストの一覧
-    pub(crate) external_artists: Option<crate::model::ExternalArtists>,
+    pub(super) external_artists: Option<crate::model::ExternalArtists>,
     /// 切り抜いた動画が存在した場合の動画id
-    pub(crate) clipped_video_id: Option<crate::model::VideoId>,
+    pub(super) clipped_video_id: Option<crate::model::VideoId>,
     /// 曲が始まる時間
-    pub(crate) start_time: crate::model::Duration,
+    pub(super) start_time: crate::model::Duration,
     /// 曲が終わる時間
-    pub(crate) end_time: crate::model::Duration,
+    pub(super) end_time: crate::model::Duration,
     /// タグ
-    pub(crate) clip_tags: Option<crate::model::ClipTags>,
+    pub(super) clip_tags: Option<crate::model::ClipTags>,
     /// uuid
-    pub(crate) uuid: crate::model::UuidVer4,
+    pub(super) uuid: crate::model::UuidVer4,
     /// 音量の正規化時に設定すべき音量
-    pub(crate) volume_percent: Option<crate::model::VolumePercent>,
+    pub(super) volume_percent: Option<crate::model::VolumePercent>,
 }
 
 impl VerifiedClipInitializer {
@@ -106,7 +106,7 @@ impl VerifiedClipInitializer {
     /// - Error:
     ///   - `start_time` >= `end_time`のとき
     ///   - `start_time`or `end_time`の時間が, 与えられた動画情報にある動画の長さより長いとき
-    pub(crate) fn init(
+    pub(super) fn init(
         self,
         video_duration: &crate::model::Duration,
     ) -> Result<VerifiedClip, VerifiedClipError> {
@@ -162,17 +162,34 @@ impl VerifiedClipInitializer {
 // ∵ 単品で`Verified`かどうかを確認できないため
 
 impl VerifiedClip {
-    pub(crate) fn get_uuid(&self) -> &crate::model::UuidVer4 {
-        &self.uuid
-    }
     pub(crate) fn get_song_title(&self) -> &str {
         &self.song_title
+    }
+    pub(crate) fn get_artists(&self) -> &crate::model::InternalArtists {
+        &self.artists
+    }
+    pub(crate) fn get_external_artists(
+        &self,
+    ) -> Option<&crate::model::ExternalArtists> {
+        self.external_artists.as_ref()
+    }
+    pub(crate) fn get_clipped_video_id(&self) -> Option<&crate::model::VideoId> {
+        self.clipped_video_id.as_ref()
     }
     pub(crate) fn get_start_time(&self) -> &crate::model::Duration {
         &self.start_time
     }
     pub(crate) fn get_end_time(&self) -> &crate::model::Duration {
         &self.end_time
+    }
+    pub(crate) fn get_clip_tags(&self) -> Option<&crate::model::ClipTags> {
+        self.clip_tags.as_ref()
+    }
+    pub(crate) fn get_uuid(&self) -> &crate::model::UuidVer4 {
+        &self.uuid
+    }
+    pub(crate) fn get_volume_percent(&self) -> Option<&crate::model::VolumePercent> {
+        self.volume_percent.as_ref()
     }
 
     pub(super) fn into_inner(self) -> VerifiedClipInner {
