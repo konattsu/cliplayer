@@ -115,7 +115,7 @@ impl AnonymousClip {
         video_duration: &crate::model::Duration,
     ) -> Result<super::VerifiedClip, super::VerifiedClipError> {
         let uuid = crate::model::UuidVer4::generate();
-        super::VerifiedClipInitializer {
+        super::verified::VerifiedClipInitializer {
             song_title: self.song_title,
             artists: self.artists,
             external_artists: self.external_artists,
@@ -144,7 +144,7 @@ impl AnonymousClip {
                 i + 1,
                 clip.song_title,
                 clip_range,
-                clip.artists.to_artists_ja_name().join("<br>"),
+                clip.artists.get_artists_ja_name().join("<br>"),
                 other_info
             );
             md_str.push_str(&row);

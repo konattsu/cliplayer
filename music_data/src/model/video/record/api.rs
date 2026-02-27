@@ -13,7 +13,7 @@ pub(crate) struct ApiVideoInfo {
     pub(super) published_at: crate::model::VideoPublishedAt,
     /// この情報を取得した日時
     #[serde(with = "crate::util::datetime_serde")]
-    pub(super) modified_at: chrono::DateTime<chrono::Utc>,
+    pub(super) synced_at: chrono::DateTime<chrono::Utc>,
     /// 動画の長さ
     pub(super) duration: crate::model::Duration,
     /// 動画のプライバシー設定
@@ -40,7 +40,7 @@ pub(crate) struct ApiVideoInfoInitializer {
     /// 動画の公開日時
     pub(crate) published_at: crate::model::VideoPublishedAt,
     /// この情報を取得した日時
-    pub(crate) modified_at: chrono::DateTime<chrono::Utc>,
+    pub(crate) synced_at: chrono::DateTime<chrono::Utc>,
     /// 動画の長さ
     pub(crate) duration: crate::model::Duration,
     /// 動画のプライバシー設定
@@ -56,7 +56,7 @@ impl ApiVideoInfoInitializer {
             title: self.title,
             channel_id: self.channel_id,
             published_at: self.published_at,
-            modified_at: self.modified_at,
+            synced_at: self.synced_at,
             duration: self.duration,
             privacy_status: self.privacy_status,
             embeddable: self.embeddable,
@@ -65,17 +65,33 @@ impl ApiVideoInfoInitializer {
 }
 
 impl ApiVideoInfo {
+    pub(crate) fn get_video_id(&self) -> &crate::model::VideoId {
+        &self.video_id
+    }
+    pub(crate) fn get_title(&self) -> &str {
+        &self.title
+    }
+    pub(crate) fn get_channel_id(&self) -> &crate::model::ChannelId {
+        &self.channel_id
+    }
     pub(crate) fn get_published_at(&self) -> &crate::model::VideoPublishedAt {
         &self.published_at
     }
-    pub(crate) fn get_video_id(&self) -> &crate::model::VideoId {
-        &self.video_id
+    pub(crate) fn get_synced_at(&self) -> &chrono::DateTime<chrono::Utc> {
+        &self.synced_at
     }
     pub(crate) fn get_duration(&self) -> &crate::model::Duration {
         &self.duration
     }
+    pub(crate) fn get_privacy_status(&self) -> &crate::model::PrivacyStatus {
+        &self.privacy_status
+    }
+    pub(crate) fn is_embeddable(&self) -> bool {
+        self.embeddable
+    }
 
-    pub(crate) fn is_same_except_modified_at(&self, other: &ApiVideoInfo) -> bool {
+    /// `synced_at`を除いて他のフィールドが一致するか比較
+    pub(crate) fn is_same_except_synced_at(&self, other: &ApiVideoInfo) -> bool {
         self.video_id == other.video_id
             && self.title == other.title
             && self.channel_id == other.channel_id
@@ -87,6 +103,7 @@ impl ApiVideoInfo {
 }
 
 impl ApiVideoInfoList {
+    /// `ApiVideoInfo`のリストから重複を除いて`ApiVideoInfoList`を生成
     pub(crate) fn from_vec_ignore_duplicated(details: Vec<ApiVideoInfo>) -> Self {
         Self {
             inner: details
@@ -108,7 +125,7 @@ impl ApiVideoInfo {
             title: "Test Video A".to_string(),
             channel_id: crate::model::ChannelId::test_id_1(),
             published_at: crate::model::VideoPublishedAt::self_1(),
-            modified_at: chrono::Utc.with_ymd_and_hms(2025, 1, 1, 1, 1, 1).unwrap(),
+            synced_at: chrono::Utc.with_ymd_and_hms(2025, 1, 1, 1, 1, 1).unwrap(),
             duration: crate::model::Duration::self_3(),
             privacy_status: crate::model::PrivacyStatus::Public,
             embeddable: true,
@@ -123,7 +140,7 @@ impl ApiVideoInfo {
             title: "Test Video B".to_string(),
             channel_id: crate::model::ChannelId::test_id_2(),
             published_at: crate::model::VideoPublishedAt::self_2(),
-            modified_at: chrono::Utc.with_ymd_and_hms(2025, 7, 7, 7, 7, 7).unwrap(),
+            synced_at: chrono::Utc.with_ymd_and_hms(2025, 7, 7, 7, 7, 7).unwrap(),
             duration: crate::model::Duration::self_2(),
             privacy_status: crate::model::PrivacyStatus::Private,
             embeddable: false,
@@ -131,12 +148,13 @@ impl ApiVideoInfo {
         .init()
     }
 
-    pub(crate) fn update_modified_at(self, new: chrono::DateTime<chrono::Utc>) -> Self {
+    pub(crate) fn update_synced_at(self, new: chrono::DateTime<chrono::Utc>) -> Self {
         Self {
-            modified_at: new,
+            synced_at: new,
             ..self
         }
     }
+
     pub(crate) fn set_duration(self, duration: crate::model::Duration) -> Self {
         Self { duration, ..self }
     }
@@ -158,7 +176,7 @@ mod tests {
         assert_eq!(a.title, "Test Video A");
         assert_eq!(a.channel_id, crate::model::ChannelId::test_id_1());
         assert_eq!(a.published_at, crate::model::VideoPublishedAt::self_1());
-        assert_eq!(a.modified_at, chrono::Utc.with_ymd_and_hms(2025, 1, 1, 1, 1, 1).unwrap());
+        assert_eq!(a.synced_at, chrono::Utc.with_ymd_and_hms(2025, 1, 1, 1, 1, 1).unwrap());
         assert_eq!(a.duration, crate::model::Duration::self_3());
         assert_eq!(a.privacy_status, crate::model::PrivacyStatus::Public);
         assert!(a.embeddable);
@@ -168,7 +186,7 @@ mod tests {
         assert_eq!(b.title, "Test Video B");
         assert_eq!(b.channel_id, crate::model::ChannelId::test_id_2());
         assert_eq!(b.published_at, crate::model::VideoPublishedAt::self_2());
-        assert_eq!(b.modified_at, chrono::Utc.with_ymd_and_hms(2025, 7, 7, 7, 7, 7).unwrap());
+        assert_eq!(b.synced_at, chrono::Utc.with_ymd_and_hms(2025, 7, 7, 7, 7, 7).unwrap());
         assert_eq!(b.duration, crate::model::Duration::self_2());
         assert_eq!(b.privacy_status, crate::model::PrivacyStatus::Private);
         assert!(!b.embeddable);
@@ -181,7 +199,7 @@ mod tests {
             title: format!("Video Title for {id}"),
             channel_id: crate::model::ChannelId::test_id_1(),
             published_at: crate::model::VideoPublishedAt::self_1(),
-            modified_at: chrono::Utc.with_ymd_and_hms(2025, 1, 1, 1, 1, 1).unwrap(),
+            synced_at: chrono::Utc.with_ymd_and_hms(2025, 1, 1, 1, 1, 1).unwrap(),
             duration: crate::model::Duration::self_1(),
             privacy_status: crate::model::PrivacyStatus::Public,
             embeddable: true,

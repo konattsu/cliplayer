@@ -198,6 +198,10 @@ impl VerifiedVideos {
         vec
     }
 
+    pub(crate) fn to_vec(&self) -> Vec<&super::VerifiedVideo> {
+        self.inner.values().collect()
+    }
+
     pub(crate) fn to_video_ids(&self) -> crate::model::VideoIds {
         self.inner
             .keys()
@@ -213,7 +217,7 @@ impl VerifiedVideos {
     }
 }
 
-// MARK: For Tests
+// MARK: Tests
 
 #[cfg(test)]
 mod tests {

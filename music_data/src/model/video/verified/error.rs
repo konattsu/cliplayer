@@ -38,16 +38,17 @@ impl From<VerifiedVideoErrors> for Vec<VerifiedVideoError> {
 }
 
 impl VerifiedVideoError {
+    /// `local`と`fetched`の動画idが一致するか確認
     pub(super) fn ensure_video_id_match(
-        expected: &crate::model::VideoId,
-        actual: &crate::model::VideoId,
+        local: &crate::model::VideoId,
+        fetched: &crate::model::VideoId,
     ) -> Result<(), Self> {
-        if expected == actual {
+        if local == fetched {
             Ok(())
         } else {
             Err(VerifiedVideoError::VideoIdMismatch {
-                local: expected.clone(),
-                fetched: actual.clone(),
+                local: local.clone(),
+                fetched: fetched.clone(),
             })
         }
     }
@@ -90,6 +91,7 @@ impl VerifiedVideoError {
 }
 
 impl VerifiedVideoErrors {
+    /// 成形して表示する用の文字列をつくる
     pub fn to_pretty_string(&self) -> String {
         let mut err_str = String::new();
         for e in self.errs.iter() {

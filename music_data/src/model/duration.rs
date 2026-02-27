@@ -8,6 +8,9 @@ pub(crate) struct Duration {
 }
 
 impl Duration {
+    /// chrono::Durationから新規作成
+    ///
+    /// - Err(e): 24時間を超えるとき. 24時間ちょうどを含む
     pub(crate) fn from_chrono_duration(
         duration: chrono::Duration,
     ) -> Result<Duration, &'static str> {
@@ -18,10 +21,14 @@ impl Duration {
         })
     }
 
+    /// u32[secs]に変換
     pub(crate) fn as_secs(&self) -> u32 {
         u32::try_from(self.inner.num_seconds()).expect("Duration.as_secs() overflowed")
     }
 
+    /// 人間が見やすく短い形式に変換
+    ///
+    /// - e.g. `PT1H2M3S` -> `1:02:03`, `PT10S` -> `10`, `PT2M` -> `20:00`
     pub(crate) fn to_short_str(&self) -> String {
         let total_secs = self.inner.num_seconds();
         let hours = total_secs / 3600;
@@ -93,7 +100,7 @@ impl std::str::FromStr for Duration {
         }
 
         // 出力のi64ではoverflowは起きない (∵ 2^16 * 3600 < 2^(64-1))
-        // 計算時にu16だとオーバフローが起こるので事前にキャスト変換しておく
+        // 計算時にu16のままで可算するとオーバフローが起こるので事前にキャスト変換しておく
         #[allow(clippy::unnecessary_cast)]
         let total_secs = ((hours as i64 * 3600) as i64)
             + ((mins as i64 * 60) as i64)
@@ -311,6 +318,7 @@ mod tests {
             serde_json::to_string(&StructForDeserializeSerialize { duration }).unwrap();
         assert_eq!(serialized, r#"{"duration":"PT1H2M3S"}"#);
     }
+
     #[test]
     fn test_duration_deserialize() {
         let json = r#"{"duration":"PT1H2M3S"}"#;
@@ -321,6 +329,18 @@ mod tests {
             Duration::from_str("PT1H2M3S").unwrap()
         );
     }
-}
 
-// TODO テスト追加した分かく
+    #[test]
+    fn test_duration_to_short_str() {
+        let cases: Vec<(Duration, &str)> = vec![
+            (duration_from_hms(0, 0, 10), "10"),
+            (duration_from_hms(0, 2, 0), "2:00"),
+            (duration_from_hms(1, 2, 3), "1:02:03"),
+            (duration_from_hms(23, 59, 59), "23:59:59"),
+            (duration_from_hms(0, 0, 0), "0"),
+        ];
+        for (duration, expected) in cases {
+            assert_eq!(duration.to_short_str(), expected);
+        }
+    }
+}

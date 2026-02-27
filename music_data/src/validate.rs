@@ -67,6 +67,7 @@ pub fn validate_new_input_md(
     let videos = try_load_anonymous_videos(files).map_err(|e| e.to_pretty_string())?;
 
     let mut md_str = "# Music Data Summary\n".to_string();
+    // TODO ソートするようにしてもいいかも
     for video in videos.into_inner().values() {
         md_str.push_str(&video.to_markdown());
     }
