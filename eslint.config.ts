@@ -1,16 +1,33 @@
 import importPlugin from "eslint-plugin-import";
 import jsxA11y from "eslint-plugin-jsx-a11y";
-import prettierConfig from "eslint-config-prettier";
+import prettierConfig from "eslint-config-prettier/flat";
 import prettierPlugin from "eslint-plugin-prettier";
+import unusedImports from "eslint-plugin-unused-imports";
 import tseslintParser from "@typescript-eslint/parser";
 import tseslintPlugin from "@typescript-eslint/eslint-plugin";
+import angular from "angular-eslint";
 
 // ref: https://eslint.org/docs/latest/use/configure/ignore#including-gitignore-files
-import js from "@eslint/js";
 import { includeIgnoreFile } from "@eslint/compat";
 import { fileURLToPath } from "url";
 
 const gitignorePath = fileURLToPath(new URL("./.gitignore", import.meta.url));
+
+// angular-eslintはextendsを使う前提で作られている.
+// しかし, このプロジェクトはflatを使うのでextendsできない. そのためなんか汚い処理が必要らしい
+// Normalize an angular-eslint exported config (object or array) into an array
+// of flat-config objects and scope them to the given `files` glob.
+function normalizeAndScopeAngularConfigs(
+  cfg: any,
+  files: string[] = ["src/**/*.html"],
+) {
+  if (!cfg) return [];
+  const arr = Array.isArray(cfg) ? cfg : [cfg];
+  return arr.map((c) => {
+    if (!c || typeof c !== "object") return { files };
+    return { ...c, files };
+  });
+}
 
 export default [
   includeIgnoreFile(gitignorePath),
@@ -33,7 +50,6 @@ export default [
       sourceType: "module",
     },
   },
-  js.configs.recommended,
   prettierConfig,
 
   // For test
@@ -51,6 +67,7 @@ export default [
     },
   },
 
+  // typescript
   {
     files: ["src/**/*.ts"],
     languageOptions: {
@@ -65,11 +82,11 @@ export default [
     plugins: {
       "@typescript-eslint": tseslintPlugin,
       prettier: prettierPlugin,
+      "unused-imports": unusedImports,
       "jsx-a11y": jsxA11y,
       import: importPlugin,
     },
     rules: {
-      // TypeScript
       "@typescript-eslint/consistent-type-definitions": ["error", "interface"],
       "@typescript-eslint/explicit-function-return-type": ["error"],
       "@typescript-eslint/no-explicit-any": "error",
@@ -126,10 +143,6 @@ export default [
           ],
           pathGroups: [
             {
-              group: "builtin",
-              position: "before",
-            },
-            {
               pattern: "@src/**",
               group: "parent",
               position: "before",
@@ -142,7 +155,6 @@ export default [
           "newlines-between": "always",
         },
       ],
-      "unused-imports/no-unused-imports": "error",
       "prettier/prettier": "error",
 
       // others
@@ -150,4 +162,8 @@ export default [
       "prefer-template": "error",
     },
   },
+
+  // expand angular-eslint template configs and scope them to src HTML files
+  ...normalizeAndScopeAngularConfigs(angular.configs.templateRecommended),
+  ...normalizeAndScopeAngularConfigs(angular.configs.templateAccessibility),
 ];
