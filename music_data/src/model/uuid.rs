@@ -174,7 +174,7 @@ impl UuidVer4 {
 
     /// `rand_a`(48bit), `rand_b`(12bit), `rand_c`(62bit) の値をランダムに生成
     fn generate_rand() -> (u64, u16, u64) {
-        use rand::Rng;
+        use rand::RngExt;
 
         let mut rng = rand::rng();
         let rand_48bit: u64 = rng.random_range(0..1 << 48); // 0..2^48

@@ -153,23 +153,6 @@ fn handle_validate_new_md(input_file: crate::cli::FilePathsFromCli) -> ! {
 
 fn handle_dev(dev_cmd: crate::cli::UtilCommands) -> Result<(), String> {
     match dev_cmd {
-        crate::cli::UtilCommands::GenerateArtist {
-            input_artists_data_path,
-            artist_output_dir,
-            search_index_file_name,
-            channel_file_name,
-            artists_file_name,
-            music_data_code_snippets_path,
-            ..
-        } => crate::artist::generate(
-            input_artists_data_path,
-            artist_output_dir,
-            search_index_file_name,
-            channel_file_name,
-            artists_file_name,
-            music_data_code_snippets_path,
-        )
-        .map_err(|e| e.to_string()),
         crate::cli::UtilCommands::MergeFiles {
             files,
             dir,

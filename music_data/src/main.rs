@@ -20,5 +20,5 @@ async fn main() {
 fn enable_tracing_log(
     cli: &musictl::cli::Cli,
 ) -> tracing_appender::non_blocking::WorkerGuard {
-    musictl::util::apply_tracing_settings(cli.stdout_level(), cli.file_level())
+    cmn_rs::tracing::apply_tracing_settings(cli.stdout_level(), cli.file_level())
 }
