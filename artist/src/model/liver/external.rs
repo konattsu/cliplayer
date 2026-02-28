@@ -14,7 +14,7 @@ pub(super) struct ExternalArtistName(String);
 /// - `artists` は空でないこと
 /// - `artists` の要素は `ExternalArtist` の順序でソートされていること
 #[derive(Debug, serde::Serialize, Clone, PartialEq, Eq)]
-pub(crate) struct ExternalArtistsName(Vec<ExternalArtistName>);
+pub struct ExternalArtistsName(Vec<ExternalArtistName>);
 
 impl ExternalArtistName {
     /// 新しい外部アーティストを生成
@@ -55,7 +55,7 @@ impl<'de> serde::Deserialize<'de> for ExternalArtistName {
 }
 
 impl ExternalArtistsName {
-    pub(crate) fn to_vec(&self) -> Vec<&str> {
+    pub fn to_vec(&self) -> Vec<&str> {
         self.0.iter().map(|artist| artist.0.as_str()).collect()
     }
 
@@ -84,7 +84,7 @@ impl<'de> serde::Deserialize<'de> for ExternalArtistsName {
     }
 }
 
-#[cfg(test)]
+#[cfg(any(test, feature = "test-helpers"))]
 impl ExternalArtistName {
     /// `Apple Mike`
     pub(crate) fn self_1() -> Self {
@@ -100,7 +100,7 @@ impl ExternalArtistName {
     }
 }
 
-#[cfg(test)]
+#[cfg(any(test, feature = "test-helpers"))]
 impl ExternalArtistsName {
     fn new_for_test(
         mut artists: Vec<ExternalArtistName>,
@@ -113,16 +113,13 @@ impl ExternalArtistsName {
         }
     }
 
-    /// Vec `Apple Mike`
-    pub(crate) fn self_1() -> Self {
+    pub fn self_1() -> Self {
         Self::new_for_test(vec![ExternalArtistName::self_1()]).unwrap()
     }
-    /// Vec `Milk Mike`
-    pub(crate) fn self_2() -> Self {
+    pub fn self_2() -> Self {
         Self::new_for_test(vec![ExternalArtistName::self_2()]).unwrap()
     }
-    /// Vec `Banana Mike`
-    pub(crate) fn self_3() -> Self {
+    pub fn self_3() -> Self {
         Self::new_for_test(vec![ExternalArtistName::self_3()]).unwrap()
     }
 }
@@ -165,7 +162,7 @@ mod tests {
 
     #[test]
     fn artists_deserialize_valid() {
-        let json = r#"[\"External Artist 1\", \"External Artist 2\", \"Apple\"]"#;
+        let json = r#"["External Artist 1", "External Artist 2", "Apple"]"#;
         let artists: ExternalArtistsName =
             serde_json::from_str(json).expect("deserialize");
         assert_eq!(artists.0[0].0, "Apple");

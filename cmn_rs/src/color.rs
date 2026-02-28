@@ -6,7 +6,7 @@ pub struct Color {
     blue: u8,
 }
 
-#[cfg(test)]
+#[cfg(any(test, feature = "test-helpers"))]
 impl Color {
     pub fn from_rgb(red: u8, green: u8, blue: u8) -> Self {
         Color { red, green, blue }

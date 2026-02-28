@@ -13,3 +13,9 @@ tracing = { workspace = true }
 tracing-appender = { workspace = true }
 tracing-subscriber = { workspace = true }
 cmn_rs = { path = "../cmn_rs" }
+
+[dev-dependencies]
+cmn_rs = { path = "../cmn_rs", features = ["test-helpers"] }
+
+[features]
+test-helpers = ["cmn_rs/test-helpers"]

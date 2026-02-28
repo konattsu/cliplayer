@@ -907,6 +907,7 @@ name = "musictl"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "artistctl",
  "chrono",
  "clap",
  "cmn_rs",

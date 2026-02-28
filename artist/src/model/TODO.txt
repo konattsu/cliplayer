@@ -1,6 +1,0 @@
-liver <- 全部の情報あるやつ
-liver-id <- idだけ
-external-artist-name <- 名前(文字列)だけ
-
-cli/被ってるのでutil-rsに移動
-util-rsをcommon-rsとかに命名変更していい

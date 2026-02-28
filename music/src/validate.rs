@@ -7,12 +7,12 @@ pub enum AnonymousVideoValidateError {
     DuplicateVideoId(Vec<crate::model::VideoId>),
     /// ファイルの読み込み失敗
     FileReadError {
-        path: crate::util::FilePath,
+        path: std::path::PathBuf,
         msg: String,
     },
     /// ファイルの内容が不正
     InvalidFileContent {
-        path: crate::util::FilePath,
+        path: std::path::PathBuf,
         msg: String,
     },
 }
@@ -47,10 +47,10 @@ impl AnonymousVideoValidateError {
                 format!("Duplicate video IDs found: {ids_str}\n")
             }
             Self::FileReadError { path, msg } => {
-                format!("Failed to read file {path}: {msg}\n",)
+                format!("Failed to read file {}: {msg}\n", path.display())
             }
             Self::InvalidFileContent { path, msg } => {
-                format!("Invalid content in file {path}: {msg}\n",)
+                format!("Invalid content in file {}: {msg}\n", path.display())
             }
         }
     }
@@ -61,9 +61,7 @@ impl AnonymousVideoValidateError {
 /// # Return
 /// - Ok(String): 検証成功. 入力をmd形式に見やすくした文字列
 /// - Err(String): 検証失敗. エラーメッセージ
-pub fn validate_new_input_md(
-    files: &[crate::util::FilePath],
-) -> Result<String, String> {
+pub fn validate_new_input_md(files: &[std::path::PathBuf]) -> Result<String, String> {
     let videos = try_load_anonymous_videos(files).map_err(|e| e.to_pretty_string())?;
 
     let mut md_str = "# Music Data Summary\n".to_string();
@@ -80,7 +78,7 @@ pub fn validate_new_input_md(
 /// # Return
 /// - Ok(()): 検証成功.
 /// - Err(String): 検証失敗. エラーメッセージ
-pub fn validate_new_input(files: &[crate::util::FilePath]) -> Result<(), String> {
+pub fn validate_new_input(files: &[std::path::PathBuf]) -> Result<(), String> {
     // deserializeできたらok
     let _videos = try_load_anonymous_videos(files).map_err(|e| e.to_pretty_string())?;
     Ok(())
@@ -88,7 +86,7 @@ pub fn validate_new_input(files: &[crate::util::FilePath]) -> Result<(), String>
 
 /// anonymous videosのファイルを読み込む
 pub fn try_load_anonymous_videos(
-    files: &[crate::util::FilePath],
+    files: &[std::path::PathBuf],
 ) -> Result<crate::model::AnonymousVideos, AnonymousVideoValidateErrors> {
     let mut videos = crate::model::AnonymousVideos::new();
     let mut duplicate_ids: Vec<crate::model::VideoId> = Vec::new();
@@ -122,11 +120,11 @@ pub fn try_load_anonymous_videos(
 }
 
 fn deserialize_anonymous_from_file(
-    file: &crate::util::FilePath,
+    file: &std::path::Path,
 ) -> Result<crate::model::AnonymousVideos, AnonymousVideoValidateError> {
-    let file_handle = std::fs::File::open(file.as_path()).map_err(|e| {
+    let file_handle = std::fs::File::open(file).map_err(|e| {
         AnonymousVideoValidateError::FileReadError {
-            path: file.clone(),
+            path: file.to_path_buf(),
             msg: e.to_string(),
         }
     })?;
@@ -135,7 +133,7 @@ fn deserialize_anonymous_from_file(
 
     serde_json::from_reader(reader).map_err(|e| {
         AnonymousVideoValidateError::InvalidFileContent {
-            path: file.clone(),
+            path: file.to_path_buf(),
             msg: e.to_string(),
         }
     })

@@ -11,10 +11,10 @@ pub(crate) struct VerifiedClip {
     /// 曲名
     song_title: String,
     /// 内部アーティストの一覧
-    artists: crate::model::InternalArtists,
+    liver_ids: artistctl::model::LiverIds,
     /// 外部アーティストの一覧
     #[serde(skip_serializing_if = "Option::is_none")]
-    external_artists: Option<crate::model::ExternalArtists>,
+    external_artists_name: Option<artistctl::model::ExternalArtistsName>,
     /// 切り抜いた動画が存在した場合の動画id
     #[serde(skip_serializing_if = "Option::is_none")]
     clipped_video_id: Option<crate::model::VideoId>,
@@ -62,9 +62,9 @@ pub(super) struct VerifiedClipInner {
     /// 曲名
     pub(super) song_title: String,
     /// 内部アーティストの一覧
-    pub(super) artists: crate::model::InternalArtists,
+    pub(super) liver_ids: artistctl::model::LiverIds,
     /// 外部アーティストの一覧
-    pub(super) external_artists: Option<crate::model::ExternalArtists>,
+    pub(super) external_artists_name: Option<artistctl::model::ExternalArtistsName>,
     /// 切り抜いた動画が存在した場合の動画id
     pub(super) clipped_video_id: Option<crate::model::VideoId>,
     /// 曲が始まる時間
@@ -83,9 +83,9 @@ pub(super) struct VerifiedClipInitializer {
     /// 曲名
     pub(super) song_title: String,
     /// 内部アーティストの一覧
-    pub(super) artists: crate::model::InternalArtists,
+    pub(super) liver_ids: artistctl::model::LiverIds,
     /// 外部アーティストの一覧
-    pub(super) external_artists: Option<crate::model::ExternalArtists>,
+    pub(super) external_artists_name: Option<artistctl::model::ExternalArtistsName>,
     /// 切り抜いた動画が存在した場合の動画id
     pub(super) clipped_video_id: Option<crate::model::VideoId>,
     /// 曲が始まる時間
@@ -114,8 +114,8 @@ impl VerifiedClipInitializer {
 
         Ok(VerifiedClip {
             song_title: self.song_title,
-            artists: self.artists,
-            external_artists: self.external_artists,
+            liver_ids: self.liver_ids,
+            external_artists_name: self.external_artists_name,
             clipped_video_id: self.clipped_video_id,
             start_time: self.start_time,
             end_time: self.end_time,
@@ -165,13 +165,13 @@ impl VerifiedClip {
     pub(crate) fn get_song_title(&self) -> &str {
         &self.song_title
     }
-    pub(crate) fn get_artists(&self) -> &crate::model::InternalArtists {
-        &self.artists
+    pub(crate) fn get_liver_ids(&self) -> &artistctl::model::LiverIds {
+        &self.liver_ids
     }
-    pub(crate) fn get_external_artists(
+    pub(crate) fn get_external_artists_name(
         &self,
-    ) -> Option<&crate::model::ExternalArtists> {
-        self.external_artists.as_ref()
+    ) -> Option<&artistctl::model::ExternalArtistsName> {
+        self.external_artists_name.as_ref()
     }
     pub(crate) fn get_clipped_video_id(&self) -> Option<&crate::model::VideoId> {
         self.clipped_video_id.as_ref()
@@ -195,8 +195,8 @@ impl VerifiedClip {
     pub(super) fn into_inner(self) -> VerifiedClipInner {
         VerifiedClipInner {
             song_title: self.song_title,
-            artists: self.artists,
-            external_artists: self.external_artists,
+            liver_ids: self.liver_ids,
+            external_artists_name: self.external_artists_name,
             clipped_video_id: self.clipped_video_id,
             start_time: self.start_time,
             end_time: self.end_time,
@@ -221,8 +221,8 @@ impl VerifiedClip {
     pub(crate) fn self_a_1() -> Self {
         let ini_1 = VerifiedClipInitializer {
             song_title: "Test Song A1".to_string(),
-            artists: crate::model::InternalArtists::self_1(),
-            external_artists: Some(crate::model::ExternalArtists::self_1()),
+            liver_ids: artistctl::model::LiverIds::self_1(),
+            external_artists_name: Some(artistctl::model::ExternalArtistsName::self_1()),
             clipped_video_id: None,
             start_time: crate::model::Duration::from_secs_u16(5),
             end_time: crate::model::Duration::from_secs_u16(10),
@@ -235,8 +235,8 @@ impl VerifiedClip {
     pub(crate) fn self_a_2() -> Self {
         let ini_2 = VerifiedClipInitializer {
             song_title: "Test Song A2".to_string(),
-            artists: crate::model::InternalArtists::self_2(),
-            external_artists: None,
+            liver_ids: artistctl::model::LiverIds::self_2(),
+            external_artists_name: None,
             clipped_video_id: Some(crate::model::VideoId::test_id_3()),
             start_time: crate::model::Duration::from_secs_u16(15),
             end_time: crate::model::Duration::from_secs_u16(20),
@@ -249,8 +249,8 @@ impl VerifiedClip {
     pub(crate) fn self_a_3() -> Self {
         let ini_3 = VerifiedClipInitializer {
             song_title: "Test Song A3".to_string(),
-            artists: crate::model::InternalArtists::self_3(),
-            external_artists: Some(crate::model::ExternalArtists::self_2()),
+            liver_ids: artistctl::model::LiverIds::self_3(),
+            external_artists_name: Some(artistctl::model::ExternalArtistsName::self_2()),
             clipped_video_id: None,
             start_time: crate::model::Duration::from_secs_u16(25),
             end_time: crate::model::Duration::from_secs_u16(30),
@@ -269,8 +269,8 @@ impl VerifiedClip {
     pub(crate) fn self_b_1() -> Self {
         let ini_b1 = VerifiedClipInitializer {
             song_title: "Test Song B1".to_string(),
-            artists: crate::model::InternalArtists::self_1(),
-            external_artists: Some(crate::model::ExternalArtists::self_3()),
+            liver_ids: artistctl::model::LiverIds::self_1(),
+            external_artists_name: Some(artistctl::model::ExternalArtistsName::self_3()),
             clipped_video_id: Some(crate::model::VideoId::test_id_4()),
             start_time: crate::model::Duration::from_secs_u16(7),
             end_time: crate::model::Duration::from_secs_u16(17),
@@ -283,8 +283,8 @@ impl VerifiedClip {
     pub(crate) fn self_b_2() -> Self {
         let ini_b2 = VerifiedClipInitializer {
             song_title: "Test Song B2".to_string(),
-            artists: crate::model::InternalArtists::self_2(),
-            external_artists: None,
+            liver_ids: artistctl::model::LiverIds::self_2(),
+            external_artists_name: None,
             clipped_video_id: None,
             start_time: crate::model::Duration::from_secs_u16(27),
             end_time: crate::model::Duration::from_secs_u16(37),
@@ -297,8 +297,8 @@ impl VerifiedClip {
     pub(crate) fn self_b_3() -> Self {
         let ini_b3 = VerifiedClipInitializer {
             song_title: "Test Song B3".to_string(),
-            artists: crate::model::InternalArtists::self_1(),
-            external_artists: None,
+            liver_ids: artistctl::model::LiverIds::self_1(),
+            external_artists_name: None,
             clipped_video_id: Some(crate::model::VideoId::test_id_5()),
             start_time: crate::model::Duration::from_secs_u16(47),
             end_time: crate::model::Duration::from_secs_u16(57),
@@ -326,8 +326,8 @@ mod tests {
     fn test_verified_clip_for_test_methods() {
         let clip_a_1 = VerifiedClip::self_a_1();
         assert_eq!(clip_a_1.song_title, "Test Song A1");
-        assert_eq!(clip_a_1.artists, crate::model::InternalArtists::self_1());
-        assert_eq!(clip_a_1.external_artists, Some(crate::model::ExternalArtists::self_1()));
+        assert_eq!(clip_a_1.liver_ids, artistctl::model::LiverIds::self_1());
+        assert_eq!(clip_a_1.external_artists_name, Some(artistctl::model::ExternalArtistsName::self_1()));
         assert!(clip_a_1.clipped_video_id.is_none());
         assert_eq!(clip_a_1.start_time, crate::model::Duration::from_secs_u16(5));
         assert_eq!(clip_a_1.end_time, crate::model::Duration::from_secs_u16(10));
@@ -337,8 +337,8 @@ mod tests {
 
         let clip_a_2 = VerifiedClip::self_a_2();
         assert_eq!(clip_a_2.song_title, "Test Song A2");
-        assert_eq!(clip_a_2.artists, crate::model::InternalArtists::self_2());
-        assert_eq!(clip_a_2.external_artists, None);
+        assert_eq!(clip_a_2.liver_ids, artistctl::model::LiverIds::self_2());
+        assert_eq!(clip_a_2.external_artists_name, None);
         assert_eq!(clip_a_2.clipped_video_id, Some(crate::model::VideoId::test_id_3()));
         assert_eq!(clip_a_2.start_time, crate::model::Duration::from_secs_u16(15));
         assert_eq!(clip_a_2.end_time, crate::model::Duration::from_secs_u16(20));
@@ -348,8 +348,8 @@ mod tests {
 
         let clip_a_3 = VerifiedClip::self_a_3();
         assert_eq!(clip_a_3.song_title, "Test Song A3");
-        assert_eq!(clip_a_3.artists, crate::model::InternalArtists::self_3());
-        assert_eq!(clip_a_3.external_artists, Some(crate::model::ExternalArtists::self_2()));
+        assert_eq!(clip_a_3.liver_ids, artistctl::model::LiverIds::self_3());
+        assert_eq!(clip_a_3.external_artists_name, Some(artistctl::model::ExternalArtistsName::self_2()));
         assert!(clip_a_3.clipped_video_id.is_none());
         assert_eq!(clip_a_3.start_time, crate::model::Duration::from_secs_u16(25));
         assert_eq!(clip_a_3.end_time, crate::model::Duration::from_secs_u16(30));
@@ -359,8 +359,8 @@ mod tests {
 
         let clip_b_1 = VerifiedClip::self_b_1();
         assert_eq!(clip_b_1.song_title, "Test Song B1");
-        assert_eq!(clip_b_1.artists, crate::model::InternalArtists::self_1());
-        assert_eq!(clip_b_1.external_artists, Some(crate::model::ExternalArtists::self_3()));
+        assert_eq!(clip_b_1.liver_ids, artistctl::model::LiverIds::self_1());
+        assert_eq!(clip_b_1.external_artists_name, Some(artistctl::model::ExternalArtistsName::self_3()));
         assert_eq!(clip_b_1.clipped_video_id, Some(crate::model::VideoId::test_id_4()));
         assert_eq!(clip_b_1.start_time, crate::model::Duration::from_secs_u16(7));
         assert_eq!(clip_b_1.end_time, crate::model::Duration::from_secs_u16(17));
@@ -370,8 +370,8 @@ mod tests {
 
         let clip_b_2 = VerifiedClip::self_b_2();
         assert_eq!(clip_b_2.song_title, "Test Song B2");
-        assert_eq!(clip_b_2.artists, crate::model::InternalArtists::self_2());
-        assert_eq!(clip_b_2.external_artists, None);
+        assert_eq!(clip_b_2.liver_ids, artistctl::model::LiverIds::self_2());
+        assert_eq!(clip_b_2.external_artists_name, None);
         assert!(clip_b_2.clipped_video_id.is_none());
         assert_eq!(clip_b_2.start_time, crate::model::Duration::from_secs_u16(27));
         assert_eq!(clip_b_2.end_time, crate::model::Duration::from_secs_u16(37));
@@ -381,8 +381,8 @@ mod tests {
 
         let clip_b_3 = VerifiedClip::self_b_3();
         assert_eq!(clip_b_3.song_title, "Test Song B3");
-        assert_eq!(clip_b_3.artists, crate::model::InternalArtists::self_1());
-        assert_eq!(clip_b_3.external_artists, None);
+        assert_eq!(clip_b_3.liver_ids, artistctl::model::LiverIds::self_1());
+        assert_eq!(clip_b_3.external_artists_name, None);
         assert_eq!(clip_b_3.clipped_video_id, Some(crate::model::VideoId::test_id_5()));
         assert_eq!(clip_b_3.start_time, crate::model::Duration::from_secs_u16(47));
         assert_eq!(clip_b_3.end_time, crate::model::Duration::from_secs_u16(57));
@@ -396,8 +396,8 @@ mod tests {
         // 正常
         let verified_initializer = VerifiedClipInitializer {
             song_title: "Test Song".to_string(),
-            artists: crate::model::InternalArtists::self_1(),
-            external_artists: None,
+            liver_ids: artistctl::model::LiverIds::self_1(),
+            external_artists_name: None,
             clipped_video_id: None,
             start_time: crate::model::Duration::from_secs_u16(30),
             end_time: crate::model::Duration::from_secs_u16(40),
@@ -412,8 +412,8 @@ mod tests {
         // 異常, `start_time`か`end_time`動画の長さを超えている
         let verified_initializer = VerifiedClipInitializer {
             song_title: "Test Song".to_string(),
-            artists: crate::model::InternalArtists::self_1(),
-            external_artists: None,
+            liver_ids: artistctl::model::LiverIds::self_1(),
+            external_artists_name: None,
             clipped_video_id: None,
             start_time: crate::model::Duration::from_secs_u16(30),
             end_time: crate::model::Duration::from_secs_u16(50),

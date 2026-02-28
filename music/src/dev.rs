@@ -27,13 +27,13 @@ pub fn find_video_ids(
 /// - Ok(path): マージされたファイルのパスのリスト
 /// - Err(e): エラーが発生した場合のエラーメッセージ
 pub fn merge_files(
-    files: Option<Vec<crate::util::FilePath>>,
-    dir: &crate::util::DirPath,
-    output_dir: crate::util::DirPath,
-) -> Result<Vec<crate::util::FilePath>, String> {
-    let files: Vec<crate::util::FilePath> = match (files, dir) {
+    files: Option<Vec<std::path::PathBuf>>,
+    dir: &std::path::PathBuf,
+    output_dir: std::path::PathBuf,
+) -> Result<Vec<std::path::PathBuf>, String> {
+    let files: Vec<std::path::PathBuf> = match (files, dir) {
         (Some(files), dir) => {
-            println!("dir(`{dir}`) is ignored because `files` is provided.");
+            println!("dir(`{dir:?}`) is ignored because `files` is provided.");
             files
         }
         (None, dir) => collect_json_paths_from_dir(dir)?,
@@ -42,7 +42,7 @@ pub fn merge_files(
     let videos = crate::validate::try_load_anonymous_videos(&files)
         .map_err(|e| e.to_pretty_string())?;
 
-    let file = output_dir.into_path_buf().join(format!(
+    let file = output_dir.join(format!(
         "{}.json",
         chrono::Utc::now().format("%Y-%m-%d_%H-%M-%S")
     ));
@@ -53,13 +53,21 @@ pub fn merge_files(
 }
 
 fn collect_json_paths_from_dir(
-    dir: &crate::util::DirPath,
-) -> Result<Vec<crate::util::FilePath>, String> {
+    dir: &std::path::Path,
+) -> Result<Vec<std::path::PathBuf>, String> {
     let mut paths = Vec::new();
-    for entry in std::fs::read_dir(dir.as_path()).map_err(|e| e.to_string())? {
+    for entry in std::fs::read_dir(dir).map_err(|e| e.to_string())? {
         let entry = entry.map_err(|e| e.to_string())?;
         if entry.path().extension().and_then(|s| s.to_str()) == Some("json") {
-            paths.push(crate::util::FilePath::from_path_buf(entry.path())?);
+            let path = entry.path();
+            if !path.is_file() {
+                return Err(format!(
+                    "Expected a file but found a directory: `{}`",
+                    path.display()
+                ));
+            } else {
+                paths.push(path);
+            }
         }
     }
     Ok(paths)

@@ -1,13 +1,13 @@
 pub async fn apply_sync(
     mut music_lib: crate::music_file::MusicLibrary,
     api_key: crate::fetcher::YouTubeApiKey,
-    min_clips_path: &crate::util::FilePath,
-    min_videos_path: &crate::util::FilePath,
+    min_clips_path: &std::path::Path,
+    min_videos_path: &std::path::Path,
 ) -> Result<(), String> {
     let youtube_api = crate::fetcher::YouTubeApi::new(api_key);
 
     for music_file in music_lib.iter_files_mut() {
-        tracing::debug!("Syncing music file: {}", music_file.get_path());
+        tracing::debug!("Syncing music file: {}", music_file.get_path().display());
         let video_ids = music_file.get_video_ids();
 
         let api_video_info_list = youtube_api

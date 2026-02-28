@@ -2,7 +2,7 @@
 ///
 /// 事前に定義したライバーIDのうちのどれかであることを保証
 #[derive(Debug, serde::Serialize, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(crate) struct LiverId(String);
+pub struct LiverId(String);
 
 impl LiverId {
     pub(crate) fn new<'a, T: Into<std::borrow::Cow<'a, str>>>(
@@ -16,8 +16,13 @@ impl LiverId {
         }
     }
 
-    pub(crate) fn as_str(&self) -> &str {
+    pub fn as_str(&self) -> &str {
         &self.0
+    }
+
+    /// バリデーションなしで LiverId を生成。LOADED_LIVER_DATA の初期化時のみ使用。
+    pub(super) fn from_raw(id: String) -> Self {
+        LiverId(id)
     }
 
     /// 有効な内部アーティストIDかどうか
@@ -37,19 +42,19 @@ impl<'de> serde::Deserialize<'de> for LiverId {
     }
 }
 
-#[cfg(test)]
+#[cfg(any(test, feature = "test-helpers"))]
 impl LiverId {
-    /// `riku-tazumi`
-    pub(crate) fn self_1() -> Self {
-        Self::new("riku-tazumi").unwrap()
+    /// `aimer-test`
+    pub fn self_1() -> Self {
+        Self::new("aimer-test").unwrap()
     }
-    /// `yugamin`
-    pub(crate) fn self_2() -> Self {
-        Self::new("yugamin").unwrap()
+    /// `eir-aoi-test`
+    pub fn self_2() -> Self {
+        Self::new("eir-aoi-test").unwrap()
     }
-    /// `yudorikku`
-    pub(crate) fn self_3() -> Self {
-        Self::new("yudorikku").unwrap()
+    /// `lisa-test`
+    pub fn self_3() -> Self {
+        Self::new("lisa-test").unwrap()
     }
 }
 
@@ -59,16 +64,16 @@ mod tests {
 
     #[test]
     fn test_artist_function_for_test_works() {
-        assert_eq!(LiverId::self_1().as_str(), "riku-tazumi");
-        assert_eq!(LiverId::self_2().as_str(), "yugamin");
-        assert_eq!(LiverId::self_3().as_str(), "yudorikku");
+        assert_eq!(LiverId::self_1().as_str(), "aimer-test");
+        assert_eq!(LiverId::self_2().as_str(), "eir-aoi-test");
+        assert_eq!(LiverId::self_3().as_str(), "lisa-test");
     }
 
     #[test]
     fn new_valid_ids_succeed() {
-        assert!(LiverId::new("riku-tazumi").is_ok());
-        assert!(LiverId::new("yugamin").is_ok());
-        assert!(LiverId::new("yudorikku").is_ok());
+        assert!(LiverId::new("aimer-test").is_ok());
+        assert!(LiverId::new("eir-aoi-test").is_ok());
+        assert!(LiverId::new("lisa-test").is_ok());
     }
 
     #[test]
@@ -80,9 +85,9 @@ mod tests {
 
     #[test]
     fn deserialize_valid() {
-        let json = r#""riku-tazumi""#;
+        let json = r#""aimer-test""#;
         let artist: LiverId = serde_json::from_str(json).expect("deserialize failed");
-        assert_eq!(artist.0, "riku-tazumi");
+        assert_eq!(artist.0, "aimer-test");
     }
 
     #[test]

@@ -6,10 +6,10 @@
 /// - `artists` は空でないこと
 /// - `artists` の要素は `LiverId` の順序でソートされていること
 #[derive(Debug, serde::Serialize, Clone, PartialEq, Eq)]
-pub(crate) struct LiverIds(Vec<super::LiverId>);
+pub struct LiverIds(Vec<super::LiverId>);
 
 impl LiverIds {
-    pub(crate) fn new(liver_ids: Vec<&str>) -> Result<Self, String> {
+    pub fn new(liver_ids: Vec<&str>) -> Result<Self, String> {
         if liver_ids.is_empty() {
             Err("liver ids list cannot be empty".to_string())
         } else {
@@ -22,12 +22,18 @@ impl LiverIds {
         }
     }
 
-    pub(crate) fn to_vec(&self) -> Vec<&str> {
+    pub fn to_vec(&self) -> Vec<&str> {
         self.0.iter().map(|artist| artist.as_str()).collect()
     }
 
-    pub(crate) fn into_inner(self) -> Vec<super::LiverId> {
+    /// 各ライバーの日本語名のリストを返す
+    ///
+    /// - `LOADED_LIVER_DATA` に存在するアーティストのみ返す
+    pub fn get_artists_ja_name(&self) -> Vec<String> {
         self.0
+            .iter()
+            .filter_map(|id| super::LOADED_LIVER_DATA.get_ja_name(id))
+            .collect()
     }
 
     fn sort_artists(artists: &mut [super::LiverId]) {
@@ -55,7 +61,7 @@ impl<'de> serde::Deserialize<'de> for LiverIds {
     }
 }
 
-#[cfg(test)]
+#[cfg(any(test, feature = "test-helpers"))]
 impl LiverIds {
     fn new_for_test(mut artists: Vec<super::LiverId>) -> Result<Self, &'static str> {
         if artists.is_empty() {
@@ -66,20 +72,16 @@ impl LiverIds {
         }
     }
 
-    /// Vec `aimer-test`
-    pub(crate) fn self_1() -> Self {
+    pub fn self_1() -> Self {
         Self::new_for_test(vec![super::LiverId::self_1()]).unwrap()
     }
-    /// Vec `eir-aoi-test`
-    pub(crate) fn self_2() -> Self {
+    pub fn self_2() -> Self {
         Self::new_for_test(vec![super::LiverId::self_2()]).unwrap()
     }
-    /// Vec `lisa-test`
-    pub(crate) fn self_3() -> Self {
+    pub fn self_3() -> Self {
         Self::new_for_test(vec![super::LiverId::self_3()]).unwrap()
     }
-    /// Vec `aimer-test`, `eir-aoi-test`, `lisa-test`
-    pub(crate) fn self_4() -> Self {
+    pub fn self_4() -> Self {
         Self::new_for_test(vec![
             super::LiverId::self_1(),
             super::LiverId::self_2(),
@@ -114,7 +116,7 @@ mod tests {
 
     #[test]
     fn deserialize_valid() {
-        let json = r#"[\"eir-aoi-test\", \"lisa-test\", \"aimer-test\"]"#;
+        let json = r#"["eir-aoi-test", "lisa-test", "aimer-test"]"#;
         let artists: LiverIds =
             serde_json::from_str(json).expect("Failed to deserialize internal artists");
         assert_eq!(artists.0[0].as_str(), "aimer-test");

@@ -2,9 +2,9 @@ mod external;
 mod id;
 mod ids;
 
-pub(crate) use external::ExternalArtistsName;
-pub(crate) use id::LiverId;
-pub(crate) use ids::LiverIds;
+pub use external::ExternalArtistsName;
+pub use id::LiverId;
+pub use ids::LiverIds;
 
 //
 
@@ -17,8 +17,27 @@ pub(crate) use ids::LiverIds;
 /// アーティストとその周辺情報のhashmap
 ///
 /// (artist_id, ArtistDefinition)
-#[derive(serde::Deserialize, serde::Serialize, Debug, Clone)]
+#[derive(serde::Serialize, Debug, Clone)]
 pub(crate) struct Livers(std::collections::HashMap<LiverId, Liver>);
+
+/// デシリアライズ時は LiverId のバリデーションを一時的に迂回するため
+/// `HashMap<String, Liver>` として読んでから変換する。
+/// (LiverId::new() が LOADED_LIVER_DATA にアクセスするためデッドロックを防ぐ)
+impl<'de> serde::Deserialize<'de> for Livers {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        use std::collections::HashMap;
+        let raw: HashMap<String, Liver> =
+            serde::Deserialize::deserialize(deserializer)?;
+        let map = raw
+            .into_iter()
+            .map(|(k, v)| (LiverId::from_raw(k), v))
+            .collect::<HashMap<LiverId, Liver>>();
+        Ok(Livers(map))
+    }
+}
 
 /// アーティストとその周辺情報
 #[derive(serde::Deserialize, serde::Serialize, Debug, Clone)]
@@ -38,6 +57,7 @@ pub struct Liver {
     /// カラー
     color: cmn_rs::color::Color,
     /// 整数id
+    #[serde(default)]
     int_id: u16,
     #[serde(skip_serializing_if = "is_false")]
     #[serde(default = "default_for_is_graduate")]
@@ -83,7 +103,7 @@ impl Livers {
         self.0.keys().map(|id| id.as_str())
     }
 
-    /// ソート済みのIDリストを返す。
+    /// ソート済みのIDリストを返す
     pub(crate) fn sorted_ids(&self) -> Vec<&str> {
         let mut ids: Vec<&str> = self.iter_ids().collect();
         ids.sort_unstable();
@@ -92,6 +112,11 @@ impl Livers {
 
     pub(crate) fn into_iter(self) -> impl Iterator<Item = (LiverId, Liver)> {
         self.0.into_iter()
+    }
+
+    /// 指定したIDのアーティストの日本語名を返す. 存在しない場合はNone
+    pub(crate) fn get_ja_name(&self, id: &LiverId) -> Option<String> {
+        self.0.get(id).map(|liver| liver.ja.clone())
     }
 }
 
@@ -116,8 +141,8 @@ impl Liver {
 ///
 /// - `LIVER_SET_PATH` 環境変数で指定されたファイルから読み込む
 ///   - 先ほどの環境変数が指定されていないと `ARTIST_SET_PATH` を読み込む
-#[cfg(not(test))]
-pub static LOADED_LIVER_DATA: once_cell::sync::Lazy<Livers> =
+#[cfg(not(any(test, feature = "test-helpers")))]
+pub(crate) static LOADED_LIVER_DATA: once_cell::sync::Lazy<Livers> =
     once_cell::sync::Lazy::new(|| {
         const LIVER_SET_PATH: &str = "./artist/data/artists_data.json";
 
@@ -137,8 +162,8 @@ pub static LOADED_LIVER_DATA: once_cell::sync::Lazy<Livers> =
     });
 
 /// アーティストidとその周辺情報
-#[cfg(test)]
-pub static LOADED_LIVER_DATA: once_cell::sync::Lazy<Livers> =
+#[cfg(any(test, feature = "test-helpers"))]
+pub(crate) static LOADED_LIVER_DATA: once_cell::sync::Lazy<Livers> =
     once_cell::sync::Lazy::new(|| {
         const LIVER_DATA: &str = r#"
         {
@@ -174,9 +199,9 @@ pub static LOADED_LIVER_DATA: once_cell::sync::Lazy<Livers> =
         livers
     });
 
-#[cfg(test)]
+#[cfg(any(test, feature = "test-helpers"))]
+#[allow(dead_code)] // because these cau be used by other crates with `test-helpers` feature
 impl Liver {
-    /// りっくん
     pub(crate) fn self_1() -> Self {
         Self {
             ja: "田角陸".to_string(),

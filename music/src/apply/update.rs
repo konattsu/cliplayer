@@ -5,8 +5,8 @@
 /// - `Err(String)`: エラーが発生した場合の整形されたエラーメッセージ
 pub fn apply_update(
     music_lib: crate::music_file::MusicLibrary,
-    min_clips_path: &crate::util::FilePath,
-    min_videos_path: &crate::util::FilePath,
+    min_clips_path: &std::path::Path,
+    min_videos_path: &std::path::Path,
 ) -> Result<(), String> {
     // 楽曲情報をファイルから取得して, そのまま書き込む:
     // - minに書き込みが必要なため

@@ -3,10 +3,8 @@
 pub struct FilePathFromCli(String);
 
 impl FilePathFromCli {
-    /// コマンドライン引数から受け取ったファイルパスを`FilePath`に変換
-    pub fn try_into_file_path(self) -> Result<crate::util::FilePath, String> {
-        crate::util::FilePath::new(std::path::Path::new(&self.0))
-            .map_err(|e| format!("Failed to parse file path: {e}"))
+    pub fn into_file_path(self) -> std::path::PathBuf {
+        self.0.into()
     }
 
     pub(super) fn new_unchecked(path: String) -> Self {

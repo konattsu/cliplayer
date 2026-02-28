@@ -5,7 +5,7 @@
 /// - 動画情報の年と月がパスと同じ
 #[derive(Debug, Clone)]
 pub(crate) struct MusicFile {
-    path: crate::util::FilePath,
+    path: std::path::PathBuf,
     videos: super::VideosSameYearMonth,
 }
 
@@ -19,7 +19,7 @@ impl MusicFile {
     pub(crate) fn get_month(&self) -> usize {
         self.videos.get_month()
     }
-    pub(crate) fn get_path(&self) -> &crate::util::FilePath {
+    pub(crate) fn get_path(&self) -> &std::path::Path {
         &self.path
     }
 
@@ -41,23 +41,14 @@ impl MusicFile {
     /// - ファイルの作成に失敗した場合
     pub(crate) fn from_video(
         video: crate::model::VerifiedVideo,
-        root: &crate::util::DirPath,
+        root: &std::path::Path,
     ) -> Result<Self, super::MusicFileError> {
         let (year, month) = (video.get_year(), video.get_month());
         let path = root
-            .clone()
-            .into_path_buf()
             // root直下に`YYYY/MM.json`の形式でパスを生成
             .join(format!("{year:04}/{month:02}.json"));
         // ファイル作る
         std::fs::File::create(&path).map_err(|e| {
-            super::MusicFileError::FileCreate {
-                path: path.display().to_string(),
-                msg: e.to_string(),
-            }
-        })?;
-        // FilePathに変換
-        let path = crate::util::FilePath::new(&path).map_err(|e| {
             super::MusicFileError::FileCreate {
                 path: path.display().to_string(),
                 msg: e.to_string(),
@@ -72,8 +63,8 @@ impl MusicFile {
 
     /// ファイルから楽曲情報を読み込む
     pub(crate) fn load(
-        path: crate::util::FilePath,
-        root: &crate::util::DirPath,
+        path: std::path::PathBuf,
+        root: &std::path::Path,
     ) -> Result<Self, super::MusicFileError> {
         let videos = super::fs_util::deserialize_from_file(&path)?;
         Self::new(path, root, videos)
@@ -82,13 +73,6 @@ impl MusicFile {
     /// ファイルに楽曲情報を書き込む
     ///
     /// pretty形式
-    #[tracing::instrument(
-        skip(self),
-        fields(
-            path = %self.path
-        ),
-        level = tracing::Level::TRACE
-    )]
     pub(crate) fn save(&self) -> Result<(), super::MusicFileError> {
         super::fs_util::serialize_to_file(&self.path, self.videos.get_videos(), false)
     }
@@ -136,8 +120,8 @@ impl MusicFile {
     /// - 楽曲情報のルートから `/YYYY/MM.json` でない
     /// - 動画情報の年と月がパスと異なる
     fn new(
-        path: crate::util::FilePath,
-        root: &crate::util::DirPath,
+        path: std::path::PathBuf,
+        root: &std::path::Path,
         videos: crate::model::VerifiedVideos,
     ) -> Result<Self, super::MusicFileError> {
         let (year, month) = Self::extract_year_month(&path, root)?;
@@ -162,17 +146,16 @@ impl MusicFile {
     /// # Returns
     /// - `Ok((year, month))`: (年, 月)
     fn extract_year_month(
-        path: &crate::util::FilePath,
-        root: &crate::util::DirPath,
+        path: &std::path::Path,
+        root: &std::path::Path,
     ) -> Result<(usize, usize), super::MusicFileError> {
         let to_err = |msg: &str| super::MusicFileError::InvalidPath {
-            path: path.clone(),
+            path: path.to_path_buf(),
             msg: msg.to_string(),
         };
 
         let rel = path
-            .as_path()
-            .strip_prefix(root.as_path())
+            .strip_prefix(root)
             .map_err(|_e| to_err("Path is not relative to root"))?;
 
         // パスが "YYYY/MM.json" 形式か検証
@@ -218,16 +201,11 @@ impl MusicFile {
 mod tests {
     use super::*;
 
-    /// FilePathのダミー生成
-    fn dummy_path<S: AsRef<std::path::Path>>(s: S) -> crate::util::FilePath {
-        crate::util::FilePath::new_uncheck_existence(s.as_ref())
+    fn dummy_dir(path: &str) -> std::path::PathBuf {
+        std::path::PathBuf::from(path)
     }
-
-    /// DirPathのダミー生成
-    #[cfg(test)]
-    fn dummy_dir<S: AsRef<std::path::Path>>(s: S) -> crate::util::DirPath {
-        // テスト用: PathBufから直接生成
-        crate::util::DirPath::new_uncheck_existence(s.as_ref())
+    fn dummy_path(path: &str) -> std::path::PathBuf {
+        std::path::PathBuf::from(path)
     }
 
     // `2024-01` の動画公開日をもつ

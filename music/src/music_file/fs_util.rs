@@ -1,12 +1,12 @@
 /// jsonファイルから楽曲情報をデシリアライズする
 pub(super) fn deserialize_from_file(
-    file: &crate::util::FilePath,
+    file: &std::path::Path,
 ) -> Result<crate::model::VerifiedVideos, super::MusicFileError> {
     use super::MusicFileError;
 
     let file_handle =
-        std::fs::File::open(file.as_path()).map_err(|e| MusicFileError::FileOpen {
-            path: file.to_string(),
+        std::fs::File::open(file).map_err(|e| MusicFileError::FileOpen {
+            path: file.to_string_lossy().to_string(),
             msg: e.to_string(),
             when: "deserializing from file".to_string(),
         })?;
@@ -14,7 +14,7 @@ pub(super) fn deserialize_from_file(
     let reader = std::io::BufReader::new(file_handle);
 
     serde_json::from_reader(reader).map_err(|e| MusicFileError::Deserialize {
-        path: file.clone(),
+        path: file.to_path_buf(),
         msg: e.to_string(),
     })
 }
@@ -26,7 +26,7 @@ pub(super) fn deserialize_from_file(
 /// - `content`: 書き込む内容
 /// - `is_minimized`: minimizedさせるかどうか, minimizedでないときは末尾に改行付与
 pub(super) fn serialize_to_file<T>(
-    file: &crate::util::FilePath,
+    file: &std::path::Path,
     content: &T,
     is_minimized: bool,
 ) -> Result<(), super::MusicFileError>
@@ -36,23 +36,19 @@ where
     use super::MusicFileError;
     use std::io::Write;
 
-    fn to_err(
-        e: &dyn std::fmt::Display,
-        file: &crate::util::FilePath,
-    ) -> MusicFileError {
+    fn to_err(e: &dyn std::fmt::Display, file: &std::path::Path) -> MusicFileError {
         MusicFileError::FileWrite {
             msg: e.to_string(),
-            path: file.clone(),
+            path: file.to_path_buf(),
         }
     }
 
-    let file_handle = std::fs::File::create(file.as_path()).map_err(|e| {
-        MusicFileError::FileOpen {
-            path: file.to_string(),
+    let file_handle =
+        std::fs::File::create(file).map_err(|e| MusicFileError::FileOpen {
+            path: file.to_string_lossy().to_string(),
             msg: e.to_string(),
             when: "serializing to file".to_string(),
-        }
-    })?;
+        })?;
 
     let mut writer = std::io::BufWriter::new(file_handle);
 

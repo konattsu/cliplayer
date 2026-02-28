@@ -10,7 +10,7 @@ pub enum MusicFileError {
     /// 無効なパス
     #[error("Invalid path: {path}, {msg}")]
     InvalidPath {
-        path: crate::util::FilePath,
+        path: std::path::PathBuf,
         msg: String,
     },
     /// ファイル名(年/月を表す)に対して動画の公開日が適していない
@@ -22,7 +22,7 @@ pub enum MusicFileError {
         ids: crate::model::VideoIds,
         year: usize,
         month: usize,
-        file_path: crate::util::FilePath,
+        file_path: std::path::PathBuf,
     },
     /// ファイルを作成する際にエラーが発生
     #[error("Failed to create file {path}: {msg}")]
@@ -37,19 +37,19 @@ pub enum MusicFileError {
     /// ファイルの読み込みに失敗
     #[error("Failed to write content to file {path}: {msg}")]
     FileWrite {
-        path: crate::util::FilePath,
+        path: std::path::PathBuf,
         msg: String,
     },
     /// ディレクトリの読み込みに失敗
     #[error("Failed to read directory {dir}: {msg}")]
     ReadDir {
-        dir: crate::util::DirPath,
+        dir: std::path::PathBuf,
         msg: String,
     },
     /// ファイルの内容のデシリアライズに失敗
     #[error("Failed to deserialize file {path}: {msg}")]
     Deserialize {
-        path: crate::util::FilePath,
+        path: std::path::PathBuf,
         msg: String,
     },
     /// 実装上のエラー
