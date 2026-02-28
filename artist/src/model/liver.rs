@@ -144,7 +144,7 @@ impl Liver {
 #[cfg(not(any(test, feature = "test-helpers")))]
 pub(crate) static LOADED_LIVER_DATA: once_cell::sync::Lazy<Livers> =
     once_cell::sync::Lazy::new(|| {
-        const LIVER_SET_PATH: &str = "./artist/data/artists_data.json";
+        const LIVER_SET_PATH: &str = "./artist/data/livers.json";
 
         let path_str = std::env::var("LIVER_SET_PATH")
             .unwrap_or_else(|_| LIVER_SET_PATH.to_string());
