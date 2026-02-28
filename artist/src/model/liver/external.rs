@@ -84,6 +84,8 @@ impl<'de> serde::Deserialize<'de> for ExternalArtistsName {
     }
 }
 
+// MARK: For Tests
+
 #[cfg(any(test, feature = "test-helpers"))]
 impl ExternalArtistName {
     /// `Apple Mike`
@@ -124,26 +126,29 @@ impl ExternalArtistsName {
     }
 }
 
+// MARK: Tests
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
-    fn new_valid() {
+    fn test_new_valid() {
         assert!(ExternalArtistName::new("External Artist").is_ok());
         assert!(ExternalArtistName::new("Another Artist").is_ok());
     }
 
     #[test]
-    fn new_invalid() {
-        assert!(ExternalArtistName::new("aimer-test").is_err());
-        assert!(ExternalArtistName::new("eir-aoi-test").is_err());
-        assert!(ExternalArtistName::new("lisa-test").is_err());
+    fn test_new_invalid() {
+        // duplicate with `liver_id`
+        assert!(ExternalArtistName::new("riku-tazumi").is_err());
+        assert!(ExternalArtistName::new("yugamin").is_err());
+        assert!(ExternalArtistName::new("yudorikku").is_err());
         assert!(ExternalArtistName::new("").is_err());
     }
 
     #[test]
-    fn deserialize_valid() {
+    fn test_deserialize_valid() {
         let json = r#""External Artist""#;
         let artist: ExternalArtistName =
             serde_json::from_str(json).expect("deserialize");
@@ -151,8 +156,9 @@ mod tests {
     }
 
     #[test]
-    fn deserialize_invalid() {
-        let json = r#""aimer-test""#;
+    fn test_deserialize_invalid() {
+        // duplicate with `liver_id`
+        let json = r#""riku-tazumi""#;
         let result: Result<ExternalArtistName, _> = serde_json::from_str(json);
         assert!(result.is_err());
         let json = r#""""#;
@@ -161,7 +167,7 @@ mod tests {
     }
 
     #[test]
-    fn artists_deserialize_valid() {
+    fn test_artists_deserialize_valid() {
         let json = r#"["External Artist 1", "External Artist 2", "Apple"]"#;
         let artists: ExternalArtistsName =
             serde_json::from_str(json).expect("deserialize");
@@ -171,7 +177,7 @@ mod tests {
     }
 
     #[test]
-    fn artists_deserialize_invalid() {
+    fn test_artists_deserialize_invalid() {
         let json = r#"[]"#;
         let result: Result<ExternalArtistsName, _> = serde_json::from_str(json);
         assert!(result.is_err());
