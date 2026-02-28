@@ -6,12 +6,6 @@
   "plugins": ["prettier-plugin-tailwindcss"],
   "overrides": [
     {
-      "files": ".vscode/music_data.code-snippets",
-      "options": {
-        "parser": "json"
-      }
-    },
-    {
       "files": "*.html",
       "options": {
         "parser": "angular"
