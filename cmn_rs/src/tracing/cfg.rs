@@ -17,8 +17,7 @@ pub fn apply_tracing_settings(
         .event_format(FormatterForStdout)
         .with_filter(filter_level(stdout_level));
 
-    let file_appender =
-        tracing_appender::rolling::daily("./logs", "rust_music_data.log");
+    let file_appender = tracing_appender::rolling::daily("./logs", "artist.log");
     let (non_blocking, guard) = tracing_appender::non_blocking(file_appender);
     let file_layer = tracing_subscriber::fmt::layer()
         .json()
@@ -51,19 +50,15 @@ fn filter_level(
             }
         },
         None => {
-            // details of constant, ref:
-            // https://docs.rs/tracing-subscriber/0.3.18/src/tracing_subscriber/filter/env/directive.rs.html#125-139
-            // https://docs.rs/tracing-core/0.1.32/src/tracing_core/metadata.rs.html#776-802
             const NO_OUTPUT: &str = "off";
             EnvFilter::new(NO_OUTPUT)
         }
     }
 }
 
-struct FormatterForStdout;
+// ref: https://docs.rs/tracing-subscriber/latest/tracing_subscriber/fmt/trait.FormatEvent.html
 
-// ref:
-// https://docs.rs/tracing-subscriber/latest/tracing_subscriber/fmt/trait.FormatEvent.html
+struct FormatterForStdout;
 
 impl<S, N> tracing_subscriber::fmt::FormatEvent<S, N> for FormatterForStdout
 where

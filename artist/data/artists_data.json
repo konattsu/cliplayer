@@ -495,6 +495,7 @@
     "aliases": [],
     "channelId": "UCg63a3lk6PNeWhVvMRM_mrQ",
     "color": "FF336E",
+    "isGraduated": true,
     "intId": 53
   },
   "tsumugu-kataribe": {
@@ -818,6 +819,7 @@
     "aliases": [],
     "channelId": "UC1QgXt46-GEvtNjEC1paHnw",
     "color": "F04B2D",
+    "isGraduated": true,
     "intId": 88
   },
   "meme-mashiro": {
@@ -836,6 +838,7 @@
     "aliases": [],
     "channelId": "UC-o-E6I3IC2q8sAoAuM6Umg",
     "color": "A02655",
+    "isGraduated": true,
     "intId": 90
   },
   "natsume-kurusu": {
@@ -1414,167 +1417,59 @@
     "color": "FF8C73",
     "intId": 153
   },
+  "reo-sumeragi": {
+    "ja": "皇れお",
+    "jah": "すめらぎれお",
+    "en": "Sumeragi Reo",
+    "aliases": [],
+    "channelId": "UCcYrL_GQe8X8K2ARhw_Syww",
+    "color": "EEB1CC",
+    "intId": 154
+  },
+  "yuno-shinomiya": {
+    "ja": "篠宮ゆの",
+    "jah": "しのみやゆの",
+    "en": "Shinomiya Yuno",
+    "aliases": [],
+    "channelId": "UCo96eJdTpPOrxHFztYajbtg",
+    "color": "AAD9F4",
+    "intId": 155
+  },
+  "isumi-shirose": {
+    "ja": "城瀬いすみ",
+    "jah": "しろせいすみ",
+    "en": "Shirose Isumi",
+    "aliases": [],
+    "channelId": "UCHVSA2OScyef9W7OwPGgJ9w",
+    "color": "E5E2F6",
+    "intId": 156
+  },
+  "tsubasa-hanakago": {
+    "ja": "花籠つばさ",
+    "jah": "はなかごつばさ",
+    "en": "Hanakago Tsubasa",
+    "aliases": [],
+    "channelId": "UCcswLVd6KGBf5mIdzeO83bA",
+    "color": "818FBF",
+    "intId": 157
+  },
 
-  "nijisanji-official": {
-    "ja": "にじさんじ公式",
-    "jah": "にじさんじこうしき",
-    "en": "Nijisanji Official",
+  "ayane-shirasa": {
+    "ja": "白砂あやね",
+    "jah": "しらさあやね",
+    "en": "Shirasa Ayane",
     "aliases": [],
-    "channelId": "UCX7YkU9nEeaoZbkVLVajcMg",
-    "color": "FFFFFF",
-    "intId": 950
+    "channelId": "UCam_xf14FPFsRshFTj4wkHw",
+    "color": "54A2E5",
+    "intId": 158
   },
-  "nijisaji-en-official": {
-    "ja": "にじさんじEN公式",
-    "jah": "にじさんじいーえぬこうしき",
-    "en": "Nijisanji EN Official",
+  "madoka-minamo": {
+    "ja": "水面まどか",
+    "jah": "みなもまどか",
+    "en": "Minamo Madoka",
     "aliases": [],
-    "channelId": "UC-JSeFfovhNsEhftt1WHMvg",
-    "color": "FFFFFF",
-    "intId": 951
-  },
-  "chronoir-official": {
-    "ja": "ChroNoiR",
-    "jah": "くろのわーる",
-    "en": "ChroNoiR",
-    "aliases": [],
-    "channelId": "UCz6vnIbgiqFT9xUcD6Bp65Q",
-    "color": "FFFFFF",
-    "intId": 952
-  },
-  "sakuyui-official": {
-    "ja": "さくゆい",
-    "jah": "さくゆい",
-    "en": "SakuYui",
-    "aliases": [],
-    "channelId": "UCGEMpMpll4otCdnnxQ9paFg",
-    "color": "FFFFFF",
-    "intId": 953
-  },
-  "raindrops-official": {
-    "ja": "Rain Drops",
-    "jah": "れいんどろっぷす",
-    "en": "Rain Drops",
-    "aliases": [],
-    "channelId": "UChqQiUSyI-Q1j3k57_mAJHA",
-    "color": "FFFFFF",
-    "intId": 954
-  },
-  "valz-official": {
-    "ja": "VΔLZ",
-    "jah": "ゔぁるつ",
-    "en": "VΔLZ",
-    "aliases": [],
-    "channelId": "UCh-GyPNxvjTsza0ptjnkh1w",
-    "color": "FFFFFF",
-    "intId": 955
-  },
-  "juvvel-official": {
-    "ja": "JuvveL",
-    "jah": "じゅえる",
-    "en": "JuvveL",
-    "aliases": [],
-    "channelId": "UC_D2DNy-KUNQJ_NGMppgmyg",
-    "color": "FFFFFF",
-    "intId": 956
-  },
-  "rofmao-official": {
-    "ja": "ROF-MAO",
-    "jah": "ろふまお",
-    "en": "ROF-MAO",
-    "aliases": [],
-    "channelId": "UCwi4P78SVunSYAGrvC9aKcw",
-    "color": "FFFFFF",
-    "intId": 957
-  },
-  "nornis-official": {
-    "ja": "Nornis",
-    "jah": "のるにす",
-    "en": "Nornis",
-    "aliases": [],
-    "channelId": "UCxWcO9CLti4uouUIS5IIF-Q",
-    "color": "FFFFFF",
-    "intId": 958
-  },
-  "voltaction-official": {
-    "ja": "VOLTACTION",
-    "jah": "ゔぉるたくしょん",
-    "en": "VOLTACTION",
-    "aliases": [],
-    "channelId": "UCNRh9kkByBTYLo0IJupnAug",
-    "color": "FFFFFF",
-    "intId": 959
-  },
-  "sepiast-official": {
-    "ja": "Sepiast",
-    "jah": "せぴあすと",
-    "en": "Sepiast",
-    "aliases": [],
-    "channelId": "UCh98mDig5OrbsF-JUXbD5LA",
-    "color": "FFFFFF",
-    "intId": 960
-  },
-  "idios-official": {
-    "ja": "Idios",
-    "jah": "いでぃおす",
-    "en": "Idios",
-    "aliases": [],
-    "channelId": "UCVj0qG8hr8On0r5uYqpGE4w",
-    "color": "FFFFFF",
-    "intId": 961
-  },
-  "oriens-official": {
-    "ja": "Oriens",
-    "jah": "おりえんす",
-    "en": "Oriens",
-    "aliases": [],
-    "channelId": "UCwNNw9kUM-Bo0n2ktXOPB7Q",
-    "color": "FFFFFF",
-    "intId": 962
-  },
-  "nanajigen-seitokai-official": {
-    "ja": "七次元生徒会！",
-    "jah": "ななじげんせいとかい",
-    "en": "Nanajigen Seitokai!",
-    "aliases": [],
-    "channelId": "UCHRCp0CSacVnTVS2Z4x9xYg",
-    "color": "FFFFFF",
-    "intId": 963
-  },
-  "3skm-official": {
-    "ja": "3SKM",
-    "jah": "すりーえすけーえむ",
-    "en": "3SKM",
-    "aliases": [],
-    "channelId": "UC8v2OmdutXSKjnjV70oQjcg",
-    "color": "FFFFFF",
-    "intId": 964
-  },
-  "izureayamekakakitsubata-official": {
-    "ja": "いずれ菖蒲か杜若",
-    "jah": "いずれあやめかかきつばた",
-    "en": "Izureayamekakakitsubata",
-    "aliases": [],
-    "channelId": "UCYjdP5F0ds2D6deMo5rpoyw",
-    "color": "FFFFFF",
-    "intId": 965
-  },
-  "peciale-official": {
-    "ja": "Speciale",
-    "jah": "すぺしゃーれ",
-    "en": "Speciale",
-    "aliases": [],
-    "channelId": "UCZzBZtqCowlyG4ZXr6R_pIw",
-    "color": "FFFFFF",
-    "intId": 966
-  },
-  "koyoi-supinerutoyumewomiru-official": {
-    "ja": "今宵、××と夢を見る。",
-    "jah": "こよい、すぴねるとゆめをみる。",
-    "en": "Koyoi Supinerutoyumewomiru",
-    "aliases": [],
-    "channelId": "UCT5-iIJ3np5QwBkp_OiBTYQ",
-    "color": "FFFFFF",
-    "intId": 967
+    "channelId": "UCGLS7BOgNa6c03r7VYacblw",
+    "color": "FF8184",
+    "intId": 159
   }
 }

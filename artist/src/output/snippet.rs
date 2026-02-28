@@ -1,7 +1,7 @@
 #[derive(serde::Deserialize, serde::Serialize, Debug, Clone)]
-pub(in crate::artist) struct Snippet {
+pub(crate) struct Snippet {
     #[serde(rename = "ArtistDataSnippet")]
-    artist_data: ArtistDataSnippet,
+    liver_data: ArtistDataSnippet,
     #[serde(flatten)]
     other: serde_json::Value,
 }
@@ -14,7 +14,7 @@ struct ArtistDataSnippet {
 }
 
 impl Snippet {
-    pub(in crate::artist) fn load(
+    pub(crate) fn load(
         music_data_code_snippets_path: &std::path::Path,
     ) -> anyhow::Result<Self> {
         let path = music_data_code_snippets_path;
@@ -24,7 +24,7 @@ impl Snippet {
                 anyhow::anyhow!(
                     "Failed to open snippet file: {} | source: {}",
                     path.display(),
-                    e.to_string()
+                    e
                 )
             })?;
 
@@ -32,19 +32,19 @@ impl Snippet {
             anyhow::anyhow!(
                 "Failed to deserialize from {} | source: {}",
                 path.display(),
-                e.to_string()
+                e
             )
         })
     }
 
-    pub(in crate::artist) fn output_json(
+    pub(crate) fn output_json(
         &mut self,
         music_data_code_snippets_path: &std::path::Path,
-        artists: &crate::artist::model::Artists,
+        livers: &crate::model::Livers,
     ) -> anyhow::Result<()> {
         use anyhow::Context;
 
-        self.rewrite_body(artists)?;
+        self.rewrite_body(livers)?;
 
         let path = music_data_code_snippets_path;
 
@@ -58,22 +58,14 @@ impl Snippet {
         Ok(())
     }
 
-    fn rewrite_body(
-        &mut self,
-        artists: &crate::artist::model::Artists,
-    ) -> anyhow::Result<()> {
+    fn rewrite_body(&mut self, livers: &crate::model::Livers) -> anyhow::Result<()> {
         use anyhow::Context;
 
-        // ソート
-        let mut artist_ids = artists
-            .0
-            .keys()
-            .map(|id| id.as_str())
-            .collect::<Vec<&str>>();
-        artist_ids.sort();
-        let artist_ids_str = artist_ids.join(",");
+        let liver_ids = livers.sorted_ids();
+        let artist_ids_str = liver_ids.join(",");
+
         let body = self
-            .artist_data
+            .liver_data
             .body
             .get_mut(0)
             .context("Failed to access `body` of artist_data")?;

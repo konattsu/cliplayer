@@ -108,29 +108,6 @@ pub enum ValidateCommands {
 
 #[derive(Debug, clap::Subcommand)]
 pub enum UtilCommands {
-    /// Generate artist-related data
-    GenerateArtist {
-        /// Path to the input artist data file
-        #[arg(long, default_value_t = default_input_artists_data_path())]
-        input_artists_data_path: String,
-        /// Directory for artist output
-        #[arg(long, default_value_t = default_artist_output_dir())]
-        artist_output_dir: String,
-        /// Path to the search index file
-        #[arg(long, default_value_t = default_search_index_file_path())]
-        search_index_file_name: String,
-        /// Path to the channel info file
-        #[arg(long, default_value_t = default_channel_file_path())]
-        channel_file_name: String,
-        /// Path to the artist info file
-        #[arg(long, default_value_t = default_artists_file_path())]
-        artists_file_name: String,
-        #[arg(long, default_value_t = default_code_snippets_path())]
-        music_data_code_snippets_path: String,
-
-        #[clap(flatten)]
-        trace_level: TraceLevel,
-    },
     /// Check for duplicate video IDs in the input
     DuplicateIds {
         /// Comma-separated video IDs to check for duplicates
@@ -169,24 +146,6 @@ fn default_min_videos_path() -> crate::cli::FilePathFromCli {
     crate::cli::FilePathFromCli::new_unchecked(
         "../public/music_data/videos.min.json".to_string(),
     )
-}
-fn default_input_artists_data_path() -> String {
-    "data/artists_data.json".to_string()
-}
-fn default_artist_output_dir() -> String {
-    "../src/music_data/".to_string()
-}
-fn default_search_index_file_path() -> String {
-    "artist_search_index.min.json".to_string()
-}
-fn default_channel_file_path() -> String {
-    "channels.min.json".to_string()
-}
-fn default_artists_file_path() -> String {
-    "artists.min.json".to_string()
-}
-fn default_code_snippets_path() -> String {
-    "../.vscode/music_data.code-snippets".to_string()
 }
 fn default_merge_files_dir() -> String {
     "./data/input/".to_string()
@@ -231,9 +190,6 @@ impl Cli {
                 }
             },
             Commands::Dev(ref util_cmd) => match util_cmd {
-                UtilCommands::GenerateArtist { trace_level, .. } => {
-                    &trace_level.file_tracing_level
-                }
                 UtilCommands::DuplicateIds { trace_level, .. } => {
                     &trace_level.file_tracing_level
                 }
@@ -270,9 +226,6 @@ impl Cli {
                 }
             },
             Commands::Dev(ref util_cmd) => match util_cmd {
-                UtilCommands::GenerateArtist { trace_level, .. } => {
-                    &trace_level.stdout_tracing_level
-                }
                 UtilCommands::DuplicateIds { trace_level, .. } => {
                     &trace_level.stdout_tracing_level
                 }
