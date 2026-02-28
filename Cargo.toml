@@ -1,5 +1,5 @@
 [workspace]
-members = ["music_data", "artist", "cmn_rs"]
+members = ["music", "artist", "cmn_rs"]
 resolver = "2"
 
 [workspace.dependencies]

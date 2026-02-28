@@ -6,18 +6,18 @@ on:
     branches:
       - main
     paths:
-      - "music_data/**"
+      - "music/**"
       - ".github/workflows/musictl.yml"
       - "!**/*.md"
-      - "!music_data/data/"
+      - "!music/data/"
   pull_request:
     branches:
       - main
     paths:
-      - "music_data/**"
+      - "music/**"
       - ".github/workflows/musictl.yml"
       - "!**/*.md"
-      - "!music_data/data/"
+      - "!music/data/"
 
 jobs:
   build:
@@ -27,7 +27,7 @@ jobs:
       RUST_BACKTRACE: 1
     defaults:
       run:
-        working-directory: music_data
+        working-directory: music
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -35,7 +35,7 @@ jobs:
       - name: Cache Rust build
         uses: Swatinem/rust-cache@v2
         with:
-          workspaces: music_data
+          workspaces: music
 
       - name: Build
         run: cargo build --release
@@ -48,4 +48,4 @@ jobs:
         with:
           name: musictl-binary
           # working-directoryはrunのみ対象らしい
-          path: music_data/target/release/musictl
+          path: music/target/release/musictl

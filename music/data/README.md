@@ -22,7 +22,7 @@ public/に配置. フロントのビルドとは関係ない
 
 新規動画(楽曲)データを追加する
 
-[スキーマ](/tools/music_data.schema.json)を[設定](/.vscode/settings.json)済み
+[スキーマ](/tools/music.schema.json)を[設定](/.vscode/settings.json)済み
 
 ```jsonc
 [
