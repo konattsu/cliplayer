@@ -1,0 +1,70 @@
+name: Synchronize music data
+
+on:
+  # schedule:
+  # - cron: "0 0 */14 * *"
+  workflow_dispatch:
+
+jobs:
+  build_and_test:
+    uses: ./.github/workflows/musictl.yml
+
+  sync:
+    needs: build_and_test
+    runs-on: ubuntu-latest
+    env:
+      RUST_BACKTRACE: 1
+      CARGO_TERM_COLOR: always
+      YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+      GH_TOKEN: ${{ github.token }}
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get last merged PR number
+        id: prnum
+        run: |
+          PR_NUMBER=$(gh pr list --state merged --base main --limit 1 --json number --jq '.[0].number')
+          echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
+
+      - name: Create new branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          BRANCH="auto/update-music_data-sync-$(date +'%Y%m%d-%H%M%S')"
+          git switch -c $BRANCH origin/main
+
+      - name: Download musictl binary
+        uses: actions/download-artifact@v4
+        with:
+          name: musictl-binary
+          path: ./bin
+
+      - name: Apply sync to music data
+        run: |
+          chmod +x ./bin/musictl
+          ls -lR ./bin
+          cd ./music
+          ../bin/musictl apply sync --file-tracing-level debug
+
+      - name: Post musictl logs
+        if: always()
+        # いつかきれいにする
+        run: |
+          cd ./music
+          ../tools/musictl_logs_to_stdout.sh
+
+      - name: Commit and Push changes
+        run: |
+          git add ./music/data/music/
+          git add ./public/music/
+          git commit -m "[music-sync] Automatically synchronize music_data and related min.json (scheduled)"
+          git push origin HEAD
+
+      - name: Create PR
+        run: |
+          gh pr create --base main --head $(git rev-parse --abbrev-ref HEAD) \
+            --title "Scheduled update: music_data and related min.json" \
+            --body "This pull request contains scheduled updates to music_data and the related min.json file."

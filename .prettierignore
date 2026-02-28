@@ -1,2 +1,7 @@
+# because of minified json files
 **.min.json
-music_data/data/music/**
+
+# when we read these files using `serde`, we have to remove trailing commas.
+# but these files are added trailing commas by format-on-save, we ignorer them.
+music/data/music/**
+.vscode/music.code-snippets
