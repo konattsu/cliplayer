@@ -3,29 +3,16 @@
 pub struct FilePathsFromCli(String);
 
 impl FilePathsFromCli {
-    /// コマンドライン引数から受け取ったファイルパスをVec<`FilePath`>に変換
+    /// コマンドライン引数から受け取ったファイルパスをVec<`PathBuf`>に変換
     ///
     /// - delimiter: ',', '\t', '\r', '\n'
     /// - delimiterだけで構成されたpathは無視
     /// - pathの文字列はtrimされる
-    pub fn try_into_file_paths(self) -> Result<Vec<crate::util::FilePath>, String> {
-        let str_paths = self.split_paths();
-
-        let mut paths: Vec<crate::util::FilePath> = Vec::new();
-        let mut errs = Vec::new();
-
-        for path in str_paths {
-            match crate::util::FilePath::new(&std::path::PathBuf::from(path)) {
-                Ok(p) => paths.push(p),
-                Err(e) => errs.push(e),
-            }
-        }
-
-        if errs.is_empty() {
-            Ok(paths)
-        } else {
-            Err(format!("Failed to parse some file paths: {errs:?}"))
-        }
+    pub fn into_file_paths(self) -> Vec<std::path::PathBuf> {
+        self.split_paths()
+            .into_iter()
+            .map(std::path::PathBuf::from)
+            .collect()
     }
 
     fn split_paths(&self) -> Vec<&str> {

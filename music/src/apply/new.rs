@@ -2,8 +2,8 @@ pub async fn apply_new(
     mut music_lib: crate::music_file::MusicLibrary,
     anonymous_videos: crate::model::AnonymousVideos,
     api_key: crate::fetcher::YouTubeApiKey,
-    min_clips_path: &crate::util::FilePath,
-    min_videos_path: &crate::util::FilePath,
+    min_clips_path: &std::path::Path,
+    min_videos_path: &std::path::Path,
 ) -> Result<(), String> {
     // api呼ぶ
     let video_ids = anonymous_videos.to_video_ids();

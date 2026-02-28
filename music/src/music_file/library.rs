@@ -1,7 +1,7 @@
 /// 保持している楽曲情報を管理するライブラリ
 #[derive(Debug, Clone)]
 pub struct MusicLibrary {
-    root_dir: crate::util::DirPath,
+    root_dir: std::path::PathBuf,
     /// (year, month)
     video_files:
         std::collections::HashMap<(usize, usize), crate::music_file::MusicFile>,
@@ -28,10 +28,10 @@ impl MusicLibrary {
     /// # Arguments
     /// - `dir`: 楽曲情報のルートディレクトリ
     #[tracing::instrument(level = tracing::Level::DEBUG)]
-    pub fn load(dir: &crate::util::DirPath) -> Result<Self, super::MusicFileErrors> {
-        tracing::debug!("Loading music files from directory: `{dir}`",);
+    pub fn load(dir: &std::path::Path) -> Result<Self, super::MusicFileErrors> {
+        tracing::debug!("Loading music files from directory: `{}`", dir.display());
         Self::collect_music_file_paths(dir).map(|file| Self {
-            root_dir: dir.clone(),
+            root_dir: dir.to_path_buf(),
             video_files: file,
         })
     }
@@ -39,13 +39,6 @@ impl MusicLibrary {
     /// 楽曲情報をファイルに保存する
     ///
     /// 単一のファイルたちのみ
-    #[tracing::instrument(
-        skip(self),
-        fields(
-            root_dir = %self.root_dir,
-        ),
-        level = tracing::Level::DEBUG
-    )]
     pub(crate) fn save_month_files(&self) -> Result<(), super::MusicFileError> {
         println!("Saving music month files to disk...");
         self.save_music_files()?;
@@ -77,7 +70,7 @@ impl MusicLibrary {
     /// minファイルを保存する
     pub(crate) fn save_min_file<T: serde::Serialize>(
         value: &T,
-        save_path: &crate::util::FilePath,
+        save_path: &std::path::Path,
     ) -> Result<(), super::MusicFileError> {
         super::fs_util::serialize_to_file(save_path, value, true)
     }
@@ -117,7 +110,7 @@ impl MusicLibrary {
     /// `dir`以下の全てのファイルに対して`MusicFile::load_file`を適用
     #[tracing::instrument(ret, level = tracing::Level::TRACE)]
     fn collect_music_file_paths(
-        dir: &crate::util::DirPath,
+        dir: &std::path::Path,
     ) -> Result<
         std::collections::HashMap<(usize, usize), super::MusicFile>,
         super::MusicFileErrors,
@@ -130,7 +123,7 @@ impl MusicLibrary {
             tracing::debug!(
                 "Loaded {} music files, dir `{}`, (month/year): {:?}",
                 debug_files.len(),
-                dir.as_path().display(),
+                dir.display(),
                 debug_files
             );
             Ok(files)
@@ -141,19 +134,16 @@ impl MusicLibrary {
 
     /// 指定ディレクトリ以下の全ファイルパスを収集
     fn collect_music_file_paths_in_dir(
-        dir: &crate::util::DirPath,
-    ) -> Vec<crate::util::FilePath> {
+        dir: &std::path::Path,
+    ) -> Vec<std::path::PathBuf> {
         let mut file_paths = Vec::new();
-        for entry in walkdir::WalkDir::new(dir.as_path()) {
+        for entry in walkdir::WalkDir::new(dir) {
             let entry = match entry {
                 Ok(entry) => entry,
                 Err(_) => continue,
             };
             if entry.file_type().is_file() {
-                match crate::util::FilePath::new(entry.path()) {
-                    Ok(path) => file_paths.push(path),
-                    Err(_) => continue,
-                }
+                file_paths.push(entry.path().to_path_buf());
             }
         }
         file_paths
@@ -161,8 +151,8 @@ impl MusicLibrary {
 
     /// ファイルパスごとにMusicFileをロードし、HashMapとエラーVecを返す
     fn load_music_files(
-        file_paths: Vec<crate::util::FilePath>,
-        dir: &crate::util::DirPath,
+        file_paths: Vec<std::path::PathBuf>,
+        dir: &std::path::Path,
     ) -> (
         std::collections::HashMap<(usize, usize), super::MusicFile>,
         Vec<crate::music_file::MusicFileError>,
@@ -216,7 +206,7 @@ impl MusicLibrary {
         for file in self.video_files.values() {
             if let Err(e) = file.save() {
                 return Err(super::MusicFileError::FileWrite {
-                    path: file.get_path().clone(),
+                    path: file.get_path().to_path_buf(),
                     msg: e.to_string(),
                 });
             }

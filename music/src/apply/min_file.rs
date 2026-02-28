@@ -1,8 +1,8 @@
 /// 全てのファイルを保存
 pub(crate) fn save(
     music_lib: crate::music_file::MusicLibrary,
-    min_clips_path: &crate::util::FilePath,
-    min_videos_path: &crate::util::FilePath,
+    min_clips_path: &std::path::Path,
+    min_videos_path: &std::path::Path,
 ) -> Result<(), crate::music_file::MusicFileError> {
     // 月ファイル
     music_lib.save_month_files()?;
@@ -13,13 +13,13 @@ pub(crate) fn save(
 /// minファイルを保存
 pub(super) fn save_min_files(
     music_lib: crate::music_file::MusicLibrary,
-    min_clips_path: &crate::util::FilePath,
-    min_videos_path: &crate::util::FilePath,
+    min_clips_path: &std::path::Path,
+    min_videos_path: &std::path::Path,
 ) -> Result<(), crate::music_file::MusicFileError> {
     tracing::debug!(
         "Saving min files to disk: `{}` and `{}`",
-        min_clips_path,
-        min_videos_path,
+        min_clips_path.display(),
+        min_videos_path.display(),
     );
 
     let videos = music_lib.into_videos()?;
@@ -47,9 +47,9 @@ struct FlatClipValue<'a> {
     /// 曲名
     song_title: &'a str,
     /// 内部アーティストの一覧
-    artists: &'a crate::model::InternalArtists,
+    artists: &'a artistctl::model::LiverIds,
     /// 外部アーティストの一覧
-    external_artists: Option<&'a crate::model::ExternalArtists>,
+    external_artists: Option<&'a artistctl::model::ExternalArtistsName>,
     /// 切り抜いた動画が存在した場合の動画id
     clipped_video_id: Option<&'a crate::model::VideoId>,
     /// 曲が始まる時間
@@ -73,9 +73,9 @@ impl serde::Serialize for FlatClipValue<'_> {
         #[serde(rename_all = "camelCase")]
         struct RawFlatClipValue<'a> {
             song_title: &'a str,
-            artists: &'a crate::model::InternalArtists,
+            artists: &'a artistctl::model::LiverIds,
             #[serde(skip_serializing_if = "Option::is_none")]
-            external_artists: Option<&'a crate::model::ExternalArtists>,
+            external_artists: Option<&'a artistctl::model::ExternalArtistsName>,
             #[serde(skip_serializing_if = "Option::is_none")]
             clipped_video_id: Option<&'a crate::model::VideoId>,
             start_time_secs: u32,
@@ -111,8 +111,8 @@ impl<'a> FlatClips<'a> {
                     clip.get_uuid(),
                     FlatClipValue {
                         song_title: clip.get_song_title(),
-                        artists: clip.get_artists(),
-                        external_artists: clip.get_external_artists(),
+                        artists: clip.get_liver_ids(),
+                        external_artists: clip.get_external_artists_name(),
                         clipped_video_id: clip.get_clipped_video_id(),
                         start_time: clip.get_start_time(),
                         end_time: clip.get_end_time(),
@@ -247,8 +247,8 @@ mod tests {
 
     #[test]
     fn test_flat_clip_value_serialize_some_1() {
-        let artists = crate::model::InternalArtists::self_1();
-        let external_artists = Some(crate::model::ExternalArtists::self_1());
+        let artists = artistctl::model::LiverIds::self_1();
+        let external_artists = Some(artistctl::model::ExternalArtistsName::self_1());
         let clipped_video_id = Some(crate::model::VideoId::test_id_4());
         let clip_tags = Some(crate::model::ClipTags::self_1());
         let volume_percent = Some(crate::model::VolumePercent::new(1).unwrap());
@@ -285,8 +285,8 @@ mod tests {
 
     #[test]
     fn test_flat_clip_value_serialize_some_2() {
-        let artists = crate::model::InternalArtists::self_2();
-        let external_artists = Some(crate::model::ExternalArtists::self_2());
+        let artists = artistctl::model::LiverIds::self_2();
+        let external_artists = Some(artistctl::model::ExternalArtistsName::self_2());
         let clipped_video_id = Some(crate::model::VideoId::test_id_3());
         let clip_tags = Some(crate::model::ClipTags::self_2());
         let volume_percent = Some(crate::model::VolumePercent::new(99).unwrap());
@@ -322,7 +322,7 @@ mod tests {
 
     #[test]
     fn test_flat_clip_value_serialize_none_1() {
-        let artists = crate::model::InternalArtists::self_1();
+        let artists = artistctl::model::LiverIds::self_1();
         let video_id = crate::model::VideoId::test_id_1();
         let start_time = crate::model::Duration::self_1();
         let end_time = crate::model::Duration::self_2();
@@ -351,7 +351,7 @@ mod tests {
 
     #[test]
     fn test_flat_clip_value_serialize_none_2() {
-        let artists = crate::model::InternalArtists::self_2();
+        let artists = artistctl::model::LiverIds::self_2();
         let video_id = crate::model::VideoId::test_id_2();
         let start_time = crate::model::Duration::self_2();
         let end_time = crate::model::Duration::self_3();

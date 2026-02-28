@@ -11,5 +11,8 @@ tracing-subscriber = { workspace = true }
 serde = { workspace = true }
 clap = { workspace = true }
 
+[features]
+test-helpers = []
+
 [dev-dependencies]
 serde_json = { workspace = true }

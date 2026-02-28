@@ -9,9 +9,9 @@ pub(crate) struct AnonymousClip {
     /// 曲名
     song_title: String,
     /// 内部アーティストの一覧
-    artists: crate::model::InternalArtists,
+    liver_ids: artistctl::model::LiverIds,
     /// 外部アーティストの一覧
-    external_artists: Option<crate::model::ExternalArtists>,
+    external_artists_name: Option<artistctl::model::ExternalArtistsName>,
     /// 切り抜いた動画が存在した場合の動画id
     clipped_video_id: Option<crate::model::VideoId>,
     /// 曲が始まる時間
@@ -27,9 +27,9 @@ struct AnonymousClipInitializer {
     /// 曲名
     song_title: String,
     /// 内部アーティストの一覧
-    artists: crate::model::InternalArtists,
+    liver_ids: artistctl::model::LiverIds,
     /// 外部アーティストの一覧
-    external_artists: Option<crate::model::ExternalArtists>,
+    external_artists_name: Option<artistctl::model::ExternalArtistsName>,
     /// 切り抜いた動画が存在した場合の動画id
     clipped_video_id: Option<crate::model::VideoId>,
     /// 曲が始まる時間
@@ -51,8 +51,8 @@ impl AnonymousClipInitializer {
 
         Ok(AnonymousClip {
             song_title: self.song_title,
-            artists: self.artists,
-            external_artists: self.external_artists,
+            liver_ids: self.liver_ids,
+            external_artists_name: self.external_artists_name,
             clipped_video_id: self.clipped_video_id,
             start_time: self.start_time,
             end_time: self.end_time,
@@ -72,8 +72,8 @@ impl<'de> serde::Deserialize<'de> for AnonymousClip {
         #[serde(deny_unknown_fields)]
         struct RawAnonymousClip {
             song_title: String,
-            artists: crate::model::InternalArtists,
-            external_artists: Option<crate::model::ExternalArtists>,
+            liver_ids: artistctl::model::LiverIds,
+            external_artists_name: Option<artistctl::model::ExternalArtistsName>,
             clipped_video_id: Option<crate::model::VideoId>,
             start_time: crate::model::Duration,
             end_time: crate::model::Duration,
@@ -88,8 +88,8 @@ impl<'de> serde::Deserialize<'de> for AnonymousClip {
 
         Ok(AnonymousClip {
             song_title: raw.song_title,
-            artists: raw.artists,
-            external_artists: raw.external_artists,
+            liver_ids: raw.liver_ids,
+            external_artists_name: raw.external_artists_name,
             clipped_video_id: raw.clipped_video_id,
             start_time: raw.start_time,
             end_time: raw.end_time,
@@ -117,8 +117,8 @@ impl AnonymousClip {
         let uuid = crate::model::UuidVer4::generate();
         super::verified::VerifiedClipInitializer {
             song_title: self.song_title,
-            artists: self.artists,
-            external_artists: self.external_artists,
+            liver_ids: self.liver_ids,
+            external_artists_name: self.external_artists_name,
             clipped_video_id: self.clipped_video_id,
             start_time: self.start_time,
             end_time: self.end_time,
@@ -144,7 +144,7 @@ impl AnonymousClip {
                 i + 1,
                 clip.song_title,
                 clip_range,
-                clip.artists.get_artists_ja_name().join("<br>"),
+                clip.liver_ids.get_artists_ja_name().join("<br />"),
                 other_info
             );
             md_str.push_str(&row);
@@ -159,10 +159,10 @@ impl AnonymousClip {
         if self.start_time.as_secs() + 420 < self.end_time.as_secs() {
             base_str.push("clip range too long?".to_string());
         }
-        if let Some(external_artists) = &self.external_artists {
+        if let Some(external_artists_name) = &self.external_artists_name {
             base_str.push(format!(
                 "external artists: {}",
-                external_artists.to_vec().join(", ")
+                external_artists_name.to_vec().join(", ")
             ));
         }
         if let Some(clipped_video_id) = &self.clipped_video_id {
@@ -173,7 +173,7 @@ impl AnonymousClip {
         if let Some(clip_tags) = &self.clip_tags {
             base_str.push(format!("cTags: {}", clip_tags.to_vec().join(", ")));
         }
-        base_str.join("<br>")
+        base_str.join("<br />")
     }
 }
 
@@ -183,8 +183,8 @@ impl AnonymousClip {
     pub(crate) fn self_a_1() -> Self {
         AnonymousClipInitializer {
             song_title: "Test Song A1".to_string(),
-            artists: crate::model::InternalArtists::self_1(),
-            external_artists: Some(crate::model::ExternalArtists::self_1()),
+            liver_ids: artistctl::model::LiverIds::self_1(),
+            external_artists_name: Some(artistctl::model::ExternalArtistsName::self_1()),
             clipped_video_id: None,
             start_time: crate::model::Duration::from_secs_u16(5),
             end_time: crate::model::Duration::from_secs_u16(10),
@@ -196,8 +196,8 @@ impl AnonymousClip {
     pub(crate) fn self_a_2() -> Self {
         AnonymousClipInitializer {
             song_title: "Test Song A2".to_string(),
-            artists: crate::model::InternalArtists::self_2(),
-            external_artists: None,
+            liver_ids: artistctl::model::LiverIds::self_2(),
+            external_artists_name: None,
             clipped_video_id: Some(crate::model::VideoId::test_id_3()),
             start_time: crate::model::Duration::from_secs_u16(15),
             end_time: crate::model::Duration::from_secs_u16(20),
@@ -209,8 +209,8 @@ impl AnonymousClip {
     pub(crate) fn self_a_3() -> Self {
         AnonymousClipInitializer {
             song_title: "Test Song A3".to_string(),
-            artists: crate::model::InternalArtists::self_3(),
-            external_artists: Some(crate::model::ExternalArtists::self_2()),
+            liver_ids: artistctl::model::LiverIds::self_3(),
+            external_artists_name: Some(artistctl::model::ExternalArtistsName::self_2()),
             clipped_video_id: None,
             start_time: crate::model::Duration::from_secs_u16(25),
             end_time: crate::model::Duration::from_secs_u16(30),
@@ -222,8 +222,8 @@ impl AnonymousClip {
     pub(crate) fn self_b_1() -> Self {
         AnonymousClipInitializer {
             song_title: "Test Song B1".to_string(),
-            artists: crate::model::InternalArtists::self_1(),
-            external_artists: Some(crate::model::ExternalArtists::self_3()),
+            liver_ids: artistctl::model::LiverIds::self_1(),
+            external_artists_name: Some(artistctl::model::ExternalArtistsName::self_3()),
             clipped_video_id: Some(crate::model::VideoId::test_id_4()),
             start_time: crate::model::Duration::from_secs_u16(7),
             end_time: crate::model::Duration::from_secs_u16(17),
@@ -235,8 +235,8 @@ impl AnonymousClip {
     pub(crate) fn self_b_2() -> Self {
         AnonymousClipInitializer {
             song_title: "Test Song B2".to_string(),
-            artists: crate::model::InternalArtists::self_2(),
-            external_artists: None,
+            liver_ids: artistctl::model::LiverIds::self_2(),
+            external_artists_name: None,
             clipped_video_id: None,
             start_time: crate::model::Duration::from_secs_u16(27),
             end_time: crate::model::Duration::from_secs_u16(37),
@@ -248,8 +248,8 @@ impl AnonymousClip {
     pub(crate) fn self_b_3() -> Self {
         AnonymousClipInitializer {
             song_title: "Test Song B3".to_string(),
-            artists: crate::model::InternalArtists::self_4(),
-            external_artists: None,
+            liver_ids: artistctl::model::LiverIds::self_4(),
+            external_artists_name: None,
             clipped_video_id: Some(crate::model::VideoId::test_id_5()),
             start_time: crate::model::Duration::from_secs_u16(47),
             end_time: crate::model::Duration::from_secs_u16(57),
@@ -271,8 +271,8 @@ mod tests {
     fn test_anonymous_clip_for_test_methods() {
         let clip_a_1 = AnonymousClip::self_a_1();
         assert_eq!(clip_a_1.song_title, "Test Song A1");
-        assert_eq!(clip_a_1.artists, crate::model::InternalArtists::self_1());
-        assert_eq!(clip_a_1.external_artists, Some(crate::model::ExternalArtists::self_1()));
+        assert_eq!(clip_a_1.liver_ids, artistctl::model::LiverIds::self_1());
+        assert_eq!(clip_a_1.external_artists_name, Some(artistctl::model::ExternalArtistsName::self_1()));
         assert!(clip_a_1.clipped_video_id.is_none());
         assert_eq!(clip_a_1.start_time, crate::model::Duration::from_secs_u16(5));
         assert_eq!(clip_a_1.end_time, crate::model::Duration::from_secs_u16(10));
@@ -280,8 +280,8 @@ mod tests {
 
         let clip_a_2 = AnonymousClip::self_a_2();
         assert_eq!(clip_a_2.song_title, "Test Song A2");
-        assert_eq!(clip_a_2.artists, crate::model::InternalArtists::self_2());
-        assert_eq!(clip_a_2.external_artists, None);
+        assert_eq!(clip_a_2.liver_ids, artistctl::model::LiverIds::self_2());
+        assert_eq!(clip_a_2.external_artists_name, None);
         assert_eq!(clip_a_2.clipped_video_id, Some(crate::model::VideoId::test_id_3()));
         assert_eq!(clip_a_2.start_time, crate::model::Duration::from_secs_u16(15));
         assert_eq!(clip_a_2.end_time, crate::model::Duration::from_secs_u16(20));
@@ -289,8 +289,8 @@ mod tests {
 
         let clip_a_3 = AnonymousClip::self_a_3();
         assert_eq!(clip_a_3.song_title, "Test Song A3");
-        assert_eq!(clip_a_3.artists, crate::model::InternalArtists::self_3());
-        assert_eq!(clip_a_3.external_artists, Some(crate::model::ExternalArtists::self_2()));
+        assert_eq!(clip_a_3.liver_ids, artistctl::model::LiverIds::self_3());
+        assert_eq!(clip_a_3.external_artists_name, Some(artistctl::model::ExternalArtistsName::self_2()));
         assert!(clip_a_3.clipped_video_id.is_none());
         assert_eq!(clip_a_3.start_time, crate::model::Duration::from_secs_u16(25));
         assert_eq!(clip_a_3.end_time, crate::model::Duration::from_secs_u16(30));
@@ -298,8 +298,8 @@ mod tests {
 
         let clip_b_1 = AnonymousClip::self_b_1();
         assert_eq!(clip_b_1.song_title, "Test Song B1");
-        assert_eq!(clip_b_1.artists, crate::model::InternalArtists::self_1());
-        assert_eq!(clip_b_1.external_artists, Some(crate::model::ExternalArtists::self_3()));
+        assert_eq!(clip_b_1.liver_ids, artistctl::model::LiverIds::self_1());
+        assert_eq!(clip_b_1.external_artists_name, Some(artistctl::model::ExternalArtistsName::self_3()));
         assert_eq!(clip_b_1.clipped_video_id, Some(crate::model::VideoId::test_id_4()));
         assert_eq!(clip_b_1.start_time, crate::model::Duration::from_secs_u16(7));
         assert_eq!(clip_b_1.end_time, crate::model::Duration::from_secs_u16(17));
@@ -307,8 +307,8 @@ mod tests {
 
         let clip_b_2 = AnonymousClip::self_b_2();
         assert_eq!(clip_b_2.song_title, "Test Song B2");
-        assert_eq!(clip_b_2.artists, crate::model::InternalArtists::self_2());
-        assert_eq!(clip_b_2.external_artists, None);
+        assert_eq!(clip_b_2.liver_ids, artistctl::model::LiverIds::self_2());
+        assert_eq!(clip_b_2.external_artists_name, None);
         assert!(clip_b_2.clipped_video_id.is_none());
         assert_eq!(clip_b_2.start_time, crate::model::Duration::from_secs_u16(27));
         assert_eq!(clip_b_2.end_time, crate::model::Duration::from_secs_u16(37));
@@ -316,8 +316,8 @@ mod tests {
 
         let clip_b_3 = AnonymousClip::self_b_3();
         assert_eq!(clip_b_3.song_title, "Test Song B3");
-        assert_eq!(clip_b_3.artists, crate::model::InternalArtists::self_4());
-        assert_eq!(clip_b_3.external_artists, None);
+        assert_eq!(clip_b_3.liver_ids, artistctl::model::LiverIds::self_4());
+        assert_eq!(clip_b_3.external_artists_name, None);
         assert_eq!(clip_b_3.clipped_video_id, Some(crate::model::VideoId::test_id_5()));
         assert_eq!(clip_b_3.start_time, crate::model::Duration::from_secs_u16(47));
         assert_eq!(clip_b_3.end_time, crate::model::Duration::from_secs_u16(57));
@@ -327,20 +327,20 @@ mod tests {
     const ANONYMOUS_CLIP_JSON_VALID: &str = r#"
     {
         "songTitle": "Test Song 1",
-        "artists": ["aimer-test"],
-        "externalArtists": ["Apple Mike"],
+        "liverIds": ["riku-tazumi"],
+        "externalArtistsName": ["Apple Mike"],
         "clippedVideoId": null,
         "startTime": "PT5S",
         "endTime": "PT10S",
         "clipTags": ["Test Clip Tag1"]
     }"#;
 
-    // `startTime` >= `endTime`
+    // invalid: `startTime` >= `endTime`
     const ANONYMOUS_CLIP_JSON_INVALID: &str = r#"
     {
         "songTitle": "Test Song 2",
-        "artists": ["aimer-test"],
-        "externalArtists": ["Apple Mike"],
+        "liverIds": ["riku-tazumi"],
+        "externalArtistsName": ["Apple Mike"],
         "startTime": "PT10S",
         "endTime": "PT5S",
         "ClipTags": ["Test Clip Tag1"]
@@ -352,10 +352,10 @@ mod tests {
         let clip: AnonymousClip =
             serde_json::from_str(ANONYMOUS_CLIP_JSON_VALID).unwrap();
         assert_eq!(clip.song_title, "Test Song 1");
-        assert_eq!(clip.artists, crate::model::InternalArtists::self_1());
+        assert_eq!(clip.liver_ids, artistctl::model::LiverIds::self_1());
         assert_eq!(
-            clip.external_artists,
-            Some(crate::model::ExternalArtists::self_1())
+            clip.external_artists_name,
+            Some(artistctl::model::ExternalArtistsName::self_1())
         );
         assert!(clip.clipped_video_id.is_none());
         assert_eq!(clip.start_time, crate::model::Duration::from_secs_u16(5));
@@ -372,8 +372,8 @@ mod tests {
     fn test_anonymous_clip_initializer_init() {
         let valid_initializer = AnonymousClipInitializer {
             song_title: "Test Song 3".to_string(),
-            artists: crate::model::InternalArtists::self_1(),
-            external_artists: Some(crate::model::ExternalArtists::self_1()),
+            liver_ids: artistctl::model::LiverIds::self_1(),
+            external_artists_name: Some(artistctl::model::ExternalArtistsName::self_1()),
             clipped_video_id: None,
             start_time: crate::model::Duration::from_secs_u16(15),
             end_time: crate::model::Duration::from_secs_u16(20),
@@ -384,8 +384,8 @@ mod tests {
 
         let invalid_initializer = AnonymousClipInitializer {
             song_title: "Test Song 4".to_string(),
-            artists: crate::model::InternalArtists::self_1(),
-            external_artists: Some(crate::model::ExternalArtists::self_1()),
+            liver_ids: artistctl::model::LiverIds::self_1(),
+            external_artists_name: Some(artistctl::model::ExternalArtistsName::self_1()),
             clipped_video_id: None,
             start_time: crate::model::Duration::from_secs_u16(25),
             // start >= end
@@ -435,12 +435,12 @@ mod tests {
 
         let expect = r#"| # | Song Title | Clip Range | Artists | Other |
 |:---|:---|:---|:---|:---|
-| 1 | Test Song A1 | 5 - 10 | エイマーテスト | external artists: Apple Mike |
-| 2 | Test Song A2 | 15 - 20 | エイラアオイテスト | clipped video exists [here](https://youtu.be/33333333333) |
-| 3 | Test Song A3 | 25 - 30 | リサテスト | external artists: Milk Mike<br>cTags: Test Clip Tag2 |
-| 4 | Test Song B1 | 7 - 17 | エイマーテスト | external artists: Banana Mike<br>clipped video exists [here](https://youtu.be/44444444444)<br>cTags: Test Clip Tag3, Test Clip Tag4 |
-| 5 | Test Song B2 | 27 - 37 | エイラアオイテスト | cTags: Test Clip Tag1 |
-| 6 | Test Song B3 | 47 - 57 | エイマーテスト<br>エイラアオイテスト<br>リサテスト | clipped video exists [here](https://youtu.be/55555555555) |
+| 1 | Test Song A1 | 5 - 10 | 田角陸 | external artists: Apple Mike |
+| 2 | Test Song A2 | 15 - 20 | ゆがみん | clipped video exists [here](https://youtu.be/33333333333) |
+| 3 | Test Song A3 | 25 - 30 | ユードリック | external artists: Milk Mike<br />cTags: Test Clip Tag2 |
+| 4 | Test Song B1 | 7 - 17 | 田角陸 | external artists: Banana Mike<br />clipped video exists [here](https://youtu.be/44444444444)<br />cTags: Test Clip Tag3, Test Clip Tag4 |
+| 5 | Test Song B2 | 27 - 37 | ゆがみん | cTags: Test Clip Tag1 |
+| 6 | Test Song B3 | 47 - 57 | 田角陸<br />ゆがみん<br />ユードリック | clipped video exists [here](https://youtu.be/55555555555) |
 "#;
 
         assert_eq!(expect, markdown);

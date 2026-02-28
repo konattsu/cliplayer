@@ -51,7 +51,7 @@ impl std::fmt::Display for ChannelId {
 
 // MARK: For Tests
 
-#[cfg(test)]
+#[cfg(any(test, feature = "test-helpers"))]
 impl ChannelId {
     /// return `UC1111111111111111111111` (24chars)
     pub fn test_id_1() -> Self {

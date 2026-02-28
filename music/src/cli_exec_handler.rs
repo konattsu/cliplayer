@@ -60,11 +60,11 @@ async fn handle_apply_new(
     min_clips_path: crate::cli::FilePathFromCli,
     min_videos_path: crate::cli::FilePathFromCli,
 ) -> Result<(), String> {
-    let input_anonymous_file = input.try_into_file_paths()?;
-    let min_clips_path = min_clips_path.try_into_file_path()?;
-    let min_videos_path = min_videos_path.try_into_file_path()?;
+    let input_anonymous_file = input.into_file_paths();
+    let min_clips_path = min_clips_path.into_file_path();
+    let min_videos_path = min_videos_path.into_file_path();
 
-    let music_lib = music_lib.try_into_music_root_from_cli()?;
+    let music_lib = music_lib.load_music_root_from_cli()?;
 
     let anonymous_videos =
         crate::validate::try_load_anonymous_videos(&input_anonymous_file)
@@ -85,9 +85,9 @@ fn handle_apply_update(
     min_clips_path: crate::cli::FilePathFromCli,
     min_videos_path: crate::cli::FilePathFromCli,
 ) -> Result<(), String> {
-    let min_clips_path = min_clips_path.try_into_file_path()?;
-    let min_videos_path = min_videos_path.try_into_file_path()?;
-    let music_lib = music_lib.try_into_music_root_from_cli()?;
+    let min_clips_path = min_clips_path.into_file_path();
+    let min_videos_path = min_videos_path.into_file_path();
+    let music_lib = music_lib.load_music_root_from_cli()?;
 
     crate::apply::apply_update(music_lib, &min_clips_path, &min_videos_path)
 }
@@ -98,9 +98,9 @@ async fn handle_apply_sync(
     min_clips_path: crate::cli::FilePathFromCli,
     min_videos_path: crate::cli::FilePathFromCli,
 ) -> Result<(), String> {
-    let min_clips_path = min_clips_path.try_into_file_path()?;
-    let min_videos_path = min_videos_path.try_into_file_path()?;
-    let music_lib = music_lib.try_into_music_root_from_cli()?;
+    let min_clips_path = min_clips_path.into_file_path();
+    let min_videos_path = min_videos_path.into_file_path();
+    let music_lib = music_lib.load_music_root_from_cli()?;
 
     crate::apply::apply_sync(music_lib, api_key, &min_clips_path, &min_videos_path)
         .await
@@ -121,7 +121,7 @@ fn handle_validate(validate_cmd: crate::cli::ValidateCommands) -> Result<(), Str
 }
 
 fn handle_validate_new(input_file: crate::cli::FilePathsFromCli) -> Result<(), String> {
-    let files = input_file.try_into_file_paths()?;
+    let files = input_file.into_file_paths();
     crate::validate::validate_new_input(&files)
 }
 
@@ -129,15 +129,12 @@ fn handle_validate_update(
     music_lib: crate::cli::MusicLibraryCli,
 ) -> Result<(), String> {
     // 正常に読み込めた => 全ての動画が検証済み
-    let _music_lib = music_lib.try_into_music_root_from_cli()?;
+    let _music_lib = music_lib.load_music_root_from_cli()?;
     Ok(())
 }
 
 fn handle_validate_new_md(input_file: crate::cli::FilePathsFromCli) -> ! {
-    let files = match input_file.try_into_file_paths() {
-        Ok(f) => f,
-        Err(_e) => std::process::exit(1),
-    };
+    let files = input_file.into_file_paths();
 
     match crate::validate::validate_new_input_md(&files) {
         Ok(md_str) => {
@@ -158,7 +155,11 @@ fn handle_dev(dev_cmd: crate::cli::UtilCommands) -> Result<(), String> {
             dir,
             output_dir,
             ..
-        } => handle_dev_merge_files(files, dir, output_dir),
+        } => {
+            let dir = std::path::PathBuf::from(dir);
+            let output_dir = std::path::PathBuf::from(output_dir);
+            handle_dev_merge_files(files, dir, output_dir)
+        }
         crate::cli::UtilCommands::DuplicateIds { ids, music_lib, .. } => {
             handle_dev_duplicate_ids(music_lib, ids)
         }
@@ -167,15 +168,23 @@ fn handle_dev(dev_cmd: crate::cli::UtilCommands) -> Result<(), String> {
 
 fn handle_dev_merge_files(
     files: Option<crate::cli::FilePathsFromCli>,
-    dir: String,
-    output_dir: String,
+    dir: std::path::PathBuf,
+    output_dir: std::path::PathBuf,
 ) -> Result<(), String> {
-    let files = files.map(|f| f.try_into_file_paths()).transpose()?;
-    let dir = crate::util::DirPath::from_path_buf(std::path::PathBuf::from(dir))
-        .map_err(|e| format!("Invalid directory path: {e}"))?;
-    let output_dir =
-        crate::util::DirPath::from_path_buf(std::path::PathBuf::from(output_dir))
-            .map_err(|e| format!("Invalid output directory path: {e}"))?;
+    let files = files.map(|f| f.into_file_paths());
+
+    if !dir.is_dir() {
+        return Err(format!(
+            "Provided path `{}` is not a valid directory",
+            dir.display(),
+        ));
+    };
+    if !output_dir.is_dir() {
+        return Err(format!(
+            "Provided output path `{}` is not a valid directory",
+            output_dir.display(),
+        ));
+    };
 
     let files = crate::dev::merge_files(files, &dir, output_dir)?;
 
@@ -189,9 +198,9 @@ fn handle_dev_merge_files(
     {
         for file in &files {
             if let Err(e) = std::fs::remove_file(file.as_path()) {
-                eprintln!("Failed to delete file {file}: {e}");
+                eprintln!("Failed to delete file {}: {e}", file.display());
             } else {
-                println!("Deleted file: {file}");
+                println!("Deleted file: {}", file.display());
             }
         }
     } else {
@@ -204,7 +213,7 @@ fn handle_dev_duplicate_ids(
     music_lib: crate::cli::MusicLibraryCli,
     ids: crate::cli::VideoIdsFromCli,
 ) -> Result<(), String> {
-    let music_lib = music_lib.try_into_music_root_from_cli()?;
+    let music_lib = music_lib.load_music_root_from_cli()?;
     let video_ids = ids.as_ids();
 
     println!(
