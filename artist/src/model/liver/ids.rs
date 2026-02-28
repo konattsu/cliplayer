@@ -97,11 +97,11 @@ mod tests {
 
     #[test]
     fn new_valid() {
-        let artists = LiverIds::new(vec!["aimer-test", "eir-aoi-test"])
+        let artists = LiverIds::new(vec!["riku-tazumi", "yugamin"])
             .expect("should create valid InternalArtists");
         assert_eq!(artists.0.len(), 2);
-        assert_eq!(artists.0[0].as_str(), "aimer-test");
-        assert_eq!(artists.0[1].as_str(), "eir-aoi-test");
+        assert_eq!(artists.0[0].as_str(), "riku-tazumi");
+        assert_eq!(artists.0[1].as_str(), "yugamin");
     }
 
     #[test]
@@ -110,18 +110,19 @@ mod tests {
         assert!(result.is_err(), "Expected error for empty artists list");
         let result = LiverIds::new(vec!["invalid-artist"]);
         assert!(result.is_err(), "Expected error for invalid artist ID");
-        let result = LiverIds::new(vec!["aimer-test", "invalid-artist"]);
+        let result = LiverIds::new(vec!["yugamin", "invalid-artist"]);
         assert!(result.is_err(), "Expected error for invalid artist ID");
     }
 
     #[test]
     fn deserialize_valid() {
-        let json = r#"["eir-aoi-test", "lisa-test", "aimer-test"]"#;
+        let json = r#"["riku-tazumi", "yugamin", "yudorikku"]"#;
         let artists: LiverIds =
             serde_json::from_str(json).expect("Failed to deserialize internal artists");
-        assert_eq!(artists.0[0].as_str(), "aimer-test");
-        assert_eq!(artists.0[1].as_str(), "eir-aoi-test");
-        assert_eq!(artists.0[2].as_str(), "lisa-test");
+        assert_eq!(artists.0[0].as_str(), "riku-tazumi");
+        // because of sorting, "yudorikku" comes before "yugamin"
+        assert_eq!(artists.0[1].as_str(), "yudorikku");
+        assert_eq!(artists.0[2].as_str(), "yugamin");
     }
 
     #[test]

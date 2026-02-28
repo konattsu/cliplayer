@@ -440,7 +440,7 @@ mod tests {
 | 3 | Test Song A3 | 25 - 30 | ユードリック | external artists: Milk Mike<br />cTags: Test Clip Tag2 |
 | 4 | Test Song B1 | 7 - 17 | 田角陸 | external artists: Banana Mike<br />clipped video exists [here](https://youtu.be/44444444444)<br />cTags: Test Clip Tag3, Test Clip Tag4 |
 | 5 | Test Song B2 | 27 - 37 | ゆがみん | cTags: Test Clip Tag1 |
-| 6 | Test Song B3 | 47 - 57 | 田角陸<br />ゆがみん<br />ユードリック | clipped video exists [here](https://youtu.be/55555555555) |
+| 6 | Test Song B3 | 47 - 57 | 田角陸<br />ユードリック<br />ゆがみん | clipped video exists [here](https://youtu.be/55555555555) |
 "#;
 
         assert_eq!(expect, markdown);
