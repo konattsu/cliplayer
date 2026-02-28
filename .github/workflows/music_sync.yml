@@ -2,7 +2,7 @@ name: Synchronize music data
 
 on:
   # schedule:
-    # - cron: "0 0 */14 * *"
+  # - cron: "0 0 */14 * *"
   workflow_dispatch:
 
 jobs:
@@ -46,20 +46,20 @@ jobs:
         run: |
           chmod +x ./bin/musictl
           ls -lR ./bin
-          cd ./music_data
+          cd ./music
           ../bin/musictl apply sync --file-tracing-level debug
 
       - name: Post musictl logs
         if: always()
         # いつかきれいにする
         run: |
-          cd ./music_data
+          cd ./music
           ../tools/musictl_logs_to_stdout.sh
 
       - name: Commit and Push changes
         run: |
-          git add ./music_data/data/music/
-          git add ./public/music_data/
+          git add ./music/data/music/
+          git add ./public/music/
           git commit -m "[music-sync] Automatically synchronize music_data and related min.json (scheduled)"
           git push origin HEAD
 

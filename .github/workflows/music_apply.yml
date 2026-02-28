@@ -5,8 +5,8 @@ on:
     branches:
       - main
     paths:
-      - "music_data/data/music/**"
-      - "music_data/data/input/**"
+      - "music/data/music/**"
+      - "music/data/input/**"
 
 jobs:
   build_and_test:
@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: music_data
+        working-directory: music
     env:
       RUST_BACKTRACE: 1
       CARGO_TERM_COLOR: always
@@ -49,11 +49,11 @@ jobs:
         run: |
           BASE_COMMIT="${{ github.event.before }}"
           HEAD_COMMIT="${{ github.event.after }}"
-          INPUT_CHANGED_FILES=$(git diff --name-only $BASE_COMMIT $HEAD_COMMIT | grep '^music_data/data/input' | sed 's|^|../|' || true)
+          INPUT_CHANGED_FILES=$(git diff --name-only $BASE_COMMIT $HEAD_COMMIT | grep '^music/data/input' | sed 's|^|../|' || true)
           INPUT_CHANGED_FILES=$(echo "$INPUT_CHANGED_FILES" | xargs)
-          MUSIC_CHANGED_FILES=$(git diff --name-only $BASE_COMMIT $HEAD_COMMIT | grep '^music_data/data/music' | sed 's|^|../|' || true)
+          MUSIC_CHANGED_FILES=$(git diff --name-only $BASE_COMMIT $HEAD_COMMIT | grep '^music/data/music' | sed 's|^|../|' || true)
           MUSIC_CHANGED_FILES=$(echo "$MUSIC_CHANGED_FILES" | xargs)
-          MUSIC_MIN_CHANGED_FILES=$(git diff --name-only $BASE_COMMIT $HEAD_COMMIT | grep '^public/music_data/.*\.json$' | sed 's|^|../|' || true)
+          MUSIC_MIN_CHANGED_FILES=$(git diff --name-only $BASE_COMMIT $HEAD_COMMIT | grep '^public/music/.*\.json$' | sed 's|^|../|' || true)
           MUSIC_MIN_CHANGED_FILES=$(echo "$MUSIC_MIN_CHANGED_FILES" | xargs)
 
           echo "input_changed_files=$INPUT_CHANGED_FILES" >> $GITHUB_OUTPUT
@@ -140,9 +140,9 @@ jobs:
         run: |
           BRANCH="auto/apply-music_data-pr-${{ steps.prnum.outputs.pr_number }}-$(date +'%Y%m%d-%H%M%S')"
           git switch -c $BRANCH origin/main
-          git add ../music_data/data/input/
-          git add ../music_data/data/music/
-          git add ../public/music_data/
+          git add ../music/data/input/
+          git add ../music/data/music/
+          git add ../public/music/
           git commit -m "[music-apply] (PR #${{ steps.prnum.outputs.pr_number }}) Auto apply music_data and relative min.json after merge"
           git push origin HEAD
 

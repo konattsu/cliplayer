@@ -35,7 +35,7 @@ fn default_input_artists_data_path() -> String {
     "data/artists_data.json".to_string()
 }
 fn default_artist_output_dir() -> String {
-    "../src/music_data/".to_string()
+    "../src/music/".to_string()
 }
 fn default_search_index_file_name() -> String {
     "artist_search_index.min.json".to_string()
@@ -47,7 +47,7 @@ fn default_artists_file_name() -> String {
     "artists.min.json".to_string()
 }
 fn default_code_snippets_path() -> String {
-    "../.vscode/music_data.code-snippets".to_string()
+    "../.vscode/music.code-snippets".to_string()
 }
 
 impl Cli {
