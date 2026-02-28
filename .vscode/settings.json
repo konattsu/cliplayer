@@ -25,7 +25,6 @@
   ],
 
   // Rust
-  "rust-analyzer.linkedProjects": ["music/Cargo.toml"],
   "[rust]": {
     "editor.defaultFormatter": "rust-lang.rust-analyzer"
   },
@@ -42,8 +41,12 @@
   // 楽曲データたちよう
   "json.schemas": [
     {
-      "fileMatch": ["/music/data/artists_data.json"],
-      "url": "./tools/artists_data.schema.json"
+      "fileMatch": ["/artist/data/livers.json"],
+      "url": "./tools/livers.schema.json"
+    },
+    {
+      "fileMatch": ["/artist/data/official_channels.json"],
+      "url": "./tools/official_channels.schema.json"
     },
     {
       "fileMatch": ["/music/data/input/*.json"],

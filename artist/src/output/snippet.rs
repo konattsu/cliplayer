@@ -1,6 +1,6 @@
 #[derive(serde::Deserialize, serde::Serialize, Debug, Clone)]
 pub(crate) struct Snippet {
-    #[serde(rename = "ArtistDataSnippet")]
+    #[serde(rename = "LiverNamesSnippet")]
     liver_data: ArtistDataSnippet,
     #[serde(flatten)]
     other: serde_json::Value,

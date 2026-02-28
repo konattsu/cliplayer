@@ -15,6 +15,8 @@ pub struct OfficialChannel {
     aliases: Vec<String>,
     /// チャンネルid
     channel_id: cmn_rs::yt::ChannelId,
+    /// 整数id
+    int_id: u16,
 }
 
 #[derive(serde::Deserialize, serde::Serialize, Debug, Clone, Hash, PartialEq, Eq)]
@@ -88,21 +90,24 @@ pub static LOADED_OFFICIAL_CHANNEL_DATA: once_cell::sync::Lazy<OfficialChannels>
                 "jah": "てすとちゃんねるいち",
                 "en": "Test Channel 1",
                 "aliases": ["てすといち"],
-                "channelId": "UC1111111111111111111111"
+                "channelId": "UC1111111111111111111111",
+                "intId": 950
             },
             "test-channel-2": {
                 "ja": "テストチャンネル2",
                 "jah": "てすとちゃんねるに",
                 "en": "Test Channel 2",
                 "aliases": ["てすとに"],
-                "channelId": "UC2222222222222222222222"
+                "channelId": "UC2222222222222222222222",
+                "intId": 951
             },
             "test-channel-3": {
                 "ja": "テストチャンネル3",
                 "jah": "てすとちゃんねるさん",
                 "en": "Test Channel 3",
                 "aliases": ["てすとさん"],
-                "channelId": "UC3333333333333333333333"
+                "channelId": "UC3333333333333333333333",
+                "intId": 952
             }
         }"#;
         let channels: OfficialChannels =
