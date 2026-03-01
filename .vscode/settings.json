@@ -6,17 +6,23 @@
     // ref: https://arktype.io/docs/intro/setup#vscode
     "strings": "on"
   },
-
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
   // prioritize ArkType's "type" for autoimports
   "typescript.preferences.autoImportSpecifierExcludeRegexes": ["^(node:)?os$"],
+  "files.associations": {
+    "justfile": "plaintext"
+  },
+
+  //
+
+  //
 
   // Prettier
   "prettier.requireConfig": true,
 
   // ESLint
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
-  },
   "eslint.validate": [
     "javascript",
     "javascriptreact",
@@ -24,15 +30,15 @@
     "typescriptreact"
   ],
 
-  // Rust
-  "[rust]": {
-    "editor.defaultFormatter": "rust-lang.rust-analyzer"
-  },
-
   // Taplo
   "[toml]": {
     "editor.defaultFormatter": "tamasfe.even-better-toml",
     "editor.formatOnSave": true
+  },
+
+  // Rust
+  "[rust]": {
+    "editor.defaultFormatter": "rust-lang.rust-analyzer"
   },
 
   // Typescript
@@ -164,7 +170,11 @@
     "eval": false,
     "Invoke-Expression": false,
     "iex": false,
-    "/^cargo (build|check|test|fmt|clippy|run)\\b/": true
+    "/^cargo (build|check|test|fmt|clippy|run)\\b/": true,
+    "/^sh -c \"\\. scripts/load_env\\.sh && echo X=\\$YOUTUBE_API_KEY\"$/": {
+      "approve": true,
+      "matchCommandLine": true
+    }
   },
 
   // spell checking

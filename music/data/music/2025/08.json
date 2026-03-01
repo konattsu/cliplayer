@@ -15,7 +15,7 @@
     "clips": [
       {
         "songTitle": "Mela!",
-        "artists": [
+        "liverIds": [
           "furen-e-lustario",
           "suzuna-nanase"
         ],
@@ -25,7 +25,7 @@
       },
       {
         "songTitle": "はなまるぴっぴはよいこだけ",
-        "artists": [
+        "liverIds": [
           "furen-e-lustario",
           "suzuna-nanase"
         ],
@@ -35,7 +35,7 @@
       },
       {
         "songTitle": "君と夏フェス",
-        "artists": [
+        "liverIds": [
           "furen-e-lustario",
           "suzuna-nanase"
         ],
@@ -45,7 +45,7 @@
       },
       {
         "songTitle": "ノーダウト",
-        "artists": [
+        "liverIds": [
           "furen-e-lustario",
           "suzuna-nanase"
         ],
@@ -55,7 +55,7 @@
       },
       {
         "songTitle": "sabotage",
-        "artists": [
+        "liverIds": [
           "furen-e-lustario"
         ],
         "startTime": "PT28M25S",
@@ -64,7 +64,7 @@
       },
       {
         "songTitle": "心絵",
-        "artists": [
+        "liverIds": [
           "suzuna-nanase"
         ],
         "startTime": "PT34M22S",
@@ -73,7 +73,7 @@
       },
       {
         "songTitle": "ようこそジャパリパークへ",
-        "artists": [
+        "liverIds": [
           "furen-e-lustario",
           "suzuna-nanase"
         ],
@@ -83,7 +83,7 @@
       },
       {
         "songTitle": "シュガーソングとビターステップ",
-        "artists": [
+        "liverIds": [
           "furen-e-lustario",
           "suzuna-nanase"
         ],
@@ -93,7 +93,7 @@
       },
       {
         "songTitle": "新時代",
-        "artists": [
+        "liverIds": [
           "furen-e-lustario"
         ],
         "startTime": "PT57M30S",
@@ -102,7 +102,7 @@
       },
       {
         "songTitle": "笑ってたいんだ",
-        "artists": [
+        "liverIds": [
           "suzuna-nanase"
         ],
         "startTime": "PT1H7M1S",
@@ -111,7 +111,7 @@
       },
       {
         "songTitle": "StaRt",
-        "artists": [
+        "liverIds": [
           "furen-e-lustario",
           "suzuna-nanase"
         ],
@@ -121,7 +121,7 @@
       },
       {
         "songTitle": "うまぴょい伝説",
-        "artists": [
+        "liverIds": [
           "furen-e-lustario",
           "suzuna-nanase"
         ],
@@ -131,7 +131,7 @@
       },
       {
         "songTitle": "怪獣の花唄",
-        "artists": [
+        "liverIds": [
           "furen-e-lustario",
           "suzuna-nanase"
         ],
@@ -157,7 +157,7 @@
     "clips": [
       {
         "songTitle": "イケナイ太陽",
-        "artists": [
+        "liverIds": [
           "meruto-kuramochi",
           "nana-tamanoi"
         ],
@@ -167,7 +167,7 @@
       },
       {
         "songTitle": "花火",
-        "artists": [
+        "liverIds": [
           "meruto-kuramochi",
           "nana-tamanoi"
         ],
@@ -177,7 +177,7 @@
       },
       {
         "songTitle": "天体観測",
-        "artists": [
+        "liverIds": [
           "meruto-kuramochi",
           "nana-tamanoi"
         ],
@@ -187,7 +187,7 @@
       },
       {
         "songTitle": "青のすみか",
-        "artists": [
+        "liverIds": [
           "meruto-kuramochi"
         ],
         "startTime": "PT33M19S",
@@ -196,7 +196,7 @@
       },
       {
         "songTitle": "美しい鰭",
-        "artists": [
+        "liverIds": [
           "nana-tamanoi"
         ],
         "startTime": "PT39M27S",
@@ -205,7 +205,7 @@
       },
       {
         "songTitle": "君の知らない物語",
-        "artists": [
+        "liverIds": [
           "meruto-kuramochi",
           "nana-tamanoi"
         ],
@@ -215,7 +215,7 @@
       },
       {
         "songTitle": "点描の唄",
-        "artists": [
+        "liverIds": [
           "meruto-kuramochi",
           "nana-tamanoi"
         ],
@@ -225,7 +225,7 @@
       },
       {
         "songTitle": "夜明けと蛍",
-        "artists": [
+        "liverIds": [
           "meruto-kuramochi",
           "nana-tamanoi"
         ],
@@ -235,7 +235,7 @@
       },
       {
         "songTitle": "島人ぬ宝",
-        "artists": [
+        "liverIds": [
           "nana-tamanoi"
         ],
         "startTime": "PT1H15M34S",
@@ -244,7 +244,7 @@
       },
       {
         "songTitle": "ノマド",
-        "artists": [
+        "liverIds": [
           "meruto-kuramochi"
         ],
         "startTime": "PT1H21M2S",
@@ -253,7 +253,7 @@
       },
       {
         "songTitle": "愛包ダンスホール",
-        "artists": [
+        "liverIds": [
           "meruto-kuramochi",
           "nana-tamanoi"
         ],
@@ -263,7 +263,7 @@
       },
       {
         "songTitle": "ロウワー",
-        "artists": [
+        "liverIds": [
           "meruto-kuramochi",
           "nana-tamanoi"
         ],
@@ -273,7 +273,7 @@
       },
       {
         "songTitle": "夏祭り",
-        "artists": [
+        "liverIds": [
           "meruto-kuramochi",
           "nana-tamanoi"
         ],

@@ -15,7 +15,7 @@
     "clips": [
       {
         "songTitle": "アイドル",
-        "artists": [
+        "liverIds": [
           "ruri-shioriha"
         ],
         "startTime": "PT1M9S",
@@ -24,7 +24,7 @@
       },
       {
         "songTitle": "KICK BACK",
-        "artists": [
+        "liverIds": [
           "ruri-shioriha"
         ],
         "startTime": "PT8M59S",
@@ -33,7 +33,7 @@
       },
       {
         "songTitle": "きゅうくらりん",
-        "artists": [
+        "liverIds": [
           "ruri-shioriha"
         ],
         "startTime": "PT14M8S",
@@ -42,7 +42,7 @@
       },
       {
         "songTitle": "オトナブルー",
-        "artists": [
+        "liverIds": [
           "ruri-shioriha"
         ],
         "startTime": "PT20M20S",
@@ -51,7 +51,7 @@
       },
       {
         "songTitle": "ビターチョコデコレーション",
-        "artists": [
+        "liverIds": [
           "ruri-shioriha"
         ],
         "startTime": "PT25M49S",
@@ -60,7 +60,7 @@
       },
       {
         "songTitle": "ここから、ここから",
-        "artists": [
+        "liverIds": [
           "ruri-shioriha"
         ],
         "startTime": "PT31M1S",
@@ -69,7 +69,7 @@
       },
       {
         "songTitle": "命ばっかり",
-        "artists": [
+        "liverIds": [
           "ruri-shioriha"
         ],
         "startTime": "PT38M37S",
@@ -78,7 +78,7 @@
       },
       {
         "songTitle": "Stay Alive",
-        "artists": [
+        "liverIds": [
           "ruri-shioriha"
         ],
         "startTime": "PT45M23S",
@@ -87,7 +87,7 @@
       },
       {
         "songTitle": "海色",
-        "artists": [
+        "liverIds": [
           "ruri-shioriha"
         ],
         "startTime": "PT50M22S",
@@ -96,7 +96,7 @@
       },
       {
         "songTitle": "午夜の待ち合わせ",
-        "artists": [
+        "liverIds": [
           "ruri-shioriha"
         ],
         "startTime": "PT55M12S",
@@ -105,7 +105,7 @@
       },
       {
         "songTitle": "starlog",
-        "artists": [
+        "liverIds": [
           "ruri-shioriha"
         ],
         "startTime": "PT58M17S",

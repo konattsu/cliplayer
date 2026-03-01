@@ -15,7 +15,7 @@
     "clips": [
       {
         "songTitle": "世界一可愛い私",
-        "artists": [
+        "liverIds": [
           "ruri-shioriha"
         ],
         "startTime": "PT1M54S",
@@ -24,7 +24,7 @@
       },
       {
         "songTitle": "こんなあたしはいかがですか",
-        "artists": [
+        "liverIds": [
           "ruri-shioriha"
         ],
         "startTime": "PT8M17S",
@@ -33,7 +33,7 @@
       },
       {
         "songTitle": "大大大大大好きな君へ",
-        "artists": [
+        "liverIds": [
           "ruri-shioriha"
         ],
         "startTime": "PT13M23S",
@@ -42,7 +42,7 @@
       },
       {
         "songTitle": "かわいいだけじゃだめですか？",
-        "artists": [
+        "liverIds": [
           "ruri-shioriha"
         ],
         "startTime": "PT20M48S",
@@ -51,7 +51,7 @@
       },
       {
         "songTitle": "ルージュの伝言",
-        "artists": [
+        "liverIds": [
           "ruri-shioriha"
         ],
         "startTime": "PT26M39S",
@@ -60,7 +60,7 @@
       },
       {
         "songTitle": "ずうっといっしょ！",
-        "artists": [
+        "liverIds": [
           "ruri-shioriha"
         ],
         "startTime": "PT30M50S",
@@ -69,7 +69,7 @@
       },
       {
         "songTitle": "カタオモイ",
-        "artists": [
+        "liverIds": [
           "ruri-shioriha"
         ],
         "startTime": "PT35M46S",
@@ -78,7 +78,7 @@
       },
       {
         "songTitle": "恋の音色ライン",
-        "artists": [
+        "liverIds": [
           "ruri-shioriha"
         ],
         "startTime": "PT40M29S",
@@ -87,7 +87,7 @@
       },
       {
         "songTitle": "ライラック",
-        "artists": [
+        "liverIds": [
           "ruri-shioriha"
         ],
         "startTime": "PT46M45S",
@@ -96,7 +96,7 @@
       },
       {
         "songTitle": "私たちはもう舞台の上",
-        "artists": [
+        "liverIds": [
           "ruri-shioriha"
         ],
         "startTime": "PT54M32S",
@@ -105,7 +105,7 @@
       },
       {
         "songTitle": "透明なプロローグ",
-        "artists": [
+        "liverIds": [
           "ruri-shioriha"
         ],
         "startTime": "PT1H2M31S",

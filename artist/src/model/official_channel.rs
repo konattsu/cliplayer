@@ -19,7 +19,17 @@ pub struct OfficialChannel {
     int_id: u16,
 }
 
-#[derive(serde::Deserialize, serde::Serialize, Debug, Clone, Hash, PartialEq, Eq)]
+#[derive(
+    serde::Deserialize,
+    serde::Serialize,
+    Debug,
+    Clone,
+    Hash,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+)]
 pub struct OfficialId(String);
 
 pub struct OfficialChannelsInner {
