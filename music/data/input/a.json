@@ -1,0 +1,90 @@
+[
+  {
+    "videoId": "cFc9Ywpk0QU",
+    "uploaderName": null,
+    "videoTags": ["2d", "karaoke"],
+    "clips": [
+      {
+        "songTitle": "ふわふわ時間",
+        "liverIds": ["sophia-valentine"],
+        "externalArtistsName": null,
+        "clippedVideoId": null,
+        "startTime": "PT3M2S",
+        "endTime": "PT6M56S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "妄想感傷代償連盟",
+        "liverIds": ["sophia-valentine"],
+        "externalArtistsName": null,
+        "clippedVideoId": null,
+        "startTime": "PT9M39S",
+        "endTime": "PT13M58S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "IRIS OUT",
+        "liverIds": ["sophia-valentine"],
+        "externalArtistsName": null,
+        "clippedVideoId": null,
+        "startTime": "PT17M15S",
+        "endTime": "PT19M41S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "たぶん",
+        "liverIds": ["sophia-valentine"],
+        "externalArtistsName": null,
+        "clippedVideoId": null,
+        "startTime": "PT23M13S",
+        "endTime": "PT27M28S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "それがあなたの幸せとしても",
+        "liverIds": ["sophia-valentine"],
+        "externalArtistsName": null,
+        "clippedVideoId": null,
+        "startTime": "PT31M23S",
+        "endTime": "PT35M7S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "神のまにまに",
+        "liverIds": ["sophia-valentine"],
+        "externalArtistsName": null,
+        "clippedVideoId": null,
+        "startTime": "PT36M58S",
+        "endTime": "PT41M8S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "キミソラキセキ",
+        "liverIds": ["sophia-valentine"],
+        "externalArtistsName": null,
+        "clippedVideoId": null,
+        "startTime": "PT43M36S",
+        "endTime": "PT48M36S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "恋愛裁判",
+        "liverIds": ["sophia-valentine"],
+        "externalArtistsName": null,
+        "clippedVideoId": null,
+        "startTime": "PT50M15S",
+        "endTime": "PT53M54S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "ヒッチコック",
+        "liverIds": ["sophia-valentine"],
+        "externalArtistsName": null,
+        "clippedVideoId": null,
+        "startTime": "PT54M58S",
+        "endTime": "PT58M40S",
+        "clipTags": null
+      }
+    ]
+  }
+]
