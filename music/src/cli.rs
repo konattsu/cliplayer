@@ -9,7 +9,7 @@ pub use file_path::FilePathFromCli;
 pub use file_paths::FilePathsFromCli;
 pub use music_root::MusicLibraryCli;
 pub use parser::{
-    ApplyCommands, Cli, Commands, TraceLevel, UtilCommands, ValidateCommands,
+    ApplyCommands, Cli, Commands, DevCommands, TraceLevel, ValidateCommands,
 };
 pub use tracing_level::TracingLevel;
 pub use video_ids::VideoIdsFromCli;

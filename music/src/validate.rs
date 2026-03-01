@@ -61,7 +61,7 @@ impl AnonymousVideoValidateError {
 /// # Return
 /// - Ok(String): 検証成功. 入力をmd形式に見やすくした文字列
 /// - Err(String): 検証失敗. エラーメッセージ
-pub fn validate_new_input_md(files: &[std::path::PathBuf]) -> Result<String, String> {
+pub fn validate_add_input_md(files: &[std::path::PathBuf]) -> Result<String, String> {
     let videos = try_load_anonymous_videos(files).map_err(|e| e.to_pretty_string())?;
 
     let mut md_str = "# Music Data Summary\n".to_string();
@@ -78,7 +78,7 @@ pub fn validate_new_input_md(files: &[std::path::PathBuf]) -> Result<String, Str
 /// # Return
 /// - Ok(()): 検証成功.
 /// - Err(String): 検証失敗. エラーメッセージ
-pub fn validate_new_input(files: &[std::path::PathBuf]) -> Result<(), String> {
+pub fn validate_add_input(files: &[std::path::PathBuf]) -> Result<(), String> {
     // deserializeできたらok
     let _videos = try_load_anonymous_videos(files).map_err(|e| e.to_pretty_string())?;
     Ok(())

@@ -12,15 +12,15 @@ pub enum Commands {
     #[command(subcommand)]
     Validate(ValidateCommands),
     #[command(subcommand)]
-    Dev(UtilCommands),
+    Dev(DevCommands),
 }
 
 // 入力値は形式が正しければ成功とみなす. 例えば指定されたパスが存在しないなら後続の処理でエラーを出す
 
 #[derive(Debug, clap::Subcommand)]
 pub enum ApplyCommands {
-    /// Apply new music data from input files
-    New {
+    /// Add new music data from input files
+    Add {
         /// Comma-separated file paths containing new music data to apply
         #[arg(short, long, value_name = "FILES")]
         input: crate::cli::FilePathsFromCli,
@@ -78,7 +78,7 @@ pub enum ApplyCommands {
 #[derive(Debug, clap::Subcommand)]
 pub enum ValidateCommands {
     /// Validate new music data input files
-    New {
+    Add {
         /// Comma-separated file paths containing new music data to validate
         #[arg(short, long, value_name = "FILES")]
         input: crate::cli::FilePathsFromCli,
@@ -96,7 +96,7 @@ pub enum ValidateCommands {
         trace_level: TraceLevel,
     },
     /// Validate new music data input files and output parsed info
-    NewMd {
+    AddMd {
         /// Comma-separated file paths containing new music data to validate
         #[arg(short, long, value_name = "FILES")]
         input: crate::cli::FilePathsFromCli,
@@ -107,7 +107,7 @@ pub enum ValidateCommands {
 }
 
 #[derive(Debug, clap::Subcommand)]
-pub enum UtilCommands {
+pub enum DevCommands {
     /// Check for duplicate video IDs in the input
     DuplicateIds {
         /// Comma-separated video IDs to check for duplicates
@@ -168,7 +168,7 @@ impl Cli {
     pub fn file_level(&self) -> Option<tracing::level_filters::LevelFilter> {
         let level = match self.command {
             Commands::Apply(ref apply_cmd) => match apply_cmd {
-                ApplyCommands::New { trace_level, .. } => {
+                ApplyCommands::Add { trace_level, .. } => {
                     &trace_level.file_tracing_level
                 }
                 ApplyCommands::Update { trace_level, .. } => {
@@ -179,21 +179,21 @@ impl Cli {
                 }
             },
             Commands::Validate(ref validate_cmd) => match validate_cmd {
-                ValidateCommands::New { trace_level, .. } => {
+                ValidateCommands::Add { trace_level, .. } => {
                     &trace_level.file_tracing_level
                 }
                 ValidateCommands::Update { trace_level, .. } => {
                     &trace_level.file_tracing_level
                 }
-                ValidateCommands::NewMd { trace_level, .. } => {
+                ValidateCommands::AddMd { trace_level, .. } => {
                     &trace_level.file_tracing_level
                 }
             },
             Commands::Dev(ref util_cmd) => match util_cmd {
-                UtilCommands::DuplicateIds { trace_level, .. } => {
+                DevCommands::DuplicateIds { trace_level, .. } => {
                     &trace_level.file_tracing_level
                 }
-                UtilCommands::MergeFiles { trace_level, .. } => {
+                DevCommands::MergeFiles { trace_level, .. } => {
                     &trace_level.file_tracing_level
                 }
             },
@@ -204,7 +204,7 @@ impl Cli {
     pub fn stdout_level(&self) -> Option<tracing::level_filters::LevelFilter> {
         let level = match self.command {
             Commands::Apply(ref apply_cmd) => match apply_cmd {
-                ApplyCommands::New { trace_level, .. } => {
+                ApplyCommands::Add { trace_level, .. } => {
                     &trace_level.stdout_tracing_level
                 }
                 ApplyCommands::Update { trace_level, .. } => {
@@ -215,21 +215,21 @@ impl Cli {
                 }
             },
             Commands::Validate(ref validate_cmd) => match validate_cmd {
-                ValidateCommands::New { trace_level, .. } => {
+                ValidateCommands::Add { trace_level, .. } => {
                     &trace_level.stdout_tracing_level
                 }
                 ValidateCommands::Update { trace_level, .. } => {
                     &trace_level.stdout_tracing_level
                 }
-                ValidateCommands::NewMd { trace_level, .. } => {
+                ValidateCommands::AddMd { trace_level, .. } => {
                     &trace_level.stdout_tracing_level
                 }
             },
             Commands::Dev(ref util_cmd) => match util_cmd {
-                UtilCommands::DuplicateIds { trace_level, .. } => {
+                DevCommands::DuplicateIds { trace_level, .. } => {
                     &trace_level.stdout_tracing_level
                 }
-                UtilCommands::MergeFiles { trace_level, .. } => {
+                DevCommands::MergeFiles { trace_level, .. } => {
                     &trace_level.stdout_tracing_level
                 }
             },
