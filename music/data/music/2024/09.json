@@ -15,7 +15,7 @@
     "clips": [
       {
         "songTitle": "劣等上等",
-        "artists": [
+        "liverIds": [
           "meruto-kuramochi"
         ],
         "startTime": "PT3M38S",
@@ -24,7 +24,7 @@
       },
       {
         "songTitle": "フラグライフ",
-        "artists": [
+        "liverIds": [
           "meruto-kuramochi",
           "saku-sasaki"
         ],
@@ -34,7 +34,7 @@
       },
       {
         "songTitle": "永遠のあくる日",
-        "artists": [
+        "liverIds": [
           "meruto-kuramochi",
           "toko-inui"
         ],
@@ -44,7 +44,7 @@
       },
       {
         "songTitle": "にっこり^^調査隊のテーマ",
-        "artists": [
+        "liverIds": [
           "kanato-fura",
           "meme-mashiro",
           "meruto-kuramochi",
@@ -56,7 +56,7 @@
       },
       {
         "songTitle": "[A]ddiction",
-        "artists": [
+        "liverIds": [
           "karuta-yamagami",
           "kohaku-todo",
           "meruto-kuramochi",
@@ -68,7 +68,7 @@
       },
       {
         "songTitle": "アイドル",
-        "artists": [
+        "liverIds": [
           "meruto-kuramochi"
         ],
         "startTime": "PT1H1M19S",
@@ -77,7 +77,7 @@
       },
       {
         "songTitle": "笑顔",
-        "artists": [
+        "liverIds": [
           "meruto-kuramochi"
         ],
         "startTime": "PT1H7M49S",

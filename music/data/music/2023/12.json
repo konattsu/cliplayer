@@ -15,7 +15,7 @@
     "clips": [
       {
         "songTitle": "おねがいダーリン",
-        "artists": [
+        "liverIds": [
           "ruri-shioriha"
         ],
         "startTime": "PT1M9S",
@@ -24,7 +24,7 @@
       },
       {
         "songTitle": "命に嫌われている。",
-        "artists": [
+        "liverIds": [
           "ruri-shioriha"
         ],
         "startTime": "PT7M12S",
@@ -33,7 +33,7 @@
       },
       {
         "songTitle": "ぼなぺてぃーと♡S",
-        "artists": [
+        "liverIds": [
           "ruri-shioriha"
         ],
         "startTime": "PT14M53S",
@@ -42,7 +42,7 @@
       },
       {
         "songTitle": "ロウワー",
-        "artists": [
+        "liverIds": [
           "ruri-shioriha"
         ],
         "startTime": "PT21M32S",
@@ -51,7 +51,7 @@
       },
       {
         "songTitle": "バラライカ",
-        "artists": [
+        "liverIds": [
           "ruri-shioriha"
         ],
         "startTime": "PT27M2S",
@@ -60,7 +60,7 @@
       },
       {
         "songTitle": "ダーリンダンス",
-        "artists": [
+        "liverIds": [
           "ruri-shioriha"
         ],
         "startTime": "PT33M32S",
@@ -69,7 +69,7 @@
       },
       {
         "songTitle": "花の塔",
-        "artists": [
+        "liverIds": [
           "ruri-shioriha"
         ],
         "startTime": "PT39M6S",
@@ -78,7 +78,7 @@
       },
       {
         "songTitle": "kaleidoscope",
-        "artists": [
+        "liverIds": [
           "ruri-shioriha"
         ],
         "startTime": "PT46M9S",
@@ -87,7 +87,7 @@
       },
       {
         "songTitle": "ココロオドル",
-        "artists": [
+        "liverIds": [
           "ruri-shioriha"
         ],
         "startTime": "PT53M13S",

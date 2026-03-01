@@ -15,7 +15,7 @@
     "clips": [
       {
         "songTitle": "地獄先生",
-        "artists": [
+        "liverIds": [
           "lize-helesta"
         ],
         "startTime": "PT2M40S",
@@ -24,7 +24,7 @@
       },
       {
         "songTitle": "秒針を噛む",
-        "artists": [
+        "liverIds": [
           "lize-helesta"
         ],
         "startTime": "PT10M10S",
@@ -33,7 +33,7 @@
       },
       {
         "songTitle": "ヴィーナスとジーザス",
-        "artists": [
+        "liverIds": [
           "lize-helesta"
         ],
         "startTime": "PT19M26S",
@@ -42,7 +42,7 @@
       },
       {
         "songTitle": "sweets parade",
-        "artists": [
+        "liverIds": [
           "lize-helesta"
         ],
         "startTime": "PT25M23S",
@@ -51,7 +51,7 @@
       },
       {
         "songTitle": "Good-bye days",
-        "artists": [
+        "liverIds": [
           "lize-helesta"
         ],
         "startTime": "PT35M56S",
@@ -60,7 +60,7 @@
       },
       {
         "songTitle": "リテラチュア",
-        "artists": [
+        "liverIds": [
           "lize-helesta"
         ],
         "startTime": "PT44M41S",
@@ -69,7 +69,7 @@
       },
       {
         "songTitle": "愛を伝えたいだとか",
-        "artists": [
+        "liverIds": [
           "lize-helesta"
         ],
         "startTime": "PT51M27S",
@@ -78,7 +78,7 @@
       },
       {
         "songTitle": "気まぐれロマンティック",
-        "artists": [
+        "liverIds": [
           "lize-helesta"
         ],
         "startTime": "PT58M57S",
@@ -87,7 +87,7 @@
       },
       {
         "songTitle": "恋愛サーキュレーション",
-        "artists": [
+        "liverIds": [
           "lize-helesta"
         ],
         "startTime": "PT1H6M8S",
