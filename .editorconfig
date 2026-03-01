@@ -22,3 +22,6 @@ quote_type = double
 
 [**/*.md]
 max_line_length = off
+
+[justfile]
+indent_size = 4
