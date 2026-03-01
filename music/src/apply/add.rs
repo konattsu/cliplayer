@@ -1,4 +1,4 @@
-pub async fn apply_new(
+pub async fn apply_add(
     mut music_lib: crate::music_file::MusicLibrary,
     anonymous_videos: crate::model::AnonymousVideos,
     api_key: crate::fetcher::YouTubeApiKey,
