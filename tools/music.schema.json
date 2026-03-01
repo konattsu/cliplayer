@@ -30,15 +30,16 @@
         "minItems": 1,
         "items": {
           "type": "object",
-          "required": ["songTitle", "artists", "startTime", "endTime"],
+          "required": ["songTitle", "liverIds", "startTime", "endTime"],
+          "additionalProperties": false,
           "properties": {
             "songTitle": { "type": ["string"], "minLength": 1 },
-            "artists": {
+            "liverIds": {
               "type": "array",
               "items": { "type": "string", "minLength": 1 },
               "minItems": 1
             },
-            "externalArtists": {
+            "externalArtistsName": {
               "type": ["array", "null"],
               "items": { "type": "string" },
               "minItems": 0

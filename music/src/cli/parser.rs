@@ -139,12 +139,12 @@ pub enum UtilCommands {
 
 fn default_min_clips_path() -> crate::cli::FilePathFromCli {
     crate::cli::FilePathFromCli::new_unchecked(
-        "../public/music/clips.min.json".to_string(),
+        "public/music/clips.min.json".to_string(),
     )
 }
 fn default_min_videos_path() -> crate::cli::FilePathFromCli {
     crate::cli::FilePathFromCli::new_unchecked(
-        "../public/music/videos.min.json".to_string(),
+        "public/music/videos.min.json".to_string(),
     )
 }
 fn default_merge_files_dir() -> String {

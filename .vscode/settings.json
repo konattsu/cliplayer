@@ -170,7 +170,11 @@
     "eval": false,
     "Invoke-Expression": false,
     "iex": false,
-    "/^cargo (build|check|test|fmt|clippy|run)\\b/": true
+    "/^cargo (build|check|test|fmt|clippy|run)\\b/": true,
+    "/^sh -c \"\\. scripts/load_env\\.sh && echo X=\\$YOUTUBE_API_KEY\"$/": {
+      "approve": true,
+      "matchCommandLine": true
+    }
   },
 
   // spell checking
