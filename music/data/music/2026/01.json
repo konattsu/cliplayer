@@ -1,1 +1,99 @@
-[]
+[
+  {
+    "videoId": "cFc9Ywpk0QU",
+    "title": "【 歌枠 】３周年だ！お歌うたうよ！🐰🤍【ソフィア・ヴァレンタイン/にじさんじ】",
+    "channelId": "UCivwPlOp0ojnMPZj5pNOPPA",
+    "publishedAt": "2026-01-19T13:23:27Z",
+    "syncedAt": "2026-03-01T08:30:04Z",
+    "duration": "PT1H52M47S",
+    "privacyStatus": "public",
+    "embeddable": true,
+    "videoTags": [
+      "2d",
+      "karaoke"
+    ],
+    "clips": [
+      {
+        "songTitle": "ふわふわ時間",
+        "liverIds": [
+          "sophia-valentine"
+        ],
+        "startTime": "PT3M2S",
+        "endTime": "PT6M56S",
+        "uuid": "11786ebd-4b42-428b-81f8-ecf791887326"
+      },
+      {
+        "songTitle": "妄想感傷代償連盟",
+        "liverIds": [
+          "sophia-valentine"
+        ],
+        "startTime": "PT9M39S",
+        "endTime": "PT13M58S",
+        "uuid": "5d5bbed2-c2eb-453c-b7f5-ebc129920b8f"
+      },
+      {
+        "songTitle": "IRIS OUT",
+        "liverIds": [
+          "sophia-valentine"
+        ],
+        "startTime": "PT17M15S",
+        "endTime": "PT19M41S",
+        "uuid": "a32833dd-865a-43fd-b820-cecb26889914"
+      },
+      {
+        "songTitle": "たぶん",
+        "liverIds": [
+          "sophia-valentine"
+        ],
+        "startTime": "PT23M13S",
+        "endTime": "PT27M28S",
+        "uuid": "449d3c46-4dec-46dc-b54e-b9a8ae40822a"
+      },
+      {
+        "songTitle": "それがあなたの幸せとしても",
+        "liverIds": [
+          "sophia-valentine"
+        ],
+        "startTime": "PT31M23S",
+        "endTime": "PT35M7S",
+        "uuid": "3f7b3cd3-9570-41c5-8b1a-556816b0885e"
+      },
+      {
+        "songTitle": "神のまにまに",
+        "liverIds": [
+          "sophia-valentine"
+        ],
+        "startTime": "PT36M58S",
+        "endTime": "PT41M8S",
+        "uuid": "4e5a9d49-498d-4f18-86fa-7f0e8e754155"
+      },
+      {
+        "songTitle": "キミソラキセキ",
+        "liverIds": [
+          "sophia-valentine"
+        ],
+        "startTime": "PT43M36S",
+        "endTime": "PT48M36S",
+        "uuid": "fd3a3500-a350-4dad-82f2-4a37ffafaf9a"
+      },
+      {
+        "songTitle": "恋愛裁判",
+        "liverIds": [
+          "sophia-valentine"
+        ],
+        "startTime": "PT50M15S",
+        "endTime": "PT53M54S",
+        "uuid": "1c80b3d9-6a9c-44a1-8a69-ab9b2831cc60"
+      },
+      {
+        "songTitle": "ヒッチコック",
+        "liverIds": [
+          "sophia-valentine"
+        ],
+        "startTime": "PT54M58S",
+        "endTime": "PT58M40S",
+        "uuid": "93d1d812-153d-4605-a340-62f2190fd365"
+      }
+    ]
+  }
+]
