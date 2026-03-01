@@ -7,114 +7,129 @@ on:
     paths:
       - "music/data/music/**"
       - "music/data/input/**"
-    types: [opened, synchronize, reopened]
+    types: [opened, synchronize, reopened, labeled, unlabeled]
 
 jobs:
-  build_and_test:
+  check_s3:
+    runs-on: ubuntu-latest
+    outputs:
+      exists: ${{ steps.check.outputs.exists }}
+    permissions:
+      id-token: write # required for requesting the JWT
+    steps:
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Look for musictl in S3
+        id: check
+        run: |
+          if aws s3 ls s3://${{ secrets.S3_BUCKET }}/cliplayer/musictl > /dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+  build_if_needed:
+    needs: check_s3
+    if: needs.check_s3.outputs.exists == 'false'
     uses: ./.github/workflows/musictl.yml
+    secrets: inherit
 
   validate:
-    needs: build_and_test
+    needs: [check_s3, build_if_needed]
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: music
     env:
       RUST_BACKTRACE: 1
       CARGO_TERM_COLOR: always
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 50
 
-      - name: Detect changed files
-        id: changes
+      # Determine operation type from PR labels (music-add / music-update).
+      # Both labels present: BOTH, neither: NONE (skip).
+      - name: Detect operation type from PR labels
+        id: op_type
         run: |
-          BASE_COMMIT="${{ github.event.pull_request.base.sha }}"
-          HEAD_COMMIT="${{ github.sha }}"
-          INPUT_CHANGED_FILES=$(git diff --name-only $BASE_COMMIT $HEAD_COMMIT | grep '^music/data/input' | sed 's|^|../|' || true)
-          INPUT_CHANGED_FILES=$(echo "$INPUT_CHANGED_FILES" | xargs)
-          MUSIC_CHANGED_FILES=$(git diff --name-only $BASE_COMMIT $HEAD_COMMIT | grep '^music/data/music' | sed 's|^|../|' || true)
-          MUSIC_CHANGED_FILES=$(echo "$MUSIC_CHANGED_FILES" | xargs)
-          MUSIC_MIN_CHANGED_FILES=$(git diff --name-only $BASE_COMMIT $HEAD_COMMIT | grep '^public/music/.*\.json$' | sed 's|^|../|' || true)
-          MUSIC_MIN_CHANGED_FILES=$(echo "$MUSIC_MIN_CHANGED_FILES" | xargs)
+          LABELS='${{ toJson(github.event.pull_request.labels) }}'
+          HAS_ADD=$(echo "$LABELS"   | jq '[.[].name] | contains(["music-add"])')
+          HAS_UPDATE=$(echo "$LABELS" | jq '[.[].name] | contains(["music-update"])')
 
-          echo "input_changed_files=$INPUT_CHANGED_FILES" >> $GITHUB_OUTPUT
-          echo "music_changed_files=$MUSIC_CHANGED_FILES" >> $GITHUB_OUTPUT
-          echo "music_min_changed_files=$MUSIC_MIN_CHANGED_FILES" >> $GITHUB_OUTPUT
-
-      - name: Detect changed type
-        id: changed_type
-        run: |
-          INPUT_CHANGED_FILES="${{ steps.changes.outputs.input_changed_files }}"
-          MUSIC_CHANGED_FILES="${{ steps.changes.outputs.music_changed_files }}"
-          MUSIC_MIN_CHANGED_FILES="${{ steps.changes.outputs.music_min_changed_files }}"
-
-          if [ -n "$MUSIC_MIN_CHANGED_FILES" ]; then
-            # music関連のminファイルが変更されている場合はスキップ
-            echo "Push includes music-related min files. Skipping workflow."
-            SKIP_WORKFLOW=true
-          elif [ -n "$INPUT_CHANGED_FILES" ] && [ -z "$MUSIC_CHANGED_FILES" ]; then
-            # inputのみ変更
-            echo "changed_type=INPUT" >> $GITHUB_OUTPUT
-            echo "input_changed_files=$INPUT_CHANGED_FILES" >> $GITHUB_OUTPUT
-            echo "changed_type has been set to INPUT (input files were changed: $INPUT_CHANGED_FILES)"
-          elif [ -z "$INPUT_CHANGED_FILES" ] && [ -n "$MUSIC_CHANGED_FILES" ]; then
-            # musicのみ変更
-            echo "changed_type=UPDATE" >> $GITHUB_OUTPUT
-            echo "music_changed_files=$MUSIC_CHANGED_FILES" >> $GITHUB_OUTPUT
-            echo "changed_type has been set to UPDATE (music files were changed: $MUSIC_CHANGED_FILES)"
-          elif [ -n "$INPUT_CHANGED_FILES" ] && [ -n "$MUSIC_CHANGED_FILES" ]; then
-            # inputもmusicも変更
-            echo "changed_type=BOTH" >> $GITHUB_OUTPUT
-            echo "input_changed_files=$INPUT_CHANGED_FILES" >> $GITHUB_OUTPUT
-            echo "music_changed_files=$MUSIC_CHANGED_FILES" >> $GITHUB_OUTPUT
-            echo "changed_type has been set to BOTH (input and music files were changed: $INPUT_CHANGED_FILES, $MUSIC_CHANGED_FILES)"
+          if [ "$HAS_ADD" = "true" ] && [ "$HAS_UPDATE" = "true" ]; then
+            echo "op=BOTH" >> $GITHUB_OUTPUT
+          elif [ "$HAS_ADD" = "true" ]; then
+            echo "op=ADD" >> $GITHUB_OUTPUT
+          elif [ "$HAS_UPDATE" = "true" ]; then
+            echo "op=UPDATE" >> $GITHUB_OUTPUT
           else
-            # 該当ファイルなし
-            echo "changed_type=NONE" >> $GITHUB_OUTPUT
-            echo "changed_type has been set to NONE (no input or music files were changed)"
-            SKIP_WORKFLOW=true
+            echo "op=NONE" >> $GITHUB_OUTPUT
           fi
-          echo "skip_workflow=$SKIP_WORKFLOW" >> $GITHUB_OUTPUT
+          echo "Detected operation: $(cat $GITHUB_OUTPUT | grep '^op=' | cut -d= -f2)"
 
-      - name: Download musictl binary
-        uses: actions/download-artifact@v4
+      # Only needed for ADD / BOTH — collects input files added in this PR.
+      - name: Get input files
+        id: input_files
+        if: steps.op_type.outputs.op == 'ADD' || steps.op_type.outputs.op == 'BOTH'
+        run: |
+          FILES=$(git diff --name-only \
+            ${{ github.event.pull_request.base.sha }} ${{ github.sha }} \
+            | grep '^music/data/input' | xargs)
+          echo "files=$FILES" >> $GITHUB_OUTPUT
+
+      - name: Prepare bin directory
+        run: mkdir -p ./bin
+
+      - name: Configure AWS credentials (OIDC)
+        if: needs.check_s3.outputs.exists == 'true'
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Obtain musictl binary from S3
+        if: needs.check_s3.outputs.exists == 'true'
+        run: aws s3 cp s3://${{ secrets.S3_BUCKET }}/cliplayer/musictl ./bin/musictl
+
+      - name: Download musictl artifact
+        if: needs.build_if_needed.result == 'success'
+        uses: actions/download-artifact@v7
         with:
           name: musictl-binary
           path: ./bin
 
       - name: Make musictl executable
-        run: |
-          chmod +x ../bin/musictl
-          ls -lR ../bin
+        run: chmod +x ./bin/musictl
 
-      - name: Validate input
-        if: steps.changed_type.outputs.changed_type == 'INPUT'
+      - name: Validate (add)
+        if: steps.op_type.outputs.op == 'ADD'
         run: |
-          ../bin/musictl validate new -i "${{ steps.changes.outputs.input_changed_files }}" --file-tracing-level debug
-          ../bin/musictl validate new-md -i "${{ steps.changes.outputs.input_changed_files }}" --file-tracing-level debug > ../validate_output.md
+          ./bin/musictl validate add    -i "${{ steps.input_files.outputs.files }}" --file-tracing-level debug
+          ./bin/musictl validate add-md -i "${{ steps.input_files.outputs.files }}" --file-tracing-level debug > ./validate_output.md
 
-      - name: Validate update
-        if: steps.changed_type.outputs.changed_type == 'UPDATE'
-        run: ../bin/musictl validate update --file-tracing-level debug
+      - name: Validate (update)
+        if: steps.op_type.outputs.op == 'UPDATE'
+        run: ./bin/musictl validate update --file-tracing-level debug
 
-      - name: Validate input & update
-        if: steps.changed_type.outputs.changed_type == 'BOTH'
+      - name: Validate (add & update)
+        if: steps.op_type.outputs.op == 'BOTH'
         run: |
-          ../bin/musictl validate new -i "${{ steps.changes.outputs.input_changed_files }}" --file-tracing-level debug
-          ../bin/musictl validate update --file-tracing-level debug
-          ../bin/musictl validate new-md -i "${{ steps.changes.outputs.input_changed_files }}" --file-tracing-level debug > ../validate_output.md
+          ./bin/musictl validate add    -i "${{ steps.input_files.outputs.files }}" --file-tracing-level debug
+          ./bin/musictl validate update --file-tracing-level debug
+          ./bin/musictl validate add-md -i "${{ steps.input_files.outputs.files }}" --file-tracing-level debug > ./validate_output.md
 
       - name: Post validation result as PR comment
-        if: steps.changed_type.outputs.changed_type == 'INPUT' || steps.changed_type.outputs.changed_type == 'BOTH'
+        if: steps.op_type.outputs.op == 'ADD' || steps.op_type.outputs.op == 'BOTH'
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_URL: ${{ github.event.pull_request.html_url}}
-        run: |
-          gh pr comment "$PR_URL" --body-file ../validate_output.md
+          GH_TOKEN: ${{ github.token }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+        run: gh pr comment "$PR_URL" --body-file ./validate_output.md
 
       - name: Post logs
         if: always()
-        run: ../tools/musictl_logs_to_stdout.sh
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+        run: ./tools/musictl_logs_to_stdout.sh

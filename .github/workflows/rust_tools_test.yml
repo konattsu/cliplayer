@@ -1,0 +1,38 @@
+name: musictl test
+
+on:
+  workflow_call:
+  push:
+    branches:
+      - main
+    paths:
+      - "music/**"
+      - "!music/data/"
+      - "artist/**"
+      - "!artist/data/"
+      - "!**/*.md"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "music/**"
+      - "!music/data/"
+      - "artist/**"
+      - "!artist/data/"
+      - "!**/*.md"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      CARGO_TERM_COLOR: always
+      RUST_BACKTRACE: 1
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Cache Rust build
+        uses: Swatinem/rust-cache@v2
+
+      - name: Run tests
+        run: cargo test --all --release
