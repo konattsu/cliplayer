@@ -11,9 +11,9 @@ pub struct Cli {
 /// Generate artist-related data
 #[derive(Debug, clap::Args)]
 pub struct GenerateArgs {
-    /// Directory for minified livers data output
-    #[arg(long, default_value_t = default_min_livers_output_dir())]
-    pub(crate) min_livers_output_dir: String,
+    /// Directory for minified data output
+    #[arg(long, default_value_t = default_output_dir())]
+    pub(crate) output_dir: String,
     /// File name for the search index output
     #[arg(long, default_value_t = default_min_livers_search_index_file_name())]
     pub(crate) min_livers_search_index_file_name: String,
@@ -23,12 +23,15 @@ pub struct GenerateArgs {
     /// File name for the artists info output
     #[arg(long, default_value_t = default_min_livers_file_name())]
     pub(crate) min_livers_file_name: String,
+    /// File name for the official channels info output
+    #[arg(long, default_value_t = default_min_official_channels_file_name())]
+    pub(crate) min_official_channels_file_name: String,
     /// Path to the VS Code code-snippets file to update
     #[arg(long, default_value_t = default_code_snippets_path())]
     pub(crate) music_code_snippets_path: String,
 }
 
-fn default_min_livers_output_dir() -> String {
+fn default_output_dir() -> String {
     "src/music/".to_string()
 }
 fn default_min_livers_search_index_file_name() -> String {
@@ -39,6 +42,9 @@ fn default_min_channels_file_name() -> String {
 }
 fn default_min_livers_file_name() -> String {
     "livers.min.json".to_string()
+}
+fn default_min_official_channels_file_name() -> String {
+    "official_channels.min.json".to_string()
 }
 fn default_code_snippets_path() -> String {
     ".vscode/music.code-snippets".to_string()
