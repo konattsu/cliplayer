@@ -14,7 +14,7 @@
     "clips": [
       {
         "songTitle": "トウキョウ・シャンディ・ランデヴ",
-        "artists": [
+        "liverIds": [
           "ruri-shioriha"
         ],
         "startTime": "PT1M6S",
@@ -23,7 +23,7 @@
       },
       {
         "songTitle": "ルージュの伝言",
-        "artists": [
+        "liverIds": [
           "ruri-shioriha"
         ],
         "startTime": "PT7M31S",
@@ -32,7 +32,7 @@
       },
       {
         "songTitle": "soldier game",
-        "artists": [
+        "liverIds": [
           "ruri-shioriha"
         ],
         "startTime": "PT13M11S",
@@ -41,7 +41,7 @@
       },
       {
         "songTitle": "Fly Me to the Star",
-        "artists": [
+        "liverIds": [
           "ruri-shioriha"
         ],
         "startTime": "PT20M7S",
@@ -50,7 +50,7 @@
       },
       {
         "songTitle": "星座になれたら",
-        "artists": [
+        "liverIds": [
           "ruri-shioriha"
         ],
         "startTime": "PT27M1S",
@@ -59,7 +59,7 @@
       },
       {
         "songTitle": "INSIDE IDENTITY",
-        "artists": [
+        "liverIds": [
           "ruri-shioriha"
         ],
         "startTime": "PT34M13S",
@@ -68,7 +68,7 @@
       },
       {
         "songTitle": "てらてら",
-        "artists": [
+        "liverIds": [
           "ruri-shioriha"
         ],
         "startTime": "PT43M58S",
@@ -77,7 +77,7 @@
       },
       {
         "songTitle": "霽れを待つ",
-        "artists": [
+        "liverIds": [
           "ruri-shioriha"
         ],
         "startTime": "PT50M8S",
@@ -86,7 +86,7 @@
       },
       {
         "songTitle": "ももいろの鍵",
-        "artists": [
+        "liverIds": [
           "ruri-shioriha"
         ],
         "startTime": "PT58M2S",
@@ -95,7 +95,7 @@
       },
       {
         "songTitle": "ワンダーステラ",
-        "artists": [
+        "liverIds": [
           "ruri-shioriha"
         ],
         "startTime": "PT1H7M45S",

@@ -15,7 +15,7 @@
     "clips": [
       {
         "songTitle": "ebb and flow",
-        "artists": [
+        "liverIds": [
           "toru-koshimizu"
         ],
         "startTime": "PT5M36S",
@@ -24,7 +24,7 @@
       },
       {
         "songTitle": "あのね。",
-        "artists": [
+        "liverIds": [
           "toko-inui",
           "toru-koshimizu"
         ],
@@ -34,7 +34,7 @@
       },
       {
         "songTitle": "shake it！",
-        "artists": [
+        "liverIds": [
           "hibari-watarai",
           "lauren-iroas",
           "naraka",
@@ -46,7 +46,7 @@
       },
       {
         "songTitle": "Wonder NeverLand",
-        "artists": [
+        "liverIds": [
           "debidebi-debiru",
           "kizuku-yashiro",
           "leos-vincent",
@@ -60,7 +60,7 @@
       },
       {
         "songTitle": "lull ～そして僕らは～",
-        "artists": [
+        "liverIds": [
           "toru-koshimizu"
         ],
         "startTime": "PT54M22S",
