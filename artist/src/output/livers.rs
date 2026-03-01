@@ -2,16 +2,17 @@
 
 #[derive(serde::Serialize, Debug, Clone)]
 pub(crate) struct OutputLivers(
-    std::collections::BTreeMap<crate::model::LiverId, OutputArtist>,
+    std::collections::BTreeMap<crate::model::LiverId, OutputLiver>,
 );
 
 #[derive(serde::Serialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
-struct OutputArtist {
+struct OutputLiver {
     ja: String,
     jah: String,
     en: String,
     color: cmn_rs::color::Color,
+    channel_id: cmn_rs::yt::ChannelId,
     #[serde(skip_serializing_if = "is_false")]
     is_graduated: bool,
 }
@@ -26,11 +27,12 @@ impl OutputLivers {
 
         for (liver_id, liver) in artists.into_iter() {
             let liver = liver.into_inner();
-            let output_artist = OutputArtist {
+            let output_artist = OutputLiver {
                 ja: liver.ja,
                 jah: liver.jah,
                 en: liver.en,
                 color: liver.color,
+                channel_id: liver.channel_id,
                 is_graduated: liver.is_graduated,
             };
             map.insert(liver_id, output_artist);

@@ -1,9 +1,9 @@
 {
-  "artist": {
+  "liver": {
     "scope": "json",
-    "prefix": "only_artist_json",
+    "prefix": "livers",
     "body": [
-      "\"${1:artistId}\": {",
+      "\"${1:liverId}\": {",
       "  \"ja\": \"${2:jp}\",",
       "  \"jah\": \"${3:jph}\",",
       "  \"en\": \"${4:en}\",",
@@ -14,6 +14,6 @@
       "},",
       "",
     ],
-    "description": "Artist data structure",
+    "description": "Liver data structure",
   },
 }
