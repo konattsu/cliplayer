@@ -15,7 +15,7 @@
     "clips": [
       {
         "songTitle": "Booo!",
-        "artists": [
+        "liverIds": [
           "meruto-kuramochi",
           "ruri-shioriha"
         ],
@@ -25,7 +25,7 @@
       },
       {
         "songTitle": "おジャ魔女カーニバル",
-        "artists": [
+        "liverIds": [
           "kirame-sorahoshi",
           "lize-helesta",
           "ruri-shioriha",
@@ -38,7 +38,7 @@
       },
       {
         "songTitle": "パジャミィ",
-        "artists": [
+        "liverIds": [
           "mito-tsukino",
           "ruri-shioriha"
         ],
@@ -48,7 +48,7 @@
       },
       {
         "songTitle": "群青",
-        "artists": [
+        "liverIds": [
           "ruri-shioriha"
         ],
         "startTime": "PT59M17S",
@@ -57,7 +57,7 @@
       },
       {
         "songTitle": "アイデア",
-        "artists": [
+        "liverIds": [
           "ruri-shioriha"
         ],
         "clippedVideoId": "dKBKAq0URvo",

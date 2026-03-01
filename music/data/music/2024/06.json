@@ -15,7 +15,7 @@
     "clips": [
       {
         "songTitle": "ガーネット",
-        "artists": [
+        "liverIds": [
           "roco-kaburaki",
           "sister-claire"
         ],
@@ -25,7 +25,7 @@
       },
       {
         "songTitle": "orion",
-        "artists": [
+        "liverIds": [
           "roco-kaburaki",
           "ruri-shioriha"
         ],
@@ -35,7 +35,7 @@
       },
       {
         "songTitle": "ミカヅキ",
-        "artists": [
+        "liverIds": [
           "roco-kaburaki",
           "yotsuha-umise"
         ],
@@ -45,7 +45,7 @@
       },
       {
         "songTitle": "晩餐歌",
-        "artists": [
+        "liverIds": [
           "meruto-kuramochi",
           "roco-kaburaki",
           "sophia-valentine"
@@ -56,7 +56,7 @@
       },
       {
         "songTitle": "bling-bang-bang-born",
-        "artists": [
+        "liverIds": [
           "kaede-higuchi",
           "miyako-seto",
           "roco-kaburaki"

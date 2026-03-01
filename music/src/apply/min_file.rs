@@ -16,7 +16,7 @@ pub(super) fn save_min_files(
     min_clips_path: &std::path::Path,
     min_videos_path: &std::path::Path,
 ) -> Result<(), crate::music_file::MusicFileError> {
-    tracing::debug!(
+    tracing::info!(
         "Saving min files to disk: `{}` and `{}`",
         min_clips_path.display(),
         min_videos_path.display(),

@@ -15,7 +15,7 @@
     "clips": [
       {
         "songTitle": "花の塔",
-        "artists": [
+        "liverIds": [
           "natsume-kurusu"
         ],
         "startTime": "PT5M2S",
@@ -24,7 +24,7 @@
       },
       {
         "songTitle": "Catch You Catch Me",
-        "artists": [
+        "liverIds": [
           "natsume-kurusu"
         ],
         "startTime": "PT12M50S",
@@ -33,7 +33,7 @@
       },
       {
         "songTitle": "ヴィーナスとジーザス",
-        "artists": [
+        "liverIds": [
           "natsume-kurusu"
         ],
         "startTime": "PT18M27S",
@@ -42,7 +42,7 @@
       },
       {
         "songTitle": "adrenaline!!!",
-        "artists": [
+        "liverIds": [
           "natsume-kurusu"
         ],
         "startTime": "PT22M56S",
@@ -51,7 +51,7 @@
       },
       {
         "songTitle": "廻廻奇譚",
-        "artists": [
+        "liverIds": [
           "natsume-kurusu"
         ],
         "startTime": "PT31M11S",
@@ -60,7 +60,7 @@
       },
       {
         "songTitle": "残響散歌",
-        "artists": [
+        "liverIds": [
           "natsume-kurusu"
         ],
         "startTime": "PT36M31S",
@@ -69,7 +69,7 @@
       },
       {
         "songTitle": "夜・逃・げでリセット！",
-        "artists": [
+        "liverIds": [
           "natsume-kurusu"
         ],
         "startTime": "PT43M8S",
@@ -78,7 +78,7 @@
       },
       {
         "songTitle": "風になる",
-        "artists": [
+        "liverIds": [
           "natsume-kurusu"
         ],
         "startTime": "PT49M2S",
@@ -102,7 +102,7 @@
     "clips": [
       {
         "songTitle": "ムーンライト伝説",
-        "artists": [
+        "liverIds": [
           "sophia-valentine"
         ],
         "startTime": "PT1M38S",
@@ -111,7 +111,7 @@
       },
       {
         "songTitle": "ヒトリゴト",
-        "artists": [
+        "liverIds": [
           "sophia-valentine"
         ],
         "startTime": "PT8M11S",
@@ -120,7 +120,7 @@
       },
       {
         "songTitle": "フォニイ",
-        "artists": [
+        "liverIds": [
           "sophia-valentine"
         ],
         "startTime": "PT15M14S",
@@ -129,7 +129,7 @@
       },
       {
         "songTitle": "愛を伝えたいだとか",
-        "artists": [
+        "liverIds": [
           "sophia-valentine"
         ],
         "startTime": "PT22M29S",
@@ -138,7 +138,7 @@
       },
       {
         "songTitle": "モエチャッカファイア",
-        "artists": [
+        "liverIds": [
           "sophia-valentine"
         ],
         "startTime": "PT28M21S",
@@ -147,7 +147,7 @@
       },
       {
         "songTitle": "貴方の恋人になりたい",
-        "artists": [
+        "liverIds": [
           "sophia-valentine"
         ],
         "startTime": "PT33M53S",
@@ -156,7 +156,7 @@
       },
       {
         "songTitle": "世界は恋に落ちている",
-        "artists": [
+        "liverIds": [
           "sophia-valentine"
         ],
         "startTime": "PT40M48S",
@@ -165,7 +165,7 @@
       },
       {
         "songTitle": "たばこ",
-        "artists": [
+        "liverIds": [
           "sophia-valentine"
         ],
         "startTime": "PT48M2S",
@@ -174,7 +174,7 @@
       },
       {
         "songTitle": "ファンサ",
-        "artists": [
+        "liverIds": [
           "sophia-valentine"
         ],
         "startTime": "PT57M54S",

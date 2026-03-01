@@ -15,7 +15,7 @@
     "clips": [
       {
         "songTitle": "愛を伝えたいだとか",
-        "artists": [
+        "liverIds": [
           "meruto-kuramochi"
         ],
         "startTime": "PT5M31S",
@@ -24,7 +24,7 @@
       },
       {
         "songTitle": "ノーダウト",
-        "artists": [
+        "liverIds": [
           "meruto-kuramochi"
         ],
         "startTime": "PT13M58S",
@@ -33,7 +33,7 @@
       },
       {
         "songTitle": "シャッター",
-        "artists": [
+        "liverIds": [
           "meruto-kuramochi"
         ],
         "startTime": "PT22M16S",
@@ -42,7 +42,7 @@
       },
       {
         "songTitle": "瞳をとじて",
-        "artists": [
+        "liverIds": [
           "meruto-kuramochi"
         ],
         "startTime": "PT33M20S",
@@ -51,7 +51,7 @@
       },
       {
         "songTitle": "君に届け",
-        "artists": [
+        "liverIds": [
           "meruto-kuramochi"
         ],
         "startTime": "PT42M",
@@ -60,7 +60,7 @@
       },
       {
         "songTitle": "ギターと孤独と蒼い惑星",
-        "artists": [
+        "liverIds": [
           "meruto-kuramochi"
         ],
         "startTime": "PT50M43S",
@@ -69,7 +69,7 @@
       },
       {
         "songTitle": "晴る",
-        "artists": [
+        "liverIds": [
           "meruto-kuramochi"
         ],
         "startTime": "PT1H3M39S",
@@ -78,7 +78,7 @@
       },
       {
         "songTitle": "ケセラセラ",
-        "artists": [
+        "liverIds": [
           "meruto-kuramochi"
         ],
         "startTime": "PT1H13M26S",

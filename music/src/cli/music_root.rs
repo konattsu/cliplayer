@@ -17,7 +17,7 @@ impl MusicLibraryCli {
 impl Default for MusicLibraryCli {
     fn default() -> Self {
         use std::str::FromStr;
-        const DEFAULT_MUSIC_ROOT: &str = "./data/music";
+        const DEFAULT_MUSIC_ROOT: &str = "music/data/music";
 
         MusicLibraryCli::from_str(DEFAULT_MUSIC_ROOT).unwrap_or_else(|_| {
             panic!("!!! Default music root path({DEFAULT_MUSIC_ROOT}) is invalid !!!")

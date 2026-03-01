@@ -5,6 +5,7 @@
 ///
 /// 戻り値が生きている間は、ログ出力が有効になる。
 pub fn apply_tracing_settings(
+    file_base_name: &str,
     stdout_level: Option<tracing::level_filters::LevelFilter>,
     file_level: Option<tracing::level_filters::LevelFilter>,
 ) -> tracing_appender::non_blocking::WorkerGuard {
@@ -17,7 +18,8 @@ pub fn apply_tracing_settings(
         .event_format(FormatterForStdout)
         .with_filter(filter_level(stdout_level));
 
-    let file_appender = tracing_appender::rolling::daily("./logs", "artist.log");
+    let file_name = format!("{file_base_name}.log",);
+    let file_appender = tracing_appender::rolling::daily("./logs", file_name);
     let (non_blocking, guard) = tracing_appender::non_blocking(file_appender);
     let file_layer = tracing_subscriber::fmt::layer()
         .json()

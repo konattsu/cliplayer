@@ -1,6 +1,6 @@
 このディレクトリにjsonファイルを作成して楽曲を追加していく
 
 楽曲追加時にはcopilotをsnoozeさせておくことを忘れずに
-  settings.jsonとかで制御出来なさそうなので毎回主導で無効化
+  settings.jsonとかで制御出来なさそうなので毎回手動で無効化
 
 追加が終わったらmusictl動かしてmerge, renameさせる

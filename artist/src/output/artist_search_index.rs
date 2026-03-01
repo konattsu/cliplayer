@@ -1,16 +1,16 @@
 #[derive(serde::Serialize, Debug, Clone)]
-pub(crate) struct ArtistSearchIndex(Vec<ArtistSearchIndexInner>);
+pub(crate) struct LiversSearchIndex(Vec<LiverSearchIndexInner>);
 
 #[derive(serde::Serialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
-struct ArtistSearchIndexInner {
+struct LiverSearchIndexInner {
     key: String,
     liver_id: crate::model::LiverId,
     #[serde(skip_serializing_if = "Option::is_none")]
     is_alias: Option<bool>,
 }
 
-impl ArtistSearchIndex {
+impl LiversSearchIndex {
     pub(crate) fn new(livers: crate::model::Livers) -> Self {
         let mut index = Vec::new();
 
@@ -34,11 +34,11 @@ impl ArtistSearchIndex {
 
     fn push_non_aliases(
         key: [String; 3],
-        index: &mut Vec<ArtistSearchIndexInner>,
+        index: &mut Vec<LiverSearchIndexInner>,
         liver_id: &crate::model::LiverId,
     ) {
         for string_non_empty in key {
-            index.push(ArtistSearchIndexInner {
+            index.push(LiverSearchIndexInner {
                 key: string_non_empty.clone(),
                 liver_id: liver_id.clone(),
                 is_alias: None,
@@ -48,11 +48,11 @@ impl ArtistSearchIndex {
 
     fn push_aliases(
         keys: Vec<String>,
-        index: &mut Vec<ArtistSearchIndexInner>,
+        index: &mut Vec<LiverSearchIndexInner>,
         liver_id: &crate::model::LiverId,
     ) {
         for key in keys {
-            index.push(ArtistSearchIndexInner {
+            index.push(LiverSearchIndexInner {
                 key,
                 liver_id: liver_id.clone(),
                 is_alias: Some(true),
@@ -87,7 +87,7 @@ mod tests {
             "Test Artist (JPN)".to_string(),
         ];
 
-        ArtistSearchIndex::push_non_aliases(keys, &mut index, &liver_id);
+        LiversSearchIndex::push_non_aliases(keys, &mut index, &liver_id);
 
         assert_eq!(index.len(), 3);
         for entry in &index {
@@ -102,7 +102,7 @@ mod tests {
         let liver_id = crate::model::LiverId::self_2();
         let aliases = vec!["Alias 1".to_string(), "Alias 2".to_string()];
 
-        ArtistSearchIndex::push_aliases(aliases, &mut index, &liver_id);
+        LiversSearchIndex::push_aliases(aliases, &mut index, &liver_id);
 
         assert_eq!(index.len(), 2);
         for entry in &index {
