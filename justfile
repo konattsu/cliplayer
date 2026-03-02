@@ -10,3 +10,10 @@ artistctl-dev *args:
     cargo run --bin artistctl {{args}}
 
 alias actl := artistctl-dev
+
+
+# run musictl binary with cargo to merge files
+musictl-input-merge:
+    cargo run --bin musictl -- dev merge-files
+
+alias mi := musictl-input-merge
