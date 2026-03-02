@@ -4,13 +4,17 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - "**"
-      - "!music/**"
-      - "!cmn_rs/**"
-      - "!artist/**"
-      - "music/**/*.md"
-      - "cmn_rs/**/*.md"
-      - "artist/**/*.md"
+      - "src/**"
+      - ".prettier*"
+      - ".angular.json"
+      - "tsconfig.json"
+      - "eslint.config.ts"
+      - "index.html"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "README.md"
+      - "tsconfig.*.json"
+      - "tsconfig.json"
 
 jobs:
   lint-format-test:

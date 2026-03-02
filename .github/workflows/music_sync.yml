@@ -45,6 +45,9 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/checkout@v6
+        with:
+          # need full history so origin/main is always available when switching branches
+          fetch-depth: 0
 
       - name: Git setup
         run: |
@@ -54,28 +57,16 @@ jobs:
           git switch -c "$BRANCH" origin/main
 
       - name: Configure AWS credentials (OIDC)
-        if: needs.check_s3.outputs.exists == 'true'
         uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Prepare bin directory
-        run: mkdir -p ./bin
-
-      - name: Obtain musictl binary from S3
-        if: needs.check_s3.outputs.exists == 'true'
-        run: aws s3 cp s3://${{ secrets.S3_BUCKET }}/cliplayer/musictl ./bin/musictl
-
-      - name: Download musictl artifact
-        if: needs.build_if_needed.result == 'success'
-        uses: actions/download-artifact@v7
-        with:
-          name: musictl-binary
-          path: ./bin
-
-      - name: Make musictl executable
-        run: chmod +x ./bin/musictl
+      - name: Prepare musictl binary
+        run: |
+          mkdir -p ./bin
+          aws s3 cp s3://${{ secrets.S3_BUCKET }}/cliplayer/musictl ./bin/musictl
+          chmod +x ./bin/musictl
 
       - name: Apply sync to music data
         env:
@@ -89,13 +80,22 @@ jobs:
         run: ./tools/musictl_logs_to_stdout.sh
 
       - name: Commit and push changes
+        id: commit
         run: |
           COMMIT_MSG="[music-sync] $(date +'%Y-%m-%d')"
           git add music/data/music/ public/music/ || true
-          git commit -m "$COMMIT_MSG" || echo "no changes to commit"
-          git push origin HEAD
+          if git diff --cached --quiet; then
+            echo "no changes to commit"
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            git commit -m "$COMMIT_MSG"
+            # push current branch and set upstream so GH CLI can use it reliably
+            git push --set-upstream origin HEAD
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
 
       - name: Create PR
+        if: steps.commit.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
