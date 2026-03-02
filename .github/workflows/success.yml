@@ -1,0 +1,24 @@
+name: success
+
+# This workflow exists purely to provide a required status check
+# so that we can enable "require branches to be up to date before merging"
+# without having to run any expensive jobs.
+#
+# This workflow increases energy use and therefore contributes to global warming,
+# but it is necessary given that GitHub’s recommended ruleset currently lacks
+# a separate option to require branches to be up-to-date before merging from CI.
+
+on:
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+jobs:
+  build:
+    runs-on: ubuntu-slim
+    timeout-minutes: 1
+    steps:
+      - name: Success
+        run: |
+          echo "Success!"
