@@ -16,6 +16,7 @@ on:
 
 jobs:
   build:
+    name: success
     runs-on: ubuntu-slim
     timeout-minutes: 1
     steps:
