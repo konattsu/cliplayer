@@ -28,14 +28,8 @@ jobs:
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
 
-  build_if_needed:
-    needs: check_s3
-    if: needs.check_s3.outputs.exists == 'false'
-    uses: ./.github/workflows/musictl.yml
-    secrets: inherit
-
   sync:
-    needs: [check_s3, build_if_needed]
+    needs: [check_s3]
     runs-on: ubuntu-latest
     env:
       RUST_BACKTRACE: 1
@@ -46,13 +40,18 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          # need full history so origin/main is always available when switching branches
-          fetch-depth: 0
+          fetch-depth: 30
+
+      - name: Build musictl if needed
+        if: needs.check_s3.outputs.exists == 'false'
+        uses: ./.github/workflows/musictl.yml
 
       - name: Git setup
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          # ensure we have the full main branch reference before creating a new one
+          git fetch origin main
           BRANCH="auto/music-sync-$(date +'%Y%m%d-%H%M%S')"
           git switch -c "$BRANCH" origin/main
 
