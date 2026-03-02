@@ -43,6 +43,7 @@ jobs:
       RUST_BACKTRACE: 1
       CARGO_TERM_COLOR: always
     permissions:
+      id-token: write # required for requesting the JWT
       contents: write
       pull-requests: write
     timeout-minutes: 40
