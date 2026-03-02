@@ -12,6 +12,7 @@ jobs:
       exists: ${{ steps.check.outputs.exists }}
     permissions:
       id-token: write # required for requesting the JWT
+    timeout-minutes: 2
     steps:
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v6
@@ -28,8 +29,15 @@ jobs:
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
 
-  sync:
+  build_musictl:
     needs: [check_s3]
+    if: needs.check_s3.outputs.exists == 'false'
+    uses: ./.github/workflows/musictl.yml
+    secrets: inherit
+
+  sync:
+    needs: [check_s3, build_musictl]
+    if: always() && !failure() && !cancelled()
     runs-on: ubuntu-latest
     env:
       RUST_BACKTRACE: 1
@@ -37,14 +45,11 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 30
-
-      - name: Build musictl if needed
-        if: needs.check_s3.outputs.exists == 'false'
-        uses: ./.github/workflows/musictl.yml
 
       - name: Git setup
         run: |
