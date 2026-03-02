@@ -15,7 +15,7 @@ pub async fn cli_exec_handler(cli: crate::cli::Cli) -> Result<(), String> {
 
 async fn handle_apply(apply_cmd: crate::cli::ApplyCommands) -> Result<(), String> {
     match apply_cmd {
-        crate::cli::ApplyCommands::New {
+        crate::cli::ApplyCommands::Add {
             input,
             api_key,
             music_root,
@@ -70,7 +70,7 @@ async fn handle_apply_new(
         crate::validate::try_load_anonymous_videos(&input_anonymous_file)
             .map_err(|e| e.to_pretty_string())?;
 
-    crate::apply::apply_new(
+    crate::apply::apply_add(
         music_lib,
         anonymous_videos,
         api_key,
@@ -110,11 +110,11 @@ async fn handle_apply_sync(
 
 fn handle_validate(validate_cmd: crate::cli::ValidateCommands) -> Result<(), String> {
     match validate_cmd {
-        crate::cli::ValidateCommands::New { input, .. } => handle_validate_new(input),
+        crate::cli::ValidateCommands::Add { input, .. } => handle_validate_new(input),
         crate::cli::ValidateCommands::Update { music_root, .. } => {
             handle_validate_update(music_root)
         }
-        crate::cli::ValidateCommands::NewMd { input, .. } => {
+        crate::cli::ValidateCommands::AddMd { input, .. } => {
             handle_validate_new_md(input)
         }
     }
@@ -122,7 +122,7 @@ fn handle_validate(validate_cmd: crate::cli::ValidateCommands) -> Result<(), Str
 
 fn handle_validate_new(input_file: crate::cli::FilePathsFromCli) -> Result<(), String> {
     let files = input_file.into_file_paths();
-    crate::validate::validate_new_input(&files)
+    crate::validate::validate_add_input(&files)
 }
 
 fn handle_validate_update(
@@ -136,7 +136,7 @@ fn handle_validate_update(
 fn handle_validate_new_md(input_file: crate::cli::FilePathsFromCli) -> ! {
     let files = input_file.into_file_paths();
 
-    match crate::validate::validate_new_input_md(&files) {
+    match crate::validate::validate_add_input_md(&files) {
         Ok(md_str) => {
             // TODO 設計考え直してもいい. 落とすのは何かなぁ~
             println!("{md_str}");
@@ -148,9 +148,9 @@ fn handle_validate_new_md(input_file: crate::cli::FilePathsFromCli) -> ! {
 
 // MARK: dev
 
-fn handle_dev(dev_cmd: crate::cli::UtilCommands) -> Result<(), String> {
+fn handle_dev(dev_cmd: crate::cli::DevCommands) -> Result<(), String> {
     match dev_cmd {
-        crate::cli::UtilCommands::MergeFiles {
+        crate::cli::DevCommands::MergeFiles {
             files,
             dir,
             output_dir,
@@ -160,7 +160,7 @@ fn handle_dev(dev_cmd: crate::cli::UtilCommands) -> Result<(), String> {
             let output_dir = std::path::PathBuf::from(output_dir);
             handle_dev_merge_files(files, dir, output_dir)
         }
-        crate::cli::UtilCommands::DuplicateIds { ids, music_lib, .. } => {
+        crate::cli::DevCommands::DuplicateIds { ids, music_lib, .. } => {
             handle_dev_duplicate_ids(music_lib, ids)
         }
     }
