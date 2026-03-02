@@ -70,19 +70,8 @@ jobs:
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
 
-  build_if_needed:
-    needs: [check_s3, parse_labels]
-    if: |
-      needs.check_s3.outputs.exists == 'false' && (
-        needs.parse_labels.outputs.has_add == 'true' ||
-        needs.parse_labels.outputs.has_update == 'true' ||
-        needs.parse_labels.outputs.has_apply == 'true'
-      )
-    uses: ./.github/workflows/musictl.yml
-    secrets: inherit
-
   validate_or_apply:
-    needs: [check_s3, build_if_needed, parse_labels]
+    needs: [check_s3, parse_labels]
     runs-on: ubuntu-latest
     if: |
       needs.parse_labels.outputs.has_add == 'true' ||
@@ -95,6 +84,15 @@ jobs:
       contents: write
       pull-requests: write
     steps:
+      - name: Build musictl if needed
+        if: |
+          needs.check_s3.outputs.exists == 'false' && (
+            needs.parse_labels.outputs.has_add == 'true' ||
+            needs.parse_labels.outputs.has_update == 'true' ||
+            needs.parse_labels.outputs.has_apply == 'true'
+          )
+        uses: ./.github/workflows/musictl.yml
+
       - name: Checkout repository
         uses: actions/checkout@v6
 
