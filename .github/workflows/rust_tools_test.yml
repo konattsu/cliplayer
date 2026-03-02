@@ -2,15 +2,6 @@ name: musictl test
 
 on:
   workflow_call:
-  push:
-    branches:
-      - main
-    paths:
-      - "music/**"
-      - "!music/data/"
-      - "artist/**"
-      - "!artist/data/"
-      - "!**/*.md"
   pull_request:
     branches:
       - main
