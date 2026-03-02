@@ -145,6 +145,8 @@ jobs:
         if: |
           needs.parse_labels.outputs.has_add == 'true' &&
           needs.parse_labels.outputs.has_apply == 'true'
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
         run: |
           # `music/data/input*.json`を全て検出して, これを入力ファイルとみなす
           changed=$(ls music/data/input/*.json 2>/dev/null || true)
@@ -159,6 +161,8 @@ jobs:
         if: |
           needs.parse_labels.outputs.has_update == 'true' &&
           needs.parse_labels.outputs.has_apply == 'true'
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
         run: ./bin/musictl apply update --file-tracing-level debug
 
       - name: Post validation result as PR comment
