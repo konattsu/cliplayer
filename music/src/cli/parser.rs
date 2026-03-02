@@ -148,10 +148,10 @@ fn default_min_videos_path() -> crate::cli::FilePathFromCli {
     )
 }
 fn default_merge_files_dir() -> String {
-    "./data/input/".to_string()
+    "./music/data/input/".to_string()
 }
 fn default_merged_dir() -> String {
-    "./data/input/".to_string()
+    "./music/data/input/".to_string()
 }
 
 #[derive(Debug, clap::Args)]
