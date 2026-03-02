@@ -152,7 +152,7 @@ jobs:
             echo "no input json files found"
             exit 1
           fi
-          ./bin/musictl apply add-md -i $changed --file-tracing-level debug
+          ./bin/musictl apply add -i $changed --file-tracing-level debug
           rm $changed
 
       - name: Apply `update`
