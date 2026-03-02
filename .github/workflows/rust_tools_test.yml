@@ -7,9 +7,9 @@ on:
       - main
     paths:
       - "music/**"
-      - "!music/data/"
+      - "!music/data/**"
       - "artist/**"
-      - "!artist/data/"
+      - "!artist/data/**"
       - "!**/*.md"
 
 jobs:
