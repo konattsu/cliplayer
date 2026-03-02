@@ -25,6 +25,7 @@ jobs:
       has_add: ${{ steps.out.outputs.has_add }}
       has_update: ${{ steps.out.outputs.has_update }}
       has_apply: ${{ steps.out.outputs.has_apply }}
+    timeout-minutes: 2
     steps:
       - name: Parse PR labels
         id: out
@@ -52,6 +53,7 @@ jobs:
       needs.parse_labels.outputs.has_update == 'true' ||
       needs.parse_labels.outputs.has_apply == 'true'
 
+    timeout-minutes: 2
     steps:
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v6
@@ -70,13 +72,28 @@ jobs:
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
 
-  validate_or_apply:
+  build_musictl:
     needs: [check_s3, parse_labels]
-    runs-on: ubuntu-latest
     if: |
-      needs.parse_labels.outputs.has_add == 'true' ||
-      needs.parse_labels.outputs.has_update == 'true' ||
-      needs.parse_labels.outputs.has_apply == 'true'
+      needs.check_s3.outputs.exists == 'false' && (
+        needs.parse_labels.outputs.has_add == 'true' ||
+        needs.parse_labels.outputs.has_update == 'true' ||
+        needs.parse_labels.outputs.has_apply == 'true'
+      )
+    uses: ./.github/workflows/musictl.yml
+    secrets: inherit
+
+  validate_or_apply:
+    timeout-minutes: 10
+    needs: [check_s3, parse_labels, build_musictl]
+    if: |
+      always() && !failure() && !cancelled() &&
+      (
+        needs.parse_labels.outputs.has_add == 'true' ||
+        needs.parse_labels.outputs.has_update == 'true' ||
+        needs.parse_labels.outputs.has_apply == 'true'
+      )
+    runs-on: ubuntu-latest
     env:
       RUST_BACKTRACE: 1
       CARGO_TERM_COLOR: always
@@ -84,15 +101,6 @@ jobs:
       contents: write
       pull-requests: write
     steps:
-      - name: Build musictl if needed
-        if: |
-          needs.check_s3.outputs.exists == 'false' && (
-            needs.parse_labels.outputs.has_add == 'true' ||
-            needs.parse_labels.outputs.has_update == 'true' ||
-            needs.parse_labels.outputs.has_apply == 'true'
-          )
-        uses: ./.github/workflows/musictl.yml
-
       - name: Checkout repository
         uses: actions/checkout@v6
 
