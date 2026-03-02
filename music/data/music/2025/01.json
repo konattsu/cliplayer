@@ -126,21 +126,12 @@
         "uuid": "c06af36d-3dc6-427d-96b6-313e8a8a5cc1"
       },
       {
-        "songTitle": "ハレンチ",
-        "liverIds": [
-          "fuyuki-hakase"
-        ],
-        "startTime": "PT1H6M51S",
-        "endTime": "PT1H10M9S",
-        "uuid": "0ddd98cc-0888-4624-bf6b-e00da307dcb0"
-      },
-      {
         "songTitle": "White Night! White Wish!",
         "liverIds": [
           "berry-saotome"
         ],
-        "startTime": "PT1H11M20S",
-        "endTime": "PT1H15M10S",
+        "startTime": "PT1H8M1S",
+        "endTime": "PT1H11M49S",
         "uuid": "1841c8af-55b1-45b0-8c71-92d4d17ffcd4"
       },
       {
@@ -150,8 +141,8 @@
           "fuyuki-hakase",
           "ruri-shioriha"
         ],
-        "startTime": "PT1H16M17S",
-        "endTime": "PT1H20M10S",
+        "startTime": "PT1H12M58S",
+        "endTime": "PT1H16M51S",
         "uuid": "cce59f03-deff-4d35-bcac-33ad64e30b57"
       }
     ]
@@ -161,7 +152,7 @@
     "title": "【歌枠】好きな歌を好きなだけ歌うチルめのお歌枠 ☽【倉持めると/にじさんじ】",
     "channelId": "UCiA-trSZfB0i92V_-dyDqBw",
     "publishedAt": "2025-01-29T11:00:09Z",
-    "syncedAt": "2025-08-15T01:13:58Z",
+    "syncedAt": "2026-03-02T16:29:50Z",
     "duration": "PT1H21M29S",
     "privacyStatus": "public",
     "embeddable": true,
