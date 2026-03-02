@@ -1,1 +1,99 @@
-[]
+[
+  {
+    "videoId": "qfMRqe6hhxs",
+    "title": "【収益化記念】初めての歌枠！収益化ありがとう🤍【白砂あやね / にじさんじ】",
+    "channelId": "UCam_xf14FPFsRshFTj4wkHw",
+    "publishedAt": "2026-02-15T11:13:52Z",
+    "syncedAt": "2026-03-02T15:06:12Z",
+    "duration": "PT1H4M6S",
+    "privacyStatus": "public",
+    "embeddable": true,
+    "videoTags": [
+      "2d",
+      "karaoke"
+    ],
+    "clips": [
+      {
+        "songTitle": "初恋サイダー",
+        "liverIds": [
+          "ayane-shirasa"
+        ],
+        "startTime": "PT1M58S",
+        "endTime": "PT5M25S",
+        "uuid": "5204c574-d252-40cc-a8cb-8d11ed42d2ef"
+      },
+      {
+        "songTitle": "とくベチュ、して",
+        "liverIds": [
+          "ayane-shirasa"
+        ],
+        "startTime": "PT8M26S",
+        "endTime": "PT12M24S",
+        "uuid": "dffe5107-9f08-49b1-85c7-bd0b725974e5"
+      },
+      {
+        "songTitle": "アララの呪文",
+        "liverIds": [
+          "ayane-shirasa"
+        ],
+        "startTime": "PT15M51S",
+        "endTime": "PT19M1S",
+        "uuid": "8ac61318-fa12-42e9-a424-ed47366b2008"
+      },
+      {
+        "songTitle": "MOON PRIDE",
+        "liverIds": [
+          "ayane-shirasa"
+        ],
+        "startTime": "PT21M9S",
+        "endTime": "PT24M46S",
+        "uuid": "0979709b-d79a-474b-977c-11112e966059"
+      },
+      {
+        "songTitle": "GO! GO! MANIAC",
+        "liverIds": [
+          "ayane-shirasa"
+        ],
+        "startTime": "PT27M27S",
+        "endTime": "PT31M31S",
+        "uuid": "bd1b2bed-0d71-4e7d-ba4f-521281131f64"
+      },
+      {
+        "songTitle": "MUGO・ん・・・色っぽい",
+        "liverIds": [
+          "ayane-shirasa"
+        ],
+        "startTime": "PT34M42S",
+        "endTime": "PT38M30S",
+        "uuid": "95f76e27-c585-40ee-876f-e5f8a6cdd12a"
+      },
+      {
+        "songTitle": "青空のラプソディ",
+        "liverIds": [
+          "ayane-shirasa"
+        ],
+        "startTime": "PT41M8S",
+        "endTime": "PT45M42S",
+        "uuid": "6f9beba9-366b-43b7-9661-59cab4009998"
+      },
+      {
+        "songTitle": "I WITH",
+        "liverIds": [
+          "ayane-shirasa"
+        ],
+        "startTime": "PT50M8S",
+        "endTime": "PT54M52S",
+        "uuid": "34d4cf72-1b5d-41d4-835e-884c1b6ab025"
+      },
+      {
+        "songTitle": "おさかな天国",
+        "liverIds": [
+          "ayane-shirasa"
+        ],
+        "startTime": "PT57M20S",
+        "endTime": "PT1H1M33S",
+        "uuid": "93b42294-8b28-444e-9df1-7da7699f9d59"
+      }
+    ]
+  }
+]
