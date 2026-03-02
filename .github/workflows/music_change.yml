@@ -187,7 +187,7 @@ jobs:
           git add music/data/music music/data/ || true
           git add public/music/ || true
           git commit -m "[music-apply] Apply music data changes" || echo "No changes to commit"
-          git push
+          git push origin HEAD:${{ github.head_ref }}
 
       - name: Post logs
         if: always()
