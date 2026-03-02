@@ -1,0 +1,182 @@
+name: Validate or apply music data
+
+# 楽曲の追加, 更新を表す`label`を検知してトリガーし, 変更内容を検証する
+#
+# ラベル
+# - `music-add`: 楽曲の追加. `music/data/input/*.json`の変更が必須
+# - `music-update`: 楽曲の更新. `music/data/music/%d/*.json`の変更が必須
+#
+#
+# 変更内容が正しいなら`music-apply`ラベルを付与することで, 実際にDBに反映され, PRに対してコミットが追加される
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "music/data/music/**"
+      - "music/data/input/**"
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+jobs:
+  parse_labels:
+    runs-on: ubuntu-latest
+    outputs:
+      has_add: ${{ steps.out.outputs.has_add }}
+      has_update: ${{ steps.out.outputs.has_update }}
+      has_apply: ${{ steps.out.outputs.has_apply }}
+    steps:
+      - name: Parse PR labels
+        id: out
+        run: |
+          LABELS='${{ toJson(github.event.pull_request.labels) }}'
+          echo "LABELS: $LABELS"
+          has_add=$(jq '[.[].name] | contains(["music-add"])' <<<"$LABELS")
+          has_update=$(jq '[.[].name] | contains(["music-update"])' <<<"$LABELS")
+          has_apply=$(jq '[.[].name] | contains(["music-apply"])' <<<"$LABELS")
+          echo "has_add=$has_add" >> $GITHUB_OUTPUT
+          echo "has_update=$has_update" >> $GITHUB_OUTPUT
+          echo "has_apply=$has_apply" >> $GITHUB_OUTPUT
+          echo "parsed: add=$has_add update=$has_update apply=$has_apply"
+
+  check_s3:
+    runs-on: ubuntu-latest
+    outputs:
+      exists: ${{ steps.check.outputs.exists }}
+    permissions:
+      id-token: write # required for requesting the JWT
+
+    needs: parse_labels
+    if: |
+      needs.parse_labels.outputs.has_add == 'true' ||
+      needs.parse_labels.outputs.has_update == 'true' ||
+      needs.parse_labels.outputs.has_apply == 'true'
+
+    steps:
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Look for musictl in S3
+        id: check
+        run: |
+          if aws s3 ls s3://${{ secrets.S3_BUCKET }}/cliplayer/musictl > /dev/null 2>&1; then
+            echo "`musictl` exists in S3"
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "`musictl` does not exist in S3"
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+  build_if_needed:
+    needs: [check_s3, parse_labels]
+    if: |
+      needs.check_s3.outputs.exists == 'false' && (
+        needs.parse_labels.outputs.has_add == 'true' ||
+        needs.parse_labels.outputs.has_update == 'true' ||
+        needs.parse_labels.outputs.has_apply == 'true'
+      )
+    uses: ./.github/workflows/musictl.yml
+    secrets: inherit
+
+  validate_or_apply:
+    needs: [check_s3, build_if_needed, parse_labels]
+    runs-on: ubuntu-latest
+    if: |
+      needs.parse_labels.outputs.has_add == 'true' ||
+      needs.parse_labels.outputs.has_update == 'true' ||
+      needs.parse_labels.outputs.has_apply == 'true'
+    env:
+      RUST_BACKTRACE: 1
+      CARGO_TERM_COLOR: always
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Configure AWS credentials (OIDC)
+        if: needs.check_s3.outputs.exists == 'true'
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Prepare musictl binary
+        run: |
+          mkdir -p ./bin
+          aws s3 cp s3://${{ secrets.S3_BUCKET }}/cliplayer/musictl ./bin/musictl
+          chmod +x ./bin/musictl
+
+      - name: Validate `add`
+        if: |
+          needs.parse_labels.outputs.has_add == 'true' &&
+          needs.parse_labels.outputs.has_apply == 'false'
+        run: |
+          # `music/data/input*.json`を全て検出して, これを入力ファイルとみなす
+          changed=$(ls music/data/input/*.json 2>/dev/null || true)
+          if [ -z "$changed" ]; then
+            echo "no input json files found"
+            exit 1
+          fi
+          ./bin/musictl validate add-md -i $changed --file-tracing-level debug > ./validate_output.md
+          rm $changed
+
+      - name: Validate `update`
+        if: |
+          needs.parse_labels.outputs.has_update == 'true' &&
+          needs.parse_labels.outputs.has_apply == 'false'
+        run: ./bin/musictl validate update --file-tracing-level debug
+
+      - name: Apply `add`
+        if: |
+          needs.parse_labels.outputs.has_add == 'true' &&
+          needs.parse_labels.outputs.has_apply == 'true'
+        run: |
+          # `music/data/input*.json`を全て検出して, これを入力ファイルとみなす
+          changed=$(ls music/data/input/*.json 2>/dev/null || true)
+          if [ -z "$changed" ]; then
+            echo "no input json files found"
+            exit 1
+          fi
+          ./bin/musictl apply add-md -i $changed --file-tracing-level debug
+          rm $changed
+
+      - name: Apply `update`
+        if: |
+          needs.parse_labels.outputs.has_update == 'true' &&
+          needs.parse_labels.outputs.has_apply == 'true'
+        run: ./bin/musictl apply update --file-tracing-level debug
+
+      - name: Post validation result as PR comment
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+        run: |
+          if [ -f ./validate_output.md ]; then
+            gh pr comment "$PR_URL" --body-file ./validate_output.md
+          else
+            echo "No validation output to post."
+          fi
+
+      - name: Commit changes
+        if: needs.parse_labels.outputs.has_apply == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add music/data/music music/data/ || true
+          git add public/music/ || true
+          git commit -m "[music-apply] Apply music data changes" || echo "No changes to commit"
+          git push
+
+      - name: Post logs
+        if: always()
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+        run: ./tools/musictl_logs_to_stdout.sh

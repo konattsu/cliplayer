@@ -10,7 +10,7 @@ on:
       - main
     paths:
       - "music/**"
-      - "!music/data/"
+      - "!music/data/**"
       - "!**/*.md"
 
 jobs:
