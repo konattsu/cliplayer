@@ -95,5 +95,102 @@
         "uuid": "93d1d812-153d-4605-a340-62f2190fd365"
       }
     ]
+  },
+  {
+    "videoId": "5GsswoDivZI",
+    "title": "【歌枠】40万人ありがとう、というわけで歌う【栞葉るり/にじさんじ】",
+    "channelId": "UC7_MFM9b8hp5kuTSpa8WyOQ",
+    "publishedAt": "2026-01-28T12:09:19Z",
+    "syncedAt": "2026-03-03T15:31:22Z",
+    "duration": "PT1H2M31S",
+    "privacyStatus": "public",
+    "embeddable": true,
+    "videoTags": [
+      "2d",
+      "karaoke"
+    ],
+    "clips": [
+      {
+        "songTitle": "恋の魔法",
+        "liverIds": [
+          "ruri-shioriha"
+        ],
+        "startTime": "PT2M",
+        "endTime": "PT5M19S",
+        "uuid": "3fc31423-b991-4c88-8de7-71d2ed9b50c5"
+      },
+      {
+        "songTitle": "君色に染まる",
+        "liverIds": [
+          "ruri-shioriha"
+        ],
+        "startTime": "PT8M59S",
+        "endTime": "PT12M10S",
+        "uuid": "b6baf4ae-44af-46c4-b6f0-564eaeecae34"
+      },
+      {
+        "songTitle": "風になる",
+        "liverIds": [
+          "ruri-shioriha"
+        ],
+        "startTime": "PT15M5S",
+        "endTime": "PT19M40S",
+        "uuid": "204b32ff-23e9-405c-9ddf-d26efad0eaf4"
+      },
+      {
+        "songTitle": "Campus mode!!",
+        "liverIds": [
+          "ruri-shioriha"
+        ],
+        "startTime": "PT25M25S",
+        "endTime": "PT29M36S",
+        "uuid": "86a3f942-d9a3-4629-99e6-3fd68fc37a9f"
+      },
+      {
+        "songTitle": "新宝島",
+        "liverIds": [
+          "ruri-shioriha"
+        ],
+        "startTime": "PT31M35S",
+        "endTime": "PT36M33S",
+        "uuid": "bacf5ae1-9bbf-4269-8507-bc1084e65269"
+      },
+      {
+        "songTitle": "きらり",
+        "liverIds": [
+          "ruri-shioriha"
+        ],
+        "startTime": "PT39M55S",
+        "endTime": "PT43M43S",
+        "uuid": "f0c9725f-2e22-4de6-b2b7-aff3551a986a"
+      },
+      {
+        "songTitle": "カタオモイ",
+        "liverIds": [
+          "ruri-shioriha"
+        ],
+        "startTime": "PT48M30S",
+        "endTime": "PT51M58S",
+        "uuid": "88e84806-9d66-49a7-874d-10d0eb6b2ce8"
+      },
+      {
+        "songTitle": "火星人",
+        "liverIds": [
+          "ruri-shioriha"
+        ],
+        "startTime": "PT53M3S",
+        "endTime": "PT56M56S",
+        "uuid": "d0689c1c-196e-4eba-959a-13dbb7ea5303"
+      },
+      {
+        "songTitle": "おねがいダーリン",
+        "liverIds": [
+          "ruri-shioriha"
+        ],
+        "startTime": "PT58M40S",
+        "endTime": "PT1H1M53S",
+        "uuid": "5eab39b4-10ae-4c94-865d-7167dca26658"
+      }
+    ]
   }
 ]
