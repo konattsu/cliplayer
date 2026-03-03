@@ -1,28 +1,51 @@
 /// `VerifiedVideo`を作ろうとしたときのエラー
-#[derive(Debug)]
+#[derive(thiserror::Error, Debug)]
 pub(crate) enum VerifiedVideoError {
     /// クリップの情報が不正
+    #[error(
+        "invalid clips found ({count}):\n\t{msgs}",
+        count = .0.len(),
+        msgs = .0.iter().map(|e| e.to_string()).collect::<Vec<_>>().join("\n\t"),
+    )]
     InvalidClip(Vec<crate::model::VerifiedClipError>),
     /// 動画IDが一致しない
+    #[error("video_id mismatch: expected {local}, got {fetched}")]
     VideoIdMismatch {
         local: crate::model::VideoId,
         fetched: crate::model::VideoId,
     },
     /// クリップの範囲が重複
+    #[error("clips overlap in video ID {id}: song titles {clips_title:?}")]
     ClipsOverlap {
         id: crate::model::VideoId,
         clips_title: Vec<String>,
     },
     /// クリップが存在しない
+    #[error("no clips found for video ID {0}")]
     NoClips(crate::model::VideoId),
     /// 動画のapiから取得できる詳細情報が欠如
+    #[error("missing api info for video ID {0}")]
     MissingApiInfo(crate::model::VideoId),
 }
 
-/// `VerifiedVideo`を作ろうとしたときのエラー
+/// 複数の`VerifiedVideoError`をまとめたもの
 #[derive(Debug)]
 pub(crate) struct VerifiedVideoErrors {
     errs: Vec<VerifiedVideoError>,
+}
+
+impl std::fmt::Display for VerifiedVideoErrors {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            self.errs
+                .iter()
+                .map(|e| e.to_string())
+                .collect::<Vec<_>>()
+                .join("\n")
+        )
+    }
 }
 
 impl From<Vec<VerifiedVideoError>> for VerifiedVideoErrors {
@@ -51,52 +74,5 @@ impl VerifiedVideoError {
                 fetched: fetched.clone(),
             })
         }
-    }
-
-    /// 成形して表示する用の文字列をつくる
-    pub fn to_pretty_string(&self) -> String {
-        let mut msg = "Failed to create VerifiedVideo: ".to_string();
-        match self {
-            Self::VideoIdMismatch {
-                local: brief,
-                fetched,
-            } => {
-                msg.push_str(&format!(
-                    "video_id mismatch: expected {brief}, got {fetched}",
-                ));
-            }
-            Self::InvalidClip(errors) => {
-                let invalid_clip_err_msgs =
-                    errors.iter().map(|e| e.to_string()).collect::<Vec<_>>();
-                msg.push_str(&format!(
-                    "Invalid clips found ({}):\n\t{}",
-                    errors.len(),
-                    invalid_clip_err_msgs.join("\n\t")
-                ));
-            }
-            Self::ClipsOverlap { id, clips_title } => {
-                msg.push_str(&format!(
-                    "Clips overlap in video ID {id}: song titles`{clips_title:?}`"
-                ));
-            }
-            Self::NoClips(id) => {
-                msg.push_str(&format!("No clips found for video ID {id}"));
-            }
-            Self::MissingApiInfo(id) => {
-                msg.push_str(&format!("Missing api info for video ID {id}"));
-            }
-        }
-        msg
-    }
-}
-
-impl VerifiedVideoErrors {
-    /// 成形して表示する用の文字列をつくる
-    pub fn to_pretty_string(&self) -> String {
-        let mut err_str = String::new();
-        for e in self.errs.iter() {
-            err_str.push_str(&e.to_pretty_string());
-        }
-        err_str
     }
 }

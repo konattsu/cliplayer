@@ -155,8 +155,8 @@ impl AnonymousClip {
     fn to_markdown_other_info(&self) -> String {
         let mut base_str = Vec::new();
 
-        // 60*7 = 420sec = 7min
-        if self.start_time.as_secs() + 420 < self.end_time.as_secs() {
+        // 390secs = 6m30s
+        if self.start_time.as_secs() + 390 < self.end_time.as_secs() {
             base_str.push("clip range too long?".to_string());
         }
         if let Some(external_artists_name) = &self.external_artists_name {

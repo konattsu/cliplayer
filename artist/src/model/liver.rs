@@ -157,7 +157,7 @@ pub(crate) static LOADED_LIVER_DATA: once_cell::sync::Lazy<Livers> =
         });
         let data: Livers = serde_json::from_str(&data).unwrap();
         tracing::info!("Loaded {} livers from {}", data.len(), path_str);
-        tracing::debug!("Loaded livers data: {:#?}", data);
+        tracing::trace!("Loaded livers data: {:#?}", data);
         data
     });
 
@@ -195,7 +195,7 @@ pub(crate) static LOADED_LIVER_DATA: once_cell::sync::Lazy<Livers> =
         }"#;
         let livers: Livers = serde_json::from_str(LIVER_DATA).expect("will not fail");
         tracing::info!("Loaded {} livers from test data", livers.len());
-        tracing::debug!("Loaded livers data: {:#?}", livers);
+        tracing::trace!("Loaded livers data: {:#?}", livers);
         livers
     });
 

@@ -76,7 +76,7 @@ jobs:
       - name: Apply sync to music data
         env:
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
-        run: ./bin/musictl apply sync --file-tracing-level debug
+        run: ./bin/musictl sync --file-tracing-level debug
 
       - name: Post musictl logs
         if: always()

@@ -6,6 +6,7 @@ fn main() {
         "artistctl",
         cli.stdout_level(),
         cli.file_level(),
+        cli.is_quiet(),
     );
     tracing::debug!("Command line arguments: {:?}", cli);
 

@@ -1,15 +1,11 @@
-mod file_path;
 mod file_paths;
-mod music_root;
-mod parser;
 mod tracing_level;
 mod video_ids;
 
-pub use file_path::FilePathFromCli;
+pub(super) mod parser;
+
 pub use file_paths::FilePathsFromCli;
-pub use music_root::MusicLibraryCli;
-pub use parser::{
-    ApplyCommands, Cli, Commands, DevCommands, TraceLevel, ValidateCommands,
-};
+pub use parser::Cli;
+pub(crate) use parser::Commands;
 pub use tracing_level::TracingLevel;
 pub use video_ids::VideoIdsFromCli;

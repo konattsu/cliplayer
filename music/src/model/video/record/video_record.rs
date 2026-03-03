@@ -10,7 +10,8 @@ pub(crate) struct VideoRecord {
 }
 
 /// `VideoRecord`に関するエラー
-#[derive(Debug, PartialEq)]
+#[derive(thiserror::Error, Debug, PartialEq)]
+#[error("failed to create VideoRecord: video_id mismatch: local={local}, api={api}")]
 pub(crate) struct VideoRecordError {
     pub(crate) local: crate::model::VideoId,
     pub(crate) api: crate::model::VideoId,
@@ -93,8 +94,7 @@ impl<'de> serde::Deserialize<'de> for VideoRecord {
         }
         .init();
 
-        VideoRecord::new(local, api)
-            .map_err(|e| serde::de::Error::custom(e.to_pretty_string()))
+        VideoRecord::new(local, api).map_err(serde::de::Error::custom)
     }
 }
 
@@ -175,16 +175,6 @@ impl VideoRecord {
         } else {
             Ok(())
         }
-    }
-}
-
-impl VideoRecordError {
-    /// 整形した文字列に変換
-    pub(crate) fn to_pretty_string(&self) -> String {
-        format!(
-            "Failed to create Video Record: no match video_id: local:{}, api:{}",
-            self.local, self.api
-        )
     }
 }
 

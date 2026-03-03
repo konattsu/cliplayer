@@ -134,7 +134,7 @@ jobs:
             echo "no input json files found"
             exit 1
           fi
-          ./bin/musictl validate add-md -i $changed --file-tracing-level debug > ./validate_output.md
+          ./bin/musictl add validate -i $changed --file-tracing-level debug --quiet --markdown
           rm $changed
 
       - name: Validate `update`
@@ -156,7 +156,7 @@ jobs:
             echo "no input json files found"
             exit 1
           fi
-          ./bin/musictl apply add -i $changed --file-tracing-level debug
+          ./bin/musictl add apply -i $changed --file-tracing-level debug
           rm $changed
 
       - name: Apply `update`
@@ -165,7 +165,7 @@ jobs:
           needs.parse_labels.outputs.has_apply == 'true'
         env:
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
-        run: ./bin/musictl apply update --file-tracing-level debug
+        run: ./bin/musictl update apply --file-tracing-level debug
 
       - name: Post validation result as PR comment
         env:
