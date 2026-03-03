@@ -134,7 +134,7 @@ jobs:
             echo "no input json files found"
             exit 1
           fi
-          ./bin/musictl add validate -i $changed --file-tracing-level debug --quiet --markdown
+          ./bin/musictl add validate -i $changed --file-tracing-level debug --quiet --markdown > ./validate_output.md
           rm $changed
 
       - name: Validate `update`
