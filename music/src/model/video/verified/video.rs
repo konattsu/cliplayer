@@ -29,9 +29,8 @@ impl<'de> serde::Deserialize<'de> for VerifiedVideo {
             raw.clips,
             raw.record.get_api().get_duration(),
         )
-        .map_err(|e| serde::de::Error::custom(e.to_pretty_string()))?;
-        Self::new(raw.record, verified_clips)
-            .map_err(|e| serde::de::Error::custom(e.to_pretty_string()))
+        .map_err(serde::de::Error::custom)?;
+        Self::new(raw.record, verified_clips).map_err(serde::de::Error::custom)
     }
 }
 

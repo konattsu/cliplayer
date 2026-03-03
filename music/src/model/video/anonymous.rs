@@ -114,7 +114,7 @@ impl AnonymousVideo {
     }
 
     /// md形式に変換
-    pub(crate) fn to_markdown(&self) -> String {
+    fn to_markdown(&self) -> String {
         let video_id = self.local_record.get_video_id();
         let uploader_name = self
             .local_record
@@ -284,6 +284,16 @@ impl AnonymousVideos {
 
     pub(crate) fn to_video_ids(&self) -> crate::model::VideoIds {
         self.inner.keys().cloned().collect()
+    }
+
+    /// 動画情報を`markdown`形式で出力
+    pub(crate) fn to_markdown(&self) -> String {
+        let mut md = String::new();
+        for video in self.inner.values() {
+            md.push_str(&video.to_markdown());
+            md.push_str("\n\n");
+        }
+        md
     }
 
     fn to_sorted_vec(&self) -> Vec<AnonymousVideo> {

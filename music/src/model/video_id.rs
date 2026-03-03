@@ -61,6 +61,14 @@ impl std::fmt::Display for VideoId {
     }
 }
 
+impl std::str::FromStr for VideoId {
+    type Err = &'static str;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        VideoId::new(s.to_string())
+    }
+}
+
 impl From<Vec<VideoId>> for VideoIds {
     fn from(video_id: Vec<VideoId>) -> Self {
         VideoIds(video_id)

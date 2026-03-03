@@ -1,22 +1,22 @@
 /// 投稿日の年/月が同じ動画の情報を保持
 #[derive(Debug, Clone)]
-pub(crate) struct VideosSameYearMonth {
+pub(super) struct VideosSameYearMonth {
     year: usize,
     month: usize,
     videos: crate::model::VerifiedVideos,
 }
 
 impl VideosSameYearMonth {
-    pub(crate) fn get_year(&self) -> usize {
+    pub(super) fn get_year(&self) -> usize {
         self.year
     }
-    pub(crate) fn get_month(&self) -> usize {
+    pub(super) fn get_month(&self) -> usize {
         self.month
     }
-    pub(crate) fn get_videos(&self) -> &crate::model::VerifiedVideos {
+    pub(super) fn get_videos(&self) -> &crate::model::VerifiedVideos {
         &self.videos
     }
-    pub(crate) fn into_videos(self) -> crate::model::VerifiedVideos {
+    pub(super) fn into_videos(self) -> crate::model::VerifiedVideos {
         self.videos
     }
 
@@ -28,7 +28,7 @@ impl VideosSameYearMonth {
     ///
     /// `Err`:
     /// 動画投稿日の年/月が引数に対応していないとき. 対応していない動画idのリストを返す.
-    pub(crate) fn new(
+    pub(super) fn new(
         year: usize,
         month: usize,
         videos: crate::model::VerifiedVideos,
@@ -43,7 +43,7 @@ impl VideosSameYearMonth {
     }
 
     /// 動画情報が空の状態で新規作成
-    pub(crate) fn new_empty(year: usize, month: usize) -> Self {
+    pub(super) fn new_empty(year: usize, month: usize) -> Self {
         Self {
             year,
             month,
@@ -57,7 +57,7 @@ impl VideosSameYearMonth {
     ///
     /// # Errors
     /// - 動画の投稿日の年/月がこのVideosSameYearMonthの年/月と異なる場合
-    pub(crate) fn push_video(
+    pub(super) fn push_video(
         &mut self,
         video: crate::model::VerifiedVideo,
     ) -> Result<(), crate::model::VideoId> {
@@ -74,10 +74,10 @@ impl VideosSameYearMonth {
         Ok(())
     }
 
-    /// 動画情報を置き換え
+    /// 動画情報を全て置き換え
     ///
     /// `Err`: 動画の投稿日の年/月がこのVideosSameYearMonthの年/月と異なる場合
-    pub(crate) fn replace_videos(
+    pub(super) fn replace_videos(
         &mut self,
         videos: crate::model::VerifiedVideos,
     ) -> Result<(), crate::model::VideoIds> {
@@ -86,6 +86,9 @@ impl VideosSameYearMonth {
         Ok(())
     }
 
+    /// 引数の動画の投稿日の年/月が`self`の年/月と同じか
+    ///
+    /// - `Err(id)`: 同じでないとき. `id`は年/月が同じでない動画の`video_id`
     fn ensure_same_year_month_from_video(
         &self,
         video: &crate::model::VerifiedVideo,

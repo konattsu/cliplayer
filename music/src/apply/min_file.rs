@@ -1,16 +1,17 @@
-/// 全てのファイルを保存
-pub(crate) fn save(
+/// 月ファイルとminファイルを全て保存
+pub(crate) fn save_all(
     music_lib: crate::music_file::MusicLibrary,
     min_clips_path: &std::path::Path,
     min_videos_path: &std::path::Path,
-) -> Result<(), crate::music_file::MusicFileError> {
+) -> Result<(), crate::music_file::MusicFileErrors> {
     // 月ファイル
     music_lib.save_month_files()?;
     // minファイル
     save_min_files(music_lib, min_clips_path, min_videos_path)
+        .map_err(|e| e.into_errors())
 }
 
-/// minファイルを保存
+/// minファイルのみを保存
 pub(super) fn save_min_files(
     music_lib: crate::music_file::MusicLibrary,
     min_clips_path: &std::path::Path,

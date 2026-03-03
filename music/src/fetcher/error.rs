@@ -25,10 +25,3 @@ pub(crate) enum YouTubeApiError {
         message: String,
     },
 }
-
-impl YouTubeApiError {
-    /// エラーメッセージを整形して返す
-    pub(crate) fn to_pretty_string(&self) -> String {
-        format!("Failed to call YouTube Api: {self}")
-    }
-}

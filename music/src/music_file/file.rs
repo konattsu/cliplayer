@@ -6,7 +6,7 @@
 #[derive(Debug, Clone)]
 pub(crate) struct MusicFile {
     path: std::path::PathBuf,
-    videos: super::VideosSameYearMonth,
+    videos: super::videos::VideosSameYearMonth,
 }
 
 impl MusicFile {
@@ -31,38 +31,25 @@ impl MusicFile {
         self.videos.get_videos().to_video_ids()
     }
 
-    /// 動画情報から楽曲情報のファイルを作成
+    /// 動画情報から`Self`を作成
     ///
-    /// - `root`以下に `/YYYY/MM.json` の形式でファイルを作成
-    /// - 動画情報の年と月がパスと一致することを確認
-    /// - ファイルが存在しない場合は新規作成, 存在すれば上書き
-    ///
-    /// # Errors
-    /// - ファイルの作成に失敗した場合
-    pub(crate) fn from_video(
+    /// - 動画情報の年と月がパスと一致することを保証
+    pub(super) fn from_video(
         video: crate::model::VerifiedVideo,
         root: &std::path::Path,
-    ) -> Result<Self, super::MusicFileError> {
+    ) -> Self {
         let (year, month) = (video.get_year(), video.get_month());
         let path = root
-            // root直下に`YYYY/MM.json`の形式でパスを生成
+            // `<root>/YYYY/MM.json`の形式の文字列を生成
             .join(format!("{year:04}/{month:02}.json"));
-        // ファイル作る
-        std::fs::File::create(&path).map_err(|e| {
-            super::MusicFileError::FileCreate {
-                path: path.display().to_string(),
-                msg: e.to_string(),
-            }
-        })?;
-
-        Ok(Self {
+        Self {
             path,
-            videos: super::VideosSameYearMonth::new_empty(year, month),
-        })
+            videos: super::videos::VideosSameYearMonth::new_empty(year, month),
+        }
     }
 
     /// ファイルから楽曲情報を読み込む
-    pub(crate) fn load(
+    pub(super) fn load(
         path: std::path::PathBuf,
         root: &std::path::Path,
     ) -> Result<Self, super::MusicFileError> {
@@ -83,7 +70,7 @@ impl MusicFile {
     ///
     /// # Errors
     /// - 動画の投稿日の年/月がこのMusicFileの年/月と異なる場合
-    pub(crate) fn push_video(
+    pub(super) fn push_video(
         &mut self,
         video: crate::model::VerifiedVideo,
     ) -> Result<(), super::MusicFileError> {
@@ -125,14 +112,12 @@ impl MusicFile {
         videos: crate::model::VerifiedVideos,
     ) -> Result<Self, super::MusicFileError> {
         let (year, month) = Self::extract_year_month(&path, root)?;
-        let videos =
-            super::VideosSameYearMonth::new(year, month, videos).map_err(|ids| {
-                super::MusicFileError::VideoPublishDateMismatch {
-                    ids,
-                    year,
-                    month,
-                    file_path: path.clone(),
-                }
+        let videos = super::videos::VideosSameYearMonth::new(year, month, videos)
+            .map_err(|ids| super::MusicFileError::VideoPublishDateMismatch {
+                ids,
+                year,
+                month,
+                file_path: path.clone(),
             })?;
         tracing::trace!(
             "music videos loaded: {year}-{month:02}, {} videos",

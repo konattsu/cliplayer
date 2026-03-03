@@ -1,8 +1,11 @@
+/// 複数の[`AnonymousVideoValidateError`]をまとめたもの
 pub struct AnonymousVideoValidateErrors {
     errs: Vec<AnonymousVideoValidateError>,
 }
 
-pub enum AnonymousVideoValidateError {
+/// anonymous videoの検証エラー
+#[derive(Debug)]
+pub(crate) enum AnonymousVideoValidateError {
     /// 動画idが重複
     DuplicateVideoId(Vec<crate::model::VideoId>),
     /// ファイルの読み込み失敗
@@ -17,26 +20,8 @@ pub enum AnonymousVideoValidateError {
     },
 }
 
-impl From<AnonymousVideoValidateErrors> for Vec<AnonymousVideoValidateError> {
-    fn from(value: AnonymousVideoValidateErrors) -> Self {
-        value.errs
-    }
-}
-
-impl AnonymousVideoValidateErrors {
-    pub fn to_pretty_string(&self) -> String {
-        self.errs
-            .iter()
-            .map(|e| e.to_pretty_string())
-            .collect::<String>()
-    }
-}
-
-impl AnonymousVideoValidateError {
-    /// エラーメッセージを整形して返す
-    ///
-    /// 文字列の最後に`\n`が付与される
-    pub fn to_pretty_string(&self) -> String {
+impl std::fmt::Display for AnonymousVideoValidateError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::DuplicateVideoId(ids) => {
                 let ids_str = ids
@@ -44,44 +29,38 @@ impl AnonymousVideoValidateError {
                     .map(|id| id.to_string())
                     .collect::<Vec<_>>()
                     .join(", ");
-                format!("Duplicate video IDs found: {ids_str}\n")
+                write!(f, "duplicate video IDs found: {ids_str}")
             }
             Self::FileReadError { path, msg } => {
-                format!("Failed to read file {}: {msg}\n", path.display())
+                write!(f, "failed to read file {}: {msg}", path.display())
             }
             Self::InvalidFileContent { path, msg } => {
-                format!("Invalid content in file {}: {msg}\n", path.display())
+                write!(f, "invalid content in file {}: {msg}", path.display())
             }
         }
     }
 }
 
-/// 新規の楽曲情報ファイルの形式を検証
-///
-/// # Return
-/// - Ok(String): 検証成功. 入力をmd形式に見やすくした文字列
-/// - Err(String): 検証失敗. エラーメッセージ
-pub fn validate_add_input_md(files: &[std::path::PathBuf]) -> Result<String, String> {
-    let videos = try_load_anonymous_videos(files).map_err(|e| e.to_pretty_string())?;
+impl std::error::Error for AnonymousVideoValidateError {}
 
-    let mut md_str = "# Music Data Summary\n".to_string();
-    // TODO ソートするようにしてもいいかも
-    for video in videos.into_inner().values() {
-        md_str.push_str(&video.to_markdown());
+impl std::fmt::Display for AnonymousVideoValidateErrors {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            self.errs
+                .iter()
+                .map(|e| e.to_string())
+                .collect::<Vec<_>>()
+                .join("\n")
+        )
     }
-
-    Ok(md_str)
 }
 
-/// 新規の楽曲情報ファイルの形式を検証
-///
-/// # Return
-/// - Ok(()): 検証成功.
-/// - Err(String): 検証失敗. エラーメッセージ
-pub fn validate_add_input(files: &[std::path::PathBuf]) -> Result<(), String> {
-    // deserializeできたらok
-    let _videos = try_load_anonymous_videos(files).map_err(|e| e.to_pretty_string())?;
-    Ok(())
+impl From<AnonymousVideoValidateErrors> for Vec<AnonymousVideoValidateError> {
+    fn from(value: AnonymousVideoValidateErrors) -> Self {
+        value.errs
+    }
 }
 
 /// anonymous videosのファイルを読み込む

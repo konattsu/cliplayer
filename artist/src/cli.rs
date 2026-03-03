@@ -5,7 +5,7 @@ pub struct Cli {
     pub(crate) generate: GenerateArgs,
 
     #[command(flatten)]
-    pub(crate) trace_level: cmn_rs::tracing::CliTraceLevel,
+    pub(crate) trace_level: cmn_rs::tracing::CliTraceOps,
 }
 
 /// Generate artist-related data
@@ -58,8 +58,14 @@ impl Cli {
     }
 
     pub fn stdout_level(&self) -> Option<tracing::level_filters::LevelFilter> {
-        self.trace_level
-            .stdout_tracing_level
-            .map(|lv| lv.into_tracing_level_filter())
+        Some(
+            self.trace_level
+                .stdout_tracing_level
+                .into_tracing_level_filter(),
+        )
+    }
+
+    pub fn is_quiet(&self) -> bool {
+        self.trace_level.quiet
     }
 }

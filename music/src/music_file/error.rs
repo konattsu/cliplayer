@@ -1,6 +1,6 @@
 /// `MusicFileError`をまとめたもの
 #[derive(Debug, Clone)]
-pub struct MusicFileErrors {
+pub(crate) struct MusicFileErrors {
     pub errs: Vec<MusicFileError>,
 }
 
@@ -24,9 +24,6 @@ pub enum MusicFileError {
         month: usize,
         file_path: std::path::PathBuf,
     },
-    /// ファイルを作成する際にエラーが発生
-    #[error("Failed to create file {path}: {msg}")]
-    FileCreate { path: String, msg: String },
     /// ファイルを開く際にエラーが発生
     #[error("Failed to open {path} when {when}: {msg}")]
     FileOpen {
@@ -40,42 +37,34 @@ pub enum MusicFileError {
         path: std::path::PathBuf,
         msg: String,
     },
-    /// ディレクトリの読み込みに失敗
-    #[error("Failed to read directory {dir}: {msg}")]
-    ReadDir {
-        dir: std::path::PathBuf,
-        msg: String,
-    },
     /// ファイルの内容のデシリアライズに失敗
     #[error("Failed to deserialize file {path}: {msg}")]
     Deserialize {
         path: std::path::PathBuf,
         msg: String,
     },
-    /// 実装上のエラー
-    #[error("Implementation error: {msg}")]
-    ImplementationErr { msg: String },
+    /// データベースの内容が不正
+    #[error("Invalid content in database: {msg}")]
+    InvalidDatabaseContent { msg: String },
 }
 
-impl MusicFileErrors {
-    /// エラーメッセージを整形して返す
-    pub fn to_pretty_string(&self) -> String {
-        self.errs
-            .iter()
-            .map(|e| e.to_string())
-            .collect::<Vec<_>>()
-            .join("\n")
+impl std::fmt::Display for MusicFileErrors {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            self.errs
+                .iter()
+                .map(|e| e.to_string())
+                .collect::<Vec<_>>()
+                .join("\n")
+        )
     }
 }
 
 impl MusicFileError {
     pub fn into_errors(self) -> MusicFileErrors {
         MusicFileErrors { errs: vec![self] }
-    }
-
-    /// エラーメッセージを整形して返す
-    pub fn to_pretty_string(&self) -> String {
-        self.to_string()
     }
 }
 
