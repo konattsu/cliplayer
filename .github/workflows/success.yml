@@ -13,6 +13,11 @@ on:
     branches:
       - main
     types: [opened, synchronize, reopened, labeled, unlabeled]
+  pull_request_target:
+    branches:
+      - main
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+  workflow_dispatch: {}
 
 jobs:
   build:
