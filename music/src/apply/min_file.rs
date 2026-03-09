@@ -373,7 +373,7 @@ mod tests {
         let ser = to_value(&val).unwrap();
         let expected = json!({
             "songTitle": "none_case",
-            "liver_ids": liver_ids,
+            "liverIds": liver_ids,
             "startTimeSecs": start_time.as_secs(),
             "endTimeSecs": end_time.as_secs(),
             "videoId": video_id
