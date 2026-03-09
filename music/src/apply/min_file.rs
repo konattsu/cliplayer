@@ -47,10 +47,10 @@ struct FlatClips<'a>(
 struct FlatClipValue<'a> {
     /// 曲名
     song_title: &'a str,
-    /// 内部アーティストの一覧
-    artists: &'a artistctl::model::LiverIds,
+    /// ライバーid
+    liver_ids: &'a artistctl::model::LiverIds,
     /// 外部アーティストの一覧
-    external_artists: Option<&'a artistctl::model::ExternalArtistsName>,
+    external_artists_name: Option<&'a artistctl::model::ExternalArtistsName>,
     /// 切り抜いた動画が存在した場合の動画id
     clipped_video_id: Option<&'a crate::model::VideoId>,
     /// 曲が始まる時間
@@ -74,9 +74,9 @@ impl serde::Serialize for FlatClipValue<'_> {
         #[serde(rename_all = "camelCase")]
         struct RawFlatClipValue<'a> {
             song_title: &'a str,
-            artists: &'a artistctl::model::LiverIds,
+            liver_ids: &'a artistctl::model::LiverIds,
             #[serde(skip_serializing_if = "Option::is_none")]
-            external_artists: Option<&'a artistctl::model::ExternalArtistsName>,
+            external_artists_name: Option<&'a artistctl::model::ExternalArtistsName>,
             #[serde(skip_serializing_if = "Option::is_none")]
             clipped_video_id: Option<&'a crate::model::VideoId>,
             start_time_secs: u32,
@@ -89,8 +89,8 @@ impl serde::Serialize for FlatClipValue<'_> {
         }
         let value = RawFlatClipValue {
             song_title: self.song_title,
-            artists: self.artists,
-            external_artists: self.external_artists,
+            liver_ids: self.liver_ids,
+            external_artists_name: self.external_artists_name,
             clipped_video_id: self.clipped_video_id,
             start_time_secs: self.start_time.as_secs(),
             end_time_secs: self.end_time.as_secs(),
@@ -112,8 +112,8 @@ impl<'a> FlatClips<'a> {
                     clip.get_uuid(),
                     FlatClipValue {
                         song_title: clip.get_song_title(),
-                        artists: clip.get_liver_ids(),
-                        external_artists: clip.get_external_artists_name(),
+                        liver_ids: clip.get_liver_ids(),
+                        external_artists_name: clip.get_external_artists_name(),
                         clipped_video_id: clip.get_clipped_video_id(),
                         start_time: clip.get_start_time(),
                         end_time: clip.get_end_time(),
@@ -248,8 +248,9 @@ mod tests {
 
     #[test]
     fn test_flat_clip_value_serialize_some_1() {
-        let artists = artistctl::model::LiverIds::self_1();
-        let external_artists = Some(artistctl::model::ExternalArtistsName::self_1());
+        let liver_ids = artistctl::model::LiverIds::self_1();
+        let external_artists_name =
+            Some(artistctl::model::ExternalArtistsName::self_1());
         let clipped_video_id = Some(crate::model::VideoId::test_id_4());
         let clip_tags = Some(crate::model::ClipTags::self_1());
         let volume_percent = Some(crate::model::VolumePercent::new(1).unwrap());
@@ -259,8 +260,8 @@ mod tests {
 
         let val = FlatClipValue {
             song_title: "dummy",
-            artists: &artists,
-            external_artists: external_artists.as_ref(),
+            liver_ids: &liver_ids,
+            external_artists_name: external_artists_name.as_ref(),
             clipped_video_id: clipped_video_id.as_ref(),
             start_time: &start_time,
             end_time: &end_time,
@@ -272,8 +273,8 @@ mod tests {
         // 期待値も実装に合わせて修正
         let expected = json!({
             "songTitle": "dummy",
-            "artists": artists,
-            "externalArtists": external_artists,
+            "liverIds": liver_ids,
+            "externalArtistsName": external_artists_name,
             "clippedVideoId": clipped_video_id,
             "startTimeSecs": start_time.as_secs(),
             "endTimeSecs": end_time.as_secs(),
@@ -286,8 +287,9 @@ mod tests {
 
     #[test]
     fn test_flat_clip_value_serialize_some_2() {
-        let artists = artistctl::model::LiverIds::self_2();
-        let external_artists = Some(artistctl::model::ExternalArtistsName::self_2());
+        let liver_ids = artistctl::model::LiverIds::self_2();
+        let external_artists_name =
+            Some(artistctl::model::ExternalArtistsName::self_2());
         let clipped_video_id = Some(crate::model::VideoId::test_id_3());
         let clip_tags = Some(crate::model::ClipTags::self_2());
         let volume_percent = Some(crate::model::VolumePercent::new(99).unwrap());
@@ -297,8 +299,8 @@ mod tests {
 
         let val = FlatClipValue {
             song_title: "another",
-            artists: &artists,
-            external_artists: external_artists.as_ref(),
+            liver_ids: &liver_ids,
+            external_artists_name: external_artists_name.as_ref(),
             clipped_video_id: clipped_video_id.as_ref(),
             start_time: &start_time,
             end_time: &end_time,
@@ -309,8 +311,8 @@ mod tests {
         let ser = to_value(&val).unwrap();
         let expected = json!({
             "songTitle": "another",
-            "artists": artists,
-            "externalArtists": external_artists,
+            "liverIds": liver_ids,
+            "externalArtistsName": external_artists_name,
             "clippedVideoId": clipped_video_id,
             "startTimeSecs": start_time.as_secs(),
             "endTimeSecs": end_time.as_secs(),
@@ -323,15 +325,15 @@ mod tests {
 
     #[test]
     fn test_flat_clip_value_serialize_none_1() {
-        let artists = artistctl::model::LiverIds::self_1();
+        let liver_ids = artistctl::model::LiverIds::self_1();
         let video_id = crate::model::VideoId::test_id_1();
         let start_time = crate::model::Duration::self_1();
         let end_time = crate::model::Duration::self_2();
 
         let val = FlatClipValue {
             song_title: "dummy",
-            artists: &artists,
-            external_artists: None,
+            liver_ids: &liver_ids,
+            external_artists_name: None,
             clipped_video_id: None,
             start_time: &start_time,
             end_time: &end_time,
@@ -342,7 +344,7 @@ mod tests {
         let ser = to_value(&val).unwrap();
         let expected = json!({
             "songTitle": "dummy",
-            "artists": artists,
+            "liverIds": liver_ids,
             "startTimeSecs": start_time.as_secs(),
             "endTimeSecs": end_time.as_secs(),
             "videoId": video_id
@@ -352,15 +354,15 @@ mod tests {
 
     #[test]
     fn test_flat_clip_value_serialize_none_2() {
-        let artists = artistctl::model::LiverIds::self_2();
+        let liver_ids = artistctl::model::LiverIds::self_2();
         let video_id = crate::model::VideoId::test_id_2();
         let start_time = crate::model::Duration::self_2();
         let end_time = crate::model::Duration::self_3();
 
         let val = FlatClipValue {
             song_title: "none_case",
-            artists: &artists,
-            external_artists: None,
+            liver_ids: &liver_ids,
+            external_artists_name: None,
             clipped_video_id: None,
             start_time: &start_time,
             end_time: &end_time,
@@ -371,7 +373,7 @@ mod tests {
         let ser = to_value(&val).unwrap();
         let expected = json!({
             "songTitle": "none_case",
-            "artists": artists,
+            "liverIds": liver_ids,
             "startTimeSecs": start_time.as_secs(),
             "endTimeSecs": end_time.as_secs(),
             "videoId": video_id
