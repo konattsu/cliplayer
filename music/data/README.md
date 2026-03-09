@@ -33,8 +33,8 @@ public/に配置. フロントのビルドとは関係ない
     "clips": [
       {
         "songTitle": "おねがいダーリン",
-        "artists": ["ruri-shioriha"],
-        "externalArtists": ["(例示用)"],
+        "liverIds": ["ruri-shioriha"],
+        "externalArtistsName": ["(例示用)"],
         "clippedVideoId": "(例示用)",
         "startTime": "PT1M10S",
         "endTime": "PT4M21S",
@@ -42,7 +42,7 @@ public/に配置. フロントのビルドとは関係ない
       },
       {
         "songTitle": "命に嫌われている。",
-        "artists": ["ruri-shioriha"],
+        "liverIds": ["ruri-shioriha"],
         "startTime": "PT7M12S",
         "endTime": "PT11M34S",
       },
@@ -65,8 +65,8 @@ public/に配置. フロントのビルドとは関係ない
 - `clips`: 動画のクリップ情報の配列
   - `songTitle`: 楽曲のタイトル
     - e.g. "おねがいダーリン", "命に嫌われている。"
-  - `artists`: 楽曲の歌唱者のアーティストID(箱内)の配列
-  - `externalArtists`: 楽曲の外部アーティスト名(箱外)の配列
+  - `liverIds`: 楽曲の歌唱者のアーティストID(箱内)の配列
+  - `externalArtistsName`: 楽曲の外部アーティスト名(箱外)の配列
   - `clippedVideoId`: このクリップが公式で切り抜かれているときはその動画id, 切り抜かれてないとnull
     - e.g. [この配信](https://youtu.be/6gKIA3_ihCY?t=1h4m20s)で最後から2番目に歌われている曲は, ご本人さんのチャンネルに[動画](https://youtu.be/NNVQm3qtkOY)として投稿されているので `NNVQm3qtkOY`を指定
   - `startTime`: クリップの開始時間. 音(イントロ||声)が流れた時間を指定
@@ -97,8 +97,8 @@ public/に配置. フロントのビルドとは関係ない
     "clips": [
       {
         "songTitle": "おねがいダーリン",
-        "artists": ["ruri-shioriha"],
-        "externalArtists": ["(例示用)"],
+        "liverIds": ["ruri-shioriha"],
+        "externalArtistsName": ["(例示用)"],
         "startTime": "PT1M10S",
         "endTime": "PT4M21S",
         // uuid version 4
@@ -110,7 +110,7 @@ public/に配置. フロントのビルドとは関係ない
       },
       {
         "songTitle": "命に嫌われている。",
-        "artists": ["ruri-shioriha"],
+        "liverIds": ["ruri-shioriha"],
         "startTime": "PT7M12S",
         "endTime": "PT11M34S",
         "uuid": "6af3a9fb-05ab-4e53-8cdf-9e63869c4246",
@@ -149,7 +149,7 @@ public/に配置. フロントのビルドとは関係ない
     "endTimeSecs": 694,
 
     "songTitle": "命に嫌われている。",
-    "artists": ["ruri-shioriha"],
+    "liverIds": ["ruri-shioriha"],
   },
 }
 ```
@@ -187,9 +187,9 @@ public/に配置. フロントのビルドとは関係ない
   {
     "docId": 0, // auto-inc
     "videoId": 0, // 対応表は別で保持
-    "artistIntIds": [6, 42], // artists.jsonを参照して整数化
+    "liverIntIds": [6, 42], // livers.jsonを参照して整数化
     "tagIds": [0, 1], // 対応表は別で保持
-    "channelIntId": 0, // Option<int>, artists.jsonを参照して整数化
+    "channelIntId": 0, // Option<int>, livers.jsonを参照して整数化
     "publishedAtSec": 0, // unix timestamp
   },
 ]
