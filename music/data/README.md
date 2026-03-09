@@ -137,8 +137,8 @@ public/に配置. フロントのビルドとは関係ない
 
     // 後は一緒
     "songTitle": "おねがいダーリン",
-    "artists": ["ruri-shioriha"],
-    "externalArtists": ["(例示用)"],
+    "liverIds": ["ruri-shioriha"],
+    "externalArtistsName": ["(例示用)"],
     "clippedVideoId": "(例示用)",
     "clipTags": ["(例示用)"],
     "volumePercent": 50,
@@ -172,7 +172,7 @@ public/に配置. フロントのビルドとは関係ない
     "uploaderName": "(例示用)",
     "publishedAt": "2023-12-10Z21:00:00Z",
     "syncedAt": "2025-05-10T12:00:00Z",
-    // 整数化
+    // 整数化, 上と同様
     "privacyStatus": 0,
     "embeddable": true,
     "videoTags": ["karaoke", "2d"],
