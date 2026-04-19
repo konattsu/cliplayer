@@ -10,7 +10,7 @@
     "source.fixAll.eslint": "explicit"
   },
   // prioritize ArkType's "type" for autoimports
-  "typescript.preferences.autoImportSpecifierExcludeRegexes": ["^(node:)?os$"],
+  "js/ts.preferences.autoImportSpecifierExcludeRegexes": ["^(node:)?os$"],
   "files.associations": {
     "justfile": "plaintext"
   },
@@ -51,23 +51,33 @@
   },
 
   // Typescript
-  "typescript.tsserver.log": "verbose",
+  "js/ts.tsserver.log": "verbose",
 
   // 楽曲データたちよう
   "json.schemas": [
     {
-      "fileMatch": ["/artist/data/livers.json"],
-      "url": "./tools/livers.schema.json"
+      "fileMatch": ["metadata/artist/data/livers.json"],
+      "url": "./tools/schema/livers.schema.json"
     },
     {
-      "fileMatch": ["/artist/data/official_channels.json"],
-      "url": "./tools/official_channels.schema.json"
+      "fileMatch": ["metadata/artist/data/official_channels.json"],
+      "url": "./tools/schema/official_channels.schema.json"
+    },
+    {
+      "fileMatch": ["metadata/tag/data/tags.json"],
+      "url": "./tools/schema/video_tags.schema.json"
     },
     {
       "fileMatch": ["/music/data/input/*.json"],
-      "url": "./tools/music.schema.json"
+      "url": "./tools/schema/music.schema.json"
     }
   ],
+
+  // ref: https://github.com/davidanson/vscode-markdownlint/issues/422
+  // TODO markdown lint消すか考える
+  "json.schemaDownload.trustedDomains": {
+    "https://raw.githubusercontent.com/DavidAnson/markdownlint/": true
+  },
 
   // copilot
   //   chat

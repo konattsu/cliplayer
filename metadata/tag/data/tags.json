@@ -1,0 +1,33 @@
+{
+  "karaoke": {
+    "ja": "歌枠",
+    "en": "karaoke",
+    "intId": 0
+  },
+  "2d": {
+    "ja": "2D",
+    "en": "2D",
+    "intId": 1
+  },
+  "3d": {
+    "ja": "3D",
+    "en": "3D",
+    "intId": 2
+  },
+  "niji-3d": {
+    "ja": "にじ3D",
+    "en": "NIJI3D",
+    "intId": 3
+  },
+  "3d-debut": {
+    "ja": "3Dお披露目",
+    "en": "3D Debut",
+    "blocked": true,
+    "intId": 4
+  },
+  "acoustic": {
+    "ja": "弾き語り",
+    "en": "acoustic",
+    "intId": 5
+  }
+}

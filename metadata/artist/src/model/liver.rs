@@ -144,15 +144,16 @@ impl Liver {
 #[cfg(not(any(test, feature = "test-helpers")))]
 pub(crate) static LOADED_LIVER_DATA: once_cell::sync::Lazy<Livers> =
     once_cell::sync::Lazy::new(|| {
-        const LIVER_SET_PATH: &str = "./artist/data/livers.json";
-
+        let default_path =
+            std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("data/livers.json");
         let path_str = std::env::var("LIVER_SET_PATH")
-            .unwrap_or_else(|_| LIVER_SET_PATH.to_string());
+            .unwrap_or_else(|_| default_path.to_string_lossy().into_owned());
         let data = std::fs::read_to_string(path_str.clone()).unwrap_or_else(|e| {
             panic!(
                 "Failed to read livers data from {path_str}. \
-                This value is read from the env value, or default to {LIVER_SET_PATH}. \
-                reason: {e}"
+                This value is read from the env value, or default to {}. \
+                reason: {e}",
+                default_path.display()
             )
         });
         let data: Livers = serde_json::from_str(&data).unwrap();

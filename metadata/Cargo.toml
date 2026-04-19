@@ -1,0 +1,15 @@
+[package]
+name = "metadata"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = { workspace = true }
+artistctl = { path = "./artist" }
+clap = { workspace = true }
+cmn_rs = { path = "../cmn_rs" }
+tagctl = { path = "./tag" }
+tracing = { workspace = true }
+
+[dev-dependencies]
+serde_json = { workspace = true }
