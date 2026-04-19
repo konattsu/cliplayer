@@ -18,17 +18,15 @@ impl Snippet {
         music_data_code_snippets_path: &std::path::Path,
     ) -> anyhow::Result<Self> {
         let path = music_data_code_snippets_path;
+        let content = std::fs::read_to_string(path).map_err(|e| {
+            anyhow::anyhow!(
+                "Failed to read snippet file: {} | source: {}",
+                path.display(),
+                e
+            )
+        })?;
 
-        let reader =
-            std::fs::File::open(std::path::PathBuf::from(path)).map_err(|e| {
-                anyhow::anyhow!(
-                    "Failed to open snippet file: {} | source: {}",
-                    path.display(),
-                    e
-                )
-            })?;
-
-        serde_json::from_reader(reader).map_err(|e| {
+        json5::from_str(&content).map_err(|e| {
             anyhow::anyhow!(
                 "Failed to deserialize from {} | source: {}",
                 path.display(),

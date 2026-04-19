@@ -5,7 +5,7 @@ edition = "2024"
 
 [dependencies]
 anyhow = { workspace = true }
-artistctl = { path = "../artist" }
+artistctl = { path = "../metadata/artist" }
 chrono = "0.4.44"
 clap = { workspace = true }
 cmn_rs = { path = "../cmn_rs" }
@@ -28,4 +28,4 @@ tracing-subscriber = { workspace = true }
 walkdir = "2.5.0"
 
 [dev-dependencies]
-artistctl = { path = "../artist", features = ["test-helpers"] }
+artistctl = { path = "../metadata/artist", features = ["test-helpers"] }

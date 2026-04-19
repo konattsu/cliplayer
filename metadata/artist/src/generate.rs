@@ -35,15 +35,19 @@ pub fn generate(
     Ok(())
 }
 
+fn output_path(output_dir: &str, file_name: &str) -> std::path::PathBuf {
+    std::path::Path::new(output_dir).join(file_name)
+}
+
 fn generate_artist_search_index(
     livers_data: crate::model::Livers,
     output_dir: &str,
     livers_search_index_file_name: &str,
 ) -> anyhow::Result<()> {
     let output_artists = crate::output::LiversSearchIndex::new(livers_data);
-    output_artists.output_as_json(std::path::Path::new(&format!(
-        "{output_dir}{livers_search_index_file_name}",
-    )))
+    let path = output_path(output_dir, livers_search_index_file_name);
+
+    output_artists.output_as_json(&path)
 }
 
 fn generate_channels(
@@ -53,10 +57,9 @@ fn generate_channels(
     channels_file_name: &str,
 ) -> anyhow::Result<()> {
     let channels = crate::output::Channels::new(livers_data, official_channels_data);
+    let path = output_path(output_dir, channels_file_name);
 
-    channels.output_json(std::path::Path::new(&format!(
-        "{output_dir}{channels_file_name}",
-    )))
+    channels.output_json(&path)
 }
 
 fn generate_livers(
@@ -65,9 +68,9 @@ fn generate_livers(
     artists_file_name: &str,
 ) -> anyhow::Result<()> {
     let output_artists = crate::output::OutputLivers::new(livers_data);
-    output_artists.output_json(std::path::Path::new(&format!(
-        "{output_dir}{artists_file_name}",
-    )))
+    let path = output_path(output_dir, artists_file_name);
+
+    output_artists.output_json(&path)
 }
 
 fn generate_snippet(
@@ -87,7 +90,7 @@ fn generate_official_channels(
 ) -> anyhow::Result<()> {
     let official_channels =
         crate::output::OfficialChannels::new(official_channels_data);
-    official_channels.output_json(std::path::Path::new(&format!(
-        "{output_dir}{official_channels_file_name}",
-    )))
+    let path = output_path(output_dir, official_channels_file_name);
+
+    official_channels.output_json(&path)
 }

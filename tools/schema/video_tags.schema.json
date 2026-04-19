@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Tags",
+  "type": "object",
+  "additionalProperties": false,
+  "patternProperties": {
+    "^.*$": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ja": { "type": "string" },
+        "en": { "type": "string" },
+        "blocked": { "type": "boolean" },
+        "intId": { "type": "integer" }
+      },
+      "required": ["ja", "en", "intId"]
+    }
+  }
+}

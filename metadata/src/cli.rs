@@ -1,18 +1,25 @@
 #[derive(Debug, clap::Parser)]
 #[command(version, about, long_about = None)]
 pub struct Cli {
-    #[command(flatten)]
-    pub(crate) generate: GenerateArgs,
+    #[command(subcommand)]
+    pub(crate) command: Command,
 
     #[command(flatten)]
     pub(crate) trace_level: cmn_rs::tracing::CliTraceOps,
 }
 
-/// Generate artist-related data
+#[derive(Debug, clap::Subcommand)]
+pub enum Command {
+    /// Generate artist-related metadata.
+    Artist(ArtistArgs),
+    /// Generate video-tag-related metadata.
+    Tag(TagArgs),
+}
+
 #[derive(Debug, clap::Args)]
-pub struct GenerateArgs {
+pub struct ArtistArgs {
     /// Directory for minified data output
-    #[arg(long, default_value_t = default_output_dir())]
+    #[arg(long, default_value_t = default_artist_output_dir())]
     pub(crate) output_dir: String,
     /// File name for the search index output
     #[arg(long, default_value_t = default_min_livers_search_index_file_name())]
@@ -27,27 +34,43 @@ pub struct GenerateArgs {
     #[arg(long, default_value_t = default_min_official_channels_file_name())]
     pub(crate) min_official_channels_file_name: String,
     /// Path to the VS Code code-snippets file to update
-    #[arg(long, default_value_t = default_code_snippets_path())]
+    #[arg(long, default_value_t = default_music_code_snippets_path())]
     pub(crate) music_code_snippets_path: String,
 }
 
-fn default_output_dir() -> String {
-    "src/music/".to_string()
+#[derive(Debug, clap::Args)]
+pub struct TagArgs {
+    /// Path to the VS Code code-snippets file to update
+    #[arg(long, default_value_t = default_tag_code_snippets_path())]
+    pub(crate) code_snippets_path: String,
 }
+
+fn default_artist_output_dir() -> String {
+    "src/music".to_string()
+}
+
 fn default_min_livers_search_index_file_name() -> String {
     "livers_search_index.min.json".to_string()
 }
+
 fn default_min_channels_file_name() -> String {
     "channels.min.json".to_string()
 }
+
 fn default_min_livers_file_name() -> String {
     "livers.min.json".to_string()
 }
+
 fn default_min_official_channels_file_name() -> String {
     "official_channels.min.json".to_string()
 }
-fn default_code_snippets_path() -> String {
+
+fn default_music_code_snippets_path() -> String {
     ".vscode/music.code-snippets".to_string()
+}
+
+fn default_tag_code_snippets_path() -> String {
+    ".vscode/tags.code-snippets".to_string()
 }
 
 impl Cli {

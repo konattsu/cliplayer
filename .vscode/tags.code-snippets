@@ -1,0 +1,38 @@
+{
+  "VideoTagsSnippet": {
+    "body": ["\"${1|karaoke,2d,3d,nmf,sitr,3d-debut,niji-3d|}\",", ""],
+    "description": "Array of tags for video data",
+    "prefix": "vtag",
+    "scope": "json",
+  },
+  "VideoData Snippet": {
+    "body": [
+      "{",
+      "  \"videoId\": \"$1\",",
+      "  \"uploaderName\": ${2:null},",
+      "  \"videoTags\": [",
+      "    $3",
+      "  ],",
+      "  \"clips\": [",
+      "    $4",
+      "  ]",
+      "},",
+    ],
+    "description": "VideoData object based on music.schema.json",
+    "prefix": "video",
+    "scope": "json",
+  },
+  "Video Tags Defenition Snippet": {
+    "body": [
+      "\"$1\": {",
+      "  \"ja\": \"${2:jp}\",",
+      "  \"en\": \"${3:en}\",",
+      "  \"intId\": ${4}",
+      "},",
+      "",
+    ],
+    "description": "Video tag definition based on tags.schema.json",
+    "prefix": "vtagdef",
+    "scope": "json",
+  },
+}
