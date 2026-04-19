@@ -1,8 +1,21 @@
 {
   "VideoTagsSnippet": {
-    "body": ["\"${1|karaoke,2d,3d,nmf,sitr,3d-debut,niji-3d|}\",", ""],
+    "body": ["\"${1|2d,3d,3d-debut,acoustic,karaoke,niji-3d|}\",", ""],
     "description": "Array of tags for video data",
     "prefix": "vtag",
+    "scope": "json",
+  },
+  "Video Tags Defenition Snippet": {
+    "body": [
+      "\"$1\": {",
+      "  \"ja\": \"${2:jp}\",",
+      "  \"en\": \"${3:en}\",",
+      "  \"intId\": ${4}",
+      "},",
+      "",
+    ],
+    "description": "Video tag definition based on tags.schema.json",
+    "prefix": "vtagdef",
     "scope": "json",
   },
   "VideoData Snippet": {
@@ -20,19 +33,6 @@
     ],
     "description": "VideoData object based on music.schema.json",
     "prefix": "video",
-    "scope": "json",
-  },
-  "Video Tags Defenition Snippet": {
-    "body": [
-      "\"$1\": {",
-      "  \"ja\": \"${2:jp}\",",
-      "  \"en\": \"${3:en}\",",
-      "  \"intId\": ${4}",
-      "},",
-      "",
-    ],
-    "description": "Video tag definition based on tags.schema.json",
-    "prefix": "vtagdef",
     "scope": "json",
   },
 }
