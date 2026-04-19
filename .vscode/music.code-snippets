@@ -26,5 +26,5 @@
     "description": "ClipData object based on music.schema.json",
     "prefix": "clip",
     "scope": "json"
-  },
+  }
 }
