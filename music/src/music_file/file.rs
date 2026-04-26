@@ -33,6 +33,7 @@ impl MusicFile {
 
     /// 動画情報から`Self`を作成
     ///
+    /// - 戻り値の`MusicFile`に引数の`video`の情報が含まれる
     /// - 動画情報の年と月がパスと一致することを保証
     pub(super) fn from_video(
         video: crate::model::VerifiedVideo,
@@ -42,10 +43,11 @@ impl MusicFile {
         let path = root
             // `<root>/YYYY/MM.json`の形式の文字列を生成
             .join(format!("{year:04}/{month:02}.json"));
-        Self {
-            path,
-            videos: super::videos::VideosSameYearMonth::new_empty(year, month),
-        }
+        // Safety: 動画情報から`year`, `month`を抽出しパスを生成. このパスと動画情報の年/月は必ず一致するためunwrap
+        let videos =
+            super::videos::VideosSameYearMonth::new(year, month, video.into_videos())
+                .unwrap();
+        Self { path, videos }
     }
 
     /// ファイルから楽曲情報を読み込む

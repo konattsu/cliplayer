@@ -256,6 +256,11 @@ impl VerifiedVideo {
             Ok(oks.into_iter().map(Result::unwrap).collect())
         }
     }
+
+    pub(crate) fn into_videos(self) -> crate::model::VerifiedVideos {
+        // Safety: ここで動画idの重複は起こらないためunwrap
+        crate::model::VerifiedVideos::try_from_vec(vec![self]).unwrap()
+    }
 }
 
 // MARK: For Tests
