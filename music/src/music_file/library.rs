@@ -193,6 +193,7 @@ impl MusicLibrary {
     /// `args`: key: `(year, month)`
     ///
     /// - music_fileが重複していれば上書き
+    // TODO `self`を引数に受け取って`files`受け取らないようにしたい. しかし, `self`が使えない環境から呼び出されることもあるので困る
     fn insert_music_file(
         files: &mut std::collections::HashMap<(usize, usize), super::MusicFile>,
         music_file: super::MusicFile,
