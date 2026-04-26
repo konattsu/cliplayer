@@ -42,15 +42,6 @@ impl VideosSameYearMonth {
         })
     }
 
-    /// 動画情報が空の状態で新規作成
-    pub(super) fn new_empty(year: usize, month: usize) -> Self {
-        Self {
-            year,
-            month,
-            videos: crate::model::VerifiedVideos::new(),
-        }
-    }
-
     /// 動画情報を追加
     ///
     /// - 動画のvideo_idが重複していれば上書き
