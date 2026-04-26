@@ -72,18 +72,10 @@ impl YouTubeApi {
                         retry_count += 1;
                         if retry_count >= network_cfg::MAX_RETRY {
                             tracing::error!(error = ?e, "YouTube API fetch error after retries");
-                            eprintln!(
-                                "Failed to fetch YouTube API after {retry_count} retries: {e}"
-                            );
                             return Err(e);
                         }
                         tracing::warn!(
                             error = ?e,
-                            "YouTube API fetch error, retrying... (attempt {}/{})",
-                            retry_count,
-                            network_cfg::MAX_RETRY
-                        );
-                        eprintln!(
                             "YouTube API fetch error, retrying... (attempt {}/{})",
                             retry_count,
                             network_cfg::MAX_RETRY
