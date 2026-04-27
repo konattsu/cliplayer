@@ -1471,5 +1471,77 @@
     "channelId": "UCGLS7BOgNa6c03r7VYacblw",
     "color": "FF8184",
     "intId": 159
+  },
+  "onotora": {
+    "ja": "男虎",
+    "jah": "おのとら",
+    "en": "Onotora",
+    "aliases": [],
+    "channelId": "UCFimqykDM5g9a5KxlW_e7ZQ",
+    "color": "442657",
+    "intId": 160
+  },
+  "eita-kuri": {
+    "ja": "九里詠太",
+    "jah": "くりえいた",
+    "en": "Kuri Eita",
+    "aliases": [],
+    "channelId": "UCzcuYIyP-1YcXC96t9J5yWQ",
+    "color": "CC8F7A",
+    "intId": 161
+  },
+  "iruka-kokonami": {
+    "ja": "小々波いるか",
+    "jah": "ここなみいるか",
+    "en": "Kokonami Iruka",
+    "aliases": [],
+    "channelId": "UCGGIGlgxXoVu1ZzbQ2XBxqQ",
+    "color": "4270B2",
+    "intId": 162
+  },
+  "ayumu-senri": {
+    "ja": "千凛あゆむ",
+    "jah": "せんりあゆむ",
+    "en": "Senri Ayumu",
+    "aliases": [],
+    "channelId": "UC5Qv2tPOI38OcnqOdUKkn7Q",
+    "color": "543298",
+    "intId": 163
+  },
+  "daichi-tsukahara": {
+    "ja": "塚原大地",
+    "jah": "つかはらだいち",
+    "en": "Tsukahara Daichi",
+    "aliases": [],
+    "channelId": "UC9HYkiQZ1_b3J_F8gc12eaA",
+    "color": "4A4A5C",
+    "intId": 164
+  },
+  "kotone-mikogami": {
+    "ja": "御子神琴音",
+    "jah": "みこがみことね",
+    "en": "Mikogami Kotone",
+    "aliases": [],
+    "channelId": "UCwjlRIySBvZ-kLV5bfjya4A",
+    "color": "D0669A",
+    "intId": 165
+  },
+  "reina": {
+    "ja": "Rei7",
+    "jah": "れいな",
+    "en": "Reina",
+    "aliases": [],
+    "channelId": "UC_4QF0dL-9XI9VajsNkMtmQ",
+    "color": "4BB3CE",
+    "intId": 166
+  },
+  "rayon": {
+    "ja": "レヨン",
+    "jah": "れよん",
+    "en": "Rayon",
+    "aliases": [],
+    "channelId": "UCsxs_R8xnsQN4t-F_3qQ8PQ",
+    "color": "558E8D",
+    "intId": 167
   }
 }
