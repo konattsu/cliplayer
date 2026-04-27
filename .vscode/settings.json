@@ -18,14 +18,16 @@
   "files.watcherExclude": {
     "**/node_modules/**": true,
     "**/target/**": true,
-    "**/.angular/**": true
+    "**/.angular/**": true,
+    "/tmp/**": true
   },
   "search.exclude": {
     "**/node_modules": true,
     "**/bower_components": true,
     "**/*.code-search": true,
     "**/target/**": true,
-    "**/.angular/**": true
+    "**/.angular/**": true,
+    "/tmp/**": true
   },
 
   // Prettier
@@ -49,7 +51,7 @@
   "[rust]": {
     "editor.defaultFormatter": "rust-lang.rust-analyzer"
   },
-  // search
+  //   search
   "rust-analyzer.linkedProjects": ["search/Cargo.toml", "music/Cargo.toml"],
 
   // Typescript
@@ -199,6 +201,16 @@
   },
 
   // spell checking
+  "cSpell.ignorePaths": [
+    ".git/{index,*refs,*HEAD}",
+    ".git/{info,lfs,logs,refs,objects}/**",
+    ".vscode",
+    "Cargo.lock",
+    "dist",
+    "node_modules",
+    "package-lock.json",
+    "vscode-extension"
+  ],
   "cSpell.words": [
     "appender",
     "arktype",
