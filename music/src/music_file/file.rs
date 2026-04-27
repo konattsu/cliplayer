@@ -68,22 +68,32 @@ impl MusicFile {
 
     /// 動画情報を追加
     ///
-    /// - 動画のvideo_idが重複してれば上書き
-    ///
     /// # Errors
     /// - 動画の投稿日の年/月がこのMusicFileの年/月と異なる場合
+    /// - 動画IDが重複している場合（重複ポリシーがRejectのとき）
     pub(super) fn push_video(
         &mut self,
         video: crate::model::VerifiedVideo,
+        duplicate_video_policy: super::videos::DuplicateVideoPolicy,
     ) -> Result<(), super::MusicFileError> {
-        self.videos.push_video(video).map_err(|id| {
-            super::MusicFileError::VideoPublishDateMismatch {
-                ids: id.into_ids(),
-                year: self.get_year(),
-                month: self.get_month(),
-                file_path: self.path.clone(),
-            }
-        })
+        self.videos
+            .push_video(video, duplicate_video_policy)
+            .map_err(|e| match e {
+                super::videos::PushVideoError::YearMonthMismatch(id) => {
+                    super::MusicFileError::VideoPublishDateMismatch {
+                        ids: id.into_ids(),
+                        year: self.get_year(),
+                        month: self.get_month(),
+                        file_path: self.path.clone(),
+                    }
+                }
+                super::videos::PushVideoError::DuplicateVideoId(id) => {
+                    super::MusicFileError::DuplicateVideoId {
+                        id,
+                        file_path: self.path.clone(),
+                    }
+                }
+            })
     }
 
     /// 動画情報を置き換え

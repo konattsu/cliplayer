@@ -7,4 +7,6 @@ pub(crate) use record::{
     ApiVideoInfo, ApiVideoInfoInitializer, ApiVideoInfoList, LocalVideoInfo,
     VideoRecord,
 };
-pub(crate) use verified::{VerifiedVideo, VerifiedVideoError, VerifiedVideos};
+pub(crate) use verified::{
+    VerifiedVideo, VerifiedVideoError, VerifiedVideoErrors, VerifiedVideos,
+};

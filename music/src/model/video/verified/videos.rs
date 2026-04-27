@@ -112,14 +112,28 @@ impl VerifiedVideos {
         }
     }
 
-    /// 動画を追加
+    /// 動画を追加する（重複は拒否）
     ///
-    /// 動画のvideo_idが重複していれば上書き
-    ///
-    /// # Returns
-    /// - `Some(動画)`: 追加前に同じvideo_idの動画が存在していた場合
-    /// - `None`: 新規追加の場合
+    /// # Errors
+    /// - すでに同一 `video_id` が存在する場合
     pub(crate) fn insert_video(
+        &mut self,
+        video: super::VerifiedVideo,
+    ) -> Result<(), crate::model::VideoId> {
+        use std::collections::hash_map::Entry;
+
+        let id = video.get_video_id().clone();
+        match self.inner.entry(id) {
+            Entry::Occupied(entry) => Err(entry.key().clone()),
+            Entry::Vacant(entry) => {
+                entry.insert(video);
+                Ok(())
+            }
+        }
+    }
+
+    /// 動画を追加する（重複時は上書き）
+    pub(crate) fn upsert_video(
         &mut self,
         video: super::VerifiedVideo,
     ) -> Option<super::VerifiedVideo> {

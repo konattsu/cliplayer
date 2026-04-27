@@ -30,9 +30,11 @@ pub(crate) enum VerifiedVideoError {
 
 /// 複数の`VerifiedVideoError`をまとめたもの
 #[derive(Debug)]
-pub(crate) struct VerifiedVideoErrors {
+pub struct VerifiedVideoErrors {
     errs: Vec<VerifiedVideoError>,
 }
+
+impl std::error::Error for VerifiedVideoErrors {}
 
 impl std::fmt::Display for VerifiedVideoErrors {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {

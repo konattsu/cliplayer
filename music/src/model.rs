@@ -21,7 +21,7 @@ pub(crate) use uuid::UuidVer4;
 pub(crate) use video::{
     AnonymousVideo, AnonymousVideos, ApiVideoInfo, ApiVideoInfoInitializer,
     ApiVideoInfoList, LocalVideoInfo, VerifiedVideo, VerifiedVideoError,
-    VerifiedVideos, VideoRecord,
+    VerifiedVideoErrors, VerifiedVideos, VideoRecord,
 };
 pub(crate) use video_id::{VideoId, VideoIds};
 pub(crate) use video_published_at::VideoPublishedAt;

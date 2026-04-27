@@ -1,7 +1,10 @@
 /// 複数の[`AnonymousVideoValidateError`]をまとめたもの
+#[derive(Debug)]
 pub struct AnonymousVideoValidateErrors {
     errs: Vec<AnonymousVideoValidateError>,
 }
+
+impl std::error::Error for AnonymousVideoValidateErrors {}
 
 /// anonymous videoの検証エラー
 #[derive(Debug)]

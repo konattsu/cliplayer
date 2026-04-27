@@ -2,18 +2,16 @@
 ///
 /// # Returns
 /// - `Ok(())`: 正常に更新が適用された場合
-/// - `Err(())`: エラーが発生した場合。エラーは`tracing::error!`で出力済み
-// TODO 設計むずい. 一旦clippy黙らすが, 要再検討
-#[allow(clippy::result_unit_err)]
+/// - `Err(_)`: エラーが発生した場合
 pub fn apply_update(
     music_lib: crate::music_file::MusicLibrary,
     min_clips_path: &std::path::Path,
     min_videos_path: &std::path::Path,
-) -> Result<(), ()> {
+) -> Result<(), crate::apply::ApplyError> {
     // 楽曲情報をファイルから取得して, そのまま書き込む:
     // - minに書き込みが必要なため
     // - 既存の楽曲情報でもソートされていることを保証するため
 
     super::min_file::save_all(music_lib, min_clips_path, min_videos_path)
-        .map_err(|e| tracing::error!("Failed to save files: {e}"))
+        .map_err(Into::into)
 }

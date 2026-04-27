@@ -8,7 +8,7 @@
 
 /// YouTube API呼び出し時のエラー
 #[derive(Debug, thiserror::Error, Clone)]
-pub(crate) enum YouTubeApiError {
+pub enum YouTubeApiError {
     /// apiが不正/制限
     #[error("forbidden: {0}")]
     Forbidden(String),
