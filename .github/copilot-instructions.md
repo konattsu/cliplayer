@@ -35,6 +35,7 @@ When performing specific operations, refer to the following related documents an
   - `.github/skills/rust/SKILL.md`
 - Context7:
   - `.github/skills/context7/SKILL.md`
+  - refer to the `Context7` skill when using external modules or tools.
 - Refactoring:
   - `.github/skills/refactor/SKILL.md`
 - Frontend Design:
