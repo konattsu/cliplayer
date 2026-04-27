@@ -6,11 +6,8 @@ async fn main() {
     let _tracing_guard = enable_tracing_log(&cli);
     tracing::debug!("Command line arguments: {:?}", cli);
 
-    if musictl::cli_exec_handler::cli_exec_handler(cli)
-        .await
-        .is_err()
-    {
-        // エラーの詳細はすでに tracing::error! で出力済み
+    if let Err(e) = musictl::cli_exec_handler::cli_exec_handler(cli).await {
+        tracing::error!("Command failed: {e}");
         std::process::exit(1);
     }
     tracing::info!("Command executed successfully.");

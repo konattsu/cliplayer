@@ -80,6 +80,9 @@ pub(crate) struct AddApplyArgs {
     /// The key of YouTube Data v3 api to fetch data
     #[arg(short, long, env = "YOUTUBE_API_KEY", hide_env_values = true)]
     pub(crate) api_key: crate::fetcher::YouTubeApiKey,
+    /// If set, duplicate video IDs in existing month files are overwritten
+    #[arg(long, action = clap::ArgAction::SetTrue)]
+    pub(crate) allow_overwrite_existing_video: bool,
     /// Directory where the results will be written
     #[arg(long, value_name = "DIR", default_value_t = cli_default_vals::default_music_root_dir())]
     pub(crate) music_root_dir: String,

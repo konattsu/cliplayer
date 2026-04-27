@@ -94,28 +94,45 @@ impl MusicLibrary {
     }
 
     /// 動画情報を一括で追加する
-    pub(crate) fn extend_videos(&mut self, videos: crate::model::VerifiedVideos) {
+    pub(crate) fn extend_videos(
+        &mut self,
+        videos: crate::model::VerifiedVideos,
+        duplicate_video_policy: crate::music_file::DuplicateVideoPolicy,
+    ) -> Result<(), crate::music_file::MusicFileErrors> {
+        let mut errs = Vec::new();
         for video in videos.into_sorted_vec() {
-            self.push_video(video);
+            if let Err(e) = self.push_video(video, duplicate_video_policy) {
+                errs.push(e);
+            }
+        }
+
+        if errs.is_empty() {
+            Ok(())
+        } else {
+            Err(errs.into())
         }
     }
 
     /// 楽曲情報を追加する
     ///
-    /// 動画idが重複していれば上書き
-    fn push_video(&mut self, video: crate::model::VerifiedVideo) {
+    fn push_video(
+        &mut self,
+        video: crate::model::VerifiedVideo,
+        duplicate_video_policy: crate::music_file::DuplicateVideoPolicy,
+    ) -> Result<(), crate::music_file::MusicFileError> {
         // 追加する動画の年月を特定して, 対応するファイルに追加
         let year_month = (video.get_year(), video.get_month());
         if let Some(music_file) = self.video_files.get_mut(&year_month) {
             // 対応する月ファイルが存在した時
-            music_file
-                .push_video(video)
-                // Safety: 対応する月ファイルが存在していることを確認済み
-                .expect("will match existing file");
+            music_file.push_video(video, duplicate_video_policy)
         } else {
             // 対応する月ファイルが存在しないとき. 新規作成して, そこに追加
             let music_file = super::MusicFile::from_video(video, &self.root_dir);
-            Self::insert_music_file(&mut self.video_files, music_file);
+            debug_assert!(
+                Self::insert_music_file(&mut self.video_files, music_file).is_none(),
+                "newly created month file must not conflict with existing keys"
+            );
+            Ok(())
         }
     }
 
@@ -162,10 +179,60 @@ impl MusicLibrary {
                 Err(_) => continue,
             };
             if entry.file_type().is_file() {
-                file_paths.push(entry.path().to_path_buf());
+                let path = entry.path();
+                if Self::is_monthly_music_file_path(dir, path) {
+                    file_paths.push(path.to_path_buf());
+                } else {
+                    tracing::trace!(
+                        "Skipped non-month music file while loading: {}",
+                        path.display()
+                    );
+                }
             }
         }
+        file_paths.sort_unstable();
         file_paths
+    }
+
+    /// ルート配下の `YYYY/MM.json` 形式に一致するか
+    fn is_monthly_music_file_path(
+        root: &std::path::Path,
+        path: &std::path::Path,
+    ) -> bool {
+        let rel = match path.strip_prefix(root) {
+            Ok(rel) => rel,
+            Err(_) => return false,
+        };
+
+        let mut components = rel.components();
+        let year = match components.next().and_then(|c| c.as_os_str().to_str()) {
+            Some(year) => year,
+            None => return false,
+        };
+        let month_file = match components.next().and_then(|c| c.as_os_str().to_str()) {
+            Some(month_file) => month_file,
+            None => return false,
+        };
+
+        if components.next().is_some() {
+            return false;
+        }
+
+        if year.len() != 4 || !year.chars().all(|c| c.is_ascii_digit()) {
+            return false;
+        }
+
+        if month_file.len() != 7 || !month_file.ends_with(".json") {
+            return false;
+        }
+
+        let month_str = &month_file[..2];
+        let month = match month_str.parse::<usize>() {
+            Ok(month) => month,
+            Err(_) => return false,
+        };
+
+        (1..=12).contains(&month)
     }
 
     /// ファイルパスごとにMusicFileをロードし、HashMapとエラーVecを返す
@@ -181,7 +248,23 @@ impl MusicLibrary {
         let mut errs: Vec<crate::music_file::MusicFileError> = Vec::new();
         for file_path in file_paths {
             match crate::music_file::MusicFile::load(file_path, dir) {
-                Ok(music_file) => Self::insert_music_file(&mut files, music_file),
+                Ok(music_file) => {
+                    let (year, month) = music_file.get_year_month();
+                    let duplicated_path = music_file.get_path().to_path_buf();
+
+                    if let Some(existing) =
+                        Self::insert_music_file(&mut files, music_file)
+                    {
+                        errs.push(
+                            crate::music_file::MusicFileError::DuplicateYearMonthFile {
+                                year,
+                                month,
+                                existing_path: existing.get_path().to_path_buf(),
+                                duplicated_path,
+                            },
+                        );
+                    }
+                }
                 Err(e) => errs.push(e),
             }
         }
@@ -192,14 +275,15 @@ impl MusicLibrary {
     ///
     /// `args`: key: `(year, month)`
     ///
-    /// - music_fileが重複していれば上書き
+    /// - 既存キーと重複している場合, 置き換え前の値を返す
     // TODO `self`を引数に受け取って`files`受け取らないようにしたい. しかし, `self`が使えない環境から呼び出されることもあるので困る
     fn insert_music_file(
         files: &mut std::collections::HashMap<(usize, usize), super::MusicFile>,
         music_file: super::MusicFile,
-    ) {
+    ) -> Option<super::MusicFile> {
         let year_month = music_file.get_year_month();
-        if let Some(_stale) = files.insert(year_month, music_file) {
+        let stale = files.insert(year_month, music_file);
+        if stale.is_some() {
             tracing::trace!(
                 "Music file for year/month `{}/{}` already exists, \
                 replacing stale file with new one.\n",
@@ -207,6 +291,7 @@ impl MusicLibrary {
                 year_month.1,
             );
         }
+        stale
     }
 
     /// 楽曲情報(単品)を全て保存

@@ -6,6 +6,18 @@ pub(super) struct VideosSameYearMonth {
     videos: crate::model::VerifiedVideos,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum DuplicateVideoPolicy {
+    Reject,
+    Overwrite,
+}
+
+#[derive(Debug)]
+pub(super) enum PushVideoError {
+    YearMonthMismatch(crate::model::VideoId),
+    DuplicateVideoId(crate::model::VideoId),
+}
+
 impl VideosSameYearMonth {
     pub(super) fn get_year(&self) -> usize {
         self.year
@@ -44,25 +56,26 @@ impl VideosSameYearMonth {
 
     /// 動画情報を追加
     ///
-    /// - 動画のvideo_idが重複していれば上書き
-    ///
     /// # Errors
     /// - 動画の投稿日の年/月がこのVideosSameYearMonthの年/月と異なる場合
     pub(super) fn push_video(
         &mut self,
         video: crate::model::VerifiedVideo,
-    ) -> Result<(), crate::model::VideoId> {
-        self.ensure_same_year_month_from_video(&video)?;
-        if let Some(prev_video) = self.videos.insert_video(video) {
-            tracing::trace!(
-                "Video with id `{}` already exists, \
-                replacing stale video with new one.\n\
-                Stale video: {:?}",
-                prev_video.get_video_id(),
-                prev_video
-            );
+        duplicate_policy: DuplicateVideoPolicy,
+    ) -> Result<(), PushVideoError> {
+        self.ensure_same_year_month_from_video(&video)
+            .map_err(PushVideoError::YearMonthMismatch)?;
+
+        match duplicate_policy {
+            DuplicateVideoPolicy::Reject => self
+                .videos
+                .insert_video(video)
+                .map_err(PushVideoError::DuplicateVideoId),
+            DuplicateVideoPolicy::Overwrite => {
+                self.videos.upsert_video(video);
+                Ok(())
+            }
         }
-        Ok(())
     }
 
     /// 動画情報を全て置き換え

@@ -1,8 +1,10 @@
 /// `MusicFileError`をまとめたもの
 #[derive(Debug, Clone)]
-pub(crate) struct MusicFileErrors {
+pub struct MusicFileErrors {
     pub errs: Vec<MusicFileError>,
 }
+
+impl std::error::Error for MusicFileErrors {}
 
 /// 音楽情報のファイルに関するエラー
 #[derive(thiserror::Error, Debug, Clone, PartialEq)]
@@ -22,6 +24,23 @@ pub enum MusicFileError {
         ids: crate::model::VideoIds,
         year: usize,
         month: usize,
+        file_path: std::path::PathBuf,
+    },
+    /// 既存ファイルと同じ年月を持つ別ファイルが見つかった
+    #[error(
+        "Duplicate monthly file detected for ({year}/{month}): \
+        existing={existing_path}, duplicated={duplicated_path}"
+    )]
+    DuplicateYearMonthFile {
+        year: usize,
+        month: usize,
+        existing_path: std::path::PathBuf,
+        duplicated_path: std::path::PathBuf,
+    },
+    /// 同一ファイル内に重複した動画IDを追加しようとした
+    #[error("Duplicate video_id `{id}` found in file {file_path}")]
+    DuplicateVideoId {
+        id: crate::model::VideoId,
         file_path: std::path::PathBuf,
     },
     /// ファイルを開く際にエラーが発生
