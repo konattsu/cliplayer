@@ -11,3 +11,6 @@ RUN npm install -g pnpm@10.30.3
 # install just
 # ref: https://github.com/casey/just#pre-built-binaries
 RUN curl -fsSL https://just.systems/install.sh | bash -s -- --to /usr/local/bin
+
+# install Codex and Bubblewrap for sandboxing
+RUN pnpm install @openai/codex && apt-get update && apt-get install bubblewrap -y

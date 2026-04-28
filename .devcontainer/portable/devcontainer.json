@@ -48,6 +48,7 @@
         "github.copilot",
         "github.vscode-github-actions",
         "mhutchie.git-graph",
+        "openai.chatgpt",
 
         // others
         "asuka.insertnumbers",
