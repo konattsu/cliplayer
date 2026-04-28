@@ -129,8 +129,6 @@ public/に配置. フロントのビルドとは関係ない
   "d5cb8a6b-fb40-424d-9079-c62bd76b92a5": {
     // このクリップが含まれる動画id
     "videoId": "ZeFvqdvutb4",
-    // 公開状況, 0:public, 1:Unlisted, 2:Private
-    "privacyStatus": 0,
     // secsに変換
     "startTimeSecs": 70,
     "endTimeSecs": 261,
@@ -172,8 +170,8 @@ public/に配置. フロントのビルドとは関係ない
     "uploaderName": "(例示用)",
     "publishedAt": "2023-12-10Z21:00:00Z",
     "syncedAt": "2025-05-10T12:00:00Z",
+    "privacyStatus": "public",
     // 整数化, 上と同様
-    "privacyStatus": 0,
     "embeddable": true,
     "videoTags": ["karaoke", "2d"],
   },

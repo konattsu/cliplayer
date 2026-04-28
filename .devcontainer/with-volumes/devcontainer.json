@@ -20,7 +20,8 @@
   },
 
   "mounts": [
-    "source=pnpm-store,target=/home/node/.local/share/pnpm/store,type=volume"
+    "source=pnpm-store,target=/home/node/.local/share/pnpm/store,type=volume",
+    "source=${localEnv:HOME}/.codex,target=/home/node/.codex,type=bind"
   ],
 
   "customizations": {
@@ -56,6 +57,7 @@
         "github.copilot",
         "github.vscode-github-actions",
         "mhutchie.git-graph",
+        "openai.chatgpt",
 
         // others
         "asuka.insertnumbers",
