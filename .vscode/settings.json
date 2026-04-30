@@ -223,6 +223,7 @@
     "reqwest",
     "rustls",
     "serde",
+    "tagctl",
     "thiserror",
     "vitest",
     "walkdir"
