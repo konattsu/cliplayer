@@ -57,22 +57,17 @@
 目的: フロント(Angular)が軽量に読み込めるデータを提供する。
 
 - artist
-  - 出力先: `src/music/`
+  - 出力先: `public/music/`
   - 出力例: `livers.min.json`, `channels.min.json`, `official_channels.min.json`, `livers_search_index.min.json`
   - 生成: `metadata artist ...` 相当
 - tag
-  - 出力先: `src/music/`
+  - 出力先: `public/music/`
   - 出力例: `tags.min.json`
   - 生成: `metadata tag --step s2`
 - clips
   - 出力先: `public/music/`
   - 出力例: `clips.min.json`, `videos.min.json`
   - 生成: `musictl add apply` / `musictl update apply` / `musictl sync` が min 生成まで行う
-
-運用上の意図:
-
-- `src/music/*` はフロントのビルドに含める(バンドルされる)用途
-- `public/music/*` はフロントのビルドとは独立に配信できる(静的配信)用途
 
 ### s3. 検索インデックスを生成する(低頻度)
 

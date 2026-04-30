@@ -69,7 +69,7 @@ pub struct TagArgs {
 }
 
 fn default_artist_output_dir() -> String {
-    "src/music".to_string()
+    "public/music".to_string()
 }
 
 fn default_min_livers_search_index_file_name() -> String {
@@ -97,7 +97,7 @@ fn default_tag_code_snippets_path() -> String {
 }
 
 fn default_tag_output_dir() -> String {
-    "src/music".to_string()
+    "public/music".to_string()
 }
 
 fn default_min_tags_file_name() -> String {
