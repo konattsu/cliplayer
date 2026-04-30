@@ -13,10 +13,10 @@ YouTube上の動画/アーカイブから歌唱部分のみを連続的に再生
 - music/musictl: 音楽管理
 - search: (開発中)
   - engine: 検索エンジン
-  - index_fmt: 検索インデックスのフォーマット
+  - index: 検索インデックスの生成と型定義
 
 ### Dependency
 
 musictl -> metadata
-search/engine -> metadata, index_fmt
-search/index_fmt -> metadata, musictl
+search/engine -> search/index
+search/index -> metadata, musictl
