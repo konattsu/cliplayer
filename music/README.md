@@ -23,3 +23,7 @@ Options:
   -h, --help                          Print help
   -V, --version                       Print version
 ```
+
+## データ形式
+
+[`README.md`](./data/README.md)を参照
