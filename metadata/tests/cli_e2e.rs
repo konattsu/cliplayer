@@ -70,13 +70,48 @@ fn test_metadata_artist_command_generates_outputs() {
 }
 
 #[test]
+fn test_metadata_artist_step_minify_generates_only_min() {
+    let tmp = tempfile::tempdir().unwrap();
+    let out_dir = tmp.path().join("out");
+    std::fs::create_dir_all(&out_dir).unwrap();
+
+    let mut cmd = Command::cargo_bin("metadata").unwrap();
+    cmd.arg("artist")
+        .arg("--operation")
+        .arg("minify")
+        .arg("--output-dir")
+        .arg(out_dir.to_string_lossy().to_string())
+        .arg("--min-livers-search-index-file-name")
+        .arg("livers_search_index.min.json")
+        .arg("--min-channels-file-name")
+        .arg("channels.min.json")
+        .arg("--min-livers-file-name")
+        .arg("livers.min.json")
+        .arg("--min-official-channels-file-name")
+        .arg("official_channels.min.json");
+
+    cmd.assert().success();
+
+    assert!(out_dir.join("livers_search_index.min.json").exists());
+    assert!(out_dir.join("channels.min.json").exists());
+    assert!(out_dir.join("livers.min.json").exists());
+    assert!(out_dir.join("official_channels.min.json").exists());
+}
+
+#[test]
 fn test_metadata_tag_command_updates_snippet() {
     let tmp = tempfile::tempdir().unwrap();
+    let out_dir = tmp.path().join("out");
+    std::fs::create_dir_all(&out_dir).unwrap();
     let snippet_path = tmp.path().join("tags.code-snippets");
     write_text_file(&snippet_path, TAG_SNIPPET_JSON5);
 
     let mut cmd = Command::cargo_bin("metadata").unwrap();
     cmd.arg("tag")
+        .arg("--output-dir")
+        .arg(out_dir.to_string_lossy().to_string())
+        .arg("--min-tags-file-name")
+        .arg("tags.min.json")
         .arg("--code-snippets-path")
         .arg(snippet_path.to_string_lossy().to_string());
 
@@ -85,4 +120,53 @@ fn test_metadata_tag_command_updates_snippet() {
     let snippet = std::fs::read_to_string(snippet_path).unwrap();
     assert!(snippet.contains("VideoTagsSnippet"));
     assert!(snippet.contains("\"${1|"));
+
+    assert!(out_dir.join("tags.min.json").exists());
+}
+
+#[test]
+fn test_metadata_tag_operation_generate_snippet_only_updates_snippet() {
+    let tmp = tempfile::tempdir().unwrap();
+    let out_dir = tmp.path().join("out");
+    std::fs::create_dir_all(&out_dir).unwrap();
+    let snippet_path = tmp.path().join("tags.code-snippets");
+    write_text_file(&snippet_path, TAG_SNIPPET_JSON5);
+
+    let mut cmd = Command::cargo_bin("metadata").unwrap();
+    cmd.arg("tag")
+        .arg("--operation")
+        .arg("generate_snippet")
+        .arg("--output-dir")
+        .arg(out_dir.to_string_lossy().to_string())
+        .arg("--min-tags-file-name")
+        .arg("tags.min.json")
+        .arg("--code-snippets-path")
+        .arg(snippet_path.to_string_lossy().to_string());
+
+    cmd.assert().success();
+
+    let snippet = std::fs::read_to_string(snippet_path).unwrap();
+    assert!(snippet.contains("VideoTagsSnippet"));
+    assert!(snippet.contains("\"${1|"));
+
+    assert!(!out_dir.join("tags.min.json").exists());
+}
+
+#[test]
+fn test_metadata_tag_operation_minify_only_generates_min() {
+    let tmp = tempfile::tempdir().unwrap();
+    let out_dir = tmp.path().join("out");
+    std::fs::create_dir_all(&out_dir).unwrap();
+
+    let mut cmd = Command::cargo_bin("metadata").unwrap();
+    cmd.arg("tag")
+        .arg("--operation")
+        .arg("minify")
+        .arg("--output-dir")
+        .arg(out_dir.to_string_lossy().to_string())
+        .arg("--min-tags-file-name")
+        .arg("tags.min.json");
+
+    cmd.assert().success();
+    assert!(out_dir.join("tags.min.json").exists());
 }

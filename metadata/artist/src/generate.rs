@@ -12,26 +12,92 @@ pub fn generate(
     let official_channels_data: crate::model::OfficialChannels =
         crate::model::LOADED_OFFICIAL_CHANNEL_DATA.clone();
 
-    generate_artist_search_index(
+    minify_impl(
         livers_data.clone(),
+        official_channels_data.clone(),
         &output_dir,
         &livers_search_index_file_name,
+        &channels_file_name,
+        &livers_file_name,
+        &official_channels_file_name,
+    )?;
+    generate_snippet_impl(&livers_data, &music_code_snippets_path)?;
+
+    tracing::info!("Generating artist data completed successfully");
+    Ok(())
+}
+
+pub fn generate_snippet(music_code_snippets_path: String) -> anyhow::Result<()> {
+    tracing::info!("Start generate artist snippet...");
+
+    let livers_data: crate::model::Livers = crate::model::LOADED_LIVER_DATA.clone();
+    generate_snippet_impl(&livers_data, &music_code_snippets_path)?;
+
+    tracing::info!("Generating artist snippet completed successfully");
+    Ok(())
+}
+
+pub fn minify(
+    output_dir: String,
+    livers_search_index_file_name: String,
+    channels_file_name: String,
+    livers_file_name: String,
+    official_channels_file_name: String,
+) -> anyhow::Result<()> {
+    tracing::info!("Start generate artist min data...");
+
+    let livers_data: crate::model::Livers = crate::model::LOADED_LIVER_DATA.clone();
+    let official_channels_data: crate::model::OfficialChannels =
+        crate::model::LOADED_OFFICIAL_CHANNEL_DATA.clone();
+
+    minify_impl(
+        livers_data,
+        official_channels_data,
+        &output_dir,
+        &livers_search_index_file_name,
+        &channels_file_name,
+        &livers_file_name,
+        &official_channels_file_name,
+    )?;
+
+    tracing::info!("Generating artist min data completed successfully");
+    Ok(())
+}
+
+fn generate_snippet_impl(
+    livers_data: &crate::model::Livers,
+    music_code_snippets_path: &str,
+) -> anyhow::Result<()> {
+    output_snippet(livers_data, music_code_snippets_path)
+}
+
+fn minify_impl(
+    livers_data: crate::model::Livers,
+    official_channels_data: crate::model::OfficialChannels,
+    output_dir: &str,
+    livers_search_index_file_name: &str,
+    channels_file_name: &str,
+    livers_file_name: &str,
+    official_channels_file_name: &str,
+) -> anyhow::Result<()> {
+    generate_artist_search_index(
+        livers_data.clone(),
+        output_dir,
+        livers_search_index_file_name,
     )?;
     generate_channels(
         &livers_data,
         official_channels_data.clone(),
-        &output_dir,
-        &channels_file_name,
+        output_dir,
+        channels_file_name,
     )?;
-    generate_snippet(&livers_data, &music_code_snippets_path)?;
-    generate_livers(livers_data, &output_dir, &livers_file_name)?;
+    generate_livers(livers_data, output_dir, livers_file_name)?;
     generate_official_channels(
         official_channels_data,
-        &output_dir,
-        &official_channels_file_name,
+        output_dir,
+        official_channels_file_name,
     )?;
 
-    tracing::info!("Generating artist data completed successfully");
     Ok(())
 }
 
@@ -73,7 +139,7 @@ fn generate_livers(
     output_artists.output_json(&path)
 }
 
-fn generate_snippet(
+fn output_snippet(
     livers_data: &crate::model::Livers,
     music_code_snippets_path: &str,
 ) -> anyhow::Result<()> {

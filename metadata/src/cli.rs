@@ -8,6 +8,17 @@ pub struct Cli {
     pub(crate) trace_level: cmn_rs::tracing::CliTraceOps,
 }
 
+#[derive(Debug, Clone, Copy, clap::ValueEnum)]
+#[clap(rename_all = "snake_case")]
+pub enum Operation {
+    /// Generate/update VS Code snippets
+    GenerateSnippet,
+    /// Generate minified JSON for the frontend
+    Minify,
+    /// Run both operations
+    All,
+}
+
 #[derive(Debug, clap::Subcommand)]
 pub enum Command {
     /// Generate artist-related metadata.
@@ -18,6 +29,9 @@ pub enum Command {
 
 #[derive(Debug, clap::Args)]
 pub struct ArtistArgs {
+    /// Which operation to run (generate_snippet, minify, all)
+    #[arg(long, value_enum, default_value_t = Operation::All)]
+    pub(crate) operation: Operation,
     /// Directory for minified data output
     #[arg(long, default_value_t = default_artist_output_dir())]
     pub(crate) output_dir: String,
@@ -40,6 +54,15 @@ pub struct ArtistArgs {
 
 #[derive(Debug, clap::Args)]
 pub struct TagArgs {
+    /// Which operation to run (generate_snippet, minify, all)
+    #[arg(long, value_enum, default_value_t = Operation::All)]
+    pub(crate) operation: Operation,
+    /// Directory for minified data output
+    #[arg(long, default_value_t = default_tag_output_dir())]
+    pub(crate) output_dir: String,
+    /// File name for the minified tags output
+    #[arg(long, default_value_t = default_min_tags_file_name())]
+    pub(crate) min_tags_file_name: String,
     /// Path to the VS Code code-snippets file to update
     #[arg(long, default_value_t = default_tag_code_snippets_path())]
     pub(crate) code_snippets_path: String,
@@ -71,6 +94,14 @@ fn default_music_code_snippets_path() -> String {
 
 fn default_tag_code_snippets_path() -> String {
     ".vscode/tags.code-snippets".to_string()
+}
+
+fn default_tag_output_dir() -> String {
+    "src/music".to_string()
+}
+
+fn default_min_tags_file_name() -> String {
+    "tags.min.json".to_string()
 }
 
 impl Cli {
