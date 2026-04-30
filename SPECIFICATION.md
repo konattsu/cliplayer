@@ -1,6 +1,10 @@
 # cliplayer
 
-## データと生成物
+## 現状
+
+Aのs2までは実装済み. s3は未実装
+
+## A. データと生成物
 
 このリポジトリでは、以下の3系統のデータを扱う。
 
@@ -90,6 +94,8 @@
   - `livers.json`, `official_channels.json`, `tags.json`, `music/data/music/**` をまとめた manifest を作り、前回と同一なら rebuild しない
 - s3 の出力には、どの入力から生成したかを追跡できるように **manifest(メタ情報)** を同梱する
 - 生成したインデックスは`public/`へ出力
+
+詳細は [`README.md`](./search/README.md) を参照。
 
 ## 頻度の考え方(まとめ)
 
