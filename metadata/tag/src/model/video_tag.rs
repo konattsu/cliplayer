@@ -3,6 +3,10 @@
 pub struct VideoTags(std::collections::HashMap<VideoTagId, VideoTag>);
 
 impl VideoTags {
+    pub(crate) fn iter(&self) -> impl Iterator<Item = (&VideoTagId, &VideoTag)> {
+        self.0.iter()
+    }
+
     fn len(&self) -> usize {
         self.0.len()
     }
@@ -27,18 +31,24 @@ impl VideoTags {
 #[serde(rename_all = "camelCase")]
 pub struct VideoTag {
     /// 日本語
-    ja: String,
+    pub(crate) ja: String,
     /// 英語
-    en: String,
+    pub(crate) en: String,
     /// フロントでの再生をブロックするか
-    blocked: Option<bool>,
+    pub(crate) blocked: Option<bool>,
     /// 整数ID
-    int_id: u16,
+    pub(crate) int_id: u16,
 }
 
 /// 動画タグID
 #[derive(Debug, serde::Deserialize, Clone, PartialEq, Eq, Hash)]
 pub struct VideoTagId(String);
+
+impl VideoTagId {
+    pub(crate) fn as_str(&self) -> &str {
+        self.0.as_str()
+    }
+}
 
 #[cfg(not(any(test, feature = "test-helpers")))]
 pub(crate) static LOADED_VIDEO_TAG_DATA: once_cell::sync::Lazy<VideoTags> =
