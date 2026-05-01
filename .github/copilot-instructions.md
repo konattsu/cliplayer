@@ -17,7 +17,7 @@ A repository that provides a backend and frontend for managing music information
   - `artist/`: Manage information about artists (livers)
   - `music/`: Manage information about music
   - `cmn_rs/`: Common code for Rust
-  - `se/`: Provides search engine and search index
+  - `search/`: Provides search engine and search index
 
 - frontend
   - mainly written in Angular, TypeScript, and SCSS
