@@ -1,0 +1,10 @@
+[package]
+name = "index"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0.102"
+artistctl = { path = "../../metadata/artist" }
+musictl = { path = "../../music" }
+tagctl = { path = "../../metadata/tag" }

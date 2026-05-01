@@ -1,292 +1,193 @@
-# 検索エンジン/インデックス
+# 検索エンジン / インデックス
 
-目的: 高速に検索できるインデックスと、そのインデックスだけを知っていれば動作する検索エンジンを生成する。
+このディレクトリでは、検索用インデックスの論理 schema と、そのインデックスを前提にした検索 API 型を定義する。
+入力データ全体の位置づけは [`SPECIFICATION.md`](../SPECIFICATION.md) を参照。
 
-このディレクトリでは、s3 の生成物である検索インデックスと、その利用方法を定義する。
-詳細入力元や s3 の位置づけは [`SPECIFICATION.md`](../SPECIFICATION.md) を参照。
+## 1. 目的
 
-## 1. 何をしたいか
+この検索基盤の初版は、clip を単位に次のことを安定して行うことを目的とする。
 
-- ライバー名で絞り込み
-- 動画タグで絞り込み
-- 投稿チャンネルで絞り込み
-- 投稿日で範囲指定
-- `is_unlisted`, `embeddable` で絞り込み
-- 投稿日で `asc` / `desc` ソート
-- ページング
-- URL query parameter に載せられる検索クエリ表現
-- UI 側の必須フィルタと、ユーザー指定クエリを分離できること
+- ライバーで絞り込む
+- タグで絞り込む
+- 投稿チャンネルで絞り込む
+- `is_unlisted`, `embeddable` で絞り込む
+- `published_at` の範囲で絞り込む
+- `published_at` の `asc` / `desc` ソートを行う
+- cursor ベースでページングする
+- URL に載せるユーザー指定クエリと、UI 側の必須フィルタを frontend 側で合成できる
 
-## 2. 設計方針
+初版では全文検索、スコアリング、facet 集計、複合ソートは扱わない。
 
-- 検索インデックスはバイナリで提供する
-- 検索エンジンは Rust で実装し、WASM としてフロントから利用できる形を優先する
-- インデックスの内部表現は検索エンジン内に閉じ込める
-- インデックス内部では、文字列はすべて整数 ID に正規化して扱う
-- フロントが直接インデックス構造を読むことは前提にしない
-- 検索エンジンの公開 API は、クエリ AST とページング情報を受け取り、順序保証された `clipUuid[]` を返すことを最小要件とする
-- 公開 API は単純さよりも安定性を優先し、深いページングでも破綻しにくい cursor 方式を基本とする
-- 公開 index には公開して問題ないデータだけを含める
-  - `required_filter` は UX 上の都合であり、秘匿制御の境界として使わない
-- 動画 ID は検索結果に含めなくてよい
-  - フロントは `clipUuid -> videoId` を O(1) で引ける前提のため
-- WAND, MaxScore などのスコアリング系高速化は現時点では非対象
-  - 今回は構造化フィルタとソートの基盤を固めることを優先する
-- 初版は boolean filter を確実に実装し、将来の文字列検索とスコアリングを阻害しない拡張余地だけを残す
-  - YAGNI を優先し、初版から全文検索 index や ranking 用統計量までは持ち込まない
+## 2. 責務の分離
 
-## 3. 責務境界
+### `search/index`
 
-### 3.1 index builder の責務
+- source-of-truth から検索用インデックスを構築する
+- 検索インデックスの schema を定義する
+- 文字列 ID を内部整数 ID に正規化する
+- postings / columns / sort index を構築する
+- 現在の Rust 実装では主に `index/src/schema/**` に置く
 
-- s0 の正データを読む
-- 検索対象レコードを正規化して確定する
-- 転置インデックス、ソート用列、辞書などを構築する
-- バージョン付きバイナリを出力する
-- 入力ファイル由来の manifest を同梱する
+### 検索エンジン側
 
-### 3.2 search engine の責務
-
-- バイナリインデックスをロードする
+- 構築済みインデックスを読み込む
 - クエリ AST を評価する
-- 必須フィルタとユーザー指定クエリを合成する
-- ソート、ページングを適用する
-- `clipUuid[]` を返す
-- 要求された場合のみ総件数を返す
+- sort / paging / total を適用する
+- `clip_uuids` を返す
+- 現在の Rust 実装では API 型を主に `engine/src/api/**` に置く
 
-### 3.3 frontend の責務
+### frontend 側
 
-- URL と検索フォームの相互変換
-- `required_filter` の自動付与
-- `clipUuid` から詳細表示用データを引く
+- URL と検索フォームの相互変換を行う
+- `required_filter` と `user_query` を `and(...)` で合成して request を組み立てる
+- 検索結果の `clip_uuid` から表示用データを引く
 
-## 4. 検索対象レコード
+## 3. データモデル
 
-検索単位は **clip** とする。
-1 レコード = 1 `clipUuid`。
+検索単位は **clip** で、1 record = 1 `clip_uuid` とする。
 
-実装上は以下の 3 種類の ID を明確に分離する。
+### ID の役割
 
 - `doc_id`
-  - 検索エンジン内部でのみ使う dense な文書番号
-  - posting list, sort column, bitset の基準になる
-  - 0..N-1 の連番 `u32` を基本とする
-- `entity_id`
-  - `clip_uuid`, `video_id`, `channel_id`, `artist_id`, `tag_id` など、source-of-truth に存在する業務上の識別子
-  - 入力時は文字列だが、index build 時に整数 ID に変換する
-- `string table offset`
-  - 必要なら整数 ID から元文字列へ戻すための辞書参照
+  - 検索エンジン内部でだけ使う dense な連番 `u32`
+  - postings, columns, bitset, sort index の共通キー
+- entity id
+  - `clip_uuid`, `video_id`, `channel_id`, `artist_id`, `tag_id` などの業務 ID
+  - source-of-truth では文字列、index 内では整数 ID に正規化する
 
-各レコードは最低限、以下の正規化済みフィールドを持つ。
-ここで保持するのは基本的に **文字列そのものではなく整数 ID** とする。
+`doc_id` は build ごとに振り直してよい。外部 API や URL には露出しない。
+
+### 正規化済み record
+
+各 clip は少なくとも次のフィールドを持つ。
 
 | field | type | 説明 |
 | --- | --- | --- |
-| `doc_id` | u32 | 内部文書番号 |
-| `clip_id` | u32 | `clip_uuid` を整数化した ID |
-| `video_id` | u32 | 元動画 ID を整数化した ID |
-| `published_at` | i64 | 投稿日時の UTC unix time seconds |
-| `channel_id` | u32 | 投稿チャンネル ID を整数化した ID |
-| `is_unlisted` | bool | URL 限定公開なら `true`、通常公開なら `false` |
-| `embeddable` | bool | 埋め込み可否 |
-| `artist_ids` | u32[] | 関連ライバー ID 群を整数化したもの |
-| `tag_ids` | u32[] | タグ ID 群を整数化したもの |
+| `doc_id` | `u32` | 検索内部の文書番号 |
+| `clip_id` | `u32` | `clip_uuid` を整数化した ID |
+| `video_id` | `u32` | `video_id` を整数化した ID |
+| `published_at` | `TimestampSecs` | UTC unix time seconds |
+| `channel_id` | `u32` | 投稿チャンネル ID |
+| `is_unlisted` | `bool` | URL 限定公開か |
+| `embeddable` | `bool` | 埋め込み可否 |
+| `artist_ids` | `u32[]` | clip に紐づくライバー ID 群 |
+| `tag_ids` | `u32[]` | clip に紐づくタグ ID 群 |
 
 補足:
 
-- `clip_id` は `doc_id` と別物である
-- `doc_id` は検索実行都合の内部 ID、`clip_id` は clip という業務エンティティの ID
-- `artist_ids` は clip 単位で関連付くライバー集合を表す
-- `tag_ids` は clip 単位で付与されたタグ集合を表す
-- `channel_id` は動画投稿元チャンネルを表す
-- 完全一致検索は、原則すべて整数 ID に正規化して評価する
+- `clip_id` と `doc_id` は別物
+- `artist_ids`, `tag_ids` は集合として扱う
+- `channel_id`, `is_unlisted`, `embeddable`, `published_at` は単一値として扱う
 
-## 5. 正規化ルール
+### 正規化ルール
 
-### 5.1 ID 系
+- 文字列 ID は `clip`, `video`, `channel`, `artist`, `tag` ごとに独立した辞書へ入れる
+- `published_at` は `TimestampSecs` として UTC unix time seconds に正規化する
+- `is_unlisted`, `embeddable` は `true` / `false` のみを取る
+- `artist_ids`, `tag_ids` は build 時に sort + dedup して保持する
 
-- `clip_uuid`, `video_id`, `channel_id`, `artist_id`, `tag_id` は source-of-truth では文字列のまま保持する
-- builder はそれぞれに整数 ID を振る
-- 検索時の条件指定は外部 API では文字列 ID を基本とし、engine 内で整数 ID に解決する
-- `clip_uuid -> clip_id`
-- `video_id(string) -> video_id(u32)`
-- `channel_id(string) -> channel_id(u32)`
-- `artist_id(string) -> artist_id(u32)`
-- `tag_id(string) -> tag_id(u32)`
-- すべてを 1 つの巨大辞書に混在させる必要はない
-  - `clip`, `video`, `channel`, `artist`, `tag` ごとに独立辞書を持つ方が実装と検証が単純
+## 4. インデックスの論理構造
 
-### 5.1.1 `doc_id` の扱い
+`SearchIndex` は次の主要要素で構成される。
 
-- `doc_id` は business identifier ではなく、検索 index 内の row 番号である
-- `doc_id` は build ごとに振り直されてよい
-- `doc_id` を URL や外部 API に露出しない
-- posting list と sort column は `doc_id` を共通キーにして参照局所性を優先する
-- 将来 segment 化するなら、外部表現としては `DocAddress { segment_ord, local_doc_id }` 相当を意識して設計する
-  - ただし初版が単一セグメントなら、物理上は `u32 doc_id` のみで十分
+実装上は `index/src/schema/search_index.rs` を起点に `schema/**` へ分割している。
 
-### 5.2 日付
+### `Dictionaries`
 
-- `published_at` は UTC 基準の unix time seconds に正規化する
-- ソートと範囲検索はすべてこの値に対して行う
-- engine は date-only を受け取らず、境界は常に UTC seconds で受け取る
-- date-only 指定を UI が許す場合、UI 側が UTC 境界へ変換してから engine に渡す
+文字列 ID と内部整数 ID の相互変換表。
 
-### 5.3 bool
+- `clip_uuid <-> clip_id`
+- `video_id <-> video_id`
+- `channel_id <-> channel_id`
+- `artist_id <-> artist_id`
+- `tag_id <-> tag_id`
 
-- `is_unlisted` は `true` / `false` のみ
-- `is_unlisted = false` は通常公開、`is_unlisted = true` は URL 限定公開を表す
-- private 動画は公開 index に含めない
-- `embeddable` は `true` / `false` のみ
+役割:
 
-## 6. インデックスの論理構造
+- クエリ入力の文字列 ID を内部 ID に解決する
+- 検索結果の `clip_id` を `clip_uuid` に戻す
 
-インデックスは、少なくとも以下の論理セクションを持つ。
+### `ColumnStore`
 
-### 6.1 header
+`doc_id` から各フィールド値を引くための列ストア。
 
-- magic bytes
-- format version
-- little-endian 固定
-- 生成日時
-- セクション数
-- 各セクションの offset / length
-- section kind
-- header checksum
-- section checksum
-- manifest への参照
+- `clip_ids`
+- `video_ids`
+- `published_ats`
+- `channel_ids`
+- `is_unlisteds`
+- `embeddables`
+- `artist_id_lists`
+- `tag_id_lists`
 
-### 6.2 manifest
+役割:
 
-- 入力ファイル一覧
-- 各入力のハッシュ
-- builder version
-- format version
-- record count
-- 辞書サイズ
-- `max_doc_id + 1`
-- 正規化後 record hash
+- ソートや cursor の評価に使う
+- range 条件の境界値評価に使う
+- 最終的な `doc_id -> clip_id -> clip_uuid` 解決に使う
 
-### 6.3 record table
+### `ExactIndexes`
 
-レコード ID (`doc_id: u32`) から固定長・可変長列へアクセスするための基底テーブル。
-
-最低限保持するもの:
-
-- `doc_id -> clip_id`
-- `doc_id -> video_id`
-- `doc_id -> published_at`
-- `doc_id -> channel_id`
-- `doc_id -> is_unlisted`
-- `doc_id -> embeddable`
-- `doc_id -> artist_id[]`
-- `doc_id -> tag_id[]`
-
-補足:
-
-- `doc_id -> clip_uuid(string)` を直接持たない
-- 外部応答で `clipUuid` が必要なら `doc_id -> clip_id -> clip_uuid` の 2 段解決にする
-- 本格的な検索実装に寄せるなら、record table は stored fields / column store 的な責務として扱うのが自然
-
-### 6.4 dictionary tables
-
-- `clip_uuid(string) <-> clip_id(u32)`
-- `video_id(string) <-> video_id(u32)`
-- `channel_id(string) <-> channel_id(u32)`
-- `artist_id(string) <-> artist_id(u32)`
-- `tag_id(string) <-> tag_id(u32)`
-
-要件:
-
-- ユーザークエリの文字列 ID を engine 内部の整数 ID に変換できること
-- 検索結果として必要なら `clip_id` から `clip_uuid` に逆変換できること
-- 変換テーブルは index に含める
-- 文字列辞書は UTF-8 の一括 blob + offset table のような形で持つと実装しやすい
-- builder は UTF-8 妥当性を検証し、壊れた文字列を index に持ち込まない
-
-### 6.5 postings
-
-転置インデックス。少なくとも以下を持つ。
+完全一致フィルタ用の inverted index。
 
 - `artist_id -> sorted doc_id[]`
 - `tag_id -> sorted doc_id[]`
 - `channel_id -> sorted doc_id[]`
-- `is_unlisted(true/false) -> sorted doc_id[]`
-- `embeddable(true/false) -> sorted doc_id[]`
+- `is_unlisted(false/true) -> sorted doc_id[]`
+- `embeddable(false/true) -> sorted doc_id[]`
 
 要件:
 
 - posting list は `doc_id` 昇順
 - posting list は重複なし
-- bitset 化したときに `doc_id` を位置として直接参照できること
-- AND / OR は posting list の線形マージまたは bitset 演算で評価できること
-- `NOT` は bitset 演算で評価する
-- 圧縮方式は実装時に選んでよいが、format version ごとに固定すること
+- `doc_id` が dense なので、必要に応じて bitset に変換できる
 
-### 6.6 sort indexes
+### `SortIndexes`
 
-- `(published_at asc, doc_id asc)` 用の `doc_id[]`
+sort 用の順序 index 群。
+現状は `published_at` 用の 1 本だけを持つ。
 
-補足:
+- `published_at`
+  - `(published_at asc, doc_id asc)` の順で並んだ `doc_id[]`
 
-- 同一 `published_at` の並びを安定化するため、内部的に `doc_id` を tie-breaker として必ず含める
-- `published_at desc` は専用列を持たず、`asc` index を逆順走査して実現する
-- 将来ソートキーが増えるなら、列単位で拡張できる構造にする
-- `doc_id` が dense である前提を維持すると、sort index も単純配列でよい
+要件:
 
-## 7. 推奨バイナリフォーマット
+- 同一 `published_at` の順序は `doc_id` を tie-breaker にして安定化する
+- `desc` は専用列を持たず、`asc` 配列を逆順に走査して実現する
 
-物理フォーマットは以下の性質を満たすこと。
+## 5. build 時の検証
 
-- ランダムアクセス可能
-- version mismatch を早期検出できる
-- WASM 上で余計な JSON parse を避けられる
-- 将来の文字列検索/スコアリング用 section を追加できる程度の拡張余地を持てる
+index builder は最低限次を検証してから build を進める。
 
-初版では以下のような単一ファイル構成を推奨する。
+- clip が未知の `channel_id` を参照していないこと
+- clip が未知の `artist_id` を参照していないこと
+- clip が未知の `tag_id` を参照していないこと
+- 辞書に入れた文字列 ID が正しく内部 ID に解決できること
 
-1. `Header`
-2. `Section Directory`
-3. `Manifest`
-4. `Dictionaries`
-5. `Record Table`
-6. `Postings`
-7. `Sort Indexes`
+現状の build 処理では、各 clip について次を行う。
 
-ファイル名例:
+1. `clip_uuid` 順に clip を安定化する
+2. 各 ID 用辞書を構築する
+3. clip を `NormalizedClipRecord` に正規化する
+4. `ColumnStore` を構築する
+5. `ExactIndexes` を構築する
+6. `SortIndexes` を構築する
 
-- `public/search/clips-search-index.bin`
-- `public/search/clips-search-index.manifest.json`
+## 6. クエリモデル
 
-備考:
+検索クエリは UI 依存の断片的なパラメータではなく、AST として表現する。
 
-- manifest はバイナリ同梱に加えて、人間確認用の JSON を別出力してもよい
-- ただし検索エンジンの動作に必要なメタ情報は `.bin` 単体で完結しているべき
-- integer 幅は固定し、offset は little-endian で解釈する
-- section offset は 8 byte alignment を基本とする
-- 圧縮方式を導入する場合は section header に codec id を持たせる
-- 前方/後方互換性のための複雑な仕組みは、実装負荷が高いなら初版では持たなくてよい
-
-## 8. クエリモデル
-
-検索クエリは UI 用の簡易パラメータではなく、**AST を正とする**。
-
-### 8.1 全体構造
+### 全体構造
 
 ```json
 {
-  "user_query": {
+  "query": {
     "type": "and",
     "children": [
+      { "type": "term", "field": "is_unlisted", "op": "eq", "value": false },
       { "type": "term", "field": "artist_id", "op": "any_in", "values": ["suisei"] },
       { "type": "term", "field": "tag_id", "op": "any_in", "values": ["original-song"] }
     ]
-  },
-  "required_filter": {
-    "type": "term",
-    "field": "is_unlisted",
-    "op": "eq",
-    "value": false
   },
   "sort": [
     { "field": "published_at", "order": "desc" }
@@ -294,18 +195,24 @@
   "page": {
     "limit": 50,
     "cursor": null
-  }
+  },
+  "total_mode": "none"
 }
 ```
 
 意味:
 
-- `user_query`: URL 共有対象になる、ユーザーが明示的に操作した条件
-- `required_filter`: UI やアプリ方針で強制される条件
-- 実行時には `effective_query = and(user_query, required_filter)` として扱う
-- query parse の最初の段階で、文字列 ID は対応する整数 ID に解決する
+- `query`
+  - 検索エンジンがそのまま評価する AST
+  - `required_filter` と `user_query` は frontend 側で `and(...)` に合成してからここへ入れる
+- `sort`
+  - 現状は `published_at` のみ
+- `page`
+  - `limit` と構造化 cursor
+- `total_mode`
+  - `exact` か `none`
 
-### 8.2 node 種別
+### query node
 
 ```ts
 type QueryNode =
@@ -327,41 +234,48 @@ type TermNode =
 
 - `and.children`, `or.children` は 1 要素以上
 - `not` は単項のみ
-- `any_in` の意味は「いずれか 1 つ以上に一致」
-- 同一 field に対する「すべて含む」を将来入れる場合は `op: "all_in"` を追加する
-- 同一 field に対する「除外」を将来入れる場合は `op: "none_in"` を追加する
+- `any_in` は「指定 values のいずれかに一致」を意味する
+- `any_in.values` は empty を禁止する
+- `any_in.values` は query 正規化時に sort + dedup する
 - `published_at` の境界値は UTC unix time seconds
+- `query = null` は match-all 相当として扱ってよい
 
-### 8.3 空クエリ
+### query 型の意図
 
-- `user_query` が空の場合は `match_all` 相当として扱う
-- 物理表現として `null` を許してよい
-- `required_filter` のみが存在する状態を正当なクエリとする
+- `artist_id`, `tag_id`
+  - record 側が複数値なので `any_in` を使う
+- `channel_id`
+  - record 側は単一値だが、API 上は複数候補指定を許すため `any_in` を使う
+- `is_unlisted`, `embeddable`
+  - bool のため `eq`
+- `published_at`
+  - lower / upper bound を持つ `range`
 
-## 9. URL パラメータ方針
+`all_in` は現状の必須機能ではない。
+同一 field に対する複数条件を `and` で束ねれば表現できるため、初版では operator を増やさない。
 
-- URL には `user_query` のみを載せる
-- `required_filter` は URL に含めない
-- URL 上は AST 全体を JSON 文字列化して圧縮・エンコードしてよい
-- ただし URL スキーマは engine ではなく frontend 側の責務とする
-- cursor を URL に載せる場合は、`published_at` と tie-breaker を復元できる opaque token とする
+### 正規化 ルール
 
-例:
+query parse 後、評価前に次の正規化を行ってよい。
 
-- `?q=...` は `user_query` を表す
-- `sort`, `limit`, `cursor` は分離してもよいし、まとめて 1 オブジェクト化してもよい
+- `And(And(...))`, `Or(Or(...))` を flatten する
+- `Not(Not(x)) -> x` を適用する
+- `Not(And(xs)) -> Or(Not(x)...)` を適用する
+- `Not(Or(xs)) -> And(Not(x)...)` を適用する
+- つまり `Not` は最終的に term 直上にだけ現れる NNF まで落としてよい
+- `any_in.values` は empty を reject する
+- `any_in.values` は sort + dedup する
+- 正規化後の `And` / `Or` の子順は、evaluator が扱いやすい順に並べ替えてよい
 
-## 10. 実行結果
+## 7. 検索結果モデル
 
-検索エンジンの返り値は最低限以下を持つ。
+公開 API の返り値は最低限次を持つ。
 
 ```ts
-type TotalMode = "exact" | "none";
-
 type SearchResult = {
   clip_uuids: string[];
-  next_cursor: string | null;
-  total_mode: TotalMode;
+  next_cursor: { doc_id: number } | null;
+  total_mode: "exact" | "none";
   total?: number;
   has_more: boolean;
 };
@@ -369,53 +283,20 @@ type SearchResult = {
 
 要件:
 
-- `clip_uuids` の順序は `sort` と `page` 適用後の順序を保証する
-- `next_cursor` は次ページが存在しない場合 `null`
+- `clip_uuids` は sort と paging 適用後の順序を保つ
+- `next_cursor` は次ページがなければ `null`
 - `has_more` は次ページ有無を表す
-- `total_mode = "exact"` のときだけ `total` を返す
-- exact total を返す場合は、limit 到達後も総件数把握のために候補全体を評価する
+- `total` は `total_mode = "exact"` のときだけ返す
+- cursor は sort 順序に依存する構造化データとして持つ
+- 現状の cursor は `{ doc_id }`
 
-将来拡張候補:
+内部では `doc_id` ベースで処理し、最後に `clip_uuid` へ戻す。
 
-- `debug_info`
-- `matched_doc_ids`
-- `facet_counts`
-- `lower_bound_total`
-- `score`
+## 8. 評価方針
 
-ただし初版では返しすぎない。まずは `clipUuid` 列挙に責務を絞る。
+### 完全一致フィルタ
 
-内部実装としては以下の段階を分ける。
-
-1. evaluator は `doc_id[]` または bitset を返す
-2. top-level search は sort / paging 後に `doc_id[]` を `clip_id[]` に変換する
-3. 公開 API が `clipUuid[]` を返すなら最後に辞書逆引きを行う
-
-つまり、外部 API は `clipUuid[]` を返してよいが、内部処理は最後まで整数 ID ベースで進める。
-また、WASM 境界のコストを抑えるため、内部 API として `doc_id[]` / `clip_id[]` を返す層を分けてよい。
-初版で `NOT` を扱うため、内部表現は bitset を第一級に扱えるようにする。
-
-内部責務を以下の 3 型に固定する。
-
-- `DocSet`
-  - evaluator の内部集合表現
-  - `All | Empty | SortedDocIds | BitSet` を取りうる
-  - term 評価結果はまず `SortedDocIds` で持ってよく、`NOT` や複数演算で必要になった時点で `BitSet` へ昇格する
-  - top-level の sort / paging は membership 判定を安定して行える形、実装上は `BitSet` を最終入力として受ける
-- `DateRange`
-  - query 上の `published_at` 範囲条件を正規化した表現
-  - lower / upper bound と inclusive / exclusive を保持する
-  - index section ではなく query/evaluator 側の型であり、`published_at` column と `SortIndex` を使って評価する
-- `SortIndex`
-  - 候補集合そのものではなく、`doc_id` を安定順序で走査するための順序 index
-  - 初版は `published_at_asc` だけを持つ
-  - `desc` は逆順走査、cursor は `(published_at, doc_id)` を使った seek で処理する
-
-## 11. フィルタ評価の方針
-
-### 11.1 完全一致フィルタ
-
-以下は posting list の積/和で処理する。
+次の条件は postings を使って評価する。
 
 - `artist_id`
 - `tag_id`
@@ -423,171 +304,91 @@ type SearchResult = {
 - `is_unlisted`
 - `embeddable`
 
-WAND, MaxScore などは不要:
+term 評価結果はまず `SortedDocIds` で持ち、必要に応じて bitset に変換する。
 
-- 今回はスコア付き上位 K 検索ではない
-- 主処理は boolean filter + sort 済み列の走査で足りる
-- 先に `doc_id`, postings, dictionary の責務分離を固める方が重要
-- 将来文字列検索を足す場合も、まずは filter candidate を作ってから ranking へ渡せる構造にしておく
+### `published_at` range
 
-### 11.2 日付範囲フィルタ
+`published_at` の範囲条件は、`sort_indexes.published_at` を使って評価する。
 
-`published_at` は以下のいずれかで実装する。
+基本方針:
 
-- sort column に対する二分探索
-- 専用の range index
+- sort index 上で開始・終了位置を決める
+- 必要なら `published_at` column を参照して境界条件を確認する
+- `NOT` を扱えるように、最終的には bitset に落とせる形を前提にする
 
-初版は `published_at asc` 列に対する二分探索で十分。
-`DateRange` は `published_at` の lower / upper bound を正規化して保持し、評価時に `published_at_asc` 上の開始・終了位置へ変換する。
-`NOT published_at range` を扱う必要があるため、range 評価結果は最終的に `DocSet::BitSet` へ落とせることを前提にする。
+### sort / paging
 
-### 11.3 ソート
+- filter で候補集合を作る
+- `sort_indexes.published_at` を順方向または逆方向に走査する
+- 候補集合に含まれる `doc_id` だけを拾う
+- cursor は `{ doc_id }` を元に次の走査開始位置を決める
 
-- まず filter で候補集合を作る
-- その後 `SortIndex(published_at_asc)` を順方向または逆方向にスキャンし、候補集合に含まれる `doc_id` だけを拾う
-- cursor 指定時は `published_at` と `doc_id` の組を開始位置として続きから走査する
-- `total_mode = "none"` なら `limit + 1` 件拾えた時点で `has_more` 判定に必要なぶんだけ見て停止してよい
-- `total_mode = "exact"` ならページ返却に必要な件数を超えても候補全体を最後まで評価する
+### total
 
-### 11.4 `NOT` と bitset
+- `total_mode = "none"`
+  - `limit + 1` 件見つかった時点で早期停止してよい
+- `total_mode = "exact"`
+  - ページ返却に十分な件数が見つかっても、総件数のため候補全体を最後まで評価する
 
-- `NOT` は bitset を前提に扱う
-- `doc_id` が dense なため、`N` 件の document に対して `N` bit の bitset を自然に張れる
-- term 評価結果は posting list から bitset へ変換してよい
-- `and`, `or`, `not` は最終的に bitset 演算として評価できる
-- 実装上は `DocSet = SortedDocIds | BitSet | All | Empty` のような抽象化を置く
-- 初版では boolean filter に責務を限定し、ranking 用の複雑な演算はここに持ち込まない
+## 9. URL パラメータ方針
 
-## 12. バージョニング方針
+- URL には `user_query` を載せる
+- `required_filter` は URL に含めない
+- request 直前に frontend 側で `and(user_query, required_filter)` を作り、engine には合成後の `query` を渡す
+- URL スキーマの詳細は frontend 側の責務とする
+- engine の request / response では構造化 `Cursor` を使う
+- URL に載せる必要がある場合だけ、frontend 側で `Cursor` を opaque token へ encode / decode する
 
-- バイナリ format version を必須とする
-- builder と engine の互換性判定は `format_version` を基準に行う
-- query schema version は必要になった時点で追加してよい
-- 後方互換は初版から過剰に背負わない
+## 10. エラー方針
 
-最低限ほしい識別子:
-
-- `index_format_version`
-- `builder_version`
-
-## 13. エラー方針
+### query / runtime
 
 - 未知の field / op / enum 値は query parse error
 - 未知の辞書 ID 参照は empty result として扱ってよい
-- 壊れたバイナリ、version 不一致、section 欠損は load error
-- builder 入力不整合は build error として失敗すべき
+- index の load 失敗や version 不一致は load error
 
-builder が最低限検証すべき項目:
+### build
 
-- `clip_uuid` 重複
-- 存在しない `artist_id`, `tag_id`, `channel_id` 参照
-- 同一 clip 内の `artist_ids`, `tag_ids` 重複
-- `published_at` 欠損または不正
-- `clip_uuid -> video_id` の多重対応
-- sort column と record table の件数不一致
-- posting list の未ソートまたは重複
-- bitset 化時に `record_count` と整合しない posting
-- 辞書 ID の範囲外参照
+- 入力データの参照整合性が壊れていれば build error にする
+- postings や sort index が内部整合性を満たさなければ build error にする
 
-## 14. 初版の非目標
-
-初版では以下をやらない。
+## 11. 初版の非目標
 
 - 自由文全文検索
 - スコアリング
-- 複数キー複合ソート
 - facet 集計
 - ハイライト
 - あいまい検索
+- 複数キー複合ソート
 - offset ベースの深いページング
 
-まずは **構造化フィルタ + 投稿日ソート** に絞る。
+初版は **構造化フィルタ + `published_at` ソート + cursor paging** に責務を絞る。
 
-## 15. 実装メモ
+## 12. 今後の拡張余地
 
-- `search/index`:
-  - インデックス論理型とバイナリフォーマット定義
-  - s0 の読み込みと検索インデックス生成
-  - ids / query / docset / sort index / dictionary / postings / columns
-  - header / section / serialize / deserialize
-- `search/engine`:
-  - `search_index` の型を使った検索実行
-  - filter evaluator
-  - sort / paging
-  - WASM 公開 API
+- sort key の追加
+- 文字列検索用 index の追加
+- facet 集計用 section の追加
+- query schema version の導入
+- バイナリフォーマットの物理表現詳細の明文化
 
-Rust 内部での代表型イメージ:
+## 13. 現在の Rust モジュール対応
 
-```rust
-pub struct SearchRequest {
-    pub user_query: Option<QueryNode>,
-    pub required_filter: Option<QueryNode>,
-    pub sort: Vec<SortSpec>,
-    pub page: PageSpec,
-    pub total_mode: TotalMode,
-}
+実装では `model` という総称は使わず、より具体的な名前に分けている。
 
-pub struct SearchResponse {
-    pub clip_uuids: Vec<String>,
-    pub next_cursor: Option<String>,
-    pub total_mode: TotalMode,
-    pub total: Option<u32>,
-    pub has_more: bool,
-}
-```
-
-より内部寄りの型イメージ:
-
-```rust
-pub type DocId = u32;
-pub type ClipId = u32;
-pub type VideoId = u32;
-pub type ChannelId = u32;
-pub type ArtistId = u32;
-pub type TagId = u32;
-```
-
-追加で必要になる代表型:
-
-```rust
-pub enum TotalMode {
-    Exact,
-    None,
-}
-
-pub enum DocSet {
-    All,
-    Empty,
-    SortedDocIds(Vec<DocId>),
-    BitSet(Vec<u64>),
-}
-
-pub struct RangeBound {
-    pub value: i64,
-    pub inclusive: bool,
-}
-
-pub struct DateRange {
-    pub lower: Option<RangeBound>,
-    pub upper: Option<RangeBound>,
-}
-
-pub struct Cursor {
-    pub published_at: i64,
-    pub doc_id: DocId,
-}
-
-pub struct SortIndex {
-    pub field: SortField,
-    pub doc_ids_asc: Vec<DocId>,
-}
-```
-
-## 16. 今後詰めるべき点
-
-- `artist_id` が clip に複数付くときの意味論を source データ側と完全に揃える
-- graduated artist の扱いを query 条件として持つか、前段の正規化で吸収するか
-- manifest JSON の公開粒度
-- URL エンコード形式(JSON 直列化 / compact binary / base64url など)
-- facet 用 section をどの粒度で追加するか
-- 将来の文字列検索で token dictionary / postings / 統計量をどの単位で追加するか
+- `search/index/src/schema/**`
+  - `SearchIndex`, `Dictionaries`, `ColumnStore`, `ExactIndexes`, `SortIndexes`
+  - `DocId`, `ClipId` などの ID 型
+  - `TimestampSecs`
+- `search/engine/src/api/query/input.rs`
+  - `SearchRequest`, `QueryNode`, `TermNode`, `SortSpec`, `PageSpec`
+- `search/engine/src/api/query/resolved.rs`
+  - `ResolvedQueryNode`, `ResolvedTermNode`
+- `search/engine/src/api/query/types.rs`
+  - `SortField`, `SortOrder`, `TotalMode`, `RangeBound`, `DateRange`
+- `search/engine/src/api/query/doc_set.rs`
+  - `DocSet`
+- `search/engine/src/api/pagination.rs`
+  - `Cursor`
+- `search/engine/src/api/response.rs`
+  - `SearchResponse`, `InternalSearchResponse`
