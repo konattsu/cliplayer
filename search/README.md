@@ -24,6 +24,7 @@
 
 - 検索インデックスの schema を定義する
 - engine が読む共通型を提供する
+- 構築済みインデックスの物理バイナリ形式は [`binary_schema.md`](./binary_schema.md) で定義する
 - 現在の Rust 実装では主に `index-core/src/schema/**` に置く
 
 ### `search/index-builder`
@@ -96,6 +97,7 @@
 `SearchIndex` は次の主要要素で構成される。
 
 実装上は `index-core/src/schema/search_index.rs` を起点に `schema/**` へ分割している。
+この節は論理スキーマの説明に限る。保存用の物理バイナリ形式や section 構成は [`binary_schema.md`](./binary_schema.md) を参照。
 
 ### `Dictionaries`
 
@@ -159,6 +161,7 @@ sort 用の順序 index 群。
 
 - 同一 `published_at` の順序は `doc_id` を tie-breaker にして安定化する
 - `desc` は専用列を持たず、`asc` 配列を逆順に走査して実現する
+- そのため `desc` の同一 `published_at` 内の順序は実質 `doc_id desc` になる
 
 ## 5. build 時の検証
 
@@ -177,6 +180,8 @@ index builder は最低限次を検証してから build を進める。
 4. `ColumnStore` を構築する
 5. `ExactIndexes` を構築する
 6. `SortIndexes` を構築する
+
+build 後の物理バイナリ化では、論理スキーマをそのまま serialize するのではなく、reader が部分読み込みしやすい形式へ変換する。詳細は [`binary_schema.md`](./binary_schema.md) を参照。
 
 ## 6. クエリモデル
 
