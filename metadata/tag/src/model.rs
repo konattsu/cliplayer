@@ -1,4 +1,3 @@
-mod video_tag;
+mod video;
 
-pub(crate) use video_tag::LOADED_VIDEO_TAG_DATA;
-pub use video_tag::{VideoTag, VideoTagId, VideoTags};
+pub use video::{LOADED_VIDEO_TAG_DATA, VideoTag, VideoTagId, VideoTags};
