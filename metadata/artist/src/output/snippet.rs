@@ -26,7 +26,7 @@ impl Snippet {
             )
         })?;
 
-        json5::from_str(&content).map_err(|e| {
+        serde_json::from_str(&content).map_err(|e| {
             anyhow::anyhow!(
                 "Failed to deserialize from {} | source: {}",
                 path.display(),

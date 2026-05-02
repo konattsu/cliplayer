@@ -2,7 +2,7 @@ use assert_cmd::prelude::*;
 use std::io::Write;
 use std::process::Command;
 
-const LIVER_SNIPPET_JSON5: &str = r#"{
+const LIVER_SNIPPET_JSON: &str = r#"{
   "LiverNamesSnippet": {
     "prefix": "liver",
     "body": ["placeholder"],
@@ -14,7 +14,7 @@ const LIVER_SNIPPET_JSON5: &str = r#"{
 }
 "#;
 
-const TAG_SNIPPET_JSON5: &str = r#"{
+const TAG_SNIPPET_JSON: &str = r#"{
   "VideoTagsSnippet": {
     "prefix": "vtag",
     "body": ["placeholder"],
@@ -40,7 +40,7 @@ fn test_metadata_artist_command_generates_outputs() {
     let out_dir = tmp.path().join("out");
     std::fs::create_dir_all(&out_dir).unwrap();
     let snippet_path = tmp.path().join("music.code-snippets");
-    write_text_file(&snippet_path, LIVER_SNIPPET_JSON5);
+    write_text_file(&snippet_path, LIVER_SNIPPET_JSON);
 
     let mut cmd = Command::cargo_bin("metadata").unwrap();
     cmd.arg("artist")
@@ -104,7 +104,7 @@ fn test_metadata_tag_command_updates_snippet() {
     let out_dir = tmp.path().join("out");
     std::fs::create_dir_all(&out_dir).unwrap();
     let snippet_path = tmp.path().join("tags.code-snippets");
-    write_text_file(&snippet_path, TAG_SNIPPET_JSON5);
+    write_text_file(&snippet_path, TAG_SNIPPET_JSON);
 
     let mut cmd = Command::cargo_bin("metadata").unwrap();
     cmd.arg("tag")
@@ -130,7 +130,7 @@ fn test_metadata_tag_operation_generate_snippet_only_updates_snippet() {
     let out_dir = tmp.path().join("out");
     std::fs::create_dir_all(&out_dir).unwrap();
     let snippet_path = tmp.path().join("tags.code-snippets");
-    write_text_file(&snippet_path, TAG_SNIPPET_JSON5);
+    write_text_file(&snippet_path, TAG_SNIPPET_JSON);
 
     let mut cmd = Command::cargo_bin("metadata").unwrap();
     cmd.arg("tag")
