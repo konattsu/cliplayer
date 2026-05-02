@@ -20,13 +20,18 @@
 
 ## 2. 責務の分離
 
-### `search/index`
+### `search/index-core`
+
+- 検索インデックスの schema を定義する
+- engine が読む共通型を提供する
+- 現在の Rust 実装では主に `index-core/src/schema/**` に置く
+
+### `search/index-builder`
 
 - source-of-truth から検索用インデックスを構築する
-- 検索インデックスの schema を定義する
 - 文字列 ID を内部整数 ID に正規化する
 - postings / columns / sort index を構築する
-- 現在の Rust 実装では主に `index/src/schema/**` に置く
+- 現在の Rust 実装では主に `index-builder/src/build/**` に置く
 
 ### 検索エンジン側
 
@@ -90,7 +95,7 @@
 
 `SearchIndex` は次の主要要素で構成される。
 
-実装上は `index/src/schema/search_index.rs` を起点に `schema/**` へ分割している。
+実装上は `index-core/src/schema/search_index.rs` を起点に `schema/**` へ分割している。
 
 ### `Dictionaries`
 

@@ -6,17 +6,18 @@ YouTube上の動画/アーカイブから歌唱部分のみを連続的に再生
 
 ### Overview
 
-- cmn_rs: 共通のユーティリティ
+- cmn_rs: 共通のユーティリティ. どのクレートから依存されてよい
 - metadata:
   - artist: アーティスト管理
   - tag: タグ管理
 - music/musictl: 音楽管理
 - search: (開発中)
+  - index-core: 検索インデックスのスキーマ定義
+  - index-builder: 検索インデックスの構築
   - engine: 検索エンジン
-  - index: 検索インデックスの生成と型定義
 
 ### Dependency
 
 musictl -> metadata
-search/engine -> search/index
-search/index -> metadata, musictl
+search/engine -> search/index-core
+search/index-builder -> metadata, musictl

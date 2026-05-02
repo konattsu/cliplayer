@@ -1,3 +1,0 @@
-[workspace]
-members = ["index", "engine"]
-resolver = "3"
