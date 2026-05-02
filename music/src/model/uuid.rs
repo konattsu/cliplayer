@@ -95,9 +95,9 @@ impl<'de> serde::Deserialize<'de> for UuidVer4 {
         D: serde::Deserializer<'de>,
     {
         use std::str::FromStr;
-        struct UuidVer7Visitor;
+        struct UuidVer4Visitor;
 
-        impl<'de> serde::de::Visitor<'de> for UuidVer7Visitor {
+        impl<'de> serde::de::Visitor<'de> for UuidVer4Visitor {
             type Value = UuidVer4;
 
             fn expecting(
@@ -115,7 +115,7 @@ impl<'de> serde::Deserialize<'de> for UuidVer4 {
             }
         }
 
-        deserializer.deserialize_str(UuidVer7Visitor)
+        deserializer.deserialize_str(UuidVer4Visitor)
     }
 }
 
@@ -183,7 +183,7 @@ impl UuidVer4 {
         (rand_48bit, rand_12bit, rand_62bit)
     }
 
-    /// UUIDv7のバイト列がUUIDv4の形式であるかどうか
+    /// UUIDのバイト列がUUIDv4の形式であるかどうか
     fn is_uuid_ver4(bytes: &[u8; 16]) -> bool {
         // 上位4bitが0b0100
         let is_version4 = (bytes[6] >> 4) == UUID4_VERSION;
@@ -370,7 +370,7 @@ mod tests {
     }
 
     #[test]
-    fn test_uuid_ver4_is_uuid_ver7_valid() {
+    fn test_uuid_ver4_is_uuid_ver4_valid() {
         let uuid = UuidVer4::self_1();
         assert!(UuidVer4::is_uuid_ver4(&uuid.bytes));
         let uuid = UuidVer4::self_2();
@@ -382,7 +382,7 @@ mod tests {
     }
 
     #[test]
-    fn test_uuid_ver4_is_uuid_ver7_invalid() {
+    fn test_uuid_ver4_is_uuid_ver4_invalid() {
         // バージョンビットが違う
         let mut bytes = UuidVer4::self_1().bytes;
         bytes[6] = 0x50; // 上位4bitが0b0101 (ver5)
