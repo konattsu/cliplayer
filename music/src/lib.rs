@@ -1,4 +1,5 @@
 pub mod apply;
+pub mod cfg;
 pub mod cli;
 pub mod cli_exec_handler;
 pub mod fetcher;

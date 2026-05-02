@@ -26,7 +26,7 @@ impl MusicLibrary {
     /// # Arguments
     /// - `dir`: 楽曲情報のルートディレクトリ
     #[tracing::instrument(level = tracing::Level::DEBUG)]
-    pub(crate) fn load(dir: &std::path::Path) -> Result<Self, super::MusicFileErrors> {
+    pub fn load(dir: &std::path::Path) -> Result<Self, super::MusicFileErrors> {
         tracing::debug!(
             "Loading monthly music files from directory: `{}`",
             dir.display()
