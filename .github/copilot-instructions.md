@@ -30,6 +30,8 @@ TODO
 ## Skills
 
 When performing specific operations, refer to the following related documents and follow their guidelines.
+These files are repository-local instruction documents, not automatically registered platform skills.
+Open the relevant `SKILL.md` explicitly when the task matches.
 
 - Rust:
   - `.github/skills/rust/SKILL.md`
