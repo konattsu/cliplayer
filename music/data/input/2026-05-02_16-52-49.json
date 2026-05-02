@@ -1,0 +1,318 @@
+[
+  {
+    "videoId": "9DsQFAbuUrs",
+    "uploaderName": null,
+    "videoTags": ["3d", "karaoke"],
+    "clips": [
+      {
+        "songTitle": "ヘビーローテーション",
+        "liverIds": [
+          "akari-shishido",
+          "roco-kaburaki",
+          "ruri-shioriha",
+          "salome-hyakumantenbara",
+          "yotsuha-umise"
+        ],
+        "externalArtistsName": null,
+        "clippedVideoId": null,
+        "startTime": "PT2M3S",
+        "endTime": "PT6M41S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "夜もすから君想ふ",
+        "liverIds": ["akari-shishido", "yotsuha-umise"],
+        "externalArtistsName": null,
+        "clippedVideoId": null,
+        "startTime": "PT10M40S",
+        "endTime": "PT14M33S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "恋",
+        "liverIds": ["roco-kaburaki", "ruri-shioriha"],
+        "externalArtistsName": null,
+        "clippedVideoId": null,
+        "startTime": "PT15M44S",
+        "endTime": "PT19M53S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "君セン！",
+        "liverIds": ["akari-shishido", "salome-hyakumantenbara"],
+        "externalArtistsName": null,
+        "clippedVideoId": null,
+        "startTime": "PT20M53S",
+        "endTime": "PT25M",
+        "clipTags": null
+      },
+      {
+        "songTitle": "打上花火",
+        "liverIds": ["ruri-shioriha", "yotsuha-umise"],
+        "externalArtistsName": null,
+        "clippedVideoId": null,
+        "startTime": "PT25M51S",
+        "endTime": "PT30M32S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "好きだから。",
+        "liverIds": ["akari-shishido", "roco-kaburaki"],
+        "externalArtistsName": null,
+        "clippedVideoId": null,
+        "startTime": "PT32M7S",
+        "endTime": "PT37M",
+        "clipTags": null
+      },
+      {
+        "songTitle": "こいのね！",
+        "liverIds": [
+          "ruri-shioriha",
+          "salome-hyakumantenbara",
+          "yotsuha-umise"
+        ],
+        "externalArtistsName": null,
+        "clippedVideoId": null,
+        "startTime": "PT38M22S",
+        "endTime": "PT41M56S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "ジャージ",
+        "liverIds": ["roco-kaburaki", "salome-hyakumantenbara"],
+        "externalArtistsName": null,
+        "clippedVideoId": null,
+        "startTime": "PT43M33S",
+        "endTime": "PT46M6S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "初恋サイダー",
+        "liverIds": ["akari-shishido", "ruri-shioriha", "yotsuha-umise"],
+        "externalArtistsName": null,
+        "clippedVideoId": null,
+        "startTime": "PT47M19S",
+        "endTime": "PT50M45S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "Pretender",
+        "liverIds": ["roco-kaburaki", "yotsuha-umise"],
+        "externalArtistsName": null,
+        "clippedVideoId": null,
+        "startTime": "PT51M45S",
+        "endTime": "PT57M4S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "輝夜の城で踊りたい",
+        "liverIds": [
+          "roco-kaburaki",
+          "ruri-shioriha",
+          "salome-hyakumantenbara"
+        ],
+        "externalArtistsName": null,
+        "clippedVideoId": null,
+        "startTime": "PT58M51S",
+        "endTime": "PT1H3M16S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "おじゃ虫",
+        "liverIds": ["akari-shishido", "ruri-shioriha"],
+        "externalArtistsName": null,
+        "clippedVideoId": null,
+        "startTime": "PT1H4M31S",
+        "endTime": "PT1H8M6S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "UFO",
+        "liverIds": ["salome-hyakumantenbara", "yotsuha-umise"],
+        "externalArtistsName": null,
+        "clippedVideoId": null,
+        "startTime": "PT1H8M45S",
+        "endTime": "PT1H12M",
+        "clipTags": null
+      },
+      {
+        "songTitle": "君じゃなきゃダメみたい",
+        "liverIds": ["akari-shishido", "roco-kaburaki", "yotsuha-umise"],
+        "externalArtistsName": null,
+        "clippedVideoId": null,
+        "startTime": "PT1H13M34S",
+        "endTime": "PT1H17M25S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "恋愛裁判",
+        "liverIds": ["ruri-shioriha", "salome-hyakumantenbara"],
+        "externalArtistsName": null,
+        "clippedVideoId": null,
+        "startTime": "PT1H18M23S",
+        "endTime": "PT1H22M2S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "ラブソングに襲われる",
+        "liverIds": [
+          "akari-shishido",
+          "roco-kaburaki",
+          "ruri-shioriha",
+          "ruri-shioriha",
+          "ruri-shioriha",
+          "ruri-shioriha",
+          "salome-hyakumantenbara",
+          "yotsuha-umise"
+        ],
+        "externalArtistsName": null,
+        "clippedVideoId": null,
+        "startTime": "PT1H23M49S",
+        "endTime": "PT1H27M22S",
+        "clipTags": null
+      }
+    ]
+  },
+  {
+    "videoId": "aJqUz6SccmA",
+    "uploaderName": null,
+    "videoTags": ["2d", "karaoke"],
+    "clips": [
+      {
+        "songTitle": "倍倍FIGHT!",
+        "liverIds": ["ayane-shirasa", "madoka-minamo"],
+        "externalArtistsName": null,
+        "clippedVideoId": null,
+        "startTime": "PT3M51S",
+        "endTime": "PT8M3S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "タッチ",
+        "liverIds": ["ayane-shirasa"],
+        "externalArtistsName": null,
+        "clippedVideoId": null,
+        "startTime": "PT9M51S",
+        "endTime": "PT12M59S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "ハイド・アンド・シーク",
+        "liverIds": ["madoka-minamo"],
+        "externalArtistsName": null,
+        "clippedVideoId": null,
+        "startTime": "PT14M42S",
+        "endTime": "PT17M56S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "おこちゃま戦争",
+        "liverIds": ["ayane-shirasa", "madoka-minamo"],
+        "externalArtistsName": null,
+        "clippedVideoId": null,
+        "startTime": "PT20M23S",
+        "endTime": "PT23M52S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "ウミユリ海底譚",
+        "liverIds": ["ayane-shirasa"],
+        "externalArtistsName": null,
+        "clippedVideoId": null,
+        "startTime": "PT25M25S",
+        "endTime": "PT29M19S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "シカ色デイズ",
+        "liverIds": ["madoka-minamo"],
+        "externalArtistsName": null,
+        "clippedVideoId": null,
+        "startTime": "PT30M51S",
+        "endTime": "PT34M11S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "UNDEAD",
+        "liverIds": ["ayane-shirasa", "madoka-minamo"],
+        "externalArtistsName": null,
+        "clippedVideoId": null,
+        "startTime": "PT36M40S",
+        "endTime": "PT39M46S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "unravel",
+        "liverIds": ["ayane-shirasa", "madoka-minamo"],
+        "externalArtistsName": null,
+        "clippedVideoId": null,
+        "startTime": "PT42M4S",
+        "endTime": "PT46M",
+        "clipTags": null
+      },
+      {
+        "songTitle": "アイワナムチュー",
+        "liverIds": ["ayane-shirasa"],
+        "externalArtistsName": null,
+        "clippedVideoId": null,
+        "startTime": "PT48M37S",
+        "endTime": "PT52M",
+        "clipTags": null
+      },
+      {
+        "songTitle": "アポリア",
+        "liverIds": ["madoka-minamo"],
+        "externalArtistsName": null,
+        "clippedVideoId": null,
+        "startTime": "PT53M21S",
+        "endTime": "PT57M5S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "ムーンライト伝説",
+        "liverIds": ["ayane-shirasa", "madoka-minamo"],
+        "externalArtistsName": null,
+        "clippedVideoId": null,
+        "startTime": "PT1H",
+        "endTime": "PT1H2M51S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "恋は渾沌カオスの隷也",
+        "liverIds": ["ayane-shirasa", "madoka-minamo"],
+        "externalArtistsName": null,
+        "clippedVideoId": null,
+        "startTime": "PT1H8M55S",
+        "endTime": "PT1H12M52S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "ファンサ",
+        "liverIds": ["ayane-shirasa"],
+        "externalArtistsName": null,
+        "clippedVideoId": null,
+        "startTime": "PT1H19M30S",
+        "endTime": "PT1H23M37S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "自己肯定感爆上げ↑↑しゅきしゅきソング",
+        "liverIds": ["madoka-minamo"],
+        "externalArtistsName": null,
+        "clippedVideoId": null,
+        "startTime": "PT1H26M32S",
+        "endTime": "PT1H30M24S",
+        "clipTags": null
+      },
+      {
+        "songTitle": "可不ちゃんのカレーうどん狂騒曲",
+        "liverIds": ["ayane-shirasa", "madoka-minamo"],
+        "externalArtistsName": null,
+        "clippedVideoId": null,
+        "startTime": "PT1H30M32S",
+        "endTime": "PT1H39M24S",
+        "clipTags": null
+      }
+    ]
+  }
+]
