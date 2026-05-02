@@ -2,7 +2,7 @@
 ///
 /// serialize時, clipsの`start_time`順にソートされていることを保証
 #[derive(Debug, Clone, PartialEq)]
-pub(crate) struct VerifiedVideo {
+pub struct VerifiedVideo {
     /// 動画の詳細情報
     record: crate::model::VideoRecord,
     /// クリップ
@@ -64,14 +64,12 @@ impl VerifiedVideo {
     pub(crate) fn get_video_id(&self) -> &crate::model::VideoId {
         self.record.get_video_id()
     }
-    // local
     pub(crate) fn get_uploader_name(&self) -> Option<&crate::model::UploaderName> {
         self.record.get_local().get_uploader_name()
     }
     pub(crate) fn get_video_tags(&self) -> &crate::model::VideoTags {
         self.record.get_local().get_video_tags()
     }
-    // api
     pub(crate) fn get_title(&self) -> &str {
         self.record.get_api().get_title()
     }
@@ -93,7 +91,6 @@ impl VerifiedVideo {
     pub(crate) fn is_embeddable(&self) -> bool {
         self.record.get_api().is_embeddable()
     }
-
     pub(crate) fn get_year(&self) -> usize {
         self.record.get_api().get_published_at().get_year()
     }
@@ -102,6 +99,38 @@ impl VerifiedVideo {
     }
     pub(crate) fn to_clips(&self) -> Vec<&crate::model::VerifiedClip> {
         self.clips.iter().collect()
+    }
+
+    pub fn video_id_string(&self) -> String {
+        self.record.get_video_id().to_string()
+    }
+
+    pub fn channel_id_string(&self) -> String {
+        self.record.get_api().get_channel_id().to_string()
+    }
+
+    pub fn published_at_secs(&self) -> i64 {
+        i64::try_from(self.record.get_api().get_published_at().as_secs())
+            .expect("published_at fits within i64")
+    }
+
+    pub fn is_unlisted(&self) -> bool {
+        matches!(
+            self.record.get_api().get_privacy_status(),
+            crate::model::PrivacyStatus::Unlisted
+        )
+    }
+
+    pub fn embeddable(&self) -> bool {
+        self.record.get_api().is_embeddable()
+    }
+
+    pub fn video_tag_ids(&self) -> Vec<&str> {
+        self.record.get_local().get_video_tags().to_vec()
+    }
+
+    pub fn clips(&self) -> impl Iterator<Item = &crate::model::VerifiedClip> {
+        self.clips.iter()
     }
 
     /// `AnonymousVideo`と`ApiVideoInfo`から`VerifiedVideo`を作成

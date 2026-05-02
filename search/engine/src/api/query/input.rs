@@ -68,13 +68,13 @@ pub enum QueryNode {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum TermNode {
     ArtistAnyIn {
-        values: Vec<index::schema::ids::ArtistIdString>,
+        values: Vec<index_core::schema::ids::ArtistIdString>,
     },
     TagAnyIn {
-        values: Vec<index::schema::ids::TagIdString>,
+        values: Vec<index_core::schema::ids::TagIdString>,
     },
     ChannelAnyIn {
-        values: Vec<index::schema::ids::ChannelIdString>,
+        values: Vec<index_core::schema::ids::ChannelIdString>,
     },
     IsUnlistedEq {
         value: bool,

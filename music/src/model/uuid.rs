@@ -17,7 +17,7 @@ static RE_UUID4: once_cell::sync::Lazy<regex::Regex> = once_cell::sync::Lazy::ne
 
 /// UUIDv4 (RFC 9562 | 4122)
 #[derive(Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(crate) struct UuidVer4 {
+pub struct UuidVer4 {
     /// `数字`を格納
     bytes: [u8; 16],
 }
@@ -214,10 +214,10 @@ impl UuidVer4 {
 
 // MARK: For Tests
 
-#[cfg(test)]
+#[cfg(any(test, feature = "test-helpers"))]
 impl UuidVer4 {
     /// `00000000-0000-4000-8000-000000000000`
-    pub(crate) fn self_1() -> Self {
+    pub fn self_1() -> Self {
         let rand_a: u64 = 0x0;
         let rand_b: u16 = 0x0;
         let rand_c: u64 = 0x0;
@@ -225,7 +225,7 @@ impl UuidVer4 {
     }
 
     /// `11111111-1111-4111-9111-111111111111`
-    pub(crate) fn self_2() -> Self {
+    pub fn self_2() -> Self {
         let rand_a: u64 = 0x11_11_11_11_11_11;
         let rand_b: u16 = 0x1_11;
         // 上位6bit            variant付与後
@@ -235,7 +235,7 @@ impl UuidVer4 {
     }
 
     /// `22222222-2222-4222-a222-222222222222`
-    pub(crate) fn self_3() -> Self {
+    pub fn self_3() -> Self {
         let rand_a: u64 = 0x22_22_22_22_22_22;
         let rand_b: u16 = 0x2_22;
         // 上位6bit            variant付与後
@@ -245,7 +245,7 @@ impl UuidVer4 {
     }
 
     /// `33333333-3333-4333-b333-333333333333`
-    pub(crate) fn self_4() -> Self {
+    pub fn self_4() -> Self {
         let rand_a: u64 = 0x33_33_33_33_33_33;
         let rand_b: u16 = 0x3_33;
         // 上位6bit            variant付与後
@@ -255,7 +255,7 @@ impl UuidVer4 {
     }
 
     /// `33333333-(任意)-4333-b333-333333333333`
-    pub(crate) fn self_partly_rand(rand: u16) -> Self {
+    pub fn self_partly_rand(rand: u16) -> Self {
         let uuid = Self::self_4();
         let mut bytes = uuid.bytes;
         let rand = rand.to_be_bytes();

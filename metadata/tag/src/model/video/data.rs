@@ -17,7 +17,7 @@ impl VideoTags {
     }
 
     /// Return a sorted list of tag IDs
-    pub(crate) fn sorted_ids(&self) -> Vec<&str> {
+    pub fn sorted_ids(&self) -> Vec<&str> {
         let mut ids: Vec<&str> = self.iter_ids().collect();
         ids.sort_unstable();
         ids

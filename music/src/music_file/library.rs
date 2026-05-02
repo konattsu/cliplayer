@@ -62,7 +62,7 @@ impl MusicLibrary {
     /// 読み込んでいる動画情報を全て取得
     ///
     /// - `Err(_)`:
-    pub(crate) fn into_videos(
+    pub fn into_videos(
         self,
     ) -> Result<crate::model::VerifiedVideos, super::MusicFileError> {
         let videos = self

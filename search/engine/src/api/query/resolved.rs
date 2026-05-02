@@ -15,13 +15,13 @@ pub enum ResolvedQueryNode {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ResolvedTermNode {
     ArtistAnyIn {
-        values: Vec<index::schema::ids::ArtistId>,
+        values: Vec<index_core::schema::ids::ArtistId>,
     },
     TagAnyIn {
-        values: Vec<index::schema::ids::TagId>,
+        values: Vec<index_core::schema::ids::TagId>,
     },
     ChannelAnyIn {
-        values: Vec<index::schema::ids::ChannelId>,
+        values: Vec<index_core::schema::ids::ChannelId>,
     },
     IsUnlistedEq {
         value: bool,

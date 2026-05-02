@@ -8,5 +8,5 @@
 /// 持たせる設計も有用である。
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Cursor {
-    pub doc_id: index::schema::ids::DocId,
+    pub doc_id: index_core::schema::ids::DocId,
 }

@@ -3,6 +3,6 @@
 pub enum DocSet {
     All,
     Empty,
-    SortedDocIds(Vec<index::schema::ids::DocId>),
+    SortedDocIds(Vec<index_core::schema::ids::DocId>),
     BitSet(Vec<u64>),
 }

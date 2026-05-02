@@ -2,7 +2,7 @@
 ///
 /// (artist_id, ArtistDefinition)
 #[derive(serde::Serialize, Debug, Clone)]
-pub(crate) struct Livers(std::collections::HashMap<super::LiverId, Liver>);
+pub struct Livers(std::collections::HashMap<super::LiverId, Liver>);
 
 /// デシリアライズ時は LiverId のバリデーションを一時的に迂回するため
 /// `HashMap<String, Liver>` として読んでから変換する。
@@ -86,13 +86,18 @@ impl Livers {
         ids
     }
 
-    pub(crate) fn into_iter(self) -> impl Iterator<Item = (super::LiverId, Liver)> {
-        self.0.into_iter()
-    }
-
     /// 指定したIDのアーティストの日本語名を返す. 存在しない場合はNone
     pub(crate) fn get_ja_name(&self, id: &super::LiverId) -> Option<String> {
         self.0.get(id).map(|liver| liver.ja.clone())
+    }
+}
+
+impl IntoIterator for Livers {
+    type Item = (super::LiverId, Liver);
+    type IntoIter = std::collections::hash_map::IntoIter<super::LiverId, Liver>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.0.into_iter()
     }
 }
 

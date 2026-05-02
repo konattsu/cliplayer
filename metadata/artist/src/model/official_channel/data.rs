@@ -44,10 +44,13 @@ impl OfficialChannels {
     pub(crate) fn len(&self) -> usize {
         self.0.len()
     }
+}
 
-    pub(crate) fn into_iter(
-        self,
-    ) -> impl Iterator<Item = (OfficialId, OfficialChannel)> {
+impl IntoIterator for OfficialChannels {
+    type Item = (OfficialId, OfficialChannel);
+    type IntoIter = std::collections::hash_map::IntoIter<OfficialId, OfficialChannel>;
+
+    fn into_iter(self) -> Self::IntoIter {
         self.0.into_iter()
     }
 }

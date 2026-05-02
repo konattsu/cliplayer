@@ -28,7 +28,7 @@ pub enum TotalMode {
 /// 範囲条件の片側境界。
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct RangeBound {
-    pub value: index::schema::TimestampSecs,
+    pub value: index_core::schema::TimestampSecs,
     pub inclusive: bool,
 }
 

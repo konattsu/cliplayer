@@ -5,7 +5,7 @@
 /// - `LIVER_SET_PATH` 環境変数で指定されたファイルから読み込む
 /// - 未指定時は `data/livers.json` を読み込む
 #[cfg(not(any(test, feature = "test-helpers")))]
-pub(crate) static LOADED_LIVER_DATA: once_cell::sync::Lazy<super::Livers> =
+pub static LOADED_LIVER_DATA: once_cell::sync::Lazy<super::Livers> =
     once_cell::sync::Lazy::new(|| {
         let path = crate::cfg::liver_data_path();
         let path_str = path.to_string_lossy().into_owned();
@@ -23,7 +23,7 @@ pub(crate) static LOADED_LIVER_DATA: once_cell::sync::Lazy<super::Livers> =
 
 /// アーティストidとその周辺情報
 #[cfg(any(test, feature = "test-helpers"))]
-pub(crate) static LOADED_LIVER_DATA: once_cell::sync::Lazy<super::Livers> =
+pub static LOADED_LIVER_DATA: once_cell::sync::Lazy<super::Livers> =
     once_cell::sync::Lazy::new(|| {
         const LIVER_DATA: &str = r#"
         {
