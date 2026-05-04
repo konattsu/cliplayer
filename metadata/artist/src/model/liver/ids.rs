@@ -17,7 +17,7 @@ impl LiverIds {
                 .into_iter()
                 .map(super::LiverId::new)
                 .collect::<Result<Vec<_>, _>>()?;
-            Self::sort_artists(&mut liver_ids);
+            Self::sort_dedup_artists(&mut liver_ids);
             Ok(LiverIds(liver_ids))
         }
     }
@@ -36,8 +36,10 @@ impl LiverIds {
             .collect()
     }
 
-    fn sort_artists(artists: &mut [super::LiverId]) {
+    /// sortして重複を削除する
+    fn sort_dedup_artists(artists: &mut Vec<super::LiverId>) {
         artists.sort();
+        artists.dedup();
     }
 }
 
@@ -55,7 +57,7 @@ impl<'de> serde::Deserialize<'de> for LiverIds {
         if raw.0.is_empty() {
             Err(serde::de::Error::custom("artists list cannot be empty"))
         } else {
-            Self::sort_artists(&mut raw.0);
+            Self::sort_dedup_artists(&mut raw.0);
             Ok(LiverIds(raw.0))
         }
     }
@@ -67,7 +69,7 @@ impl LiverIds {
         if artists.is_empty() {
             Err("artists list cannot be empty")
         } else {
-            Self::sort_artists(&mut artists);
+            Self::sort_dedup_artists(&mut artists);
             Ok(LiverIds(artists))
         }
     }
@@ -112,6 +114,15 @@ mod tests {
         assert!(result.is_err(), "Expected error for invalid artist ID");
         let result = LiverIds::new(vec!["yugamin", "invalid-artist"]);
         assert!(result.is_err(), "Expected error for invalid artist ID");
+    }
+
+    #[test]
+    fn new_dedupes_duplicates() {
+        let artists = LiverIds::new(vec!["yugamin", "riku-tazumi", "yugamin"])
+            .expect("should create valid LiverIds");
+        assert_eq!(artists.0.len(), 2);
+        assert_eq!(artists.0[0].as_str(), "riku-tazumi");
+        assert_eq!(artists.0[1].as_str(), "yugamin");
     }
 
     #[test]
