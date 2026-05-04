@@ -8,8 +8,12 @@ on:
     paths:
       - "music/**"
       - "!music/data/**"
-      - "artist/**"
-      - "!artist/data/**"
+      - "metadata/**"
+      - "!metadata/artist/**"
+      - "!metadata/tag/**"
+      - "search/**"
+      - "cmn_rs/**"
+      - "**/Cargo.toml"
       - "!**/*.md"
 
 jobs:
