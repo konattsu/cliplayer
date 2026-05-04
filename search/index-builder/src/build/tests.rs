@@ -96,3 +96,27 @@ fn test_build_search_index_from_loaded_data_rejects_unknown_channel() {
         crate::build::assemble::build_search_index_from_loaded_data(data).unwrap_err();
     assert!(err.to_string().contains("unknown channel_id"));
 }
+
+#[test]
+fn test_build_search_index_binary_roundtrip() {
+    let index = crate::build::assemble::build_search_index_from_loaded_data(
+        sample_loaded_data(),
+    )
+    .unwrap();
+
+    let binary = index_core::binary::serialize_search_index(&index).unwrap();
+    let reader = index_core::binary::SearchIndexReader::new(&binary).unwrap();
+
+    assert_eq!(
+        reader.metadata_view().unwrap().builder_version(),
+        env!("CARGO_PKG_VERSION"),
+    );
+    assert_eq!(
+        reader.clip_ids().unwrap().len(),
+        usize::try_from(index.meta.record_count).unwrap(),
+    );
+    assert_eq!(
+        reader.published_at_sort().unwrap().doc_ids_asc().len(),
+        usize::try_from(index.meta.record_count).unwrap(),
+    );
+}

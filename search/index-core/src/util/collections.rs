@@ -10,7 +10,7 @@ pub struct BiMap<Id> {
 
 impl<Id> BiMap<Id>
 where
-    Id: From<u32> + Copy,
+    Id: From<u32> + Copy + std::cmp::Eq + std::hash::Hash,
 {
     /// 双方向マップを作成
     pub fn build(keys: std::collections::BTreeSet<String>) -> Self {
@@ -36,6 +36,41 @@ where
 
     pub fn get_by_str(&self, value: &str) -> Option<Id> {
         self.str_to_id.get(value).copied()
+    }
+
+    pub fn ordered_strings(&self) -> &[String] {
+        &self.id_to_str
+    }
+
+    pub fn len(&self) -> usize {
+        self.id_to_str.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.id_to_str.is_empty()
+    }
+
+    pub fn from_ordered_strings(strings: Vec<String>) -> Result<Self, &'static str> {
+        let mut str_to_id =
+            std::collections::HashMap::<String, Id>::with_capacity(strings.len());
+
+        if strings.len() > (u32::MAX as usize) {
+            return Err("too many keys for BiMap");
+        }
+
+        for (idx, key) in strings.iter().enumerate() {
+            if str_to_id
+                .insert(key.clone(), Id::from(idx as u32))
+                .is_some()
+            {
+                return Err("duplicate key in BiMap");
+            }
+        }
+
+        Ok(Self {
+            str_to_id,
+            id_to_str: strings,
+        })
     }
 }
 
@@ -86,5 +121,17 @@ impl U32ListColumn {
         let start = self.offsets[index] as usize;
         let end = self.offsets[index + 1] as usize;
         &self.values[start..end]
+    }
+
+    pub fn offsets(&self) -> &[u32] {
+        &self.offsets
+    }
+
+    pub fn values(&self) -> &[u32] {
+        &self.values
+    }
+
+    pub fn from_parts(offsets: Vec<u32>, values: Vec<u32>) -> Self {
+        Self { offsets, values }
     }
 }

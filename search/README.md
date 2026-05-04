@@ -163,6 +163,30 @@ sort 用の順序 index 群。
 - `desc` は専用列を持たず、`asc` 配列を逆順に走査して実現する
 - そのため `desc` の同一 `published_at` 内の順序は実質 `doc_id desc` になる
 
+### 論理スキーマと物理バイナリの関係
+
+論理スキーマは不要にはならない。
+`binary` は保存形式であり、section の意味や相互関係そのものではないためである。
+
+- `dictionary`, `column`, `exact index`, `sort index` という区分自体が論理スキーマ
+- `binary` はその論理構造を、header + section table + section payloads に落とした物理表現
+- したがって、不要になりうるのは論理スキーマの概念ではなく、特定の in-memory struct 表現
+
+現行実装の `index-core::binary` は `SearchIndexReader` から dictionary / column / postings / sort section を borrowed view として個別参照できる。
+検索 engine を binary 主役で組む場合は、これらの section view API を直接使い、`schema::SearchIndex` 全体を materialize しない前提で使うのが自然である。
+
+一方で writer 側はまだ `schema::SearchIndex` を入力に取る。
+したがって現在の `schema/**` は「概念として必要」なだけでなく、「build 済み index を binary に落とす writer の入力境界」としても使われている。
+
+reader が現在公開している主な access は次の通り。
+
+- `header` / `metadata_view`
+- `clips_dictionary` / `videos_dictionary` / `channels_dictionary` / `artists_dictionary` / `tags_dictionary`
+- `clip_ids` / `video_ids` / `published_ats` / `channel_ids` / `is_unlisteds` / `embeddables`
+- `artist_id_lists` / `tag_id_lists`
+- `artist_docs` / `tag_docs` / `channel_docs` / `is_unlisted_docs` / `embeddable_docs`
+- `published_at_sort`
+
 ## 5. build 時の検証
 
 index builder は最低限次を検証してから build を進める。

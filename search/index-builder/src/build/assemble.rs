@@ -5,6 +5,13 @@ pub fn build_search_index(
     build_search_index_from_loaded_data(data)
 }
 
+pub fn build_search_index_binary(
+    music_root: &std::path::Path,
+) -> anyhow::Result<Vec<u8>> {
+    let index = build_search_index(music_root)?;
+    Ok(index_core::binary::serialize_search_index(&index)?)
+}
+
 pub(crate) fn build_search_index_from_loaded_data(
     data: crate::build::load::LoadedData,
 ) -> anyhow::Result<index_core::schema::SearchIndex> {
