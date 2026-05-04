@@ -219,12 +219,14 @@
     "cliplayer",
     "Deque",
     "dialoguer",
+    "embeddables",
     "musictl",
     "reqwest",
     "rustls",
     "serde",
     "tagctl",
     "thiserror",
+    "unlisteds",
     "vitest",
     "walkdir"
   ]
