@@ -1,12 +1,17 @@
 /// ページング再開位置を表す cursor。
 ///
-/// 現状の search index では `doc_id` から sort key の値を O(1) で引けるため、
-/// cursor 自体は `doc_id` だけを持てばよい。
+/// cursor は同一 index build, 同一 query, 同一 sort 条件に対する
+/// 再開位置だけを表す。
 ///
 /// 将来、sort の種類ごとに再開位置に必要な payload が変わるなら、
 /// `Cursor` を enum にして sort ごとの variant に `doc_id` 以外の値を
 /// 持たせる設計も有用である。
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Cursor {
-    pub doc_id: index_core::schema::ids::DocId,
+    pub index_build_id: u64,
+    pub query_fingerprint: u64,
+    pub sort_field: crate::api::query::types::SortField,
+    pub sort_order: crate::api::query::types::SortOrder,
+    pub last_published_at: index_core::schema::TimestampSecs,
+    pub last_doc_id: index_core::schema::ids::DocId,
 }

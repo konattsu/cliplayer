@@ -10,22 +10,7 @@
 
 ## Project Overview
 
-A repository that provides a backend and frontend for managing music information and continuously playing it on a static site.
-
-- backend
-  - written in Rust
-  - `artist/`: Manage information about artists (livers)
-  - `music/`: Manage information about music
-  - `cmn_rs/`: Common code for Rust
-  - `search/`: Provides search engine and search index
-
-- frontend
-  - mainly written in Angular, TypeScript, and SCSS
-  - `src/`: Contains the source code for the frontend application, including components, services, and styles.
-
-## Data Structure
-
-TODO
+ref: `README.md`
 
 ## Skills
 
@@ -33,6 +18,8 @@ When performing specific operations, refer to the following related documents an
 These files are repository-local instruction documents, not automatically registered platform skills.
 Open the relevant `SKILL.md` explicitly when the task matches.
 
+- Angular:
+  - `.github/skills/angular/SKILL.md`
 - Rust:
   - `.github/skills/rust/SKILL.md`
 - Context7:

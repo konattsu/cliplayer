@@ -2,11 +2,35 @@
 pub struct SearchIndexReader<'a> {
     bytes: &'a [u8],
     header: crate::binary::format::SearchIndexHeader,
-    sections: std::collections::HashMap<u32, crate::binary::format::SectionEntry>,
+    sections: std::sync::Arc<
+        std::collections::HashMap<u32, crate::binary::format::SectionEntry>,
+    >,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ValidatedIndexLayout {
+    header: crate::binary::format::SearchIndexHeader,
+    sections: std::sync::Arc<
+        std::collections::HashMap<u32, crate::binary::format::SectionEntry>,
+    >,
+    file_len: usize,
+}
+
+impl ValidatedIndexLayout {
+    pub fn header(&self) -> &crate::binary::format::SearchIndexHeader {
+        &self.header
+    }
 }
 
 impl<'a> SearchIndexReader<'a> {
     pub fn new(bytes: &'a [u8]) -> Result<Self, crate::binary::Error> {
+        let layout = Self::validate_layout(bytes)?;
+        Self::from_validated_layout(bytes, &layout)
+    }
+
+    pub fn validate_layout(
+        bytes: &[u8],
+    ) -> Result<ValidatedIndexLayout, crate::binary::Error> {
         use crate::binary::Error;
         use crate::binary::codec;
         use crate::binary::format::{
@@ -126,14 +150,31 @@ impl<'a> SearchIndexReader<'a> {
             }
         }
 
-        Ok(Self {
-            bytes,
+        Ok(ValidatedIndexLayout {
             header: crate::binary::format::SearchIndexHeader {
                 format_version,
                 section_count,
                 record_count,
             },
-            sections,
+            sections: std::sync::Arc::new(sections),
+            file_len: bytes.len(),
+        })
+    }
+
+    pub fn from_validated_layout(
+        bytes: &'a [u8],
+        layout: &ValidatedIndexLayout,
+    ) -> Result<Self, crate::binary::Error> {
+        if bytes.len() != layout.file_len {
+            return Err(crate::binary::Error::InvalidFormat(
+                "validated layout does not match file length",
+            ));
+        }
+
+        Ok(Self {
+            bytes,
+            header: layout.header.clone(),
+            sections: layout.sections.clone(),
         })
     }
 

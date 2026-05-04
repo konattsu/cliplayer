@@ -18,10 +18,12 @@ pub(crate) fn build_search_index_from_loaded_data(
     let dictionaries = crate::build::dictionaries::build_dictionaries(&data);
     let normalized =
         crate::build::normalize::normalize_clip_records(&data, &dictionaries)?;
+    let index_build_id = generate_index_build_id();
 
     Ok(index_core::schema::SearchIndex {
         meta: index_core::schema::IndexMetadata {
             index_format_version: 1,
+            index_build_id,
             builder_version: env!("CARGO_PKG_VERSION").to_string(),
             record_count: u32::try_from(normalized.len())
                 .expect("record count fits within u32"),
@@ -59,6 +61,20 @@ fn build_columns(
                 .collect::<Vec<_>>(),
         ),
     }
+}
+
+fn generate_index_build_id() -> u64 {
+    use std::hash::Hash;
+    use std::hash::Hasher;
+
+    let mut hasher = std::collections::hash_map::DefaultHasher::new();
+    std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_nanos()
+        .hash(&mut hasher);
+    std::process::id().hash(&mut hasher);
+    hasher.finish()
 }
 
 fn build_exact_indexes(

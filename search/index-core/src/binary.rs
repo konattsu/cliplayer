@@ -8,7 +8,7 @@ mod writer;
 
 pub use error::Error;
 pub use format::SearchIndexHeader;
-pub use reader::SearchIndexReader;
+pub use reader::{SearchIndexReader, ValidatedIndexLayout};
 pub use view::{
     BoolPostingsView, BoolSliceView, DensePostingsView, I64SliceView, MetadataView,
     SortIndexView, StringDictionaryView, U32ListColumnView, U32SliceView,

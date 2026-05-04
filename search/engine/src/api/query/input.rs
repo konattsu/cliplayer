@@ -1,5 +1,5 @@
 /// 検索条件の sort 指定。
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct SortSpec {
     pub field: crate::api::query::types::SortField,
     pub order: crate::api::query::types::SortOrder,
@@ -28,7 +28,7 @@ pub struct SearchRequest {
 ///
 /// parse 直後は任意の木構造を許すが、評価前には NNF
 /// (Negation Normal Form) まで正規化してよい。
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum QueryNode {
     /// 子ノードの論理積。
     ///
@@ -65,7 +65,7 @@ pub enum QueryNode {
 /// - empty を禁止する
 /// - sort 済み
 /// - dedup 済み
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum TermNode {
     ArtistAnyIn {
         values: Vec<index_core::schema::ids::ArtistIdString>,

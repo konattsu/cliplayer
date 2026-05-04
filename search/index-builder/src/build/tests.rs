@@ -112,6 +112,10 @@ fn test_build_search_index_binary_roundtrip() {
         env!("CARGO_PKG_VERSION"),
     );
     assert_eq!(
+        reader.metadata_view().unwrap().index_build_id(),
+        index.meta.index_build_id,
+    );
+    assert_eq!(
         reader.clip_ids().unwrap().len(),
         usize::try_from(index.meta.record_count).unwrap(),
     );

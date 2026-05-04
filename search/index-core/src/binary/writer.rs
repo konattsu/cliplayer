@@ -156,7 +156,10 @@ impl<'a> BinaryWriter<'a> {
             self.section(
                 SECTION_METADATA,
                 1,
-                encode_metadata(&self.index.meta.builder_version)?,
+                encode_metadata(
+                    self.index.meta.index_build_id,
+                    &self.index.meta.builder_version,
+                )?,
             ),
             self.dictionary_section(
                 SECTION_DICT_CLIPS,

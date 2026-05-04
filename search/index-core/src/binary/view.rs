@@ -1,6 +1,7 @@
 /// Borrowed metadata view over the metadata section payload.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct MetadataView<'a> {
+    index_build_id: u64,
     builder_version: &'a str,
 }
 
@@ -14,19 +15,28 @@ impl<'a> MetadataView<'a> {
         if item_count != 1 {
             return Err(Error::InvalidFormat("metadata item_count must be 1"));
         }
-        if payload.len() < 4 {
+        if payload.len() < 12 {
             return Err(Error::InvalidFormat("metadata payload too small"));
         }
 
-        let builder_version_len = crate::binary::codec::read_u32(payload)? as usize;
-        if payload.len() != 4 + builder_version_len {
+        let index_build_id = crate::binary::codec::read_u64_at(payload, 0)?;
+        let builder_version_len =
+            crate::binary::codec::read_u32_at(payload, 8)? as usize;
+        if payload.len() != 12 + builder_version_len {
             return Err(Error::InvalidFormat("metadata payload length mismatch"));
         }
 
         let builder_version =
-            std::str::from_utf8(&payload[4..]).map_err(|_| Error::Utf8)?;
+            std::str::from_utf8(&payload[12..]).map_err(|_| Error::Utf8)?;
 
-        Ok(Self { builder_version })
+        Ok(Self {
+            index_build_id,
+            builder_version,
+        })
+    }
+
+    pub fn index_build_id(&self) -> u64 {
+        self.index_build_id
     }
 
     pub fn builder_version(&self) -> &'a str {

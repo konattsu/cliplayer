@@ -1,9 +1,11 @@
 pub(super) fn encode_metadata(
+    index_build_id: u64,
     builder_version: &str,
 ) -> Result<Vec<u8>, crate::binary::Error> {
     let len = u32::try_from(builder_version.len())
         .map_err(|_| crate::binary::Error::TooLarge("builder_version length"))?;
-    let mut out = Vec::with_capacity(4 + builder_version.len());
+    let mut out = Vec::with_capacity(12 + builder_version.len());
+    write_u64(&mut out, index_build_id);
     write_u32(&mut out, len);
     out.extend_from_slice(builder_version.as_bytes());
     Ok(out)

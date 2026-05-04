@@ -36,6 +36,7 @@ fn sample_index() -> index_core::schema::SearchIndex {
     index_core::schema::SearchIndex {
         meta: index_core::schema::IndexMetadata {
             index_format_version: 1,
+            index_build_id: 7,
             builder_version: "integration-test-builder".to_string(),
             record_count: 4,
         },
@@ -103,6 +104,7 @@ fn test_public_binary_roundtrip_with_sparse_and_tied_values() {
         reader.metadata_view().unwrap().builder_version(),
         "integration-test-builder",
     );
+    assert_eq!(reader.metadata_view().unwrap().index_build_id(), 7);
     assert_eq!(reader.clip_ids().unwrap().to_vec(), vec![0, 1, 2, 3]);
     assert_eq!(
         reader.tag_docs().unwrap().get(3).unwrap().unwrap().to_vec(),
@@ -127,6 +129,7 @@ fn test_public_reader_exposes_header_and_metadata_before_full_decode() {
         reader.metadata_view().unwrap().builder_version(),
         "integration-test-builder",
     );
+    assert_eq!(reader.metadata_view().unwrap().index_build_id(), 7);
     assert_eq!(
         reader.clips_dictionary().unwrap().get(2).unwrap(),
         Some("clip-c"),
