@@ -11,21 +11,18 @@ pub(super) fn handle_update(
 fn handle_apply(
     args: crate::cli::parser::UpdateApplyArgs,
 ) -> Result<(), crate::cli_exec_handler::CliExecError> {
-    let music_lib =
-        crate::music_file::MusicLibrary::load(args.music_root_dir.as_ref())?;
-    crate::apply::apply_update(
-        music_lib,
-        args.min_clips_path.as_ref(),
-        args.min_videos_path.as_ref(),
-    )
-    .map_err(Into::into)
+    let music_lib = crate::music_file::MusicLibraryRepository::load(
+        args.music_root.music_root_dir.as_path(),
+    )?;
+    crate::apply::apply_update(music_lib).map_err(Into::into)
 }
 
 fn handle_validate(
     args: crate::cli::parser::UpdateValidateArgs,
 ) -> Result<(), crate::cli_exec_handler::CliExecError> {
     // 読み込めてエラーがなければ検証成功
-    let _music_lib =
-        crate::music_file::MusicLibrary::load(args.music_root_dir.as_ref())?;
+    let _music_lib = crate::music_file::MusicLibraryRepository::load(
+        args.music_root.music_root_dir.as_path(),
+    )?;
     Ok(())
 }

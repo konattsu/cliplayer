@@ -13,11 +13,12 @@ RUN npm install -g pnpm@10.33.3
 # ref: https://github.com/casey/just#pre-built-binaries
 RUN curl -fsSL https://just.systems/install.sh | bash -s -- --to /usr/local/bin
 
-# install Codex and Bubblewrap for sandboxing
-RUN pnpm install @openai/codex && apt-get update && apt-get install bubblewrap -y
+# install  Bubblewrap for sandboxing
+RUN apt-get update && apt-get install -y bubblewrap
 
 # install mold
 RUN curl -fsSL -L https://github.com/rui314/mold/releases/download/v2.41.0/mold-2.41.0-x86_64-linux.tar.gz \
   | tar -xzf - -C /usr/local/bin --strip-components=2 mold-2.41.0-x86_64-linux/bin/mold
 
+# install clang for linker of rust
 RUN apt-get install clang -y

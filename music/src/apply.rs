@@ -1,6 +1,5 @@
 mod add;
 mod error;
-mod min_file;
 mod sync;
 mod update;
 

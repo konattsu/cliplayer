@@ -8,6 +8,25 @@ pub struct MusicLibrary {
 }
 
 impl MusicLibrary {
+    pub(crate) fn new(
+        root_dir: std::path::PathBuf,
+        video_files: std::collections::HashMap<
+            (usize, usize),
+            crate::music_file::MusicFile,
+        >,
+    ) -> Self {
+        Self {
+            root_dir,
+            video_files,
+        }
+    }
+
+    pub(crate) fn iter_files(
+        &self,
+    ) -> impl Iterator<Item = &crate::music_file::MusicFile> {
+        self.video_files.values()
+    }
+
     pub(crate) fn get_video_ids(&self) -> crate::model::VideoIds {
         self.video_files
             .values()
@@ -19,44 +38,6 @@ impl MusicLibrary {
         &mut self,
     ) -> impl Iterator<Item = &mut crate::music_file::MusicFile> {
         self.video_files.values_mut()
-    }
-
-    /// 楽曲情報をファイルから指定のディレクトリ以下から読むこむ
-    ///
-    /// # Arguments
-    /// - `dir`: 楽曲情報のルートディレクトリ
-    #[tracing::instrument(level = tracing::Level::DEBUG)]
-    pub fn load(dir: &std::path::Path) -> Result<Self, super::MusicFileErrors> {
-        tracing::debug!(
-            "Loading monthly music files from directory: `{}`",
-            dir.display()
-        );
-        let files = Self::collect_music_file_paths(dir)?;
-        if files.is_empty() {
-            Err(super::MusicFileError::InvalidPath {
-                path: dir.to_path_buf(),
-                msg: format!(
-                    "No monthly music files found in directory `{}`",
-                    dir.display()
-                ),
-            }
-            .into_errors())
-        } else {
-            Ok(Self {
-                root_dir: dir.to_path_buf(),
-                video_files: files,
-            })
-        }
-    }
-
-    /// 楽曲情報をファイルに保存する
-    ///
-    /// 単一のファイルたちのみ
-    pub(crate) fn save_month_files(&self) -> Result<(), super::MusicFileErrors> {
-        tracing::info!("Saving monthly music files to disk...");
-        self.save_music_files()?;
-        tracing::info!("Saved all monthly music files saved successfully.");
-        Ok(())
     }
 
     /// 読み込んでいる動画情報を全て取得
@@ -80,17 +61,6 @@ impl MusicLibrary {
             );
             super::MusicFileError::InvalidDatabaseContent { msg }
         })
-    }
-
-    /// minファイルを保存する
-    pub(crate) fn save_min_file<T: serde::Serialize>(
-        value: &T,
-        save_path: &std::path::Path,
-    ) -> Result<(), super::MusicFileError> {
-        tracing::info!("Saving `{}` file to disk...", save_path.display());
-        super::fs_util::serialize_to_file(save_path, value, true)?;
-        tracing::info!("Saved `{}` file successfully.", save_path.display());
-        Ok(())
     }
 
     /// 動画情報を一括で追加する
@@ -128,202 +98,12 @@ impl MusicLibrary {
         } else {
             // 対応する月ファイルが存在しないとき. 新規作成して, そこに追加
             let music_file = super::MusicFile::from_video(video, &self.root_dir);
+            let existing = self.video_files.insert(year_month, music_file);
             debug_assert!(
-                Self::insert_music_file(&mut self.video_files, music_file).is_none(),
+                existing.is_none(),
                 "newly created month file must not conflict with existing keys"
             );
             Ok(())
-        }
-    }
-
-    /// 楽曲情報をファイルから指定のディレクトリ以下から読むこむ
-    ///
-    /// `dir`以下の全てのファイルに対して`MusicFile::load_file`を適用
-    #[tracing::instrument(ret, level = tracing::Level::TRACE)]
-    fn collect_music_file_paths(
-        dir: &std::path::Path,
-    ) -> Result<
-        std::collections::HashMap<(usize, usize), super::MusicFile>,
-        super::MusicFileErrors,
-    > {
-        let file_paths = Self::collect_music_file_paths_in_dir(dir);
-        let (files, errs) = Self::load_music_files(file_paths, dir);
-        if errs.is_empty() {
-            let mut year_month = files.keys().collect::<Vec<_>>();
-            year_month.sort_by(|y, m| y.0.cmp(&m.0).then(y.1.cmp(&m.1)));
-            tracing::info!(
-                "Loaded {} monthly music month files from directory `{}`",
-                files.len(),
-                dir.display()
-            );
-            Ok(files)
-        } else {
-            tracing::error!(
-                "Loaded {} monthly music month files with {} errors from directory `{}`",
-                files.len(),
-                errs.len(),
-                dir.display()
-            );
-            Err(errs.into())
-        }
-    }
-
-    /// 指定ディレクトリ以下の全ファイルパスを収集
-    fn collect_music_file_paths_in_dir(
-        dir: &std::path::Path,
-    ) -> Vec<std::path::PathBuf> {
-        let mut file_paths = Vec::new();
-        for entry in walkdir::WalkDir::new(dir) {
-            let entry = match entry {
-                Ok(entry) => entry,
-                Err(_) => continue,
-            };
-            if entry.file_type().is_file() {
-                let path = entry.path();
-                if Self::is_monthly_music_file_path(dir, path) {
-                    file_paths.push(path.to_path_buf());
-                } else {
-                    tracing::trace!(
-                        "Skipped non-month music file while loading: {}",
-                        path.display()
-                    );
-                }
-            }
-        }
-        file_paths.sort_unstable();
-        file_paths
-    }
-
-    /// ルート配下の `YYYY/MM.json` 形式に一致するか
-    fn is_monthly_music_file_path(
-        root: &std::path::Path,
-        path: &std::path::Path,
-    ) -> bool {
-        let rel = match path.strip_prefix(root) {
-            Ok(rel) => rel,
-            Err(_) => return false,
-        };
-
-        let mut components = rel.components();
-        let year = match components.next().and_then(|c| c.as_os_str().to_str()) {
-            Some(year) => year,
-            None => return false,
-        };
-        let month_file = match components.next().and_then(|c| c.as_os_str().to_str()) {
-            Some(month_file) => month_file,
-            None => return false,
-        };
-
-        if components.next().is_some() {
-            return false;
-        }
-
-        if year.len() != 4 || !year.chars().all(|c| c.is_ascii_digit()) {
-            return false;
-        }
-
-        if month_file.len() != 7 || !month_file.ends_with(".json") {
-            return false;
-        }
-
-        let month_str = &month_file[..2];
-        let month = match month_str.parse::<usize>() {
-            Ok(month) => month,
-            Err(_) => return false,
-        };
-
-        (1..=12).contains(&month)
-    }
-
-    /// ファイルパスごとにMusicFileをロードし、HashMapとエラーVecを返す
-    fn load_music_files(
-        file_paths: Vec<std::path::PathBuf>,
-        dir: &std::path::Path,
-    ) -> (
-        std::collections::HashMap<(usize, usize), super::MusicFile>,
-        Vec<crate::music_file::MusicFileError>,
-    ) {
-        use std::collections::HashMap;
-        let mut files: HashMap<(usize, usize), super::MusicFile> = HashMap::new();
-        let mut errs: Vec<crate::music_file::MusicFileError> = Vec::new();
-        for file_path in file_paths {
-            match crate::music_file::MusicFile::load(file_path, dir) {
-                Ok(music_file) => {
-                    let (year, month) = music_file.get_year_month();
-                    let duplicated_path = music_file.get_path().to_path_buf();
-
-                    if let Some(existing) =
-                        Self::insert_music_file(&mut files, music_file)
-                    {
-                        errs.push(
-                            crate::music_file::MusicFileError::DuplicateYearMonthFile {
-                                year,
-                                month,
-                                existing_path: existing.get_path().to_path_buf(),
-                                duplicated_path,
-                            },
-                        );
-                    }
-                }
-                Err(e) => errs.push(e),
-            }
-        }
-        (files, errs)
-    }
-
-    /// 楽曲情報を追加する
-    ///
-    /// `args`: key: `(year, month)`
-    ///
-    /// - 既存キーと重複している場合, 置き換え前の値を返す
-    // TODO `self`を引数に受け取って`files`受け取らないようにしたい. しかし, `self`が使えない環境から呼び出されることもあるので困る
-    fn insert_music_file(
-        files: &mut std::collections::HashMap<(usize, usize), super::MusicFile>,
-        music_file: super::MusicFile,
-    ) -> Option<super::MusicFile> {
-        let year_month = music_file.get_year_month();
-        let stale = files.insert(year_month, music_file);
-        if stale.is_some() {
-            tracing::trace!(
-                "Music file for year/month `{}/{}` already exists, \
-                replacing stale file with new one.\n",
-                year_month.0,
-                year_month.1,
-            );
-        }
-        stale
-    }
-
-    /// 楽曲情報(単品)を全て保存
-    ///
-    /// pretty形式で保存
-    ///
-    /// 一つでも保存できなかったら即座にエラーを返すのではなく, 全てのファイルに対して保存を試みて,
-    /// 失敗したファイルのパスとエラー内容を全て返す.
-    #[tracing::instrument(skip(self), level = tracing::Level::TRACE)]
-    fn save_music_files(&self) -> Result<(), super::MusicFileErrors> {
-        tracing::info!(
-            "Saving {} monthly music files (total {} videos) to disk...",
-            self.video_files.len(),
-            self.get_video_ids().len()
-        );
-
-        let mut errs = Vec::new();
-
-        for file in self.video_files.values() {
-            if let Err(e) = file.save() {
-                let e = super::MusicFileError::FileWrite {
-                    path: file.get_path().to_path_buf(),
-                    msg: e.to_string(),
-                };
-                errs.push(e);
-            }
-        }
-
-        if errs.is_empty() {
-            Ok(())
-        } else {
-            Err(errs.into())
         }
     }
 }

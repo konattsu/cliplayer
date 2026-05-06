@@ -1,5 +1,5 @@
 /// jsonファイルから楽曲情報をデシリアライズする
-pub(super) fn deserialize_from_file(
+pub(crate) fn deserialize_from_file(
     file: &std::path::Path,
 ) -> Result<crate::model::VerifiedVideos, super::MusicFileError> {
     use super::MusicFileError;
@@ -25,7 +25,7 @@ pub(super) fn deserialize_from_file(
 /// - `file`: 書き込むファイルのパス
 /// - `content`: 書き込む内容
 /// - `is_minimized`: minimizedさせるかどうか, minimizedでないときは末尾に改行付与
-pub(super) fn serialize_to_file<T>(
+pub(crate) fn serialize_to_file<T>(
     file: &std::path::Path,
     content: &T,
     is_minimized: bool,
@@ -41,6 +41,14 @@ where
             msg: e.to_string(),
             path: file.to_path_buf(),
         }
+    }
+
+    if let Some(parent) = file.parent() {
+        std::fs::create_dir_all(parent).map_err(|e| MusicFileError::FileOpen {
+            path: parent.to_string_lossy().to_string(),
+            msg: e.to_string(),
+            when: "creating parent directories".to_string(),
+        })?;
     }
 
     let file_handle =

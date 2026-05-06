@@ -46,15 +46,17 @@ impl<'de> serde::Deserialize<'de> for AnonymousVideo {
         #[serde(rename_all = "camelCase")]
         #[serde(deny_unknown_fields)]
         struct RawAnonymousVideo {
-            #[serde(flatten)]
-            video_brief: super::LocalVideoInfo,
+            video_id: crate::model::VideoId,
+            uploader_name: Option<crate::model::UploaderName>,
+            #[serde(default)]
+            video_tags: crate::model::VideoTagIds,
             clips: Vec<crate::model::AnonymousClip>,
         }
 
         let raw = RawAnonymousVideo::deserialize(deserializer)?;
-        let video_brief = raw.video_brief;
-        let clips = raw.clips;
-        AnonymousVideo::new(video_brief, clips).map_err(serde::de::Error::custom)
+        let video_brief =
+            super::LocalVideoInfo::new(raw.video_id, raw.uploader_name, raw.video_tags);
+        AnonymousVideo::new(video_brief, raw.clips).map_err(serde::de::Error::custom)
     }
 }
 
@@ -66,15 +68,19 @@ impl serde::Serialize for AnonymousVideo {
         #[derive(serde::Serialize)]
         #[serde(rename_all = "camelCase")]
         struct SerializableAnonymousVideo<'a> {
-            #[serde(flatten)]
-            video_brief: &'a super::LocalVideoInfo,
-            clips: Vec<&'a crate::model::AnonymousClip>,
+            video_id: &'a crate::model::VideoId,
+            #[serde(skip_serializing_if = "Option::is_none")]
+            uploader_name: Option<&'a crate::model::UploaderName>,
+            #[serde(default)]
+            video_tags: &'a crate::model::VideoTagIds,
+            clips: &'a [crate::model::AnonymousClip],
         }
 
-        let clips = self.to_sorted_clips();
         let serializable = SerializableAnonymousVideo {
-            video_brief: &self.local_record,
-            clips: clips.iter().collect::<Vec<_>>(),
+            video_id: self.local_record.get_video_id(),
+            uploader_name: self.local_record.get_uploader_name(),
+            video_tags: self.local_record.get_video_tags(),
+            clips: &self.clips,
         };
 
         serializable
@@ -86,6 +92,12 @@ impl serde::Serialize for AnonymousVideo {
 impl AnonymousVideo {
     pub(crate) fn get_video_id(&self) -> &crate::model::VideoId {
         self.local_record.get_video_id()
+    }
+    pub(crate) fn local_info(&self) -> &super::LocalVideoInfo {
+        &self.local_record
+    }
+    pub(crate) fn clips(&self) -> &[crate::model::AnonymousClip] {
+        &self.clips
     }
     pub(crate) fn into_inner(
         self,
@@ -111,38 +123,6 @@ impl AnonymousVideo {
             local_record: video_brief,
             clips,
         })
-    }
-
-    /// md形式に変換
-    fn to_markdown(&self) -> String {
-        let video_id = self.local_record.get_video_id();
-        let uploader_name = self
-            .local_record
-            .get_uploader_name()
-            .map(|s| s.to_string())
-            .unwrap_or("(None)".to_string());
-        let video_tags = self.local_record.get_video_tags().to_vec().join(", ");
-        let total_clips = self.clips.len();
-
-        let clips_info =
-            crate::model::AnonymousClip::vec_to_markdown(&self.to_sorted_clips());
-
-        let md_str = format!(
-            r#"
-<details>
-<summary>{video_id} | Clips: {total_clips} | {video_tags}</summary>
-
-- [Watch on YouTube](https://youtu.be/{video_id})
-- Uploader Name: {uploader_name}
-
-Clips list:
-
-{clips_info}
-</details>
-"#,
-        );
-
-        md_str
     }
 
     /// 動画のクリップの整合性を検証
@@ -181,12 +161,6 @@ Clips list:
             })
         }
     }
-
-    fn to_sorted_clips(&self) -> Vec<crate::model::AnonymousClip> {
-        let mut vec = self.clips.clone();
-        vec.sort_by_key(|clip| clip.get_start_time().as_secs());
-        vec
-    }
 }
 
 // MARK: Videos impl
@@ -211,7 +185,7 @@ impl serde::Serialize for AnonymousVideos {
     where
         S: serde::Serializer,
     {
-        self.to_sorted_vec().serialize(serializer)
+        self.sorted_videos().serialize(serializer)
     }
 }
 
@@ -286,18 +260,8 @@ impl AnonymousVideos {
         self.inner.keys().cloned().collect()
     }
 
-    /// 動画情報を`markdown`形式で出力
-    pub(crate) fn to_markdown(&self) -> String {
-        let mut md = String::new();
-        for video in self.inner.values() {
-            md.push_str(&video.to_markdown());
-            md.push_str("\n\n");
-        }
-        md
-    }
-
-    fn to_sorted_vec(&self) -> Vec<AnonymousVideo> {
-        let mut vec: Vec<_> = self.inner.values().cloned().collect();
+    pub(crate) fn sorted_videos(&self) -> Vec<&AnonymousVideo> {
+        let mut vec: Vec<_> = self.inner.values().collect();
         vec.sort_by_key(|video| video.get_video_id().clone());
         vec
     }
@@ -312,7 +276,7 @@ mod tests {
     fn make_brief_json() -> serde_json::Value {
         serde_json::json!({
             "videoId": crate::model::VideoId::test_id_1().to_string(),
-            "videoTags": ["Test Video Tag1"]
+            "videoTags": ["karaoke"]
         })
     }
 
@@ -348,6 +312,15 @@ mod tests {
     }
 
     #[test]
+    fn test_deserialize_anonymous_video_error_unknown_field() {
+        let mut v = make_brief_json();
+        v["clips"] = serde_json::json!([make_clip_json()]);
+        v["editor"] = serde_json::json!("vscode");
+        let res: Result<AnonymousVideo, _> = serde_json::from_value(v);
+        assert!(res.is_err());
+    }
+
+    #[test]
     fn test_deserialize_anonymous_videos_error_duplicate_id() {
         let mut v = make_brief_json();
         v["clips"] = serde_json::json!([make_clip_json()]);
@@ -361,7 +334,7 @@ mod tests {
         let brief = crate::model::LocalVideoInfo::new(
             crate::model::VideoId::test_id_1(),
             None,
-            crate::model::VideoTags::self_1(),
+            crate::model::VideoTagIds::self_1(),
         );
         let clips = vec![
             // ソートされてない
@@ -385,7 +358,7 @@ mod tests {
         let brief = crate::model::LocalVideoInfo::new(
             crate::model::VideoId::test_id_1(),
             None,
-            crate::model::VideoTags::self_1(),
+            crate::model::VideoTagIds::self_1(),
         );
         let clips = vec![
             crate::model::AnonymousClip::self_a_1(),
@@ -405,7 +378,7 @@ mod tests {
         let brief = crate::model::LocalVideoInfo::new(
             crate::model::VideoId::test_id_1(),
             None,
-            crate::model::VideoTags::self_1(),
+            crate::model::VideoTagIds::self_1(),
         );
         let clips = Vec::new();
         let result = AnonymousVideo::new(brief, clips);
@@ -421,7 +394,7 @@ mod tests {
             crate::model::LocalVideoInfo::new(
                 crate::model::VideoId::test_id_1(),
                 None,
-                crate::model::VideoTags::self_1(),
+                crate::model::VideoTagIds::self_1(),
             ),
             vec![crate::model::AnonymousClip::self_a_1()],
         )
@@ -430,7 +403,7 @@ mod tests {
             crate::model::LocalVideoInfo::new(
                 crate::model::VideoId::test_id_2(),
                 None,
-                crate::model::VideoTags::self_2(),
+                crate::model::VideoTagIds::self_2(),
             ),
             vec![crate::model::AnonymousClip::self_b_1()],
         )
@@ -458,7 +431,7 @@ mod tests {
             crate::model::LocalVideoInfo::new(
                 crate::model::VideoId::test_id_1(),
                 None,
-                crate::model::VideoTags::self_1(),
+                crate::model::VideoTagIds::self_1(),
             ),
             vec![crate::model::AnonymousClip::self_a_1()],
         )
@@ -467,7 +440,7 @@ mod tests {
             crate::model::LocalVideoInfo::new(
                 crate::model::VideoId::test_id_1(), // 重複するID
                 None,
-                crate::model::VideoTags::self_2(),
+                crate::model::VideoTagIds::self_2(),
             ),
             vec![crate::model::AnonymousClip::self_b_1()],
         )
@@ -488,7 +461,7 @@ mod tests {
             crate::model::LocalVideoInfo::new(
                 crate::model::VideoId::test_id_1(),
                 None,
-                crate::model::VideoTags::self_1(),
+                crate::model::VideoTagIds::self_1(),
             ),
             vec![crate::model::AnonymousClip::self_a_1()],
         )
@@ -497,7 +470,7 @@ mod tests {
             crate::model::LocalVideoInfo::new(
                 crate::model::VideoId::test_id_2(),
                 None,
-                crate::model::VideoTags::self_2(),
+                crate::model::VideoTagIds::self_2(),
             ),
             vec![crate::model::AnonymousClip::self_b_1()],
         )
@@ -511,7 +484,7 @@ mod tests {
             crate::model::LocalVideoInfo::new(
                 crate::model::VideoId::test_id_2(),
                 None,
-                crate::model::VideoTags::self_2(),
+                crate::model::VideoTagIds::self_2(),
             ),
             vec![
                 crate::model::AnonymousClip::self_b_1(),
@@ -523,7 +496,7 @@ mod tests {
             crate::model::LocalVideoInfo::new(
                 crate::model::VideoId::test_id_3(),
                 None,
-                crate::model::VideoTags::self_3(),
+                crate::model::VideoTagIds::self_3(),
             ),
             vec![crate::model::AnonymousClip::self_a_1()],
         )
@@ -566,7 +539,7 @@ mod tests {
         let brief = crate::model::LocalVideoInfo::new(
             crate::model::VideoId::test_id_1(),
             Some(crate::model::UploaderName::test_uploader_name_1()),
-            crate::model::VideoTags::self_1(),
+            crate::model::VideoTagIds::self_1(),
         );
         // clips: ソートされていない順で作成
         let clips = vec![
@@ -582,7 +555,7 @@ mod tests {
         let brief = crate::model::LocalVideoInfo::new(
             crate::model::VideoId::test_id_1(),
             Some(crate::model::UploaderName::test_uploader_name_1()),
-            crate::model::VideoTags::self_1(),
+            crate::model::VideoTagIds::self_1(),
         );
         let clips = vec![
             crate::model::AnonymousClip::self_a_1(),

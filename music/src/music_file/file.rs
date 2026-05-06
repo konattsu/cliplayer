@@ -10,6 +10,9 @@ pub(crate) struct MusicFile {
 }
 
 impl MusicFile {
+    pub(crate) fn videos(&self) -> &crate::model::VerifiedVideos {
+        self.videos.get_videos()
+    }
     pub(crate) fn into_videos(self) -> crate::model::VerifiedVideos {
         self.videos.into_videos()
     }

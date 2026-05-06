@@ -22,14 +22,8 @@ pub struct VerifiedClip {
     start_time: crate::model::Duration,
     /// 曲が終わる時間
     end_time: crate::model::Duration,
-    /// タグ
-    #[serde(skip_serializing_if = "Option::is_none")]
-    clip_tags: Option<crate::model::ClipTags>,
     /// uuid
     uuid: crate::model::UuidVer4,
-    /// 音量の正規化時に設定すべき音量
-    #[serde(skip_serializing_if = "Option::is_none")]
-    volume_percent: Option<crate::model::VolumePercent>,
 }
 
 /// `VerifiedClip`のエラー
@@ -71,12 +65,8 @@ pub(super) struct VerifiedClipInner {
     pub(super) start_time: crate::model::Duration,
     /// 曲が終わる時間
     pub(super) end_time: crate::model::Duration,
-    /// タグ
-    pub(super) clip_tags: Option<crate::model::ClipTags>,
     /// uuid
     pub(super) uuid: crate::model::UuidVer4,
-    /// 音量の正規化時に設定すべき音量
-    pub(super) volume_percent: Option<crate::model::VolumePercent>,
 }
 
 pub(super) struct VerifiedClipInitializer {
@@ -92,12 +82,8 @@ pub(super) struct VerifiedClipInitializer {
     pub(super) start_time: crate::model::Duration,
     /// 曲が終わる時間
     pub(super) end_time: crate::model::Duration,
-    /// タグ
-    pub(super) clip_tags: Option<crate::model::ClipTags>,
     /// uuid
     pub(super) uuid: crate::model::UuidVer4,
-    /// 音量の正規化時に設定すべき音量
-    pub(super) volume_percent: Option<crate::model::VolumePercent>,
 }
 
 impl VerifiedClipInitializer {
@@ -119,9 +105,7 @@ impl VerifiedClipInitializer {
             clipped_video_id: self.clipped_video_id,
             start_time: self.start_time,
             end_time: self.end_time,
-            clip_tags: self.clip_tags,
             uuid: self.uuid,
-            volume_percent: self.volume_percent,
         })
     }
 
@@ -182,14 +166,8 @@ impl VerifiedClip {
     pub(crate) fn get_end_time(&self) -> &crate::model::Duration {
         &self.end_time
     }
-    pub(crate) fn get_clip_tags(&self) -> Option<&crate::model::ClipTags> {
-        self.clip_tags.as_ref()
-    }
     pub(crate) fn get_uuid(&self) -> &crate::model::UuidVer4 {
         &self.uuid
-    }
-    pub(crate) fn get_volume_percent(&self) -> Option<&crate::model::VolumePercent> {
-        self.volume_percent.as_ref()
     }
 
     pub fn uuid_string(&self) -> String {
@@ -200,13 +178,6 @@ impl VerifiedClip {
         self.liver_ids.to_vec()
     }
 
-    pub fn tag_ids(&self) -> Vec<&str> {
-        self.clip_tags
-            .as_ref()
-            .map(crate::model::ClipTags::to_vec)
-            .unwrap_or_default()
-    }
-
     pub(super) fn into_inner(self) -> VerifiedClipInner {
         VerifiedClipInner {
             song_title: self.song_title,
@@ -215,9 +186,7 @@ impl VerifiedClip {
             clipped_video_id: self.clipped_video_id,
             start_time: self.start_time,
             end_time: self.end_time,
-            clip_tags: self.clip_tags,
             uuid: self.uuid,
-            volume_percent: self.volume_percent,
         }
     }
 }
@@ -241,9 +210,7 @@ impl VerifiedClip {
             clipped_video_id: None,
             start_time: crate::model::Duration::from_secs_u16(5),
             end_time: crate::model::Duration::from_secs_u16(10),
-            clip_tags: None,
             uuid: crate::model::UuidVer4::self_partly_rand(0xa1),
-            volume_percent: None,
         };
         Self::self_a_initialize(ini_1)
     }
@@ -255,9 +222,7 @@ impl VerifiedClip {
             clipped_video_id: Some(crate::model::VideoId::test_id_3()),
             start_time: crate::model::Duration::from_secs_u16(15),
             end_time: crate::model::Duration::from_secs_u16(20),
-            clip_tags: None,
             uuid: crate::model::UuidVer4::self_partly_rand(0xa2),
-            volume_percent: None,
         };
         Self::self_a_initialize(ini_2)
     }
@@ -269,9 +234,7 @@ impl VerifiedClip {
             clipped_video_id: None,
             start_time: crate::model::Duration::from_secs_u16(25),
             end_time: crate::model::Duration::from_secs_u16(30),
-            clip_tags: Some(crate::model::ClipTags::self_2()),
             uuid: crate::model::UuidVer4::self_partly_rand(0xa3),
-            volume_percent: None,
         };
         Self::self_a_initialize(ini_3)
     }
@@ -289,9 +252,7 @@ impl VerifiedClip {
             clipped_video_id: Some(crate::model::VideoId::test_id_4()),
             start_time: crate::model::Duration::from_secs_u16(7),
             end_time: crate::model::Duration::from_secs_u16(17),
-            clip_tags: Some(crate::model::ClipTags::self_3()),
             uuid: crate::model::UuidVer4::self_partly_rand(0xb1),
-            volume_percent: None,
         };
         Self::self_b_initialize(ini_b1)
     }
@@ -303,9 +264,7 @@ impl VerifiedClip {
             clipped_video_id: None,
             start_time: crate::model::Duration::from_secs_u16(27),
             end_time: crate::model::Duration::from_secs_u16(37),
-            clip_tags: Some(crate::model::ClipTags::self_1()),
             uuid: crate::model::UuidVer4::self_partly_rand(0xb2),
-            volume_percent: None,
         };
         Self::self_b_initialize(ini_b2)
     }
@@ -317,9 +276,7 @@ impl VerifiedClip {
             clipped_video_id: Some(crate::model::VideoId::test_id_5()),
             start_time: crate::model::Duration::from_secs_u16(47),
             end_time: crate::model::Duration::from_secs_u16(57),
-            clip_tags: None,
             uuid: crate::model::UuidVer4::self_partly_rand(0xb3),
-            volume_percent: None,
         };
         Self::self_b_initialize(ini_b3)
     }
@@ -346,9 +303,7 @@ mod tests {
         assert!(clip_a_1.clipped_video_id.is_none());
         assert_eq!(clip_a_1.start_time, crate::model::Duration::from_secs_u16(5));
         assert_eq!(clip_a_1.end_time, crate::model::Duration::from_secs_u16(10));
-        assert_eq!(clip_a_1.clip_tags, None);
         assert_eq!(clip_a_1.uuid, crate::model::UuidVer4::self_partly_rand(0xa1));
-        assert_eq!(clip_a_1.volume_percent, None);
 
         let clip_a_2 = VerifiedClip::self_a_2();
         assert_eq!(clip_a_2.song_title, "Test Song A2");
@@ -357,9 +312,7 @@ mod tests {
         assert_eq!(clip_a_2.clipped_video_id, Some(crate::model::VideoId::test_id_3()));
         assert_eq!(clip_a_2.start_time, crate::model::Duration::from_secs_u16(15));
         assert_eq!(clip_a_2.end_time, crate::model::Duration::from_secs_u16(20));
-        assert_eq!(clip_a_2.clip_tags, None);
         assert_eq!(clip_a_2.uuid, crate::model::UuidVer4::self_partly_rand(0xa2));
-        assert_eq!(clip_a_2.volume_percent, None);
 
         let clip_a_3 = VerifiedClip::self_a_3();
         assert_eq!(clip_a_3.song_title, "Test Song A3");
@@ -368,9 +321,7 @@ mod tests {
         assert!(clip_a_3.clipped_video_id.is_none());
         assert_eq!(clip_a_3.start_time, crate::model::Duration::from_secs_u16(25));
         assert_eq!(clip_a_3.end_time, crate::model::Duration::from_secs_u16(30));
-        assert_eq!(clip_a_3.clip_tags, Some(crate::model::ClipTags::self_2()));
         assert_eq!(clip_a_3.uuid, crate::model::UuidVer4::self_partly_rand(0xa3));
-        assert_eq!(clip_a_3.volume_percent, None);
 
         let clip_b_1 = VerifiedClip::self_b_1();
         assert_eq!(clip_b_1.song_title, "Test Song B1");
@@ -379,9 +330,7 @@ mod tests {
         assert_eq!(clip_b_1.clipped_video_id, Some(crate::model::VideoId::test_id_4()));
         assert_eq!(clip_b_1.start_time, crate::model::Duration::from_secs_u16(7));
         assert_eq!(clip_b_1.end_time, crate::model::Duration::from_secs_u16(17));
-        assert_eq!(clip_b_1.clip_tags, Some(crate::model::ClipTags::self_3()));
         assert_eq!(clip_b_1.uuid, crate::model::UuidVer4::self_partly_rand(0xb1));
-        assert_eq!(clip_b_1.volume_percent, None);
 
         let clip_b_2 = VerifiedClip::self_b_2();
         assert_eq!(clip_b_2.song_title, "Test Song B2");
@@ -390,9 +339,7 @@ mod tests {
         assert!(clip_b_2.clipped_video_id.is_none());
         assert_eq!(clip_b_2.start_time, crate::model::Duration::from_secs_u16(27));
         assert_eq!(clip_b_2.end_time, crate::model::Duration::from_secs_u16(37));
-        assert_eq!(clip_b_2.clip_tags, Some(crate::model::ClipTags::self_1()));
         assert_eq!(clip_b_2.uuid, crate::model::UuidVer4::self_partly_rand(0xb2));
-        assert_eq!(clip_b_2.volume_percent, None);
 
         let clip_b_3 = VerifiedClip::self_b_3();
         assert_eq!(clip_b_3.song_title, "Test Song B3");
@@ -401,9 +348,7 @@ mod tests {
         assert_eq!(clip_b_3.clipped_video_id, Some(crate::model::VideoId::test_id_5()));
         assert_eq!(clip_b_3.start_time, crate::model::Duration::from_secs_u16(47));
         assert_eq!(clip_b_3.end_time, crate::model::Duration::from_secs_u16(57));
-        assert_eq!(clip_b_3.clip_tags, None);
         assert_eq!(clip_b_3.uuid, crate::model::UuidVer4::self_partly_rand(0xb3));
-        assert_eq!(clip_b_3.volume_percent, None);
     }
 
     #[test]
@@ -416,9 +361,7 @@ mod tests {
             clipped_video_id: None,
             start_time: crate::model::Duration::from_secs_u16(30),
             end_time: crate::model::Duration::from_secs_u16(40),
-            clip_tags: None,
             uuid: crate::model::UuidVer4::self_4(),
-            volume_percent: None,
         };
         verified_initializer
             .validate_video_duration(&crate::model::Duration::from_secs_u16(60))
@@ -432,9 +375,7 @@ mod tests {
             clipped_video_id: None,
             start_time: crate::model::Duration::from_secs_u16(30),
             end_time: crate::model::Duration::from_secs_u16(50),
-            clip_tags: None,
             uuid: crate::model::UuidVer4::self_4(),
-            volume_percent: None,
         };
         let result = verified_initializer
             .validate_video_duration(&crate::model::Duration::from_secs_u16(40));

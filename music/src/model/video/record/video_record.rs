@@ -50,7 +50,7 @@ struct RawVideoRecord {
     uploader_name: Option<crate::model::UploaderName>,
     /// 動画のタグ
     #[serde(default)]
-    video_tags: crate::model::VideoTags,
+    video_tags: crate::model::VideoTagIds,
 }
 
 impl From<VideoRecord> for RawVideoRecord {

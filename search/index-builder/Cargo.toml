@@ -10,12 +10,17 @@ musictl = { path = "../../music" }
 tagctl = { path = "../../metadata/tag" }
 
 anyhow = { workspace = true }
+clap = { workspace = true }
+cmn_rs = { path = "../../cmn_rs" }
+tracing = { workspace = true }
 
 [dev-dependencies]
 artistctl = { path = "../../metadata/artist", features = ["test-helpers"] }
+assert_cmd = "2.1.1"
 cmn_rs = { path = "../../cmn_rs" }
 musictl = { path = "../../music", features = ["test-helpers"] }
 tagctl = { path = "../../metadata/tag", features = ["test-helpers"] }
+tempfile = "3.26.0"
 
 [features]
 test-helpers = ["artistctl/test-helpers", "musictl/test-helpers", "tagctl/test-helpers"]

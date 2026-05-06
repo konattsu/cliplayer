@@ -3,8 +3,6 @@ pub async fn apply_add(
     anonymous_videos: crate::model::AnonymousVideos,
     api_key: crate::fetcher::YouTubeApiKey,
     duplicate_video_policy: crate::music_file::DuplicateVideoPolicy,
-    min_clips_path: &std::path::Path,
-    min_videos_path: &std::path::Path,
 ) -> Result<(), crate::apply::ApplyError> {
     let youtube_api = crate::fetcher::YouTubeApi::new(api_key);
 
@@ -13,8 +11,6 @@ pub async fn apply_add(
         anonymous_videos,
         |video_ids| youtube_api.run(video_ids),
         duplicate_video_policy,
-        min_clips_path,
-        min_videos_path,
     )
     .await
 }
@@ -24,8 +20,6 @@ async fn apply_add_with_fetcher<F, Fut>(
     anonymous_videos: crate::model::AnonymousVideos,
     fetch_video_info: F,
     duplicate_video_policy: crate::music_file::DuplicateVideoPolicy,
-    min_clips_path: &std::path::Path,
-    min_videos_path: &std::path::Path,
 ) -> Result<(), crate::apply::ApplyError>
 where
     F: FnOnce(crate::model::VideoIds) -> Fut,
@@ -47,18 +41,6 @@ where
 
     music_lib.extend_videos(verified_videos, duplicate_video_policy)?;
 
-    persist_add_outputs(music_lib, min_clips_path, min_videos_path)
-}
-
-fn persist_add_outputs(
-    music_lib: &crate::music_file::MusicLibrary,
-    min_clips_path: &std::path::Path,
-    min_videos_path: &std::path::Path,
-) -> Result<(), crate::apply::ApplyError> {
-    music_lib.save_month_files()?;
-
-    // `save_min_files` は所有権を取るため clone する。
-    // ここでは月ファイル保存後に min ファイル生成だけを行いたい。
-    super::min_file::save_min_files(music_lib.clone(), min_clips_path, min_videos_path)
-        .map_err(Into::into)
+    crate::music_file::MusicLibraryRepository::save_month_files(music_lib)?;
+    Ok(())
 }
