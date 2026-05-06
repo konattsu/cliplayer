@@ -268,16 +268,7 @@ error 側には structured object を返す。
 
 ```ts
 type SearchError = {
-  code:
-    | "INVALID_REQUEST"
-    | "INVALID_CURSOR"
-    | "QUERY_TOO_COMPLEX"
-    | "CORRUPT_INDEX"
-    | "VERSION_MISMATCH"
-    | "UNSUPPORTED_FEATURE"
-    | "INTERNAL_INDEX"
-    | "BINARY"
-    | "INTERNAL";
+  code: "INVALID_REQUEST" | "INVALID_CURSOR" | "QUERY_TOO_COMPLEX" | "CORRUPT_INDEX" | "VERSION_MISMATCH" | "UNSUPPORTED_FEATURE" | "INTERNAL_INDEX" | "BINARY" | "INTERNAL";
   message: string;
 };
 ```
@@ -368,19 +359,9 @@ type SearchResponse = {
 例:
 
 ```ts
-type QueryNode =
-  | { type: "and"; children: QueryNode[] }
-  | { type: "or"; children: QueryNode[] }
-  | { type: "not"; child: QueryNode }
-  | { type: "term"; term: TermNode };
+type QueryNode = { type: "and"; children: QueryNode[] } | { type: "or"; children: QueryNode[] } | { type: "not"; child: QueryNode } | { type: "term"; term: TermNode };
 
-type TermNode =
-  | { type: "artist_any_in"; values: string[] }
-  | { type: "tag_any_in"; values: string[] }
-  | { type: "channel_any_in"; values: string[] }
-  | { type: "is_unlisted_eq"; value: boolean }
-  | { type: "embeddable_eq"; value: boolean }
-  | { type: "published_at_range"; range: DateRange };
+type TermNode = { type: "artist_any_in"; values: string[] } | { type: "tag_any_in"; values: string[] } | { type: "channel_any_in"; values: string[] } | { type: "is_unlisted_eq"; value: boolean } | { type: "embeddable_eq"; value: boolean } | { type: "published_at_range"; range: DateRange };
 ```
 
 この形を選ぶ理由:

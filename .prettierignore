@@ -5,3 +5,5 @@
 # But these files are added trailing commas by the prettier, we ignorer them.
 music/data/music/**
 .vscode/music.code-snippets
+
+**/devcontainer-lock.json
