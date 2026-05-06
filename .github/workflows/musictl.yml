@@ -52,8 +52,8 @@ jobs:
 
       - name: Upload musictl binary to S3
         run: |
-          chmod +x target/release/musictl
-          aws s3 cp target/release/musictl s3://${{ secrets.S3_BUCKET }}/cliplayer/musictl
+          chmod +x target/x86_64-unknown-linux-gnu/release/musictl
+          aws s3 cp target/x86_64-unknown-linux-gnu/release/musictl s3://${{ secrets.S3_BUCKET }}/cliplayer/musictl
 
       - name: Upload musictl artifact
         uses: actions/upload-artifact@v7
