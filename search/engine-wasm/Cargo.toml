@@ -1,10 +1,9 @@
+[workspace]
 [package]
-name = "engine"
+name = "engine-wasm"
 version = "0.1.0"
 edition = "2024"
 
-[lib]
-crate-type = ["rlib"]
-
 [dependencies]
+engine = { path = "../engine" }
 index-core = { path = "../index-core" }

@@ -52,7 +52,7 @@
     "editor.defaultFormatter": "rust-lang.rust-analyzer"
   },
   //   search
-  "rust-analyzer.linkedProjects": ["music/Cargo.toml", "search/engine/Cargo.toml"],
+  "rust-analyzer.linkedProjects": ["music/Cargo.toml", "search/engine-wasm/Cargo.toml"],
 
   // Typescript
   "js/ts.tsserver.log": "verbose",

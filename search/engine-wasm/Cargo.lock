@@ -10,5 +10,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "engine-wasm"
+version = "0.1.0"
+dependencies = [
+ "engine",
+ "index-core",
+]
+
+[[package]]
 name = "index-core"
 version = "0.1.0"

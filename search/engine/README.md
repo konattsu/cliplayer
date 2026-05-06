@@ -1,7 +1,7 @@
 # search/engine design
 
 この README は `search/engine` の実装設計だけを扱う。
-全体像は [`../README.md`](../README.md)、binary format は
+全体像は [`../README.md`](../README.md)、binary schema は
 [`../binary_schema.md`](../binary_schema.md) を参照。
 
 ## 1. 役割
@@ -476,28 +476,3 @@ integration test:
 9. boolean query 評価
 10. paging / total
 11. integration test
-
-## 15. 実装後に消すメモ: 他クレートへの変更
-
-### `search/index-core`
-
-- binary metadata に `index_build_id` を追加する
-- load 時に検証済みの section directory を保持できる API を追加する
-- asc sort index の不変条件を
-  `(published_at asc, doc_id asc)` として明文化する
-
-### `search/index-builder`
-
-- build ごとに一意な `index_build_id` を生成して metadata へ書く
-- sort index 構築時の tie-break を `(published_at asc, doc_id asc)` に固定する
-
-### `search/engine` API
-
-- cursor 型を seek cursor に拡張する
-- response に `warnings` を追加するか決める
-- `DocSet` を `api/query` 配下から内部 module へ移す
-
-### frontend
-
-- cursor を opaque token として扱う
-- `warnings` を UI / log のどこへ出すか決める
