@@ -104,3 +104,26 @@ fn test_util_find_duplicate_id_e2e() {
         .success()
         .stdout(contains("Duplicate video IDs found"));
 }
+
+#[test]
+fn test_min_command_writes_min_files() {
+    let tmp = tempfile::tempdir().unwrap();
+    let music_root = tmp.path().join("music");
+    let month_path = music_root.join("2026/01.json");
+    let min_clips = tmp.path().join("public/clips.min.json");
+    let min_videos = tmp.path().join("public/videos.min.json");
+    write_text_file(&month_path, MONTHLY_FILE_JSON);
+
+    let mut cmd = Command::cargo_bin("musictl").unwrap();
+    cmd.arg("min")
+        .arg("--music-root-dir")
+        .arg(music_root.to_string_lossy().to_string())
+        .arg("--min-clips-path")
+        .arg(min_clips.to_string_lossy().to_string())
+        .arg("--min-videos-path")
+        .arg(min_videos.to_string_lossy().to_string());
+
+    cmd.assert().success();
+    assert!(min_clips.exists());
+    assert!(min_videos.exists());
+}

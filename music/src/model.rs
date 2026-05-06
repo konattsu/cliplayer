@@ -7,7 +7,6 @@ mod uuid;
 mod video;
 mod video_id;
 mod video_published_at;
-mod volume_percent;
 
 pub mod clip;
 
@@ -23,7 +22,6 @@ pub(crate) use video::{
     VideoRecord,
 };
 pub(crate) use video_published_at::VideoPublishedAt;
-pub(crate) use volume_percent::VolumePercent;
 
 #[cfg(any(test, feature = "test-helpers"))]
 pub use uuid::UuidVer4;

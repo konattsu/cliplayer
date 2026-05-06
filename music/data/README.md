@@ -38,7 +38,6 @@ public/に配置. フロントのビルドとは関係ない
         "clippedVideoId": "(例示用)",
         "startTime": "PT1M10S",
         "endTime": "PT4M21S",
-        "clipTags": ["(例示用)"],
       },
       {
         "songTitle": "命に嫌われている。",
@@ -73,7 +72,6 @@ public/に配置. フロントのビルドとは関係ない
     - e.g. 1分30.4秒など中途半端であれば0.4秒早めて`PT1M30S`を指定.
   - `endTime`: クリップの終了時間. 同上
     - e.g. 3分24.1秒であれば0.9秒遅くして`PT3M25S`を指定
-  - `clipTags`: クリップのタグ. 現在のところ未使用
 
 ### `(年)/(月).json`
 
@@ -103,7 +101,6 @@ public/に配置. フロントのビルドとは関係ない
         "endTime": "PT4M21S",
         // uuid version 4
         "uuid": "d5cb8a6b-fb40-424d-9079-c62bd76b92a5",
-        "clipTags": ["(例示用)"],
         "clippedVideoId": "(例示用)",
         // 今は未実装. 実装しても, actionsで直接付与できるものではなくローカルからのPRになりそう
         "volumePercent": 50,
@@ -138,7 +135,6 @@ public/に配置. フロントのビルドとは関係ない
     "liverIds": ["ruri-shioriha"],
     "externalArtistsName": ["(例示用)"],
     "clippedVideoId": "(例示用)",
-    "clipTags": ["(例示用)"],
     "volumePercent": 50,
   },
   "6af3a9fb-05ab-4e53-8cdf-9e63869c4246": {
@@ -175,41 +171,5 @@ public/に配置. フロントのビルドとは関係ない
     "embeddable": true,
     "videoTags": ["karaoke", "2d"],
   },
-}
-```
-
-### `clip_docs.min.json`
-
-```jsonc
-[
-  {
-    "docId": 0, // auto-inc
-    "videoId": 0, // 対応表は別で保持
-    "liverIntIds": [6, 42], // livers.jsonを参照して整数化
-    "tagIds": [0, 1], // 対応表は別で保持
-    "channelIntId": 0, // Option<int>, livers.jsonを参照して整数化
-    "publishedAtSec": 0, // unix timestamp
-  },
-]
-```
-
-### `video_id_record.min.json`
-
-```jsonc
-{
-  // auto-inc
-  "ZeFvqdvutb4": 0,
-  "6gKIA3_ihCY": 1,
-}
-```
-
-### `tag_id_record.min.json`
-
-```jsonc
-{
-  // auto-inc
-  "karaoke": 0,
-  "3d": 1,
-  "sitr-nagoya": 2,
 }
 ```

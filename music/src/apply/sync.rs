@@ -13,25 +13,15 @@ enum SyncError {
 pub async fn apply_sync(
     music_lib: crate::music_file::MusicLibrary,
     api_key: crate::fetcher::YouTubeApiKey,
-    min_clips_path: &std::path::Path,
-    min_videos_path: &std::path::Path,
 ) -> Result<(), crate::apply::ApplyError> {
     let youtube_api = crate::fetcher::YouTubeApi::new(api_key);
 
-    apply_sync_with_fetcher(
-        music_lib,
-        |video_ids| youtube_api.run(video_ids),
-        min_clips_path,
-        min_videos_path,
-    )
-    .await
+    apply_sync_with_fetcher(music_lib, |video_ids| youtube_api.run(video_ids)).await
 }
 
 async fn apply_sync_with_fetcher<F, Fut>(
     mut music_lib: crate::music_file::MusicLibrary,
     mut fetch_video_info: F,
-    min_clips_path: &std::path::Path,
-    min_videos_path: &std::path::Path,
 ) -> Result<(), crate::apply::ApplyError>
 where
     F: FnMut(crate::model::VideoIds) -> Fut,
@@ -61,9 +51,7 @@ where
 
     if failed_files.is_empty() {
         tracing::info!("All music files synced successfully.");
-        // minファイルを更新
-        super::min_file::save_min_files(music_lib, min_clips_path, min_videos_path)
-            .map_err(Into::into)
+        Ok(())
     } else {
         Err(crate::apply::ApplyError::SyncPartialFailure(
             failed_files.join("\n"),
@@ -99,9 +87,8 @@ where
         .map_err(|e| SyncError::Fatal(e.into()))?;
 
     let new_videos = music_file
-        .clone()
-        .into_videos()
-        .with_new_api_info_list(api_video_info_list)
+        .videos()
+        .refreshed_with_api_info_list(api_video_info_list)
         .map_err(|e| {
             let msg = format!("Failed to apply API info to videos: {e}");
             tracing::error!("{msg}");
@@ -180,7 +167,7 @@ mod tests {
     }
 
     fn build_music_library(root: &std::path::Path) -> crate::music_file::MusicLibrary {
-        crate::music_file::MusicLibrary::load(root).unwrap()
+        crate::music_file::MusicLibraryRepository::load(root).unwrap()
     }
 
     fn api_info_for_id(id: &crate::model::VideoId) -> crate::model::ApiVideoInfo {
@@ -213,30 +200,20 @@ mod tests {
         write_month_file(root, 2024, 1, MONTH_2024_01_JSON);
         write_month_file(root, 2024, 2, MONTH_2024_02_JSON);
 
-        let min_clips = root.join("clips.min.json");
-        let min_videos = root.join("videos.min.json");
-
         let lib = build_music_library(root);
-        let res = apply_sync_with_fetcher(
-            lib,
-            |video_ids| async move {
-                let infos = video_ids
-                    .into_vec()
-                    .into_iter()
-                    .map(|id| api_info_for_id(&id))
-                    .collect::<Vec<_>>();
-                Ok(crate::model::ApiVideoInfoList::from_vec_ignore_duplicated(
-                    infos,
-                ))
-            },
-            &min_clips,
-            &min_videos,
-        )
+        let res = apply_sync_with_fetcher(lib, |video_ids| async move {
+            let infos = video_ids
+                .into_vec()
+                .into_iter()
+                .map(|id| api_info_for_id(&id))
+                .collect::<Vec<_>>();
+            Ok(crate::model::ApiVideoInfoList::from_vec_ignore_duplicated(
+                infos,
+            ))
+        })
         .await;
 
         assert!(res.is_ok());
-        assert!(min_clips.exists());
-        assert!(min_videos.exists());
     }
 
     #[tokio::test]
@@ -246,20 +223,12 @@ mod tests {
 
         write_month_file(root, 2024, 1, MONTH_2024_01_JSON);
 
-        let min_clips = root.join("clips.min.json");
-        let min_videos = root.join("videos.min.json");
-
         let lib = build_music_library(root);
-        let res = apply_sync_with_fetcher(
-            lib,
-            |_video_ids| async {
-                Err(crate::fetcher::YouTubeApiError::NetworkError(
-                    "network down".to_string(),
-                ))
-            },
-            &min_clips,
-            &min_videos,
-        )
+        let res = apply_sync_with_fetcher(lib, |_video_ids| async {
+            Err(crate::fetcher::YouTubeApiError::NetworkError(
+                "network down".to_string(),
+            ))
+        })
         .await;
 
         assert!(matches!(
@@ -277,20 +246,12 @@ mod tests {
 
         write_month_file(root, 2024, 1, MONTH_2024_01_JSON);
 
-        let min_clips = root.join("clips.min.json");
-        let min_videos = root.join("videos.min.json");
-
         let lib = build_music_library(root);
-        let res = apply_sync_with_fetcher(
-            lib,
-            |_video_ids| async {
-                Ok(crate::model::ApiVideoInfoList::from_vec_ignore_duplicated(
-                    Vec::new(),
-                ))
-            },
-            &min_clips,
-            &min_videos,
-        )
+        let res = apply_sync_with_fetcher(lib, |_video_ids| async {
+            Ok(crate::model::ApiVideoInfoList::from_vec_ignore_duplicated(
+                Vec::new(),
+            ))
+        })
         .await;
 
         match res {

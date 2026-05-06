@@ -40,8 +40,7 @@ fn test_build_writes_search_index_binary() {
     write_text_file(&music_root.join("2026/01.json"), MONTHLY_FILE_JSON);
 
     let mut cmd = std::process::Command::cargo_bin("index-builder").unwrap();
-    cmd.arg("build")
-        .arg("--music-root-dir")
+    cmd.arg("--music-root-dir")
         .arg(&music_root)
         .arg("--output-path")
         .arg(&output_path);

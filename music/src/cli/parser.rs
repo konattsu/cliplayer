@@ -16,6 +16,8 @@ pub(crate) enum Commands {
     Update(UpdateCommands),
     /// Synchronize the library with YouTube using the current library state.
     Sync(SyncCommands),
+    /// Generate minimized public data files from the current music library.
+    Min(MinCommands),
     /// Run utility commands that are outside the core music‑library workflows.
     Util(UtilCommands),
 }
@@ -40,35 +42,22 @@ pub(crate) enum AddMode {
 
 #[derive(Debug, clap::Args)]
 pub(crate) struct AddValidateArgs {
-    /// Comma-separated file paths containing new music data to validate
-    #[arg(short, long, value_name = "FILES")]
-    pub(crate) input: crate::cli::FilePathsFromCli,
-    /// If set, output the parsed information in markdown format
-    #[arg(long, action = clap::ArgAction::SetTrue)]
-    pub(crate) markdown: bool,
+    #[command(flatten)]
+    pub(crate) input: crate::cli::InputFilesArgs,
+    #[command(flatten)]
+    pub(crate) markdown: crate::cli::MarkdownArgs,
 }
 
 #[derive(Debug, clap::Args)]
 pub(crate) struct AddApplyArgs {
-    /// Comma-separated file paths containing new music data to apply
-    #[arg(short, long, value_name = "FILES")]
-    pub(crate) input: crate::cli::FilePathsFromCli,
-    /// The key of YouTube Data v3 api to fetch data
-    #[arg(short, long, env = "YOUTUBE_API_KEY", hide_env_values = true)]
-    pub(crate) api_key: crate::fetcher::YouTubeApiKey,
-    /// If set, duplicate video IDs in existing month files are overwritten
-    #[arg(long, action = clap::ArgAction::SetTrue)]
-    pub(crate) allow_overwrite_existing_video: bool,
-    /// Directory where the results will be written
-    #[arg(long, value_name = "DIR", default_value_t = crate::cfg::default_music_root_dir())]
-    pub(crate) music_root_dir: String,
-    // Path to the output file for minimized clips data
-    #[arg(long, value_name = "FILE", default_value_t = crate::cfg::default_min_output_clips_path())]
-    /// Path to the output file for minimized videos data
-    pub(crate) min_clips_path: String,
-    // Path to the output file for minimized videos data
-    #[arg(long, value_name = "FILE", default_value_t = crate::cfg::default_min_output_videos_path())]
-    pub(crate) min_videos_path: String,
+    #[command(flatten)]
+    pub(crate) input: crate::cli::InputFilesArgs,
+    #[command(flatten)]
+    pub(crate) api_key: crate::cli::ApiKeyArgs,
+    #[command(flatten)]
+    pub(crate) duplicate_video_policy: crate::cli::DuplicateVideoPolicyArgs,
+    #[command(flatten)]
+    pub(crate) music_root: crate::cli::MusicRootArgs,
 }
 
 // MARK: update
@@ -89,40 +78,34 @@ pub(crate) enum UpdateMode {
 
 #[derive(Debug, clap::Args)]
 pub(crate) struct UpdateValidateArgs {
-    /// Directory of the music data to use for validation
-    #[arg(long, value_name = "DIR", default_value_t = crate::cfg::default_music_root_dir())]
-    pub(crate) music_root_dir: String,
+    #[command(flatten)]
+    pub(crate) music_root: crate::cli::MusicRootArgs,
 }
 
 #[derive(Debug, clap::Args)]
 pub(crate) struct UpdateApplyArgs {
-    /// Directory where the results will be written
-    #[arg(long, value_name = "DIR", default_value_t = crate::cfg::default_music_root_dir())]
-    pub(crate) music_root_dir: String,
-    /// Path to the output file for minimized clips data
-    #[arg(long, value_name = "FILE", default_value_t = crate::cfg::default_min_output_clips_path())]
-    pub(crate) min_clips_path: String,
-    /// Path to the output file for minimized videos data
-    #[arg(long, value_name = "FILE", default_value_t = crate::cfg::default_min_output_videos_path())]
-    pub(crate) min_videos_path: String,
+    #[command(flatten)]
+    pub(crate) music_root: crate::cli::MusicRootArgs,
 }
 
 // MARK: sync
 
 #[derive(Debug, clap::Args)]
 pub(crate) struct SyncCommands {
-    /// The key of YouTube Data v3 api to fetch data
-    #[arg(short, long, env = "YOUTUBE_API_KEY", hide_env_values = true)]
-    pub(crate) api_key: crate::fetcher::YouTubeApiKey,
-    /// Directory of the music data to synchronize with
-    #[arg(long, value_name = "DIR", default_value_t = crate::cfg::default_music_root_dir())]
-    pub(crate) music_root_dir: String,
-    /// Path to the output file for minimized clips data
-    #[arg(long, value_name = "FILE", default_value_t = crate::cfg::default_min_output_clips_path())]
-    pub(crate) min_clips_path: String,
-    /// Path to the output file for minimized videos data
-    #[arg(long, value_name = "FILE", default_value_t = crate::cfg::default_min_output_videos_path())]
-    pub(crate) min_videos_path: String,
+    #[command(flatten)]
+    pub(crate) api_key: crate::cli::ApiKeyArgs,
+    #[command(flatten)]
+    pub(crate) music_root: crate::cli::MusicRootArgs,
+}
+
+// MARK: min
+
+#[derive(Debug, clap::Args)]
+pub(crate) struct MinCommands {
+    #[command(flatten)]
+    pub(crate) music_root: crate::cli::MusicRootArgs,
+    #[command(flatten)]
+    pub(crate) min_output: crate::cli::MinOutputArgs,
 }
 
 // MARK: util
@@ -146,19 +129,17 @@ pub(crate) struct FindDuplicateIdsArgs {
     /// Comma-separated video IDs to check for duplicates
     #[arg(short, long, value_name = "String")]
     pub(crate) ids: crate::cli::VideoIdsFromCli,
-    /// Directory of the music data to use for duplicate checking
-    #[arg(long, value_name = "DIR", default_value_t = crate::cfg::default_music_root_dir())]
-    pub(crate) music_root_dir: String,
+    #[command(flatten)]
+    pub(crate) music_root: crate::cli::MusicRootArgs,
 }
 
 #[derive(Debug, clap::Args)]
 pub(crate) struct MergeFilesArgs {
-    /// Directory containing the json files to be merged
-    #[arg(short, long, value_name = "DIR", default_value_t = crate::cfg::default_merge_files_dir())]
-    pub(crate) input_dir: String,
-    /// Directory where the json files will be merged
-    #[arg(short, long, value_name = "DIR", default_value_t = crate::cfg::default_merged_file_dir())]
-    pub(crate) output_dir: String,
+    #[command(flatten)]
+    pub(crate) directories: crate::cli::MergeDirectoriesArgs,
+    /// Remove source files after a successful merge
+    #[arg(long, action = clap::ArgAction::SetTrue)]
+    pub(crate) remove_source_files: bool,
 }
 
 // MARK: impl

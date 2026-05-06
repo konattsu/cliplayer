@@ -59,7 +59,7 @@ pub(crate) fn load_data(music_root: &std::path::Path) -> anyhow::Result<LoadedDa
         .map(str::to_owned)
         .collect::<Vec<_>>();
 
-    let library = musictl::music_file::MusicLibrary::load(music_root)?;
+    let library = musictl::music_file::MusicLibraryRepository::load(music_root)?;
     let videos = library.into_videos()?;
     let mut clips = Vec::new();
 
@@ -72,11 +72,6 @@ pub(crate) fn load_data(music_root: &std::path::Path) -> anyhow::Result<LoadedDa
         video_tag_ids.sort_unstable();
 
         for clip in video.clips() {
-            let mut tag_ids = video_tag_ids.clone();
-            tag_ids.extend(clip.tag_ids().into_iter().map(str::to_owned));
-            tag_ids.sort_unstable();
-            tag_ids.dedup();
-
             clips.push(LoadedClipRecord {
                 clip_uuid: clip.uuid_string(),
                 video_id: video.video_id_string(),
@@ -89,7 +84,7 @@ pub(crate) fn load_data(music_root: &std::path::Path) -> anyhow::Result<LoadedDa
                     .into_iter()
                     .map(str::to_owned)
                     .collect::<Vec<_>>(),
-                tag_ids,
+                tag_ids: video_tag_ids.clone(),
             });
         }
     }

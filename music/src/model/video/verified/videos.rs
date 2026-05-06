@@ -32,8 +32,7 @@ impl serde::Serialize for VerifiedVideos {
     where
         S: serde::Serializer,
     {
-        // serialize時に順番を保証するためにソート
-        self.to_sorted_vec().serialize(serializer)
+        self.sorted_videos().serialize(serializer)
     }
 }
 
@@ -198,6 +197,13 @@ impl VerifiedVideos {
         }
     }
 
+    pub(crate) fn refreshed_with_api_info_list(
+        &self,
+        api_list: crate::model::ApiVideoInfoList,
+    ) -> Result<Self, super::error::VerifiedVideoErrors> {
+        self.clone().with_new_api_info_list(api_list)
+    }
+
     /// 内部の動画をソートして返す
     pub fn into_sorted_vec(self) -> Vec<super::VerifiedVideo> {
         let mut vec = self.inner.into_values().collect::<Vec<_>>();
@@ -205,8 +211,8 @@ impl VerifiedVideos {
         vec
     }
 
-    pub(crate) fn to_vec(&self) -> Vec<&super::VerifiedVideo> {
-        self.inner.values().collect()
+    pub(crate) fn iter(&self) -> impl Iterator<Item = &super::VerifiedVideo> {
+        self.inner.values()
     }
 
     pub(crate) fn to_video_ids(&self) -> crate::model::VideoIds {
@@ -217,8 +223,8 @@ impl VerifiedVideos {
             .into()
     }
 
-    fn to_sorted_vec(&self) -> Vec<super::VerifiedVideo> {
-        let mut vec = self.inner.values().cloned().collect::<Vec<_>>();
+    fn sorted_videos(&self) -> Vec<&super::VerifiedVideo> {
+        let mut vec = self.inner.values().collect::<Vec<_>>();
         vec.sort_by_key(|video| video.get_published_at().as_secs());
         vec
     }

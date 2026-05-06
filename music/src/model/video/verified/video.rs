@@ -19,18 +19,47 @@ impl<'de> serde::Deserialize<'de> for VerifiedVideo {
         #[serde(rename_all = "camelCase")]
         #[serde(deny_unknown_fields)]
         struct RawVerifiedVideo {
-            #[serde(flatten)]
-            record: crate::model::VideoRecord,
+            video_id: crate::model::VideoId,
+            title: String,
+            channel_id: crate::model::ChannelId,
+            published_at: crate::model::VideoPublishedAt,
+            #[serde(with = "crate::util::datetime_serde")]
+            synced_at: chrono::DateTime<chrono::Utc>,
+            duration: crate::model::Duration,
+            privacy_status: crate::model::PrivacyStatus,
+            embeddable: bool,
+            uploader_name: Option<crate::model::UploaderName>,
+            #[serde(default)]
+            video_tags: crate::model::VideoTagIds,
             clips: Vec<crate::model::UnverifiedClip>,
         }
         let raw = RawVerifiedVideo::deserialize(deserializer)?;
+        let record = crate::model::VideoRecord::new(
+            crate::model::LocalVideoInfo::new(
+                raw.video_id.clone(),
+                raw.uploader_name,
+                raw.video_tags,
+            ),
+            crate::model::ApiVideoInfoInitializer {
+                video_id: raw.video_id,
+                title: raw.title,
+                channel_id: raw.channel_id,
+                published_at: raw.published_at,
+                synced_at: raw.synced_at,
+                duration: raw.duration,
+                privacy_status: raw.privacy_status,
+                embeddable: raw.embeddable,
+            }
+            .init(),
+        )
+        .map_err(serde::de::Error::custom)?;
         // ここでrecordの情報を基にVerifiedClipを作成
         let verified_clips = Self::verify_clips_from_unverified(
             raw.clips,
-            raw.record.get_api().get_duration(),
+            record.get_api().get_duration(),
         )
         .map_err(serde::de::Error::custom)?;
-        Self::new(raw.record, verified_clips).map_err(serde::de::Error::custom)
+        Self::new(record, verified_clips).map_err(serde::de::Error::custom)
     }
 }
 
@@ -39,22 +68,38 @@ impl serde::Serialize for VerifiedVideo {
     where
         S: serde::Serializer,
     {
-        // clipsのstart_time順にソートしてからserialize
-        let mut sorted_clips = self.clips.clone();
-        sorted_clips.sort_by_key(|clip| clip.get_start_time().as_secs());
-
         #[derive(serde::Serialize)]
         #[serde(rename_all = "camelCase")]
         #[serde(deny_unknown_fields)]
         struct RawVerifiedVideo<'a> {
-            #[serde(flatten)]
-            record: &'a crate::model::VideoRecord,
-            clips: Vec<crate::model::VerifiedClip>,
+            video_id: &'a crate::model::VideoId,
+            title: &'a str,
+            channel_id: &'a crate::model::ChannelId,
+            published_at: &'a crate::model::VideoPublishedAt,
+            #[serde(with = "crate::util::datetime_serde")]
+            synced_at: &'a chrono::DateTime<chrono::Utc>,
+            duration: &'a crate::model::Duration,
+            privacy_status: &'a crate::model::PrivacyStatus,
+            embeddable: bool,
+            #[serde(skip_serializing_if = "Option::is_none")]
+            uploader_name: Option<&'a crate::model::UploaderName>,
+            #[serde(default)]
+            video_tags: &'a crate::model::VideoTagIds,
+            clips: &'a [crate::model::VerifiedClip],
         }
 
         let raw = RawVerifiedVideo {
-            record: &self.record,
-            clips: sorted_clips,
+            video_id: self.record.get_video_id(),
+            title: self.record.get_api().get_title(),
+            channel_id: self.record.get_api().get_channel_id(),
+            published_at: self.record.get_api().get_published_at(),
+            synced_at: self.record.get_api().get_synced_at(),
+            duration: self.record.get_api().get_duration(),
+            privacy_status: self.record.get_api().get_privacy_status(),
+            embeddable: self.record.get_api().is_embeddable(),
+            uploader_name: self.record.get_local().get_uploader_name(),
+            video_tags: self.record.get_local().get_video_tags(),
+            clips: &self.clips,
         };
         raw.serialize(serializer)
     }
@@ -97,10 +142,6 @@ impl VerifiedVideo {
     pub(crate) fn get_month(&self) -> usize {
         self.record.get_api().get_published_at().get_month()
     }
-    pub(crate) fn to_clips(&self) -> Vec<&crate::model::VerifiedClip> {
-        self.clips.iter().collect()
-    }
-
     pub fn video_id_string(&self) -> String {
         self.record.get_video_id().to_string()
     }
@@ -224,6 +265,8 @@ impl VerifiedVideo {
         record: crate::model::VideoRecord,
         clips: Vec<crate::model::VerifiedClip>,
     ) -> Result<Self, super::VerifiedVideoError> {
+        let mut clips = clips;
+        clips.sort_by_key(|clip| clip.get_start_time().as_secs());
         Self::validate_consistency(&clips, record.get_video_id())?;
         Ok(VerifiedVideo { record, clips })
     }
@@ -370,6 +413,33 @@ mod tests {
 
         assert_eq!(updated_video.record, new_record);
         assert_eq!(updated_video.clips.len(), 2);
+    }
+
+    #[test]
+    fn test_verified_video_deserialize_unknown_field() {
+        let value = serde_json::json!({
+            "videoId": crate::model::VideoId::test_id_1().to_string(),
+            "title": "Test Video A",
+            "channelId": crate::model::ChannelId::test_id_1(),
+            "publishedAt": crate::model::VideoPublishedAt::self_1(),
+            "syncedAt": "2025-01-01T01:01:01Z",
+            "duration": crate::model::Duration::self_3(),
+            "privacyStatus": crate::model::PrivacyStatus::Public,
+            "embeddable": true,
+            "videoTags": ["karaoke"],
+            "editor": "vscode",
+            "clips": [
+                {
+                    "songTitle": "song",
+                    "liverIds": ["riku-tazumi"],
+                    "startTime": "PT1S",
+                    "endTime": "PT2S",
+                    "uuid": "11786ebd-4b42-428b-81f8-ecf791887326"
+                }
+            ]
+        });
+        let result: Result<VerifiedVideo, _> = serde_json::from_value(value);
+        assert!(result.is_err());
     }
 
     #[test]
