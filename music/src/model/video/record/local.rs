@@ -9,7 +9,7 @@ pub(crate) struct LocalVideoInfo {
     pub(super) uploader_name: Option<crate::model::UploaderName>,
     /// 動画のタグ
     #[serde(default)]
-    pub(super) video_tags: crate::model::VideoTags,
+    pub(super) video_tags: crate::model::VideoTagIds,
 }
 
 impl LocalVideoInfo {
@@ -19,7 +19,7 @@ impl LocalVideoInfo {
     pub(crate) fn get_uploader_name(&self) -> Option<&crate::model::UploaderName> {
         self.uploader_name.as_ref()
     }
-    pub(crate) fn get_video_tags(&self) -> &crate::model::VideoTags {
+    pub(crate) fn get_video_tags(&self) -> &crate::model::VideoTagIds {
         &self.video_tags
     }
 
@@ -27,7 +27,7 @@ impl LocalVideoInfo {
     pub(crate) fn new(
         video_id: crate::model::VideoId,
         uploader_name: Option<crate::model::UploaderName>,
-        tags: crate::model::VideoTags,
+        tags: crate::model::VideoTagIds,
     ) -> Self {
         Self {
             video_id,
@@ -45,14 +45,14 @@ impl LocalVideoInfo {
         LocalVideoInfo::new(
             crate::model::VideoId::test_id_1(),
             Some(crate::model::UploaderName::test_uploader_name_1()),
-            crate::model::VideoTags::self_1(),
+            crate::model::VideoTagIds::self_1(),
         )
     }
     pub(crate) fn self_b() -> Self {
         LocalVideoInfo::new(
             crate::model::VideoId::test_id_2(),
             None,
-            crate::model::VideoTags::self_2(),
+            crate::model::VideoTagIds::self_2(),
         )
     }
 }
@@ -66,7 +66,7 @@ mod tests {
     const LOCAL_VIDEO_INFO_VALID_JSON_1: &str = r#"{
         "videoId": "11111111111",
         "uploaderName": "Test Channel 1",
-        "videoTags": ["Test Video Tag1"]
+        "videoTags": ["karaoke"]
     }"#;
 
     const LOCAL_VIDEO_INFO_VALID_JSON_2: &str = r#"{
@@ -82,7 +82,7 @@ mod tests {
             local.uploader_name,
             Some(crate::model::UploaderName::test_uploader_name_1())
         );
-        assert_eq!(local.video_tags, crate::model::VideoTags::self_1());
+        assert_eq!(local.video_tags, crate::model::VideoTagIds::self_1());
 
         let local: LocalVideoInfo = serde_json::from_str(LOCAL_VIDEO_INFO_VALID_JSON_2)
             .expect("should deserialize successfully");

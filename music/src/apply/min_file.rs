@@ -58,7 +58,7 @@ struct FlatClipValue<'a> {
     /// 曲が終わる時間
     end_time: &'a crate::model::Duration,
     /// タグ
-    clip_tags: Option<&'a crate::model::ClipTags>,
+    clip_tags: Option<&'a crate::model::VideoTagIds>,
     /// 音量の正規化時に設定すべき音量
     volume_percent: Option<&'a crate::model::VolumePercent>,
     /// このクリップと紐づく動画id
@@ -82,7 +82,7 @@ impl serde::Serialize for FlatClipValue<'_> {
             start_time_secs: u32,
             end_time_secs: u32,
             #[serde(skip_serializing_if = "Option::is_none")]
-            clip_tags: Option<&'a crate::model::ClipTags>,
+            clip_tags: Option<&'a crate::model::VideoTagIds>,
             #[serde(skip_serializing_if = "Option::is_none")]
             volume_percent: Option<&'a crate::model::VolumePercent>,
             video_id: &'a crate::model::VideoId,
@@ -162,7 +162,7 @@ struct FlatVideoValue<'a> {
     /// チャンネル名, 箱外で行われた配信/動画の時に付与
     uploader_name: Option<&'a crate::model::UploaderName>,
     /// 動画のタグ
-    video_tags: &'a crate::model::VideoTags,
+    video_tags: &'a crate::model::VideoTagIds,
 }
 
 impl serde::Serialize for FlatVideoValue<'_> {
@@ -185,7 +185,7 @@ impl serde::Serialize for FlatVideoValue<'_> {
             #[serde(skip_serializing_if = "Option::is_none")]
             uploader_name: Option<&'a crate::model::UploaderName>,
             #[serde(default)]
-            video_tags: &'a crate::model::VideoTags,
+            video_tags: &'a crate::model::VideoTagIds,
         }
         let value = RawFlatVideoValue {
             clip_uuids: &self.clip_uuids,
@@ -252,7 +252,7 @@ mod tests {
         let external_artists_name =
             Some(artistctl::model::ExternalArtistsName::self_1());
         let clipped_video_id = Some(crate::model::VideoId::test_id_4());
-        let clip_tags = Some(crate::model::ClipTags::self_1());
+        let clip_tags = Some(crate::model::VideoTagIds::self_1());
         let volume_percent = Some(crate::model::VolumePercent::new(1).unwrap());
         let video_id = crate::model::VideoId::test_id_1();
         let start_time = crate::model::Duration::self_1();
@@ -291,7 +291,7 @@ mod tests {
         let external_artists_name =
             Some(artistctl::model::ExternalArtistsName::self_2());
         let clipped_video_id = Some(crate::model::VideoId::test_id_3());
-        let clip_tags = Some(crate::model::ClipTags::self_2());
+        let clip_tags = Some(crate::model::VideoTagIds::self_2());
         let volume_percent = Some(crate::model::VolumePercent::new(99).unwrap());
         let video_id = crate::model::VideoId::test_id_2();
         let start_time = crate::model::Duration::self_2();
@@ -391,7 +391,7 @@ mod tests {
         let duration = crate::model::Duration::self_1();
         let privacy_status = crate::model::PrivacyStatus::Private;
         let uploader_name = Some(crate::model::UploaderName::test_uploader_name_1());
-        let video_tags = crate::model::VideoTags::self_1();
+        let video_tags = crate::model::VideoTagIds::self_1();
 
         let val = FlatVideoValue {
             clip_uuids: vec![&uuid1, &uuid2],
@@ -431,7 +431,7 @@ mod tests {
         let duration = crate::model::Duration::self_2();
         let privacy_status = crate::model::PrivacyStatus::Public;
         let uploader_name = Some(crate::model::UploaderName::test_uploader_name_3());
-        let video_tags = crate::model::VideoTags::self_2();
+        let video_tags = crate::model::VideoTagIds::self_2();
 
         let val = FlatVideoValue {
             clip_uuids: vec![&uuid1, &uuid2],
@@ -469,7 +469,7 @@ mod tests {
         let synced_at = chrono::Utc::now();
         let duration = crate::model::Duration::self_1();
         let privacy_status = crate::model::PrivacyStatus::Unlisted;
-        let video_tags = crate::model::VideoTags::self_1();
+        let video_tags = crate::model::VideoTagIds::self_1();
 
         let val = FlatVideoValue {
             clip_uuids: vec![&uuid1],
@@ -506,7 +506,7 @@ mod tests {
         let synced_at = chrono::Utc::now();
         let duration = crate::model::Duration::self_2();
         let privacy_status = crate::model::PrivacyStatus::Public;
-        let video_tags = crate::model::VideoTags::self_2();
+        let video_tags = crate::model::VideoTagIds::self_2();
 
         let val = FlatVideoValue {
             clip_uuids: vec![&uuid1],

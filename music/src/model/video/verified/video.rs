@@ -67,7 +67,7 @@ impl VerifiedVideo {
     pub(crate) fn get_uploader_name(&self) -> Option<&crate::model::UploaderName> {
         self.record.get_local().get_uploader_name()
     }
-    pub(crate) fn get_video_tags(&self) -> &crate::model::VideoTags {
+    pub(crate) fn get_video_tags(&self) -> &crate::model::VideoTagIds {
         self.record.get_local().get_video_tags()
     }
     pub(crate) fn get_title(&self) -> &str {

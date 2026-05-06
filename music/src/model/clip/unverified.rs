@@ -19,7 +19,7 @@ pub(crate) struct UnverifiedClip {
     /// 曲が終わる時間
     end_time: crate::model::Duration,
     /// タグ
-    clip_tags: Option<crate::model::ClipTags>,
+    clip_tags: Option<crate::model::VideoTagIds>,
     /// uuid
     uuid: crate::model::UuidVer4,
     /// 音量の正規化時に設定すべき音量
@@ -55,7 +55,7 @@ struct UnverifiedClipInitializer {
     /// 曲が終わる時間
     end_time: crate::model::Duration,
     /// タグ
-    clip_tags: Option<crate::model::ClipTags>,
+    clip_tags: Option<crate::model::VideoTagIds>,
     /// uuid
     uuid: crate::model::UuidVer4,
     /// 音量の正規化時に設定すべき音量
@@ -104,7 +104,7 @@ impl<'de> serde::Deserialize<'de> for UnverifiedClip {
             clipped_video_id: Option<crate::model::VideoId>,
             start_time: crate::model::Duration,
             end_time: crate::model::Duration,
-            clip_tags: Option<crate::model::ClipTags>,
+            clip_tags: Option<crate::model::VideoTagIds>,
             uuid: crate::model::UuidVer4,
             volume_percent: Option<crate::model::VolumePercent>,
         }
@@ -216,7 +216,7 @@ mod tests {
         "clippedVideoId": null,
         "startTime": "PT12H12M12S",
         "endTime": "PT12H12M20S",
-        "clipTags": ["Test Clip Tag1"],
+        "clipTags": ["karaoke"],
         "uuid": "00000000-0000-4000-8000-000000000000"
     }"#;
 
@@ -229,7 +229,7 @@ mod tests {
         "isClipped": null,
         "startTime": "PT12H12M12S",
         "endTime": "PT12H12M5S",
-        "clipTags": ["Test Clip Tag1"],
+        "clipTags": ["karaoke"],
         "uuid": "00000000-0000-4000-8000-000000000000"
     }"#;
 
@@ -260,7 +260,7 @@ mod tests {
         assert!(clip.clipped_video_id.is_none());
         assert_eq!(clip.start_time, dur_12h_12m_12s());
         assert_eq!(clip.end_time, dur_12h_12m_12s_plus(8));
-        assert_eq!(clip.clip_tags, Some(crate::model::ClipTags::self_1()));
+        assert_eq!(clip.clip_tags, Some(crate::model::VideoTagIds::self_1()));
         assert_eq!(clip.uuid, crate::model::UuidVer4::self_1());
         assert_eq!(clip.volume_percent, None);
 
@@ -280,7 +280,7 @@ mod tests {
             clipped_video_id: None,
             start_time: dur_12h_12m_12s(),
             end_time: dur_12h_12m_12s_plus(8),
-            clip_tags: Some(crate::model::ClipTags::self_1()),
+            clip_tags: Some(crate::model::VideoTagIds::self_1()),
             uuid: crate::model::UuidVer4::self_1(),
             volume_percent: None,
         };
@@ -293,7 +293,7 @@ mod tests {
             clipped_video_id: None,
             start_time: dur_12h_12m_12s(),
             end_time: dur_12h_12m_12s_plus(-5),
-            clip_tags: Some(crate::model::ClipTags::self_1()),
+            clip_tags: Some(crate::model::VideoTagIds::self_1()),
             uuid: crate::model::UuidVer4::self_1(),
             volume_percent: None,
         };

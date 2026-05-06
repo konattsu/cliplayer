@@ -19,7 +19,7 @@ pub(crate) struct AnonymousClip {
     /// 曲が終わる時間
     end_time: crate::model::Duration,
     /// タグ
-    clip_tags: Option<crate::model::ClipTags>,
+    clip_tags: Option<crate::model::VideoTagIds>,
 }
 
 #[cfg(test)]
@@ -37,7 +37,7 @@ struct AnonymousClipInitializer {
     /// 曲が終わる時間
     end_time: crate::model::Duration,
     /// タグ
-    clip_tags: Option<crate::model::ClipTags>,
+    clip_tags: Option<crate::model::VideoTagIds>,
 }
 
 #[cfg(test)]
@@ -77,7 +77,7 @@ impl<'de> serde::Deserialize<'de> for AnonymousClip {
             clipped_video_id: Option<crate::model::VideoId>,
             start_time: crate::model::Duration,
             end_time: crate::model::Duration,
-            clip_tags: Option<crate::model::ClipTags>,
+            clip_tags: Option<crate::model::VideoTagIds>,
         }
 
         let raw: RawAnonymousClip = serde::Deserialize::deserialize(deserializer)
@@ -214,7 +214,7 @@ impl AnonymousClip {
             clipped_video_id: None,
             start_time: crate::model::Duration::from_secs_u16(25),
             end_time: crate::model::Duration::from_secs_u16(30),
-            clip_tags: Some(crate::model::ClipTags::self_2()),
+            clip_tags: Some(crate::model::VideoTagIds::self_2()),
         }
         .init()
         .unwrap()
@@ -227,7 +227,7 @@ impl AnonymousClip {
             clipped_video_id: Some(crate::model::VideoId::test_id_4()),
             start_time: crate::model::Duration::from_secs_u16(7),
             end_time: crate::model::Duration::from_secs_u16(17),
-            clip_tags: Some(crate::model::ClipTags::self_3()),
+            clip_tags: Some(crate::model::VideoTagIds::self_3()),
         }
         .init()
         .unwrap()
@@ -240,7 +240,7 @@ impl AnonymousClip {
             clipped_video_id: None,
             start_time: crate::model::Duration::from_secs_u16(27),
             end_time: crate::model::Duration::from_secs_u16(37),
-            clip_tags: Some(crate::model::ClipTags::self_1()),
+            clip_tags: Some(crate::model::VideoTagIds::self_1()),
         }
         .init()
         .unwrap()
@@ -294,7 +294,7 @@ mod tests {
         assert!(clip_a_3.clipped_video_id.is_none());
         assert_eq!(clip_a_3.start_time, crate::model::Duration::from_secs_u16(25));
         assert_eq!(clip_a_3.end_time, crate::model::Duration::from_secs_u16(30));
-        assert_eq!(clip_a_3.clip_tags, Some(crate::model::ClipTags::self_2()));
+        assert_eq!(clip_a_3.clip_tags, Some(crate::model::VideoTagIds::self_2()));
 
         let clip_b_1 = AnonymousClip::self_b_1();
         assert_eq!(clip_b_1.song_title, "Test Song B1");
@@ -303,7 +303,7 @@ mod tests {
         assert_eq!(clip_b_1.clipped_video_id, Some(crate::model::VideoId::test_id_4()));
         assert_eq!(clip_b_1.start_time, crate::model::Duration::from_secs_u16(7));
         assert_eq!(clip_b_1.end_time, crate::model::Duration::from_secs_u16(17));
-        assert_eq!(clip_b_1.clip_tags, Some(crate::model::ClipTags::self_3()));
+        assert_eq!(clip_b_1.clip_tags, Some(crate::model::VideoTagIds::self_3()));
 
         let clip_b_2 = AnonymousClip::self_b_2();
         assert_eq!(clip_b_2.song_title, "Test Song B2");
@@ -312,7 +312,7 @@ mod tests {
         assert!(clip_b_2.clipped_video_id.is_none());
         assert_eq!(clip_b_2.start_time, crate::model::Duration::from_secs_u16(27));
         assert_eq!(clip_b_2.end_time, crate::model::Duration::from_secs_u16(37));
-        assert_eq!(clip_b_2.clip_tags, Some(crate::model::ClipTags::self_1()));
+        assert_eq!(clip_b_2.clip_tags, Some(crate::model::VideoTagIds::self_1()));
 
         let clip_b_3 = AnonymousClip::self_b_3();
         assert_eq!(clip_b_3.song_title, "Test Song B3");
@@ -332,7 +332,7 @@ mod tests {
         "clippedVideoId": null,
         "startTime": "PT5S",
         "endTime": "PT10S",
-        "clipTags": ["Test Clip Tag1"]
+        "clipTags": ["karaoke"]
     }"#;
 
     // invalid: `startTime` >= `endTime`
@@ -343,7 +343,7 @@ mod tests {
         "externalArtistsName": ["Apple Mike"],
         "startTime": "PT10S",
         "endTime": "PT5S",
-        "ClipTags": ["Test Clip Tag1"]
+        "ClipTags": ["karaoke"]
     }"#;
 
     #[test]
@@ -360,7 +360,7 @@ mod tests {
         assert!(clip.clipped_video_id.is_none());
         assert_eq!(clip.start_time, crate::model::Duration::from_secs_u16(5));
         assert_eq!(clip.end_time, crate::model::Duration::from_secs_u16(10));
-        assert_eq!(clip.clip_tags, Some(crate::model::ClipTags::self_1()));
+        assert_eq!(clip.clip_tags, Some(crate::model::VideoTagIds::self_1()));
 
         // 異常なデシリアライズ
         let result: Result<AnonymousClip, _> =
@@ -377,7 +377,7 @@ mod tests {
             clipped_video_id: None,
             start_time: crate::model::Duration::from_secs_u16(15),
             end_time: crate::model::Duration::from_secs_u16(20),
-            clip_tags: Some(crate::model::ClipTags::self_1()),
+            clip_tags: Some(crate::model::VideoTagIds::self_1()),
         };
         let result = valid_initializer.init();
         assert!(result.is_ok());
@@ -390,7 +390,7 @@ mod tests {
             start_time: crate::model::Duration::from_secs_u16(25),
             // start >= end
             end_time: crate::model::Duration::from_secs_u16(20),
-            clip_tags: Some(crate::model::ClipTags::self_1()),
+            clip_tags: Some(crate::model::VideoTagIds::self_1()),
         };
         let result = invalid_initializer.init();
         assert!(result.is_err());
@@ -416,7 +416,7 @@ mod tests {
             other_info
                 .contains("clipped video exists [here](https://youtu.be/44444444444)")
         );
-        assert!(other_info.contains("cTags: Test Clip Tag3, Test Clip Tag4"));
+        assert!(other_info.contains("cTags: acoustic, karaoke"));
     }
 
     #[test]
@@ -437,9 +437,9 @@ mod tests {
 |:---|:---|:---|:---|:---|
 | 1 | Test Song A1 | 5 - 10 | 田角陸 | external artists: Apple Mike |
 | 2 | Test Song A2 | 15 - 20 | ゆがみん | clipped video exists [here](https://youtu.be/33333333333) |
-| 3 | Test Song A3 | 25 - 30 | ユードリック | external artists: Milk Mike<br />cTags: Test Clip Tag2 |
-| 4 | Test Song B1 | 7 - 17 | 田角陸 | external artists: Banana Mike<br />clipped video exists [here](https://youtu.be/44444444444)<br />cTags: Test Clip Tag3, Test Clip Tag4 |
-| 5 | Test Song B2 | 27 - 37 | ゆがみん | cTags: Test Clip Tag1 |
+| 3 | Test Song A3 | 25 - 30 | ユードリック | external artists: Milk Mike<br />cTags: 3d |
+| 4 | Test Song B1 | 7 - 17 | 田角陸 | external artists: Banana Mike<br />clipped video exists [here](https://youtu.be/44444444444)<br />cTags: acoustic, karaoke |
+| 5 | Test Song B2 | 27 - 37 | ゆがみん | cTags: karaoke |
 | 6 | Test Song B3 | 47 - 57 | 田角陸<br />ユードリック<br />ゆがみん | clipped video exists [here](https://youtu.be/55555555555) |
 "#;
 

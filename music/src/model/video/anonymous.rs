@@ -312,7 +312,7 @@ mod tests {
     fn make_brief_json() -> serde_json::Value {
         serde_json::json!({
             "videoId": crate::model::VideoId::test_id_1().to_string(),
-            "videoTags": ["Test Video Tag1"]
+            "videoTags": ["karaoke"]
         })
     }
 
@@ -361,7 +361,7 @@ mod tests {
         let brief = crate::model::LocalVideoInfo::new(
             crate::model::VideoId::test_id_1(),
             None,
-            crate::model::VideoTags::self_1(),
+            crate::model::VideoTagIds::self_1(),
         );
         let clips = vec![
             // ソートされてない
@@ -385,7 +385,7 @@ mod tests {
         let brief = crate::model::LocalVideoInfo::new(
             crate::model::VideoId::test_id_1(),
             None,
-            crate::model::VideoTags::self_1(),
+            crate::model::VideoTagIds::self_1(),
         );
         let clips = vec![
             crate::model::AnonymousClip::self_a_1(),
@@ -405,7 +405,7 @@ mod tests {
         let brief = crate::model::LocalVideoInfo::new(
             crate::model::VideoId::test_id_1(),
             None,
-            crate::model::VideoTags::self_1(),
+            crate::model::VideoTagIds::self_1(),
         );
         let clips = Vec::new();
         let result = AnonymousVideo::new(brief, clips);
@@ -421,7 +421,7 @@ mod tests {
             crate::model::LocalVideoInfo::new(
                 crate::model::VideoId::test_id_1(),
                 None,
-                crate::model::VideoTags::self_1(),
+                crate::model::VideoTagIds::self_1(),
             ),
             vec![crate::model::AnonymousClip::self_a_1()],
         )
@@ -430,7 +430,7 @@ mod tests {
             crate::model::LocalVideoInfo::new(
                 crate::model::VideoId::test_id_2(),
                 None,
-                crate::model::VideoTags::self_2(),
+                crate::model::VideoTagIds::self_2(),
             ),
             vec![crate::model::AnonymousClip::self_b_1()],
         )
@@ -458,7 +458,7 @@ mod tests {
             crate::model::LocalVideoInfo::new(
                 crate::model::VideoId::test_id_1(),
                 None,
-                crate::model::VideoTags::self_1(),
+                crate::model::VideoTagIds::self_1(),
             ),
             vec![crate::model::AnonymousClip::self_a_1()],
         )
@@ -467,7 +467,7 @@ mod tests {
             crate::model::LocalVideoInfo::new(
                 crate::model::VideoId::test_id_1(), // 重複するID
                 None,
-                crate::model::VideoTags::self_2(),
+                crate::model::VideoTagIds::self_2(),
             ),
             vec![crate::model::AnonymousClip::self_b_1()],
         )
@@ -488,7 +488,7 @@ mod tests {
             crate::model::LocalVideoInfo::new(
                 crate::model::VideoId::test_id_1(),
                 None,
-                crate::model::VideoTags::self_1(),
+                crate::model::VideoTagIds::self_1(),
             ),
             vec![crate::model::AnonymousClip::self_a_1()],
         )
@@ -497,7 +497,7 @@ mod tests {
             crate::model::LocalVideoInfo::new(
                 crate::model::VideoId::test_id_2(),
                 None,
-                crate::model::VideoTags::self_2(),
+                crate::model::VideoTagIds::self_2(),
             ),
             vec![crate::model::AnonymousClip::self_b_1()],
         )
@@ -511,7 +511,7 @@ mod tests {
             crate::model::LocalVideoInfo::new(
                 crate::model::VideoId::test_id_2(),
                 None,
-                crate::model::VideoTags::self_2(),
+                crate::model::VideoTagIds::self_2(),
             ),
             vec![
                 crate::model::AnonymousClip::self_b_1(),
@@ -523,7 +523,7 @@ mod tests {
             crate::model::LocalVideoInfo::new(
                 crate::model::VideoId::test_id_3(),
                 None,
-                crate::model::VideoTags::self_3(),
+                crate::model::VideoTagIds::self_3(),
             ),
             vec![crate::model::AnonymousClip::self_a_1()],
         )
@@ -566,7 +566,7 @@ mod tests {
         let brief = crate::model::LocalVideoInfo::new(
             crate::model::VideoId::test_id_1(),
             Some(crate::model::UploaderName::test_uploader_name_1()),
-            crate::model::VideoTags::self_1(),
+            crate::model::VideoTagIds::self_1(),
         );
         // clips: ソートされていない順で作成
         let clips = vec![
@@ -582,7 +582,7 @@ mod tests {
         let brief = crate::model::LocalVideoInfo::new(
             crate::model::VideoId::test_id_1(),
             Some(crate::model::UploaderName::test_uploader_name_1()),
-            crate::model::VideoTags::self_1(),
+            crate::model::VideoTagIds::self_1(),
         );
         let clips = vec![
             crate::model::AnonymousClip::self_a_1(),

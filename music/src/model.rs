@@ -15,7 +15,7 @@ pub(crate) use channel_id::ChannelId;
 pub(crate) use clip::{AnonymousClip, UnverifiedClip, VerifiedClipError};
 pub(crate) use duration::Duration;
 pub(crate) use privacy_status::PrivacyStatus;
-pub(crate) use tag::{ClipTags, VideoTags};
+pub(crate) use tag::VideoTagIds;
 pub(crate) use uploader_name::UploaderName;
 pub(crate) use video::{
     AnonymousVideo, AnonymousVideos, ApiVideoInfo, ApiVideoInfoInitializer,
