@@ -4,10 +4,10 @@
 
 ## cmd
 
-- `artistctl`: アーティスト情報を基に以下の処理を行う
+- 引数に基づいて, 以下の処理を行う
   - validate
   - `code snippet`ファイルの更新
-  - 検索インデックス, フロント用のminifiedデータを生成しファイルに出力
+  - フロント用のminifiedデータを生成しファイルに出力
 
 ## data format
 

@@ -1,27 +1,3 @@
-mod cli_default_vals {
-    pub(super) const MUSIC_ROOT_DIR: &str = "music/data/music";
-    pub(super) const MIN_OUTPUT_CLIPS_PATH: &str = "public/music/clips.min.json";
-    pub(super) const MIN_OUTPUT_VIDEOS_PATH: &str = "public/music/videos.min.json";
-    pub(super) const MERGE_FILES_INPUT_DIR: &str = "./music/data/input/";
-    pub(super) const MERGED_FILE_OUTPUT_DIR: &str = "./music/data/input/";
-
-    pub(super) fn default_music_root_dir() -> String {
-        MUSIC_ROOT_DIR.to_string()
-    }
-    pub(super) fn default_min_output_clips_path() -> String {
-        MIN_OUTPUT_CLIPS_PATH.to_string()
-    }
-    pub(super) fn default_min_output_videos_path() -> String {
-        MIN_OUTPUT_VIDEOS_PATH.to_string()
-    }
-    pub(super) fn default_merge_files_dir() -> String {
-        MERGE_FILES_INPUT_DIR.to_string()
-    }
-    pub(super) fn default_merged_file_dir() -> String {
-        MERGED_FILE_OUTPUT_DIR.to_string()
-    }
-}
-
 #[derive(Debug, clap::Parser)]
 #[command(version, about, long_about = None)]
 pub struct Cli {
@@ -84,14 +60,14 @@ pub(crate) struct AddApplyArgs {
     #[arg(long, action = clap::ArgAction::SetTrue)]
     pub(crate) allow_overwrite_existing_video: bool,
     /// Directory where the results will be written
-    #[arg(long, value_name = "DIR", default_value_t = cli_default_vals::default_music_root_dir())]
+    #[arg(long, value_name = "DIR", default_value_t = crate::cfg::default_music_root_dir())]
     pub(crate) music_root_dir: String,
     // Path to the output file for minimized clips data
-    #[arg(long, value_name = "FILE", default_value_t = cli_default_vals::default_min_output_clips_path())]
+    #[arg(long, value_name = "FILE", default_value_t = crate::cfg::default_min_output_clips_path())]
     /// Path to the output file for minimized videos data
     pub(crate) min_clips_path: String,
     // Path to the output file for minimized videos data
-    #[arg(long, value_name = "FILE", default_value_t = cli_default_vals::default_min_output_videos_path())]
+    #[arg(long, value_name = "FILE", default_value_t = crate::cfg::default_min_output_videos_path())]
     pub(crate) min_videos_path: String,
 }
 
@@ -114,20 +90,20 @@ pub(crate) enum UpdateMode {
 #[derive(Debug, clap::Args)]
 pub(crate) struct UpdateValidateArgs {
     /// Directory of the music data to use for validation
-    #[arg(long, value_name = "DIR", default_value_t = cli_default_vals::default_music_root_dir())]
+    #[arg(long, value_name = "DIR", default_value_t = crate::cfg::default_music_root_dir())]
     pub(crate) music_root_dir: String,
 }
 
 #[derive(Debug, clap::Args)]
 pub(crate) struct UpdateApplyArgs {
     /// Directory where the results will be written
-    #[arg(long, value_name = "DIR", default_value_t = cli_default_vals::default_music_root_dir())]
+    #[arg(long, value_name = "DIR", default_value_t = crate::cfg::default_music_root_dir())]
     pub(crate) music_root_dir: String,
     /// Path to the output file for minimized clips data
-    #[arg(long, value_name = "FILE", default_value_t = cli_default_vals::default_min_output_clips_path())]
+    #[arg(long, value_name = "FILE", default_value_t = crate::cfg::default_min_output_clips_path())]
     pub(crate) min_clips_path: String,
     /// Path to the output file for minimized videos data
-    #[arg(long, value_name = "FILE", default_value_t = cli_default_vals::default_min_output_videos_path())]
+    #[arg(long, value_name = "FILE", default_value_t = crate::cfg::default_min_output_videos_path())]
     pub(crate) min_videos_path: String,
 }
 
@@ -139,13 +115,13 @@ pub(crate) struct SyncCommands {
     #[arg(short, long, env = "YOUTUBE_API_KEY", hide_env_values = true)]
     pub(crate) api_key: crate::fetcher::YouTubeApiKey,
     /// Directory of the music data to synchronize with
-    #[arg(long, value_name = "DIR", default_value_t = cli_default_vals::default_music_root_dir())]
+    #[arg(long, value_name = "DIR", default_value_t = crate::cfg::default_music_root_dir())]
     pub(crate) music_root_dir: String,
     /// Path to the output file for minimized clips data
-    #[arg(long, value_name = "FILE", default_value_t = cli_default_vals::default_min_output_clips_path())]
+    #[arg(long, value_name = "FILE", default_value_t = crate::cfg::default_min_output_clips_path())]
     pub(crate) min_clips_path: String,
     /// Path to the output file for minimized videos data
-    #[arg(long, value_name = "FILE", default_value_t = cli_default_vals::default_min_output_videos_path())]
+    #[arg(long, value_name = "FILE", default_value_t = crate::cfg::default_min_output_videos_path())]
     pub(crate) min_videos_path: String,
 }
 
@@ -171,17 +147,17 @@ pub(crate) struct FindDuplicateIdsArgs {
     #[arg(short, long, value_name = "String")]
     pub(crate) ids: crate::cli::VideoIdsFromCli,
     /// Directory of the music data to use for duplicate checking
-    #[arg(long, value_name = "DIR", default_value_t = cli_default_vals::default_music_root_dir())]
+    #[arg(long, value_name = "DIR", default_value_t = crate::cfg::default_music_root_dir())]
     pub(crate) music_root_dir: String,
 }
 
 #[derive(Debug, clap::Args)]
 pub(crate) struct MergeFilesArgs {
     /// Directory containing the json files to be merged
-    #[arg(short, long, value_name = "DIR", default_value_t = cli_default_vals::default_merge_files_dir())]
+    #[arg(short, long, value_name = "DIR", default_value_t = crate::cfg::default_merge_files_dir())]
     pub(crate) input_dir: String,
     /// Directory where the json files will be merged
-    #[arg(short, long, value_name = "DIR", default_value_t = cli_default_vals::default_merged_file_dir())]
+    #[arg(short, long, value_name = "DIR", default_value_t = crate::cfg::default_merged_file_dir())]
     pub(crate) output_dir: String,
 }
 

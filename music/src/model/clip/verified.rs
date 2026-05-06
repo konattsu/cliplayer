@@ -7,7 +7,7 @@
 /// - `start_time` or `end_time`の時間が動画の長さを超えない
 #[derive(serde::Serialize, Debug, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
-pub(crate) struct VerifiedClip {
+pub struct VerifiedClip {
     /// 曲名
     song_title: String,
     /// 内部アーティストの一覧
@@ -190,6 +190,21 @@ impl VerifiedClip {
     }
     pub(crate) fn get_volume_percent(&self) -> Option<&crate::model::VolumePercent> {
         self.volume_percent.as_ref()
+    }
+
+    pub fn uuid_string(&self) -> String {
+        self.uuid.to_string()
+    }
+
+    pub fn artist_ids(&self) -> Vec<&str> {
+        self.liver_ids.to_vec()
+    }
+
+    pub fn tag_ids(&self) -> Vec<&str> {
+        self.clip_tags
+            .as_ref()
+            .map(crate::model::ClipTags::to_vec)
+            .unwrap_or_default()
     }
 
     pub(super) fn into_inner(self) -> VerifiedClipInner {

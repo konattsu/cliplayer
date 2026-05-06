@@ -2,7 +2,7 @@
 ///
 /// 内部の情報はシリアライズ時に`published_at`順にソートされていることを保証
 #[derive(Debug, Clone)]
-pub(crate) struct VerifiedVideos {
+pub struct VerifiedVideos {
     inner: std::collections::HashMap<crate::model::VideoId, super::VerifiedVideo>,
 }
 
@@ -199,7 +199,7 @@ impl VerifiedVideos {
     }
 
     /// 内部の動画をソートして返す
-    pub(crate) fn into_sorted_vec(self) -> Vec<super::VerifiedVideo> {
+    pub fn into_sorted_vec(self) -> Vec<super::VerifiedVideo> {
         let mut vec = self.inner.into_values().collect::<Vec<_>>();
         vec.sort_by_key(|video| video.get_published_at().as_secs());
         vec

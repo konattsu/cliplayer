@@ -52,7 +52,10 @@
     "editor.defaultFormatter": "rust-lang.rust-analyzer"
   },
   //   search
-  "rust-analyzer.linkedProjects": ["search/Cargo.toml", "music/Cargo.toml"],
+  "rust-analyzer.linkedProjects": [
+    "music/Cargo.toml",
+    "search/engine-wasm/Cargo.toml"
+  ],
 
   // Typescript
   "js/ts.tsserver.log": "verbose",
@@ -219,11 +222,14 @@
     "cliplayer",
     "Deque",
     "dialoguer",
+    "embeddables",
     "musictl",
     "reqwest",
     "rustls",
     "serde",
+    "tagctl",
     "thiserror",
+    "unlisteds",
     "vitest",
     "walkdir"
   ]

@@ -1,0 +1,21 @@
+[package]
+name = "index-builder"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+artistctl = { path = "../../metadata/artist" }
+index-core = { path = "../index-core" }
+musictl = { path = "../../music" }
+tagctl = { path = "../../metadata/tag" }
+
+anyhow = { workspace = true }
+
+[dev-dependencies]
+artistctl = { path = "../../metadata/artist", features = ["test-helpers"] }
+cmn_rs = { path = "../../cmn_rs" }
+musictl = { path = "../../music", features = ["test-helpers"] }
+tagctl = { path = "../../metadata/tag", features = ["test-helpers"] }
+
+[features]
+test-helpers = ["artistctl/test-helpers", "musictl/test-helpers", "tagctl/test-helpers"]

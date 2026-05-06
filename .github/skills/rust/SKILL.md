@@ -9,6 +9,8 @@ Follow idiomatic Rust practices and community standards when writing Rust code.
 
 These instructions are based on [The Rust Book](https://doc.rust-lang.org/book/), [Rust API Guidelines](https://rust-lang.github.io/api-guidelines/), [RFC 430 naming conventions](https://github.com/rust-lang/rfcs/blob/master/text/0430-finalizing-naming-conventions.md), and the broader Rust community at [users.rust-lang.org](https://users.rust-lang.org).
 
+IMPORTANT: This project is currently under development, so you do not need to keep changes to a minimum and do not need to worry about compatibility at all.
+
 ## General Instructions
 
 - Always prioritize readability, safety, and maintainability.
@@ -66,6 +68,9 @@ These instructions are based on [The Rust Book](https://doc.rust-lang.org/book/)
 - Use `cargo clippy` to catch common mistakes and enforce best practices.
 - Don't use `use` at the top of the file for external crates; instead, use full paths or local `use` statements within functions to improve readability and reduce namespace pollution.
   - But for re-exporting modules (`pub use`), it's acceptable to do so at the top level for better organization and discoverability.
+- `use super::*` is allowed in test modules placed at the bottom of a file, but avoid wildcard imports in non-test code to prevent namespace pollution and preserve readability.
+- When a public re-export alias already exists, use the aliased path consistently.
+  - For example, if `pub use crate::foo::Bar;` exists, prefer `crate::Bar`.
 
 ## Error Handling
 
@@ -100,6 +105,8 @@ Eagerly implement common traits where appropriate:
 
 - Use sealed traits to protect against downstream implementations
 - Structs should have private fields
+- Keep visibility as narrow as possible.
+  - Only use `pub` when it is truly needed, and prefer `pub(crate)`, `pub(super)`, or `pub(in path)` when they better express the intended scope.
 - Functions should validate their arguments
 - All public types must implement `Debug`
 

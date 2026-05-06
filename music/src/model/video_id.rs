@@ -119,26 +119,26 @@ impl std::ops::DerefMut for VideoIds {
 
 // MARK: For Tests
 
-#[cfg(test)]
+#[cfg(any(test, feature = "test-helpers"))]
 impl VideoId {
     /// return `11111111111`
-    pub(crate) fn test_id_1() -> Self {
+    pub fn test_id_1() -> Self {
         VideoId::new("11111111111".to_string()).unwrap()
     }
     /// return `22222222222`
-    pub(crate) fn test_id_2() -> Self {
+    pub fn test_id_2() -> Self {
         VideoId::new("22222222222".to_string()).unwrap()
     }
     /// return `33333333333`
-    pub(crate) fn test_id_3() -> Self {
+    pub fn test_id_3() -> Self {
         VideoId::new("33333333333".to_string()).unwrap()
     }
     /// return `44444444444`
-    pub(crate) fn test_id_4() -> Self {
+    pub fn test_id_4() -> Self {
         VideoId::new("44444444444".to_string()).unwrap()
     }
     /// return `55555555555`
-    pub(crate) fn test_id_5() -> Self {
+    pub fn test_id_5() -> Self {
         VideoId::new("55555555555".to_string()).unwrap()
     }
 }

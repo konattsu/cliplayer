@@ -1,17 +1,23 @@
 [workspace]
-members = ["music", "cmn_rs", "metadata", "metadata/artist", "metadata/tag"]
+members = [
+    "music",
+    "cmn_rs",
+    "metadata",
+    "metadata/artist",
+    "metadata/tag",
+    "search/index-builder",
+]
 resolver = "3"
 
 [workspace.dependencies]
 anyhow = "1.0.102"
-clap = { version = "4.5.60", features = ["derive", "env"] }
-json5 = "0.4.1"
-once_cell = "1.21.3"
+clap = { version = "4.6.1", features = ["derive", "env"] }
+once_cell = "1.21.4"
 serde = { version = "1.0.228", features = ["derive"] }
 serde_json = "1.0.149"
 tracing = "0.1.44"
-tracing-appender = "0.2.4"
-tracing-subscriber = { version = "0.3.22", features = ["env-filter", "json"] }
+tracing-appender = "0.2.5"
+tracing-subscriber = { version = "0.3.23", features = ["env-filter", "json"] }
 
 
 [profile.test]

@@ -1,2 +1,0 @@
-[workspace]
-members = ["index_fmt", "engine"]
