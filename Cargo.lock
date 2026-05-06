@@ -791,10 +791,14 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "artistctl",
+ "assert_cmd",
+ "clap",
  "cmn_rs",
  "index-core",
  "musictl",
  "tagctl",
+ "tempfile",
+ "tracing",
 ]
 
 [[package]]

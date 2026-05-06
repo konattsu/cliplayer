@@ -24,6 +24,8 @@
     "source=${localEnv:HOME}/.codex,target=/home/node/.codex,type=bind"
   ],
 
+  "postCreateCommand": "sudo chown -R node:node /home/node/.local/share/pnpm",
+
   "customizations": {
     "vscode": {
       "extensions": [
