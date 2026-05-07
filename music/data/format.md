@@ -1,22 +1,22 @@
 # データの扱われ方
 
-TODO
-
-タグを静的に精査(tag.json), でも一次生成時は文字列として保存, クリップid廃止(運用難しい)
-
 preview用に`jsonc`使ってるが実際は全て`json`
 
 ## 動画のデータ
 
-public/に配置. フロントのビルドとは関係ない
-
 - 手動で記述
   - `input/foo.json`: 動画の情報を一時的に記述
-- 一次生成
+- 一次生成(s0)
   - `(年)/(月).json`: 年月ごとに動画の情報をまとめたもの
-- 二次生成, 頻繁に変更されるのでpublic/に配置
+- 二次生成(s2)
   - `clips.min.json`: クリップの情報をまとめたもの
   - `videos.min.json`: 動画の情報をまとめたもの
+
+s2 の frontend 向け生成物はトップレベルに metadata を持つ。
+
+- `schemaVersion`
+- `dataBuildId`
+- `generatedAt`
 
 ### `input/foo.json`
 
@@ -123,30 +123,39 @@ public/に配置. フロントのビルドとは関係ない
 
 ```jsonc
 {
-  "d5cb8a6b-fb40-424d-9079-c62bd76b92a5": {
-    // このクリップが含まれる動画id
-    "videoId": "ZeFvqdvutb4",
-    // secsに変換
-    "startTimeSecs": 70,
-    "endTimeSecs": 261,
+  "schemaVersion": 1,
+  "dataBuildId": "2026-05-07T00:00:00Z+abcdef",
+  "generatedAt": "2026-05-07T00:00:00Z",
+  "data": {
+    "d5cb8a6b-fb40-424d-9079-c62bd76b92a5": {
+      // このクリップが含まれる動画id
+      "videoId": "ZeFvqdvutb4",
+      // secsに変換
+      "startTimeSecs": 70,
+      "endTimeSecs": 261,
 
-    // 後は一緒
-    "songTitle": "おねがいダーリン",
-    "liverIds": ["ruri-shioriha"],
-    "externalArtistsName": ["(例示用)"],
-    "clippedVideoId": "(例示用)",
-    "volumePercent": 50,
-  },
-  "6af3a9fb-05ab-4e53-8cdf-9e63869c4246": {
-    "videoId": "ZeFvqdvutb4",
-    "startTimeSecs": 432,
-    "endTimeSecs": 694,
+      // 後は一緒
+      "songTitle": "おねがいダーリン",
+      "liverIds": ["ruri-shioriha"],
+      "externalArtistsName": ["(例示用)"],
+      "clippedVideoId": "(例示用)"
+    },
+    "6af3a9fb-05ab-4e53-8cdf-9e63869c4246": {
+      "videoId": "ZeFvqdvutb4",
+      "startTimeSecs": 432,
+      "endTimeSecs": 694,
 
-    "songTitle": "命に嫌われている。",
-    "liverIds": ["ruri-shioriha"],
-  },
+      "songTitle": "命に嫌われている。",
+      "liverIds": ["ruri-shioriha"]
+    }
+  }
 }
 ```
+
+注意:
+
+- 現在の min 出力には `volumePercent` は含まれない
+- 将来追加するなら format version の扱いを見直す
 
 ### `videos.min.json`
 
@@ -154,22 +163,27 @@ public/に配置. フロントのビルドとは関係ない
 
 ```jsonc
 {
-  "ZeFvqdvutb4": {
-    // 順番は保証しない
-    "clipUuids": ["d5cb8a6b-fb40-424d-9079-c62bd76b92a5", "6af3a9fb-05ab-4e53-8cdf-9e63869c4246"],
-    // secsに変換
-    "durationSecs": 3562,
+  "schemaVersion": 1,
+  "dataBuildId": "2026-05-07T00:00:00Z+abcdef",
+  "generatedAt": "2026-05-07T00:00:00Z",
+  "data": {
+    "ZeFvqdvutb4": {
+      // 順番は保証しない
+      "clipUuids": ["d5cb8a6b-fb40-424d-9079-c62bd76b92a5", "6af3a9fb-05ab-4e53-8cdf-9e63869c4246"],
+      // secsに変換
+      "durationSecs": 3562,
 
-    // 後は一緒
-    "title": "【収益化記念】イ　ン　タ　ー　ネ　ッ　ト　カ　ラ　オ　ケ　T　I　M　E【栞葉るり/にじさんじ】",
-    "channelId": "UC7_MFM9b8hp5kuTSpa8WyOQ",
-    "uploaderName": "(例示用)",
-    "publishedAt": "2023-12-10Z21:00:00Z",
-    "syncedAt": "2025-05-10T12:00:00Z",
-    "privacyStatus": "public",
-    // 整数化, 上と同様
-    "embeddable": true,
-    "videoTags": ["karaoke", "2d"],
-  },
+      // 後は一緒
+      "title": "【収益化記念】イ　ン　タ　ー　ネ　ッ　ト　カ　ラ　オ　ケ　T　I　M　E【栞葉るり/にじさんじ】",
+      "channelId": "UC7_MFM9b8hp5kuTSpa8WyOQ",
+      "uploaderName": "(例示用)",
+      "publishedAt": "2023-12-10Z21:00:00Z",
+      "syncedAt": "2025-05-10T12:00:00Z",
+      "privacyStatus": "public",
+      // 整数化, 上と同様
+      "embeddable": true,
+      "videoTags": ["karaoke", "2d"]
+    }
+  }
 }
 ```

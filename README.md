@@ -30,3 +30,21 @@ YouTube上の動画/アーカイブから歌唱部分のみを連続的に再生
 - search/engine -> search/index-core
 - search/index-builder -> search/index-core, metadata, musictl
 - search/engine-wasm -> search/engine, search/index-core
+
+## Important Project Docs
+
+This repository also includes several companion documents for design and data flow:
+
+- `docs/data_flow.md` — overall data pipeline and generation stages (s0/s1/s2/s3)
+- `docs/site_design.md` — frontend site design assumptions and page flow
+- `search/binary_schema.md` — search index binary format and section layout
+- `search/engine/design.md` — search engine implementation design
+- `search/overview.md` — search system overview and responsibilities
+
+## Frontend min file schemas
+
+The frontend consumes generated minified JSON under `public/music/`. The structure and format of those frontend-facing min files are documented in:
+
+- `metadata/artist/format.md`
+- `metadata/tag/format.md`
+- `music/data/format.md`

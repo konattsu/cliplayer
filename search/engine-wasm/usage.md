@@ -1,7 +1,7 @@
 # search/engine wasm design
 
 この文書は `search/engine` を WASM から利用するための境界設計を扱う。
-engine 本体の検索設計は [`README.md`](../engine/README.md) を参照。
+engine 本体の検索設計は [`design.md`](../engine/design.md) を参照。
 
 ## 1. 目的
 
@@ -93,7 +93,7 @@ Web Worker 内での利用を前提にする。
 ### 4.1 request / response は構造化データで受け渡す
 
 frontend と engine の境界では URL パラメータ列ではなく
-構造化 request をやり取りする、という `search/README.md` の前提を維持する。
+構造化 request をやり取りする、という `search/overview.md` の前提を維持する。
 
 そのため初版では:
 

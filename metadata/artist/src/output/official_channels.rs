@@ -22,15 +22,12 @@ impl OfficialChannels {
         Self(channels)
     }
 
-    pub(crate) fn output_json(&self, path: &std::path::Path) -> anyhow::Result<()> {
-        use anyhow::Context;
-        let file = std::fs::File::create(path).with_context(|| {
-            format!("Failed to create/truncate file: {}", path.display())
-        })?;
-        serde_json::to_writer(file, &self.0).with_context(|| {
-            format!("Failed to write JSON to file: {}", path.display())
-        })?;
-        Ok(())
+    pub(crate) fn output_json(
+        &self,
+        path: &std::path::Path,
+        metadata: &crate::output::BuildMetadata,
+    ) -> anyhow::Result<()> {
+        crate::output::minified_json::write_json(path, &self.0, metadata)
     }
 }
 

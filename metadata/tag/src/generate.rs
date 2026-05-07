@@ -50,6 +50,9 @@ fn minify_impl(
     min_tags_file_name: &str,
 ) -> anyhow::Result<()> {
     let output = crate::output::MinVideoTags::new(video_tags);
+    let mut hasher = std::collections::hash_map::DefaultHasher::new();
+    crate::output::BuildMetadata::hash_serializable(&mut hasher, &output)?;
+    let metadata = crate::output::BuildMetadata::from_hash(hasher);
     let path = std::path::Path::new(output_dir).join(min_tags_file_name);
-    output.output_json(&path)
+    output.output_json(&path, &metadata)
 }

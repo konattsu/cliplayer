@@ -18,6 +18,36 @@ Aのs2までは実装済み. s3は未実装
 - **検索用インデックス**: 検索エンジン向け(生成コストが高い想定)
 - **定義支援(snippet)ファイル**: 手入力を支援する VS Code snippet
 
+## Build Metadata
+
+frontend が生成物の整合性を検証できるように、s2 と s3 の生成物には
+build metadata を持たせる。
+
+最低限必要な項目:
+
+- `schemaVersion`
+  - その生成物の frontend-facing schema version
+- `dataBuildId`
+  - s2 の min データ群がどの入力集合から生成されたかを識別する ID
+- `generatedAt`
+  - 生成日時
+
+s3 の検索インデックスには加えて次が必要:
+
+- `indexBuildId`
+  - 検索 index build を識別する ID
+- binary `formatVersion`
+  - frontend が互換性確認に使える binary format version
+
+原則:
+
+- 同じ s2 build に属する min データ群は同じ `dataBuildId` を共有する
+- `schemaVersion` は file format の後方互換性が壊れるときだけ上げる
+- frontend は `dataBuildId` / `indexBuildId` を queue 復元や cursor 再利用判定に使う
+- metadata は frontend が追加 fetch なしで読める位置に置く
+  - JSON は同一ファイルのトップレベル
+  - binary index は header または隣接 manifest
+
 ### 重要な原則
 
 - **source-of-truth(正)は常に「人が編集する定義ファイル」**に置く。
@@ -60,6 +90,12 @@ Aのs2までは実装済み. s3は未実装
 
 目的: フロント(Angular)が軽量に読み込めるデータを提供する。
 
+要件:
+
+- すべての min データは `schemaVersion`, `dataBuildId`, `generatedAt` を持つ
+- 同一 build に属する min データ群は同じ `dataBuildId` を共有する
+- frontend が参照整合性を確認できる shape にする
+
 - artist
   - 出力先: `public/music/`
   - 出力例: `livers.min.json`, `channels.min.json`, `official_channels.min.json`, `livers_search_index.min.json`
@@ -73,6 +109,11 @@ Aのs2までは実装済み. s3は未実装
   - 出力例: `clips.min.json`, `videos.min.json`
   - 生成: `musictl add apply` / `musictl update apply` / `musictl sync` が min 生成まで行う
 
+frontend は s2 生成物を読み込む際、まず metadata を確認し、
+次に参照整合性を検証する。
+たとえば `clip.videoId -> videos.min.json`, `video.videoTags -> tags.min.json`,
+`clip.liverIds -> livers.min.json` の参照切れを検出できるようにする。
+
 ### s3. 検索インデックスを生成する(低頻度)
 
 目的: 検索エンジン向けに、artist/tag/clips を統合した検索用インデックスを作る。
@@ -85,6 +126,7 @@ Aのs2までは実装済み. s3は未実装
   - clips: `music/data/music/**`
 - 生成物は、フロント用 min (s2) とは **別アーティファクト**として扱う
 - **生成頻度は s2 より遅くてよい**(生成コストが高い想定)
+- frontend が build 不一致を検出できる `indexBuildId` を持つ
 
 設計:
 
@@ -93,9 +135,11 @@ Aのs2までは実装済み. s3は未実装
 - s3 の実行可否は **入力のハッシュ**で判定してスキップできるようにする
   - `livers.json`, `official_channels.json`, `tags.json`, `music/data/music/**` をまとめた manifest を作り、前回と同一なら rebuild しない
 - s3 の出力には、どの入力から生成したかを追跡できるように **manifest(メタ情報)** を同梱する
+- s3 の出力には少なくとも `indexBuildId` と `formatVersion` を含める
+- `generatedAt` は index 側では必須ではない
 - 生成したインデックスは`public/`へ出力
 
-詳細は [`README.md`](./search/README.md) を参照。
+詳細は [`search/overview.md`](./search/overview.md) を参照。
 
 ## 頻度の考え方(まとめ)
 

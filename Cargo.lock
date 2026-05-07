@@ -81,6 +81,7 @@ name = "artistctl"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "chrono",
  "clap",
  "cmn_rs",
  "once_cell",
@@ -1655,6 +1656,7 @@ name = "tagctl"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "chrono",
  "clap",
  "cmn_rs",
  "once_cell",

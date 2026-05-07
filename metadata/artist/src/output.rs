@@ -1,10 +1,12 @@
 mod artist_search_index;
 mod channels;
 mod livers;
+mod minified_json;
 mod official_channels;
 mod snippet;
 
 pub(crate) use artist_search_index::LiversSearchIndex;
+pub(crate) use minified_json::BuildMetadata;
 pub(crate) use channels::Channels;
 pub(crate) use livers::OutputLivers;
 pub(crate) use official_channels::OfficialChannels;

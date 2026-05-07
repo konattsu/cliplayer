@@ -45,3 +45,30 @@
 - `tags.min.json
 
 上の`tags.json`をそのままminifyしたもの
+
+frontend 向け生成物はトップレベルに metadata を持つ。
+
+- `schemaVersion`
+- `dataBuildId`
+- `generatedAt`
+
+```jsonc
+{
+  "schemaVersion": 1,
+  "dataBuildId": "2026-05-07T00:00:00Z+abcdef",
+  "generatedAt": "2026-05-07T00:00:00Z",
+  "data": {
+    "karaoke": {
+      "ja": "歌枠",
+      "en": "karaoke",
+      "intId": 0
+    },
+    "3d-debut": {
+      "ja": "3Dお披露目",
+      "en": "3D Debut",
+      "blocked": true,
+      "intId": 4
+    }
+  }
+}
+```

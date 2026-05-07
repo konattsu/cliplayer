@@ -27,4 +27,4 @@ Options:
 
 ## データ形式
 
-[`README.md`](./data/README.md)を参照
+[`format.md`](./data/format.md)を参照

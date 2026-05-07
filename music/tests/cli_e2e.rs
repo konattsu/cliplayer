@@ -51,6 +51,10 @@ fn write_text_file(path: &std::path::Path, content: &str) {
     file.write_all(content.as_bytes()).unwrap();
 }
 
+fn read_json(path: &std::path::Path) -> serde_json::Value {
+    serde_json::from_str(&std::fs::read_to_string(path).unwrap()).unwrap()
+}
+
 #[test]
 fn test_add_validate_markdown_e2e() {
     let tmp = tempfile::tempdir().unwrap();
@@ -126,4 +130,16 @@ fn test_min_command_writes_min_files() {
     cmd.assert().success();
     assert!(min_clips.exists());
     assert!(min_videos.exists());
+
+    let clips = read_json(&min_clips);
+    assert_eq!(clips["schemaVersion"], 1);
+    assert!(clips["dataBuildId"].is_string());
+    assert!(clips["generatedAt"].is_string());
+    assert!(clips["data"]["11786ebd-4b42-428b-81f8-ecf791887326"].is_object());
+
+    let videos = read_json(&min_videos);
+    assert_eq!(videos["schemaVersion"], 1);
+    assert_eq!(videos["dataBuildId"], clips["dataBuildId"]);
+    assert_eq!(videos["generatedAt"], clips["generatedAt"]);
+    assert!(videos["data"]["cFc9Ywpk0QU"].is_object());
 }

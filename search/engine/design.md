@@ -1,7 +1,7 @@
 # search/engine design
 
 この README は `search/engine` の実装設計だけを扱う。
-全体像は [`../README.md`](../README.md)、binary schema は
+全体像は [`../overview.md`](../overview.md)、binary schema は
 [`../binary_schema.md`](../binary_schema.md) を参照。
 
 ## 1. 役割

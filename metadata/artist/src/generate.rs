@@ -80,63 +80,36 @@ fn minify_impl(
     livers_file_name: &str,
     official_channels_file_name: &str,
 ) -> anyhow::Result<()> {
-    generate_artist_search_index(
-        livers_data.clone(),
-        output_dir,
-        livers_search_index_file_name,
+    let output_artists = crate::output::LiversSearchIndex::new(livers_data.clone());
+    let channels =
+        crate::output::Channels::new(&livers_data, official_channels_data.clone());
+    let livers = crate::output::OutputLivers::new(livers_data);
+    let official_channels =
+        crate::output::OfficialChannels::new(official_channels_data);
+    let build_metadata = build_metadata(
+        &output_artists,
+        &channels,
+        &livers,
+        &official_channels,
     )?;
-    generate_channels(
-        &livers_data,
-        official_channels_data.clone(),
-        output_dir,
-        channels_file_name,
-    )?;
-    generate_livers(livers_data, output_dir, livers_file_name)?;
-    generate_official_channels(
-        official_channels_data,
-        output_dir,
-        official_channels_file_name,
-    )?;
+
+    let path = output_path(output_dir, livers_search_index_file_name);
+    output_artists.output_as_json(&path, &build_metadata)?;
+
+    let path = output_path(output_dir, channels_file_name);
+    channels.output_json(&path, &build_metadata)?;
+
+    let path = output_path(output_dir, livers_file_name);
+    livers.output_json(&path, &build_metadata)?;
+
+    let path = output_path(output_dir, official_channels_file_name);
+    official_channels.output_json(&path, &build_metadata)?;
 
     Ok(())
 }
 
 fn output_path(output_dir: &str, file_name: &str) -> std::path::PathBuf {
     std::path::Path::new(output_dir).join(file_name)
-}
-
-fn generate_artist_search_index(
-    livers_data: crate::model::Livers,
-    output_dir: &str,
-    livers_search_index_file_name: &str,
-) -> anyhow::Result<()> {
-    let output_artists = crate::output::LiversSearchIndex::new(livers_data);
-    let path = output_path(output_dir, livers_search_index_file_name);
-
-    output_artists.output_as_json(&path)
-}
-
-fn generate_channels(
-    livers_data: &crate::model::Livers,
-    official_channels_data: crate::model::OfficialChannels,
-    output_dir: &str,
-    channels_file_name: &str,
-) -> anyhow::Result<()> {
-    let channels = crate::output::Channels::new(livers_data, official_channels_data);
-    let path = output_path(output_dir, channels_file_name);
-
-    channels.output_json(&path)
-}
-
-fn generate_livers(
-    livers_data: crate::model::Livers,
-    output_dir: &str,
-    artists_file_name: &str,
-) -> anyhow::Result<()> {
-    let output_artists = crate::output::OutputLivers::new(livers_data);
-    let path = output_path(output_dir, artists_file_name);
-
-    output_artists.output_json(&path)
 }
 
 fn output_snippet(
@@ -149,14 +122,19 @@ fn output_snippet(
     snippet.output_json(music_data_code_snippets_path, livers_data)
 }
 
-fn generate_official_channels(
-    official_channels_data: crate::model::OfficialChannels,
-    output_dir: &str,
-    official_channels_file_name: &str,
-) -> anyhow::Result<()> {
-    let official_channels =
-        crate::output::OfficialChannels::new(official_channels_data);
-    let path = output_path(output_dir, official_channels_file_name);
-
-    official_channels.output_json(&path)
+fn build_metadata(
+    output_artists: &crate::output::LiversSearchIndex,
+    channels: &crate::output::Channels,
+    livers: &crate::output::OutputLivers,
+    official_channels: &crate::output::OfficialChannels,
+) -> anyhow::Result<crate::output::BuildMetadata> {
+    let mut hasher = std::collections::hash_map::DefaultHasher::new();
+    crate::output::BuildMetadata::hash_serializable(&mut hasher, output_artists)?;
+    crate::output::BuildMetadata::hash_serializable(&mut hasher, channels)?;
+    crate::output::BuildMetadata::hash_serializable(&mut hasher, livers)?;
+    crate::output::BuildMetadata::hash_serializable(
+        &mut hasher,
+        official_channels,
+    )?;
+    Ok(crate::output::BuildMetadata::from_hash(hasher))
 }

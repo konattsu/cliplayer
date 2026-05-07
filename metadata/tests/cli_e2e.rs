@@ -34,6 +34,10 @@ fn write_text_file(path: &std::path::Path, content: &str) {
     file.write_all(content.as_bytes()).unwrap();
 }
 
+fn read_json(path: &std::path::Path) -> serde_json::Value {
+    serde_json::from_str(&std::fs::read_to_string(path).unwrap()).unwrap()
+}
+
 #[test]
 fn test_metadata_artist_command_generates_outputs() {
     let tmp = tempfile::tempdir().unwrap();
@@ -63,6 +67,20 @@ fn test_metadata_artist_command_generates_outputs() {
     assert!(out_dir.join("channels.min.json").exists());
     assert!(out_dir.join("livers.min.json").exists());
     assert!(out_dir.join("official_channels.min.json").exists());
+
+    let livers = read_json(&out_dir.join("livers.min.json"));
+    assert_eq!(livers["schemaVersion"], 1);
+    assert!(livers["dataBuildId"].is_string());
+    assert!(livers["generatedAt"].is_string());
+    assert!(livers["data"]["riku-tazumi"].is_object());
+
+    let channels = read_json(&out_dir.join("channels.min.json"));
+    assert_eq!(channels["schemaVersion"], 1);
+    assert!(channels["data"].is_object());
+
+    let search_index = read_json(&out_dir.join("livers_search_index.min.json"));
+    assert_eq!(search_index["schemaVersion"], 1);
+    assert!(search_index["data"].is_array());
 
     let snippet = std::fs::read_to_string(snippet_path).unwrap();
     assert!(snippet.contains("LiverNamesSnippet"));
@@ -96,6 +114,10 @@ fn test_metadata_artist_step_minify_generates_only_min() {
     assert!(out_dir.join("channels.min.json").exists());
     assert!(out_dir.join("livers.min.json").exists());
     assert!(out_dir.join("official_channels.min.json").exists());
+
+    let official_channels = read_json(&out_dir.join("official_channels.min.json"));
+    assert_eq!(official_channels["schemaVersion"], 1);
+    assert!(official_channels["data"].is_object());
 }
 
 #[test]
@@ -122,6 +144,9 @@ fn test_metadata_tag_command_updates_snippet() {
     assert!(snippet.contains("\"${1|"));
 
     assert!(out_dir.join("tags.min.json").exists());
+    let tags = read_json(&out_dir.join("tags.min.json"));
+    assert_eq!(tags["schemaVersion"], 1);
+    assert!(tags["data"]["karaoke"].is_object());
 }
 
 #[test]
@@ -169,4 +194,9 @@ fn test_metadata_tag_operation_minify_only_generates_min() {
 
     cmd.assert().success();
     assert!(out_dir.join("tags.min.json").exists());
+
+    let tags = read_json(&out_dir.join("tags.min.json"));
+    assert_eq!(tags["schemaVersion"], 1);
+    assert!(tags["dataBuildId"].is_string());
+    assert!(tags["generatedAt"].is_string());
 }

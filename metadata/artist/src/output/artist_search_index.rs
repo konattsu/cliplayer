@@ -60,16 +60,12 @@ impl LiversSearchIndex {
         }
     }
 
-    pub(crate) fn output_as_json(&self, path: &std::path::Path) -> anyhow::Result<()> {
-        use anyhow::Context;
-
-        let file = std::fs::File::create(path).with_context(|| {
-            format!("Failed to create/truncate file at {}", path.display())
-        })?;
-        serde_json::to_writer(file, self).with_context(|| {
-            format!("Failed to write JSON to file: {}", path.display())
-        })?;
-        Ok(())
+    pub(crate) fn output_as_json(
+        &self,
+        path: &std::path::Path,
+        metadata: &crate::output::BuildMetadata,
+    ) -> anyhow::Result<()> {
+        crate::output::minified_json::write_json(path, self, metadata)
     }
 }
 
