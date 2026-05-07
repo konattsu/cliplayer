@@ -1,5 +1,5 @@
-pub(super) fn handle_min(
-    cmd: crate::cli::parser::MinCommands,
+pub(super) fn handle_minify(
+    cmd: crate::cli::parser::MinifyCommands,
 ) -> Result<(), crate::cli_exec_handler::CliExecError> {
     let music_lib = crate::music_file::MusicLibraryRepository::load(
         cmd.music_root.music_root_dir.as_path(),

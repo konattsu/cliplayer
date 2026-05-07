@@ -17,7 +17,7 @@ pub(crate) enum Commands {
     /// Synchronize the library with YouTube using the current library state.
     Sync(SyncCommands),
     /// Generate minimized public data files from the current music library.
-    Min(MinCommands),
+    Minify(MinifyCommands),
     /// Run utility commands that are outside the core music‑library workflows.
     Util(UtilCommands),
 }
@@ -101,7 +101,7 @@ pub(crate) struct SyncCommands {
 // MARK: min
 
 #[derive(Debug, clap::Args)]
-pub(crate) struct MinCommands {
+pub(crate) struct MinifyCommands {
     #[command(flatten)]
     pub(crate) music_root: crate::cli::MusicRootArgs,
     #[command(flatten)]

@@ -115,7 +115,7 @@ fn test_min_command_writes_min_files() {
     write_text_file(&month_path, MONTHLY_FILE_JSON);
 
     let mut cmd = Command::cargo_bin("musictl").unwrap();
-    cmd.arg("min")
+    cmd.arg("minify")
         .arg("--music-root-dir")
         .arg(music_root.to_string_lossy().to_string())
         .arg("--min-clips-path")
