@@ -18,7 +18,7 @@ YouTube上の動画/アーカイブから歌唱部分のみを連続的に再生
   - artist: アーティスト管理
   - tag: タグ管理
 - music/musictl: 音楽管理
-- search: (開発中)
+- search:
   - index-core: 検索インデックスのスキーマ定義
   - index-builder: 検索インデックスの構築
   - engine: 検索エンジン
