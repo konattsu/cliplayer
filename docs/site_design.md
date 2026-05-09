@@ -46,12 +46,12 @@
 
 初版の route は次に絞る。
 
-| route | 役割 |
-| --- | --- |
-| `/` | home |
-| `/search` | 検索条件の編集と結果一覧 |
-| `/play` | queue 再生 |
-| `/clip/:clipUuid` | clip 直リンク |
+| route             | 役割                     |
+| ----------------- | ------------------------ |
+| `/`               | home                     |
+| `/search`         | 検索条件の編集と結果一覧 |
+| `/play`           | queue 再生               |
+| `/clip/:clipUuid` | clip 直リンク            |
 
 ### home
 
