@@ -48,10 +48,6 @@
         // markdown
         "davidanson.vscode-markdownlint",
         // "bierner.markdown-mermaid",
-        // "corschenzi.mermaid-graphical-editor",
-        // "shd101wyy.markdown-preview-enhanced",
-        // "yzane.markdown-pdf",
-        // "yzhang.markdown-all-in-one",
 
         // git/github
         "donjayamanne.githistory",
@@ -66,9 +62,9 @@
         "christian-kohler.path-intellisense",
         "editorconfig.editorconfig",
         "esbenp.prettier-vscode",
-        "gruntfuggly.todo-tree",
         "mosapride.zenkaku",
         "ms-azuretools.vscode-docker",
+        "ms-vscode.hexeditor",
         "redhat.vscode-yaml",
         "shardulm94.trailing-spaces",
         "streetsidesoftware.code-spell-checker",
