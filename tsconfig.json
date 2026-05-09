@@ -22,10 +22,10 @@
   "files": [],
   "references": [
     {
-      "path": "./src/app/tsconfig.app.json"
+      "path": "./src/tsconfig.app.json"
     },
     {
-      "path": "./src/app/tsconfig.spec.json"
+      "path": "./src/tsconfig.spec.json"
     }
   ]
 }
