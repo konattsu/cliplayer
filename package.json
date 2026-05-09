@@ -12,6 +12,7 @@
     "test": "ng test",
     "lint": "eslint './**/*.{js,ts,sass,scss,css,html}'",
     "lint:test": "eslint './**/*.{js,ts,sass,scss,css,html}' --max-warnings 0",
+    "test:unit": "vitest run",
     "format": "prettier --write './**/*.{js,ts,sass,scss,css,html,json,md}'",
     "format:test": "prettier --check './**/*.{js,ts,sass,scss,css,html,json,md}'"
   },
