@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 TARGET_DIR=target/x86_64-unknown-linux-gnu/release
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 set -euo pipefail
 
@@ -31,6 +32,9 @@ echo "Generate minified json files"
 
 echo "Build search index"
 "$TARGET_DIR/index-builder" --dataset-build-id "$DATASET_BUILD_ID"
+
+echo "Build wasm engine"
+bash "$SCRIPT_DIR/build_engine.sh"
 
 echo "Build web site"
 # TODO

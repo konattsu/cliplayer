@@ -218,6 +218,7 @@
     "appender",
     "arktype",
     "artistctl",
+    "bindgen",
     "chrono",
     "cliplayer",
     "Deque",
