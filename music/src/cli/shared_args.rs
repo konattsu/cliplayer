@@ -29,6 +29,13 @@ pub(crate) struct MinOutputArgs {
 }
 
 #[derive(Debug, Clone, clap::Args)]
+pub(crate) struct DatasetBuildIdArgs {
+    /// Opaque dataset build ID shared by every generated artifact in the same build
+    #[arg(long, value_name = "ID")]
+    pub(crate) dataset_build_id: cmn_rs::min_json::DatasetBuildId,
+}
+
+#[derive(Debug, Clone, clap::Args)]
 pub(crate) struct ApiKeyArgs {
     /// The key of YouTube Data v3 api to fetch data
     #[arg(short, long, env = "YOUTUBE_API_KEY", hide_env_values = true)]

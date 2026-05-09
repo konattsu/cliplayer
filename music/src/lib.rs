@@ -3,6 +3,7 @@ pub mod cfg;
 pub mod cli;
 pub mod cli_exec_handler;
 pub mod fetcher;
+pub mod hash_inputs;
 pub mod min_output;
 pub mod model;
 pub mod music_file;

@@ -12,9 +12,10 @@ fn handle_build(args: crate::cli::BuildArgs) -> anyhow::Result<()> {
         std::fs::create_dir_all(parent)?;
     }
 
-    let binary = crate::build::build_search_index_binary(std::path::Path::new(
-        &args.music_root_dir,
-    ))?;
+    let binary = crate::build::build_search_index_binary(
+        std::path::Path::new(&args.music_root_dir),
+        args.dataset_build_id,
+    )?;
     std::fs::write(&output_path, binary)?;
 
     tracing::info!(output_path = %output_path.display(), "search index written");

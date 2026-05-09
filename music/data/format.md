@@ -11,12 +11,24 @@ preview用に`jsonc`使ってるが実際は全て`json`
 - 二次生成(s2)
   - `clips.min.json`: クリップの情報をまとめたもの
   - `videos.min.json`: 動画の情報をまとめたもの
+  - `search_index.bin`: 検索インデックス
 
-s2 の frontend 向け生成物はトップレベルに metadata を持つ。
+s2 の frontend 向け生成物はトップレベルに共通 envelope を持つ。
 
 - `schemaVersion`
-- `dataBuildId`
-- `generatedAt`
+- `datasetBuildId`
+- `data`
+
+```ts
+type MinEnvelope<T> = {
+  schemaVersion: number;
+  datasetBuildId: string;
+  data: T;
+};
+```
+
+`datasetBuildId` は opaque string として扱い、形式は `^[a-z0-9][a-z0-9._-]{7,127}$` とする。
+`musictl` 単体で決める値ではなく、`tools/build.sh` などの上位 orchestration が生成して `minify` に渡す。
 
 ### `input/foo.json`
 
@@ -124,8 +136,7 @@ s2 の frontend 向け生成物はトップレベルに metadata を持つ。
 ```jsonc
 {
   "schemaVersion": 1,
-  "dataBuildId": "2026-05-07T00:00:00Z+abcdef",
-  "generatedAt": "2026-05-07T00:00:00Z",
+  "datasetBuildId": "20260509-dataset-abcdef0123456789",
   "data": {
     "d5cb8a6b-fb40-424d-9079-c62bd76b92a5": {
       // このクリップが含まれる動画id
@@ -138,7 +149,7 @@ s2 の frontend 向け生成物はトップレベルに metadata を持つ。
       "songTitle": "おねがいダーリン",
       "liverIds": ["ruri-shioriha"],
       "externalArtistsName": ["(例示用)"],
-      "clippedVideoId": "(例示用)"
+      "clippedVideoId": "(例示用)",
     },
     "6af3a9fb-05ab-4e53-8cdf-9e63869c4246": {
       "videoId": "ZeFvqdvutb4",
@@ -146,9 +157,9 @@ s2 の frontend 向け生成物はトップレベルに metadata を持つ。
       "endTimeSecs": 694,
 
       "songTitle": "命に嫌われている。",
-      "liverIds": ["ruri-shioriha"]
-    }
-  }
+      "liverIds": ["ruri-shioriha"],
+    },
+  },
 }
 ```
 
@@ -164,8 +175,7 @@ s2 の frontend 向け生成物はトップレベルに metadata を持つ。
 ```jsonc
 {
   "schemaVersion": 1,
-  "dataBuildId": "2026-05-07T00:00:00Z+abcdef",
-  "generatedAt": "2026-05-07T00:00:00Z",
+  "datasetBuildId": "20260509-dataset-abcdef0123456789",
   "data": {
     "ZeFvqdvutb4": {
       // 順番は保証しない
@@ -182,8 +192,8 @@ s2 の frontend 向け生成物はトップレベルに metadata を持つ。
       "privacyStatus": "public",
       // 整数化, 上と同様
       "embeddable": true,
-      "videoTags": ["karaoke", "2d"]
-    }
-  }
+      "videoTags": ["karaoke", "2d"],
+    },
+  },
 }
 ```

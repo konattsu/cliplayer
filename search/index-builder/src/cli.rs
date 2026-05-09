@@ -16,6 +16,9 @@ pub(crate) struct BuildArgs {
     /// Path to the output binary search index file.
     #[arg(long, value_name = "FILE", default_value_t = default_output_path())]
     pub(crate) output_path: String,
+    /// Opaque dataset build ID shared by every generated artifact in the same build.
+    #[arg(long, value_name = "ID")]
+    pub(crate) dataset_build_id: cmn_rs::min_json::DatasetBuildId,
 }
 
 fn default_output_path() -> String {

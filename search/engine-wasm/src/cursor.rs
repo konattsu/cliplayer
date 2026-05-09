@@ -4,7 +4,7 @@ const CURSOR_TOKEN_VERSION: u8 = 1;
 #[serde(deny_unknown_fields)]
 struct CursorToken {
     v: u8,
-    index_build_id: String,
+    dataset_build_id: String,
     query_fingerprint: String,
     sort_field: crate::api::SortField,
     sort_order: crate::api::SortOrder,
@@ -53,7 +53,7 @@ impl CursorToken {
     fn from_engine(cursor: &engine::api::pagination::Cursor) -> Self {
         Self {
             v: CURSOR_TOKEN_VERSION,
-            index_build_id: cursor.index_build_id.to_string(),
+            dataset_build_id: cursor.dataset_build_id.clone(),
             query_fingerprint: cursor.query_fingerprint.to_string(),
             sort_field: crate::api::SortField::from_engine(cursor.sort_field),
             sort_order: crate::api::SortOrder::from_engine(cursor.sort_order),
@@ -72,7 +72,7 @@ impl CursorToken {
         }
 
         Ok(engine::api::pagination::Cursor {
-            index_build_id: parse_u64("index_build_id", &self.index_build_id)?,
+            dataset_build_id: self.dataset_build_id,
             query_fingerprint: parse_u64("query_fingerprint", &self.query_fingerprint)?,
             sort_field: self.sort_field.into_engine(),
             sort_order: self.sort_order.into_engine(),

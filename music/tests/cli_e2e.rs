@@ -43,6 +43,9 @@ const ANONYMOUS_INPUT_JSON: &str = r#"[
 ]
 "#;
 
+const TEST_DATASET_BUILD_ID: &str =
+    "dataset-build-20260509abcdef0123456789abcdef0123456789abcdef01234567";
+
 fn write_text_file(path: &std::path::Path, content: &str) {
     if let Some(parent) = path.parent() {
         std::fs::create_dir_all(parent).unwrap();
@@ -119,13 +122,16 @@ fn test_min_command_writes_min_files() {
     write_text_file(&month_path, MONTHLY_FILE_JSON);
 
     let mut cmd = Command::cargo_bin("musictl").unwrap();
-    cmd.arg("minify")
+    cmd.arg("build")
+        .arg("minify")
         .arg("--music-root-dir")
         .arg(music_root.to_string_lossy().to_string())
         .arg("--min-clips-path")
         .arg(min_clips.to_string_lossy().to_string())
         .arg("--min-videos-path")
-        .arg(min_videos.to_string_lossy().to_string());
+        .arg(min_videos.to_string_lossy().to_string())
+        .arg("--dataset-build-id")
+        .arg(TEST_DATASET_BUILD_ID);
 
     cmd.assert().success();
     assert!(min_clips.exists());
@@ -133,13 +139,56 @@ fn test_min_command_writes_min_files() {
 
     let clips = read_json(&min_clips);
     assert_eq!(clips["schemaVersion"], 1);
-    assert!(clips["dataBuildId"].is_string());
-    assert!(clips["generatedAt"].is_string());
+    assert_eq!(clips["datasetBuildId"], TEST_DATASET_BUILD_ID);
     assert!(clips["data"]["11786ebd-4b42-428b-81f8-ecf791887326"].is_object());
 
     let videos = read_json(&min_videos);
     assert_eq!(videos["schemaVersion"], 1);
-    assert_eq!(videos["dataBuildId"], clips["dataBuildId"]);
-    assert_eq!(videos["generatedAt"], clips["generatedAt"]);
+    assert_eq!(videos["datasetBuildId"], clips["datasetBuildId"]);
     assert!(videos["data"]["cFc9Ywpk0QU"].is_object());
+}
+
+#[test]
+fn test_build_minify_command_requires_dataset_build_id() {
+    let tmp = tempfile::tempdir().unwrap();
+    let music_root = tmp.path().join("music");
+    let month_path = music_root.join("2026/01.json");
+    let min_clips = tmp.path().join("public/clips.min.json");
+    let min_videos = tmp.path().join("public/videos.min.json");
+    write_text_file(&month_path, MONTHLY_FILE_JSON);
+
+    let mut cmd = Command::cargo_bin("musictl").unwrap();
+    cmd.arg("build")
+        .arg("minify")
+        .arg("--music-root-dir")
+        .arg(music_root.to_string_lossy().to_string())
+        .arg("--min-clips-path")
+        .arg(min_clips.to_string_lossy().to_string())
+        .arg("--min-videos-path")
+        .arg(min_videos.to_string_lossy().to_string());
+
+    cmd.assert().failure();
+}
+
+#[test]
+fn test_hash_inputs_prints_sha256() {
+    use assert_cmd::assert::OutputAssertExt;
+
+    let tmp = tempfile::tempdir().unwrap();
+    let music_root = tmp.path().join("music");
+    let month_path = music_root.join("2026/01.json");
+    write_text_file(&month_path, MONTHLY_FILE_JSON);
+
+    let mut cmd = Command::cargo_bin("musictl").unwrap();
+    cmd.arg("--quiet")
+        .arg("build")
+        .arg("hash-inputs")
+        .arg("--music-root-dir")
+        .arg(music_root.to_string_lossy().to_string());
+
+    let output = cmd.assert().success().get_output().stdout.clone();
+    let hash = String::from_utf8(output).unwrap();
+    let hash = hash.trim();
+    assert_eq!(hash.len(), 64);
+    assert!(hash.bytes().all(|byte| byte.is_ascii_hexdigit()));
 }

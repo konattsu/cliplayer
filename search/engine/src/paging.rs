@@ -5,7 +5,7 @@ mod scan;
 pub(crate) fn paginate(
     reader: &index_core::binary::SearchIndexReader<'_>,
     record_count: u32,
-    index_build_id: u64,
+    dataset_build_id: &str,
     query_fingerprint: u64,
     sort: &crate::api::query::input::SortSpec,
     cursor: Option<&crate::api::pagination::Cursor>,
@@ -27,7 +27,7 @@ pub(crate) fn paginate(
         Some(cursor) => {
             cursor::validate_cursor(
                 &published_ats,
-                index_build_id,
+                dataset_build_id,
                 query_fingerprint,
                 sort,
                 cursor,
@@ -58,7 +58,7 @@ pub(crate) fn paginate(
     let next_cursor = match (has_more, doc_ids.last().copied()) {
         (true, Some(doc_id)) => Some(cursor::build_cursor(
             &published_ats,
-            index_build_id,
+            dataset_build_id,
             query_fingerprint,
             sort,
             doc_id,

@@ -9,8 +9,8 @@ pub use file_paths::FilePathsFromCli;
 pub use parser::Cli;
 pub(crate) use parser::Commands;
 pub(crate) use shared_args::{
-    ApiKeyArgs, DuplicateVideoPolicyArgs, InputFilesArgs, MarkdownArgs,
-    MergeDirectoriesArgs, MinOutputArgs, MusicRootArgs,
+    ApiKeyArgs, DatasetBuildIdArgs, DuplicateVideoPolicyArgs, InputFilesArgs,
+    MarkdownArgs, MergeDirectoriesArgs, MinOutputArgs, MusicRootArgs,
 };
 pub use tracing_level::TracingLevel;
 pub use video_ids::VideoIdsFromCli;

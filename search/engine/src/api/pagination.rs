@@ -8,7 +8,7 @@
 /// 持たせる設計も有用である。
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Cursor {
-    pub index_build_id: u64,
+    pub dataset_build_id: String,
     pub query_fingerprint: u64,
     pub sort_field: crate::api::query::types::SortField,
     pub sort_order: crate::api::query::types::SortOrder,

@@ -179,7 +179,7 @@ copy 削減は将来の最適化候補とし、初版の必須要件にはしな
 `design.md` の cursor は内部的には次を持つ。
 
 ```text
-index_build_id
+dataset_build_id
 query_fingerprint
 sort_field
 sort_order
@@ -193,7 +193,7 @@ last_doc_id
 理由:
 
 - frontend 側が cursor の内部 schema に依存しなくて済む
-- `index_build_id` や `query_fingerprint` の表現を JS 都合で漏らさずに済む
+- `dataset_build_id` や `query_fingerprint` の表現を JS 都合で漏らさずに済む
 - 将来 cursor payload を変更しても frontend API を壊しにくい
 
 ### 6.2 token 化の責務は wasm facade 側に寄せる
@@ -230,7 +230,7 @@ token payload には必ず version を持たせる。
 ```json
 {
   "v": 1,
-  "index_build_id": "123",
+  "dataset_build_id": "dataset-build-20260509abcdef0123456789abcdef0123456789abcdef01234567",
   "query_fingerprint": "456",
   "sort_field": "published_at",
   "sort_order": "desc",
@@ -239,9 +239,9 @@ token payload には必ず version を持たせる。
 }
 ```
 
-ここでの `index_build_id` と `query_fingerprint` は token 内部では文字列化する。
+ここでの `dataset_build_id` と `query_fingerprint` は token 内部では文字列として保持する。
 公開 API では opaque token のため frontend はこれを意識しないが、
-token schema としては `u64` の安全性問題を先回りして回避する。
+token schema としては build identity の内部表現を frontend に漏らさない。
 
 ### 6.4 response invariant
 

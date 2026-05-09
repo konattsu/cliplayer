@@ -134,9 +134,12 @@ reader は壊れた binary による巨大 allocation を避ける。
 
 metadata section には次を入れる。
 
+- `dataset_build_id`
 - `builder_version`
-- 必要なら build timestamp
-- 必要なら build metadata
+- 必要なら追加 build metadata
+
+`dataset_build_id` は min JSON 側の `datasetBuildId` と同じ build identity を表す。
+frontend はこの値を cursor や永続化済み queue の再利用判定に使う。
 
 `record_count` は header を canonical とする。
 metadata に重複保持する場合は reader が一致を必須検証する。
