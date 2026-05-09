@@ -198,3 +198,4 @@ rust-project.json
 .pnpm-store/
 public/**/*.min.json
 public/**/*.bin
+temp/
