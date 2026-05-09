@@ -16,8 +16,8 @@ pub(crate) enum Commands {
     Update(UpdateCommands),
     /// Synchronize the library with YouTube using the current library state.
     Sync(SyncCommands),
-    /// Generate minimized public data files from the current music library.
-    Min(MinCommands),
+    /// Run build-related commands for public artifacts.
+    Build(BuildCommands),
     /// Run utility commands that are outside the core music‑library workflows.
     Util(UtilCommands),
 }
@@ -98,14 +98,36 @@ pub(crate) struct SyncCommands {
     pub(crate) music_root: crate::cli::MusicRootArgs,
 }
 
-// MARK: min
+// MARK: build
 
 #[derive(Debug, clap::Args)]
-pub(crate) struct MinCommands {
+pub(crate) struct BuildCommands {
+    #[command(subcommand)]
+    pub(crate) mode: BuildMode,
+}
+
+#[derive(Debug, clap::Subcommand)]
+pub(crate) enum BuildMode {
+    /// Generate minimized public data files from the current music library.
+    Minify(BuildMinifyCommands),
+    /// Hash the source input set used for public artifacts.
+    HashInputs(BuildHashInputsCommands),
+}
+
+#[derive(Debug, clap::Args)]
+pub(crate) struct BuildMinifyCommands {
     #[command(flatten)]
     pub(crate) music_root: crate::cli::MusicRootArgs,
     #[command(flatten)]
     pub(crate) min_output: crate::cli::MinOutputArgs,
+    #[command(flatten)]
+    pub(crate) dataset_build_id: crate::cli::DatasetBuildIdArgs,
+}
+
+#[derive(Debug, clap::Args)]
+pub(crate) struct BuildHashInputsCommands {
+    #[command(flatten)]
+    pub(crate) music_root: crate::cli::MusicRootArgs,
 }
 
 // MARK: util

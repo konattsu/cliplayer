@@ -42,7 +42,9 @@ pub(crate) fn sample_index() -> crate::schema::SearchIndex {
     crate::schema::SearchIndex {
         meta: crate::schema::IndexMetadata {
             index_format_version: super::format::FORMAT_VERSION,
-            index_build_id: 42,
+            dataset_build_id:
+                "dataset-build-42abcdef0123456789abcdef0123456789abcdef0123456789"
+                    .to_string(),
             builder_version: "test-builder".to_string(),
             record_count: 3,
         },
@@ -154,7 +156,10 @@ fn test_roundtrip_search_index_binary() {
         reader.metadata_view().unwrap().builder_version(),
         "test-builder"
     );
-    assert_eq!(reader.metadata_view().unwrap().index_build_id(), 42);
+    assert_eq!(
+        reader.metadata_view().unwrap().dataset_build_id(),
+        "dataset-build-42abcdef0123456789abcdef0123456789abcdef0123456789",
+    );
     assert_eq!(
         reader.clips_dictionary().unwrap().get(0).unwrap(),
         Some("clip-a")

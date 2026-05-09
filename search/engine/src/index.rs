@@ -17,7 +17,7 @@ pub(crate) struct LoadedIndex {
     bytes: std::sync::Arc<[u8]>,
     layout: index_core::binary::ValidatedIndexLayout,
     pub(crate) record_count: u32,
-    pub(crate) index_build_id: u64,
+    pub(crate) dataset_build_id: String,
     pub(crate) dictionaries: DictionaryCaches,
 }
 
@@ -36,7 +36,7 @@ impl LoadedIndex {
         Ok(Self {
             bytes,
             record_count: layout.header().record_count,
-            index_build_id: metadata.index_build_id(),
+            dataset_build_id: metadata.dataset_build_id().to_string(),
             dictionaries: DictionaryCaches {
                 channels: build_dictionary_cache(reader.channels_dictionary()?)?,
                 artists: build_dictionary_cache(reader.artists_dictionary()?)?,

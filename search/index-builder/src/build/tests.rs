@@ -15,6 +15,12 @@ fn sample_tag_ids() -> (String, String) {
     (tag_ids[0].clone(), tag_ids[1].clone())
 }
 
+fn test_dataset_build_id() -> cmn_rs::min_json::DatasetBuildId {
+    "dataset-build-20260509abcdef0123456789abcdef0123456789abcdef01234567"
+        .parse()
+        .unwrap()
+}
+
 fn sample_loaded_data() -> crate::build::load::LoadedData {
     let artist_id_1 = artistctl::model::LiverId::self_1().as_str().to_owned();
     let artist_id_2 = artistctl::model::LiverId::self_2().as_str().to_owned();
@@ -71,6 +77,7 @@ fn sample_loaded_data() -> crate::build::load::LoadedData {
 fn test_build_search_index_from_loaded_data() {
     let index = crate::build::assemble::build_search_index_from_loaded_data(
         sample_loaded_data(),
+        test_dataset_build_id(),
     )
     .unwrap();
 
@@ -92,8 +99,11 @@ fn test_build_search_index_from_loaded_data_rejects_unknown_channel() {
     let mut data = sample_loaded_data();
     data.clips[0].channel_id = "UCUNKNOWNUNKNOWNUNKNOWN1".to_string();
 
-    let err =
-        crate::build::assemble::build_search_index_from_loaded_data(data).unwrap_err();
+    let err = crate::build::assemble::build_search_index_from_loaded_data(
+        data,
+        test_dataset_build_id(),
+    )
+    .unwrap_err();
     assert!(err.to_string().contains("unknown channel_id"));
 }
 
@@ -101,6 +111,7 @@ fn test_build_search_index_from_loaded_data_rejects_unknown_channel() {
 fn test_build_search_index_binary_roundtrip() {
     let index = crate::build::assemble::build_search_index_from_loaded_data(
         sample_loaded_data(),
+        test_dataset_build_id(),
     )
     .unwrap();
 
@@ -112,8 +123,8 @@ fn test_build_search_index_binary_roundtrip() {
         env!("CARGO_PKG_VERSION"),
     );
     assert_eq!(
-        reader.metadata_view().unwrap().index_build_id(),
-        index.meta.index_build_id,
+        reader.metadata_view().unwrap().dataset_build_id(),
+        index.meta.dataset_build_id,
     );
     assert_eq!(
         reader.clip_ids().unwrap().len(),

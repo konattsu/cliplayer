@@ -196,3 +196,5 @@ rust-project.json
 # End of https://www.toptal.com/developers/gitignore/api/angular,node,rust,rust-analyzer
 
 .pnpm-store/
+public/**/*.min.json
+public/**/*.bin

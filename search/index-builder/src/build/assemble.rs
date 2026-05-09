@@ -1,29 +1,31 @@
 pub fn build_search_index(
     music_root: &std::path::Path,
+    dataset_build_id: cmn_rs::min_json::DatasetBuildId,
 ) -> anyhow::Result<index_core::schema::SearchIndex> {
     let data = crate::build::load::load_data(music_root)?;
-    build_search_index_from_loaded_data(data)
+    build_search_index_from_loaded_data(data, dataset_build_id)
 }
 
 pub fn build_search_index_binary(
     music_root: &std::path::Path,
+    dataset_build_id: cmn_rs::min_json::DatasetBuildId,
 ) -> anyhow::Result<Vec<u8>> {
-    let index = build_search_index(music_root)?;
+    let index = build_search_index(music_root, dataset_build_id)?;
     Ok(index_core::binary::serialize_search_index(&index)?)
 }
 
 pub(crate) fn build_search_index_from_loaded_data(
     data: crate::build::load::LoadedData,
+    dataset_build_id: cmn_rs::min_json::DatasetBuildId,
 ) -> anyhow::Result<index_core::schema::SearchIndex> {
     let dictionaries = crate::build::dictionaries::build_dictionaries(&data);
     let normalized =
         crate::build::normalize::normalize_clip_records(&data, &dictionaries)?;
-    let index_build_id = generate_index_build_id();
 
     Ok(index_core::schema::SearchIndex {
         meta: index_core::schema::IndexMetadata {
             index_format_version: 1,
-            index_build_id,
+            dataset_build_id: dataset_build_id.to_string(),
             builder_version: env!("CARGO_PKG_VERSION").to_string(),
             record_count: u32::try_from(normalized.len())
                 .expect("record count fits within u32"),
@@ -61,20 +63,6 @@ fn build_columns(
                 .collect::<Vec<_>>(),
         ),
     }
-}
-
-fn generate_index_build_id() -> u64 {
-    use std::hash::Hash;
-    use std::hash::Hasher;
-
-    let mut hasher = std::collections::hash_map::DefaultHasher::new();
-    std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .unwrap_or_default()
-        .as_nanos()
-        .hash(&mut hasher);
-    std::process::id().hash(&mut hasher);
-    hasher.finish()
 }
 
 fn build_exact_indexes(

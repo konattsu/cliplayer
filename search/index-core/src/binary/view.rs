@@ -1,7 +1,7 @@
 /// Borrowed metadata view over the metadata section payload.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct MetadataView<'a> {
-    index_build_id: u64,
+    dataset_build_id: &'a str,
     builder_version: &'a str,
 }
 
@@ -15,28 +15,33 @@ impl<'a> MetadataView<'a> {
         if item_count != 1 {
             return Err(Error::InvalidFormat("metadata item_count must be 1"));
         }
-        if payload.len() < 12 {
+        if payload.len() < 8 {
             return Err(Error::InvalidFormat("metadata payload too small"));
         }
 
-        let index_build_id = crate::binary::codec::read_u64_at(payload, 0)?;
+        let dataset_build_id_len =
+            crate::binary::codec::read_u32_at(payload, 0)? as usize;
+        let dataset_build_id_end = 4 + dataset_build_id_len;
         let builder_version_len =
-            crate::binary::codec::read_u32_at(payload, 8)? as usize;
-        if payload.len() != 12 + builder_version_len {
+            crate::binary::codec::read_u32_at(payload, dataset_build_id_end)? as usize;
+        let builder_version_start = dataset_build_id_end + 4;
+        if payload.len() != builder_version_start + builder_version_len {
             return Err(Error::InvalidFormat("metadata payload length mismatch"));
         }
 
-        let builder_version =
-            std::str::from_utf8(&payload[12..]).map_err(|_| Error::Utf8)?;
+        let dataset_build_id = std::str::from_utf8(&payload[4..dataset_build_id_end])
+            .map_err(|_| Error::Utf8)?;
+        let builder_version = std::str::from_utf8(&payload[builder_version_start..])
+            .map_err(|_| Error::Utf8)?;
 
         Ok(Self {
-            index_build_id,
+            dataset_build_id,
             builder_version,
         })
     }
 
-    pub fn index_build_id(&self) -> u64 {
-        self.index_build_id
+    pub fn dataset_build_id(&self) -> &'a str {
+        self.dataset_build_id
     }
 
     pub fn builder_version(&self) -> &'a str {

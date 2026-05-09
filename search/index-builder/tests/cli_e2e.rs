@@ -22,6 +22,9 @@ const MONTHLY_FILE_JSON: &str = r#"[
 ]
 "#;
 
+const TEST_DATASET_BUILD_ID: &str =
+    "dataset-build-20260509abcdef0123456789abcdef0123456789abcdef01234567";
+
 fn write_text_file(path: &std::path::Path, content: &str) {
     if let Some(parent) = path.parent() {
         std::fs::create_dir_all(parent).unwrap();
@@ -43,7 +46,9 @@ fn test_build_writes_search_index_binary() {
     cmd.arg("--music-root-dir")
         .arg(&music_root)
         .arg("--output-path")
-        .arg(&output_path);
+        .arg(&output_path)
+        .arg("--dataset-build-id")
+        .arg(TEST_DATASET_BUILD_ID);
 
     cmd.assert().success();
     assert!(output_path.exists());
@@ -54,5 +59,9 @@ fn test_build_writes_search_index_binary() {
     assert_eq!(
         reader.metadata_view().unwrap().builder_version(),
         env!("CARGO_PKG_VERSION")
+    );
+    assert_eq!(
+        reader.metadata_view().unwrap().dataset_build_id(),
+        TEST_DATASET_BUILD_ID,
     );
 }

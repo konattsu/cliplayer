@@ -100,14 +100,14 @@ impl VerifiedVideos {
                 duplicated_ids.insert(prev_video.get_video_id().clone());
             }
         }
-
         if duplicated_ids.is_empty() {
             Ok(Self { inner })
         } else {
-            Err(duplicated_ids
+            let mut duplicated_ids = duplicated_ids
                 .into_iter()
-                .collect::<Vec<crate::model::VideoId>>()
-                .into())
+                .collect::<Vec<crate::model::VideoId>>();
+            duplicated_ids.sort();
+            Err(duplicated_ids.into())
         }
     }
 
@@ -257,6 +257,24 @@ mod tests {
         let err_ids = result.unwrap_err().into_vec();
         assert_eq!(err_ids.len(), 1);
         assert_eq!(err_ids[0], crate::model::VideoId::test_id_1());
+    }
+
+    #[test]
+    fn test_verified_videos_try_from_vec_duplicate_sorted_ids() {
+        let video1 = super::super::VerifiedVideo::self_b();
+        let video2 = super::super::VerifiedVideo::self_a();
+        let video3 = super::super::VerifiedVideo::self_b();
+        let video4 = super::super::VerifiedVideo::self_a();
+
+        let result = VerifiedVideos::try_from_vec(vec![video1, video2, video3, video4]);
+
+        assert_eq!(
+            result.unwrap_err().into_vec(),
+            vec![
+                crate::model::VideoId::test_id_1(),
+                crate::model::VideoId::test_id_2(),
+            ]
+        );
     }
 
     #[test]

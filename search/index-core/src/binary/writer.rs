@@ -157,7 +157,7 @@ impl<'a> BinaryWriter<'a> {
                 SECTION_METADATA,
                 1,
                 encode_metadata(
-                    self.index.meta.index_build_id,
+                    &self.index.meta.dataset_build_id,
                     &self.index.meta.builder_version,
                 )?,
             ),

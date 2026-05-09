@@ -45,3 +45,40 @@
 - `tags.min.json
 
 上の`tags.json`をそのままminifyしたもの
+
+frontend 向け生成物はトップレベルに共通 envelope を持つ。
+
+- `schemaVersion`
+- `datasetBuildId`
+- `data`
+
+```ts
+type MinEnvelope<T> = {
+  schemaVersion: number;
+  datasetBuildId: string;
+  data: T;
+};
+```
+
+`datasetBuildId` は opaque string として扱い、形式は `^[a-z0-9][a-z0-9._-]{7,127}$` とする。
+`tagctl` 単体で決める値ではなく、`tools/build.sh` などの上位 orchestration が生成して `minify` に渡す。
+
+```jsonc
+{
+  "schemaVersion": 1,
+  "datasetBuildId": "20260509-dataset-abcdef0123456789",
+  "data": {
+    "karaoke": {
+      "ja": "歌枠",
+      "en": "karaoke",
+      "intId": 0,
+    },
+    "3d-debut": {
+      "ja": "3Dお披露目",
+      "en": "3D Debut",
+      "blocked": true,
+      "intId": 4,
+    },
+  },
+}
+```

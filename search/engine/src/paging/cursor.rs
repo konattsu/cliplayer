@@ -1,15 +1,15 @@
 pub(crate) fn validate_cursor(
     published_ats: &index_core::binary::I64SliceView<'_>,
-    index_build_id: u64,
+    dataset_build_id: &str,
     query_fingerprint: u64,
     sort: &crate::api::query::input::SortSpec,
     cursor: &crate::api::pagination::Cursor,
 ) -> Result<(), crate::EngineError> {
     use crate::EngineError;
 
-    if cursor.index_build_id != index_build_id {
+    if cursor.dataset_build_id != dataset_build_id {
         return Err(EngineError::InvalidCursor(
-            "cursor index build id does not match",
+            "cursor dataset build id does not match",
         ));
     }
     if cursor.query_fingerprint != query_fingerprint {
@@ -37,7 +37,7 @@ pub(crate) fn validate_cursor(
 
 pub(crate) fn build_cursor(
     published_ats: &index_core::binary::I64SliceView<'_>,
-    index_build_id: u64,
+    dataset_build_id: &str,
     query_fingerprint: u64,
     sort: &crate::api::query::input::SortSpec,
     doc_id: index_core::schema::ids::DocId,
@@ -49,7 +49,7 @@ pub(crate) fn build_cursor(
                 "published_at column out of bounds",
             ))?;
     Ok(crate::api::pagination::Cursor {
-        index_build_id,
+        dataset_build_id: dataset_build_id.to_string(),
         query_fingerprint,
         sort_field: sort.field,
         sort_order: sort.order,

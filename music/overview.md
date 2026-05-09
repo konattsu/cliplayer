@@ -13,7 +13,7 @@ Commands:
   add     Add new music entries to the library using one or more input files
   update  Update the existing music library based on its current contents
   sync    Synchronize the library with YouTube using the current library state
-  min     Generate minimized public data files from the current music library
+  build   Run build-related commands for public artifacts
   util    Run utility commands that are outside the core music‑library workflows
   help    Print this message or the help of the given subcommand(s)
 
@@ -27,4 +27,4 @@ Options:
 
 ## データ形式
 
-[`README.md`](./data/README.md)を参照
+[`format.md`](./data/format.md)を参照

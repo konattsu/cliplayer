@@ -28,7 +28,7 @@ impl SearchEngine {
         let internal = crate::paging::paginate(
             &reader,
             self.index.record_count,
-            self.index.index_build_id,
+            &self.index.dataset_build_id,
             request.query_fingerprint,
             &request.sort,
             request.cursor.as_ref(),
