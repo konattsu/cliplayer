@@ -1,6 +1,10 @@
-# agents
+# Agents
 
-Follow `.github/copilot-instructions.md`.
+This is the primary repo instruction file for both Copilot and Codex.
 
-Repository-local guides under `.github/skills/*/SKILL.md` are not platform-registered skills.
-Treat them as project instruction documents and open the relevant file explicitly when the task matches.
+## Core Rules
+
+- Treat this file as the first stop for repo-specific guidance.
+- Use `pnpm` instead of `npm`.
+- Be careful about where you read and edit code; position mistakes are easy here.
+- Refer to `README.md` for the project overview.
