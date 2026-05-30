@@ -1,0 +1,795 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="2.0" xmlns="urn:oasis:names:tc:xliff:document:2.0" srcLang="ja" trgLang="en">
+  <file id="ngi18n" original="ng.template">
+    <unit id="navSearch">
+      <notes>
+        <note category="location">src/app/app.ts:106</note>
+        <note category="description">Primary navigation label</note>
+      </notes>
+      <segment>
+        <source>検索</source>
+        <target>Search</target>
+      </segment>
+    </unit>
+    <unit id="navPlay">
+      <notes>
+        <note category="location">src/app/app.ts:107</note>
+        <note category="description">Primary navigation label</note>
+      </notes>
+      <segment>
+        <source>再生</source>
+        <target>Play</target>
+      </segment>
+    </unit>
+    <unit id="navSettings">
+      <notes>
+        <note category="location">src/app/app.ts:108</note>
+        <note category="description">Primary navigation label</note>
+      </notes>
+      <segment>
+        <source>設定</source>
+        <target>Settings</target>
+      </segment>
+    </unit>
+    <unit id="navMenu">
+      <notes>
+        <note category="location">src/app/app.ts:109</note>
+        <note category="description">Mobile navigation button label</note>
+      </notes>
+      <segment>
+        <source>メニュー</source>
+        <target>Menu</target>
+      </segment>
+    </unit>
+    <unit id="navMenuLabel">
+      <notes>
+        <note category="location">src/app/app.ts:110</note>
+        <note category="description">Mobile navigation aria label</note>
+      </notes>
+      <segment>
+        <source>ナビゲーションを開く</source>
+        <target>Open navigation</target>
+      </segment>
+    </unit>
+    <unit id="navPrimaryLabel">
+      <notes>
+        <note category="location">src/app/app.ts:34</note>
+        <note category="description">Primary navigation aria label</note>
+      </notes>
+      <segment>
+        <source>primary</source>
+        <target>primary</target>
+      </segment>
+    </unit>
+    <unit id="navLocaleSwitchLabel">
+      <notes>
+        <note category="location">src/app/app.ts:62</note>
+        <note category="description">Locale switch aria label</note>
+      </notes>
+      <segment>
+        <source>locale</source>
+        <target>locale</target>
+      </segment>
+    </unit>
+    <unit id="appBootingTitle">
+      <notes>
+        <note category="location">src/app/app.ts:111</note>
+        <note category="description">Boot state title</note>
+      </notes>
+      <segment>
+        <source>起動中</source>
+        <target>Starting</target>
+      </segment>
+    </unit>
+    <unit id="appLoadingEyebrow">
+      <notes>
+        <note category="location">src/app/app.ts:112</note>
+        <note category="description">Loading state eyebrow</note>
+      </notes>
+      <segment>
+        <source>loading</source>
+        <target>loading</target>
+      </segment>
+    </unit>
+    <unit id="appLoadingTitle">
+      <notes>
+        <note category="location">src/app/app.ts:113</note>
+        <note category="description">Loading state title</note>
+      </notes>
+      <segment>
+        <source>データセットを読み込んでいます</source>
+        <target>Loading dataset</target>
+      </segment>
+    </unit>
+    <unit id="appErrorEyebrow">
+      <notes>
+        <note category="location">src/app/app.ts:114</note>
+        <note category="description">Fatal error eyebrow</note>
+      </notes>
+      <segment>
+        <source>load error</source>
+        <target>load error</target>
+      </segment>
+    </unit>
+    <unit id="appErrorTitle">
+      <notes>
+        <note category="location">src/app/app.ts:115</note>
+        <note category="description">Fatal error title</note>
+      </notes>
+      <segment>
+        <source>データセットを読み込めませんでした</source>
+        <target>Dataset could not be loaded</target>
+      </segment>
+    </unit>
+    <unit id="appErrorDescription">
+      <notes>
+        <note category="location">src/app/app.ts:116</note>
+        <note category="description">Fatal error description</note>
+      </notes>
+      <segment>
+        <source>時間をおいて再読み込みしてください。技術的な詳細は console に出力しています。</source>
+        <target>Please reload later. The technical error was written to the console.</target>
+      </segment>
+    </unit>
+    <unit id="playPlay">
+      <notes>
+        <note category="location">src/app/features/play/play.page.ts:191</note>
+        <note category="description">Play button label</note>
+      </notes>
+      <segment>
+        <source>再生</source>
+        <target>Play</target>
+      </segment>
+    </unit>
+    <unit id="playPause">
+      <notes>
+        <note category="location">src/app/features/play/play.page.ts:192</note>
+        <note category="description">Pause button label</note>
+      </notes>
+      <segment>
+        <source>一時停止</source>
+        <target>Pause</target>
+      </segment>
+    </unit>
+    <unit id="playPrevious">
+      <notes>
+        <note category="location">src/app/features/play/play.page.ts:193</note>
+        <note category="description">Previous queue item</note>
+      </notes>
+      <segment>
+        <source>前へ</source>
+        <target>Previous</target>
+      </segment>
+    </unit>
+    <unit id="playNext">
+      <notes>
+        <note category="location">src/app/features/play/play.page.ts:194</note>
+        <note category="description">Next queue item</note>
+      </notes>
+      <segment>
+        <source>次へ</source>
+        <target>Next</target>
+      </segment>
+    </unit>
+    <unit id="playOriginal">
+      <notes>
+        <note category="location">src/app/features/play/play.page.ts:195</note>
+        <note category="description">Open original video label</note>
+      </notes>
+      <segment>
+        <source>元動画</source>
+        <target>Original video</target>
+      </segment>
+    </unit>
+    <unit id="playCopyLink">
+      <notes>
+        <note category="location">src/app/features/play/play.page.ts:196</note>
+        <note category="description">Copy queue link label</note>
+      </notes>
+      <segment>
+        <source>リンクをコピー</source>
+        <target>Copy link</target>
+      </segment>
+    </unit>
+    <unit id="playQueueHeading">
+      <notes>
+        <note category="location">src/app/features/play/play.page.ts:197</note>
+        <note category="description">Queue heading</note>
+      </notes>
+      <segment>
+        <source>queue</source>
+        <target>queue</target>
+      </segment>
+    </unit>
+    <unit id="playEmptyTitle">
+      <notes>
+        <note category="location">src/app/features/play/play.page.ts:198</note>
+        <note category="description">Empty queue title</note>
+      </notes>
+      <segment>
+        <source>queue が空です</source>
+        <target>Queue is empty</target>
+      </segment>
+    </unit>
+    <unit id="playEmptyDescription">
+      <notes>
+        <note category="location">src/app/features/play/play.page.ts:199</note>
+        <note category="description">Empty queue description</note>
+      </notes>
+      <segment>
+        <source>検索結果または clip URL から queue を作成してください。</source>
+        <target>Create a queue from search results or a clip URL.</target>
+      </segment>
+    </unit>
+    <unit id="playEmptyAction">
+      <notes>
+        <note category="location">src/app/features/play/play.page.ts:200</note>
+        <note category="description">Empty queue action</note>
+      </notes>
+      <segment>
+        <source>検索を開く</source>
+        <target>Open search</target>
+      </segment>
+    </unit>
+    <unit id="playCopied">
+      <notes>
+        <note category="location">src/app/features/play/play.page.ts:201</note>
+        <note category="description">Queue link copied status</note>
+      </notes>
+      <segment>
+        <source>コピーしました</source>
+        <target>Link copied</target>
+      </segment>
+    </unit>
+    <unit id="playRemoveItemLabel">
+      <notes>
+        <note category="location">src/app/features/play/play.page.ts:123</note>
+        <note category="description">Remove queue item aria label</note>
+      </notes>
+      <segment>
+        <source>remove item</source>
+        <target>remove item</target>
+      </segment>
+    </unit>
+    <unit id="searchEyebrow">
+      <notes>
+        <note category="location">src/app/features/search/search.page.ts:321</note>
+        <note category="description">Search page eyebrow</note>
+      </notes>
+      <segment>
+        <source>検索</source>
+        <target>search</target>
+      </segment>
+    </unit>
+    <unit id="searchTitle">
+      <notes>
+        <note category="location">src/app/features/search/search.page.ts:322</note>
+        <note category="description">Search page title</note>
+      </notes>
+      <segment>
+        <source>clip を探す</source>
+        <target>Find clips</target>
+      </segment>
+    </unit>
+    <unit id="searchIntro">
+      <notes>
+        <note category="location">src/app/features/search/search.page.ts:323</note>
+        <note category="description">Search page intro</note>
+      </notes>
+      <segment>
+        <source>件数を確認してから、確定して clip を表示します。</source>
+        <target>Preview the count first, then confirm to show clips.</target>
+      </segment>
+    </unit>
+    <unit id="searchArtistLabel">
+      <notes>
+        <note category="location">src/app/features/search/search.page.ts:324</note>
+        <note category="description">Search field label</note>
+      </notes>
+      <segment>
+        <source>artist</source>
+        <target>artist</target>
+      </segment>
+    </unit>
+    <unit id="searchArtistPlaceholder">
+      <notes>
+        <note category="location">src/app/features/search/search.page.ts:325</note>
+        <note category="description">Search artist placeholder</note>
+      </notes>
+      <segment>
+        <source>ライバー名</source>
+        <target>Artist name</target>
+      </segment>
+    </unit>
+    <unit id="searchTagLabel">
+      <notes>
+        <note category="location">src/app/features/search/search.page.ts:326</note>
+        <note category="description">Search tag label</note>
+      </notes>
+      <segment>
+        <source>tag</source>
+        <target>tag</target>
+      </segment>
+    </unit>
+    <unit id="searchChannelLabel">
+      <notes>
+        <note category="location">src/app/features/search/search.page.ts:327</note>
+        <note category="description">Search channel label</note>
+      </notes>
+      <segment>
+        <source>channel</source>
+        <target>channel</target>
+      </segment>
+    </unit>
+    <unit id="searchChannelPlaceholder">
+      <notes>
+        <note category="location">src/app/features/search/search.page.ts:328</note>
+        <note category="description">Search channel placeholder</note>
+      </notes>
+      <segment>
+        <source>チャンネル名</source>
+        <target>Channel name</target>
+      </segment>
+    </unit>
+    <unit id="searchFromMonth">
+      <notes>
+        <note category="location">src/app/features/search/search.page.ts:329</note>
+        <note category="description">Search from month label</note>
+      </notes>
+      <segment>
+        <source>from month</source>
+        <target>from month</target>
+      </segment>
+    </unit>
+    <unit id="searchToMonth">
+      <notes>
+        <note category="location">src/app/features/search/search.page.ts:330</note>
+        <note category="description">Search to month label</note>
+      </notes>
+      <segment>
+        <source>to month</source>
+        <target>to month</target>
+      </segment>
+    </unit>
+    <unit id="searchEmbedLabel">
+      <notes>
+        <note category="location">src/app/features/search/search.page.ts:331</note>
+        <note category="description">Search embeddable label</note>
+      </notes>
+      <segment>
+        <source>embed</source>
+        <target>embed</target>
+      </segment>
+    </unit>
+    <unit id="searchAny">
+      <notes>
+        <note category="location">src/app/features/search/search.page.ts:332</note>
+        <note category="description">Search tri-state any</note>
+      </notes>
+      <segment>
+        <source>any</source>
+        <target>any</target>
+      </segment>
+    </unit>
+    <unit id="searchOnly">
+      <notes>
+        <note category="location">src/app/features/search/search.page.ts:333</note>
+        <note category="description">Search tri-state only</note>
+      </notes>
+      <segment>
+        <source>only</source>
+        <target>only</target>
+      </segment>
+    </unit>
+    <unit id="searchExclude">
+      <notes>
+        <note category="location">src/app/features/search/search.page.ts:334</note>
+        <note category="description">Search tri-state exclude</note>
+      </notes>
+      <segment>
+        <source>exclude</source>
+        <target>exclude</target>
+      </segment>
+    </unit>
+    <unit id="searchSortLabel">
+      <notes>
+        <note category="location">src/app/features/search/search.page.ts:335</note>
+        <note category="description">Search sort label</note>
+      </notes>
+      <segment>
+        <source>sort</source>
+        <target>sort</target>
+      </segment>
+    </unit>
+    <unit id="searchNewest">
+      <notes>
+        <note category="location">src/app/features/search/search.page.ts:336</note>
+        <note category="description">Search newest sort label</note>
+      </notes>
+      <segment>
+        <source>新しい順</source>
+        <target>Newest first</target>
+      </segment>
+    </unit>
+    <unit id="searchOldest">
+      <notes>
+        <note category="location">src/app/features/search/search.page.ts:337</note>
+        <note category="description">Search oldest sort label</note>
+      </notes>
+      <segment>
+        <source>古い順</source>
+        <target>Oldest first</target>
+      </segment>
+    </unit>
+    <unit id="searchClipsUnit">
+      <notes>
+        <note category="location">src/app/features/search/search.page.ts:338</note>
+        <note category="description">Clips count unit</note>
+      </notes>
+      <segment>
+        <source>clips</source>
+        <target>clips</target>
+      </segment>
+    </unit>
+    <unit id="searchShowClips">
+      <notes>
+        <note category="location">src/app/features/search/search.page.ts:339</note>
+        <note category="description">Show clips button</note>
+      </notes>
+      <segment>
+        <source>clip を表示</source>
+        <target>Show clips</target>
+      </segment>
+    </unit>
+    <unit id="searchClear">
+      <notes>
+        <note category="location">src/app/features/search/search.page.ts:340</note>
+        <note category="description">Clear search button</note>
+      </notes>
+      <segment>
+        <source>クリア</source>
+        <target>Clear</target>
+      </segment>
+    </unit>
+    <unit id="searchConfirmHint">
+      <notes>
+        <note category="location">src/app/features/search/search.page.ts:341</note>
+        <note category="description">Search confirm hint</note>
+      </notes>
+      <segment>
+        <source>条件を確定すると具体的な clip 一覧を表示します。</source>
+        <target>Confirm the conditions to render the concrete list.</target>
+      </segment>
+    </unit>
+    <unit id="searchResultsEyebrow">
+      <notes>
+        <note category="location">src/app/features/search/search.page.ts:342</note>
+        <note category="description">Search results eyebrow</note>
+      </notes>
+      <segment>
+        <source>results</source>
+        <target>results</target>
+      </segment>
+    </unit>
+    <unit id="searchQueueAction">
+      <notes>
+        <note category="location">src/app/features/search/search.page.ts:343</note>
+        <note category="description">Search queue action</note>
+      </notes>
+      <segment>
+        <source>この結果で再生</source>
+        <target>Open queue</target>
+      </segment>
+    </unit>
+    <unit id="searchOpenClip">
+      <notes>
+        <note category="location">src/app/features/search/search.page.ts:344</note>
+        <note category="description">Open clip action</note>
+      </notes>
+      <segment>
+        <source>開く</source>
+        <target>Open</target>
+      </segment>
+    </unit>
+    <unit id="searchAddToQueue">
+      <notes>
+        <note category="location">src/app/features/search/search.page.ts:345</note>
+        <note category="description">Add to queue action</note>
+      </notes>
+      <segment>
+        <source>キューに追加</source>
+        <target>Add to queue</target>
+      </segment>
+    </unit>
+    <unit id="searchNoClips">
+      <notes>
+        <note category="location">src/app/features/search/search.page.ts:346</note>
+        <note category="description">Empty search results title</note>
+      </notes>
+      <segment>
+        <source>該当なし</source>
+        <target>No clips</target>
+      </segment>
+    </unit>
+    <unit id="settingsEyebrow">
+      <notes>
+        <note category="location">src/app/features/settings/settings.page.ts:94</note>
+        <note category="description">Settings page eyebrow</note>
+      </notes>
+      <segment>
+        <source>settings</source>
+        <target>settings</target>
+      </segment>
+    </unit>
+    <unit id="settingsTitle">
+      <notes>
+        <note category="location">src/app/features/settings/settings.page.ts:95</note>
+        <note category="description">Settings page title</note>
+      </notes>
+      <segment>
+        <source>設定</source>
+        <target>Settings</target>
+      </segment>
+    </unit>
+    <unit id="settingsDescription">
+      <notes>
+        <note category="location">src/app/features/settings/settings.page.ts:96</note>
+        <note category="description">Settings page description</note>
+      </notes>
+      <segment>
+        <source>言語は URL で切り替え、テーマと ambient color をここで調整します。</source>
+        <target>Switch language by URL, then tune theme and ambient color.</target>
+      </segment>
+    </unit>
+    <unit id="settingsLanguage">
+      <notes>
+        <note category="location">src/app/features/settings/settings.page.ts:97</note>
+        <note category="description">Settings language label</note>
+      </notes>
+      <segment>
+        <source>言語</source>
+        <target>language</target>
+      </segment>
+    </unit>
+    <unit id="settingsTheme">
+      <notes>
+        <note category="location">src/app/features/settings/settings.page.ts:98</note>
+        <note category="description">Settings theme label</note>
+      </notes>
+      <segment>
+        <source>テーマ</source>
+        <target>theme</target>
+      </segment>
+    </unit>
+    <unit id="settingsThemeSystem">
+      <notes>
+        <note category="location">src/app/features/settings/settings.page.ts:99</note>
+        <note category="description">Settings system theme option</note>
+      </notes>
+      <segment>
+        <source>system</source>
+        <target>system</target>
+      </segment>
+    </unit>
+    <unit id="settingsThemeLight">
+      <notes>
+        <note category="location">src/app/features/settings/settings.page.ts:100</note>
+        <note category="description">Settings light theme option</note>
+      </notes>
+      <segment>
+        <source>light</source>
+        <target>light</target>
+      </segment>
+    </unit>
+    <unit id="settingsThemeDark">
+      <notes>
+        <note category="location">src/app/features/settings/settings.page.ts:101</note>
+        <note category="description">Settings dark theme option</note>
+      </notes>
+      <segment>
+        <source>dark</source>
+        <target>dark</target>
+      </segment>
+    </unit>
+    <unit id="settingsAccent">
+      <notes>
+        <note category="location">src/app/features/settings/settings.page.ts:102</note>
+        <note category="description">Settings ambient color label</note>
+      </notes>
+      <segment>
+        <source>ambient color</source>
+        <target>ambient color</target>
+      </segment>
+    </unit>
+    <unit id="settingsAccentHelp">
+      <notes>
+        <note category="location">src/app/features/settings/settings.page.ts:103</note>
+        <note category="description">Settings ambient color help</note>
+      </notes>
+      <segment>
+        <source>背景の淡い色味や装飾にだけ使います。本文や主要ボタンには使いません。</source>
+        <target>Used only for subtle background tint and decoration, not text or buttons.</target>
+      </segment>
+    </unit>
+    <unit id="settingsResetAccent">
+      <notes>
+        <note category="location">src/app/features/settings/settings.page.ts:104</note>
+        <note category="description">Settings reset accent label</note>
+      </notes>
+      <segment>
+        <source>既定色に戻す</source>
+        <target>Use default color</target>
+      </segment>
+    </unit>
+    <unit id="settingsOpenSearch">
+      <notes>
+        <note category="location">src/app/features/settings/settings.page.ts:105</note>
+        <note category="description">Settings open search label</note>
+      </notes>
+      <segment>
+        <source>検索を開く</source>
+        <target>Open search</target>
+      </segment>
+    </unit>
+    <unit id="settingsBackTo">
+      <notes>
+        <note category="location">src/app/features/settings/settings.page.ts:106</note>
+        <note category="description">Settings back to prefix</note>
+      </notes>
+      <segment>
+        <source>戻る:</source>
+        <target>Back to:</target>
+      </segment>
+    </unit>
+    <unit id="settingsBackHome">
+      <notes>
+        <note category="location">src/app/features/settings/settings.page.ts:107</note>
+        <note category="description">Settings back home label</note>
+      </notes>
+      <segment>
+        <source>ホームへ戻る</source>
+        <target>Go home</target>
+      </segment>
+    </unit>
+    <unit id="settingsBackDestSearch">
+      <notes>
+        <note category="location">src/app/features/settings/settings.page.ts:177</note>
+        <note category="description">Settings back destination search</note>
+      </notes>
+      <segment>
+        <source>検索</source>
+        <target>search</target>
+      </segment>
+    </unit>
+    <unit id="settingsBackDestPlay">
+      <notes>
+        <note category="location">src/app/features/settings/settings.page.ts:180</note>
+        <note category="description">Settings back destination play</note>
+      </notes>
+      <segment>
+        <source>再生</source>
+        <target>play</target>
+      </segment>
+    </unit>
+    <unit id="settingsBackDestSettings">
+      <notes>
+        <note category="location">src/app/features/settings/settings.page.ts:183</note>
+        <note category="description">Settings back destination settings</note>
+      </notes>
+      <segment>
+        <source>設定</source>
+        <target>settings</target>
+      </segment>
+    </unit>
+    <unit id="settingsBackDestHome">
+      <notes>
+        <note category="location">src/app/features/settings/settings.page.ts:185</note>
+        <note category="description">Settings back destination home</note>
+      </notes>
+      <segment>
+        <source>ホーム</source>
+        <target>home</target>
+      </segment>
+    </unit>
+    <unit id="homeEyebrow">
+      <notes>
+        <note category="location">src/app/home.page.ts:31</note>
+        <note category="description">Home page eyebrow</note>
+      </notes>
+      <segment>
+        <source>home</source>
+        <target>home</target>
+      </segment>
+    </unit>
+    <unit id="homeTitle">
+      <notes>
+        <note category="location">src/app/home.page.ts:32</note>
+        <note category="description">Home page title</note>
+      </notes>
+      <segment>
+        <source>歌唱 clip を探して、そのまま途切れず再生する。</source>
+        <target>Find singing clips without losing the queue.</target>
+      </segment>
+    </unit>
+    <unit id="homeDescription">
+      <notes>
+        <note category="location">src/app/home.page.ts:33</note>
+        <note category="description">Home page description</note>
+      </notes>
+      <segment>
+        <source>まず検索で clip を絞り込み、そのまま連続再生しやすい画面へ移ります。</source>
+        <target>Search clips first, then move into a compact play screen built for continuous playback.</target>
+      </segment>
+    </unit>
+    <unit id="homePrimaryAction">
+      <notes>
+        <note category="location">src/app/home.page.ts:34</note>
+        <note category="description">Home primary action</note>
+      </notes>
+      <segment>
+        <source>検索を開く</source>
+        <target>Open search</target>
+      </segment>
+    </unit>
+    <unit id="homeSecondaryAction">
+      <notes>
+        <note category="location">src/app/home.page.ts:35</note>
+        <note category="description">Home secondary action</note>
+      </notes>
+      <segment>
+        <source>設定</source>
+        <target>Settings</target>
+      </segment>
+    </unit>
+    <unit id="homeNote">
+      <notes>
+        <note category="location">src/app/home.page.ts:36</note>
+        <note category="description">Home note about availability</note>
+      </notes>
+      <segment>
+        <source>YouTube の埋め込み制限や動画削除により、再生できない clip が含まれる場合があります。</source>
+        <target>Some videos may become unavailable because of YouTube embedding restrictions or deletion.</target>
+      </segment>
+    </unit>
+    <unit id="notFoundEyebrow">
+      <notes>
+        <note category="location">src/app/not-found.page.ts:21</note>
+        <note category="description">Not found eyebrow</note>
+      </notes>
+      <segment>
+        <source>not found</source>
+        <target>not found</target>
+      </segment>
+    </unit>
+    <unit id="notFoundTitle">
+      <notes>
+        <note category="location">src/app/not-found.page.ts:22</note>
+        <note category="description">Not found title</note>
+      </notes>
+      <segment>
+        <source>ページまたは clip が見つかりません</source>
+        <target>Page or clip not found</target>
+      </segment>
+    </unit>
+    <unit id="notFoundDescription">
+      <notes>
+        <note category="location">src/app/not-found.page.ts:23</note>
+        <note category="description">Not found description</note>
+      </notes>
+      <segment>
+        <source>URL を確認するか、検索ページから clip を探してください。</source>
+        <target>Check the URL or search for clips again.</target>
+      </segment>
+    </unit>
+    <unit id="notFoundAction">
+      <notes>
+        <note category="location">src/app/not-found.page.ts:24</note>
+        <note category="description">Not found action</note>
+      </notes>
+      <segment>
+        <source>検索を開く</source>
+        <target>Open search</target>
+      </segment>
+    </unit>
+  </file>
+</xliff>

@@ -1,0 +1,47 @@
+{
+  "datasetBuildId": "57ae1f8f2efdf6475b9bba6b306c94f1da4409143c3f1a2f72750d5b071acbdb",
+  "datasetSchemaVersion": 1,
+  "basePath": "/",
+  "assets": {
+    "livers": {
+      "assetKind": "livers",
+      "url": "/music/livers.min.json",
+      "assetSchemaVersion": 1
+    },
+    "liversSearchIndex": {
+      "assetKind": "livers_search_index",
+      "url": "/music/livers_search_index.min.json",
+      "assetSchemaVersion": 1
+    },
+    "officialChannels": {
+      "assetKind": "official_channels",
+      "url": "/music/official_channels.min.json",
+      "assetSchemaVersion": 1
+    },
+    "channels": {
+      "assetKind": "channels",
+      "url": "/music/channels.min.json",
+      "assetSchemaVersion": 1
+    },
+    "tags": {
+      "assetKind": "tags",
+      "url": "/music/tags.min.json",
+      "assetSchemaVersion": 1
+    },
+    "clips": {
+      "assetKind": "clips",
+      "url": "/music/clips.min.json",
+      "assetSchemaVersion": 1
+    },
+    "videos": {
+      "assetKind": "videos",
+      "url": "/music/videos.min.json",
+      "assetSchemaVersion": 1
+    },
+    "searchIndex": {
+      "assetKind": "search_index",
+      "url": "/search/search_index.bin",
+      "formatVersion": 1
+    }
+  }
+}

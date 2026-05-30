@@ -18,6 +18,15 @@
       "root": "",
       "sourceRoot": "src",
       "prefix": "app",
+      "i18n": {
+        "sourceLocale": "ja",
+        "locales": {
+          "en": {
+            "translation": "src/locale/messages.en.xlf",
+            "subPath": "en"
+          }
+        }
+      },
       "architect": {
         "build": {
           "builder": "@angular/build:application",
@@ -25,6 +34,7 @@
             "browser": "src/main.ts",
             "tsConfig": "src/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
+            "i18nMissingTranslation": "error",
             "assets": [
               {
                 "glob": "**/*",
@@ -49,6 +59,16 @@
               ],
               "outputHashing": "all"
             },
+            "ja": {
+              "localize": ["ja"],
+              "outputPath": "dist/site/ja",
+              "baseHref": "/ja/"
+            },
+            "en": {
+              "localize": ["en"],
+              "outputPath": "dist/site/en",
+              "baseHref": "/en/"
+            },
             "development": {
               "optimization": false,
               "extractLicenses": false,
@@ -65,9 +85,18 @@
             },
             "development": {
               "buildTarget": "angular-ng:build:development"
+            },
+            "ja": {
+              "buildTarget": "angular-ng:build:development,ja"
+            },
+            "en": {
+              "buildTarget": "angular-ng:build:development,en"
             }
           },
-          "defaultConfiguration": "development"
+          "defaultConfiguration": "ja"
+        },
+        "extract-i18n": {
+          "builder": "@angular/build:extract-i18n"
         },
         "test": {
           "builder": "@angular/build:unit-test",

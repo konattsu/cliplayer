@@ -4,6 +4,7 @@ pub(crate) struct OfficialChannels(
 );
 
 #[derive(serde::Serialize, Debug, Clone)]
+#[serde(rename_all = "camelCase")]
 struct OfficialChannel {
     ja: String,
     jah: String,
