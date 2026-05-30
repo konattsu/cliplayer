@@ -52,7 +52,10 @@ const DEFAULT_SEARCH_UI = SearchUiStateSchema.parse({
       }
       @case ("loading_assets") {
         <section class="panel loading-panel">
-          <p class="eyebrow" i18n="Search loading eyebrow@@searchLoadingEyebrow">
+          <p
+            class="eyebrow"
+            i18n="Search loading eyebrow@@searchLoadingEyebrow"
+          >
             loading
           </p>
           <h1 i18n="Search loading title@@searchLoadingTitle">
@@ -69,7 +72,8 @@ const DEFAULT_SEARCH_UI = SearchUiStateSchema.parse({
             データセットを読み込めませんでした
           </h1>
           <p i18n="Search error description@@searchErrorDescription">
-            時間をおいて再読み込みしてください。技術的な詳細は console に出力しています。
+            時間をおいて再読み込みしてください。技術的な詳細は console
+            に出力しています。
           </p>
         </section>
       }
@@ -179,7 +183,11 @@ const DEFAULT_SEARCH_UI = SearchUiStateSchema.parse({
               </label>
 
               @if (channelSuggestions().length > 0) {
-                <div class="suggestions" id="channel-suggestions" role="listbox">
+                <div
+                  class="suggestions"
+                  id="channel-suggestions"
+                  role="listbox"
+                >
                   @for (
                     channel of channelSuggestions();
                     track channel.channelId
@@ -348,7 +356,10 @@ const DEFAULT_SEARCH_UI = SearchUiStateSchema.parse({
                 </div>
 
                 <div class="clip-list">
-                  @for (clip of visibleResult().clipCards; track clip.clipUuid) {
+                  @for (
+                    clip of visibleResult().clipCards;
+                    track clip.clipUuid
+                  ) {
                     <article class="clip-row">
                       <div class="clip-card-main">
                         <h3>{{ clip.songTitle }}</h3>

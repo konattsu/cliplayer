@@ -57,7 +57,8 @@ import type { SafeResourceUrl } from "@angular/platform-browser";
             データセットを読み込めませんでした
           </h1>
           <p i18n="Play error description@@playErrorDescription">
-            時間をおいて再読み込みしてください。技術的な詳細は console に出力しています。
+            時間をおいて再読み込みしてください。技術的な詳細は console
+            に出力しています。
           </p>
         </section>
       }
@@ -110,7 +111,9 @@ import type { SafeResourceUrl } from "@angular/platform-browser";
                       @if (paused()) {
                         <span i18n="Play button label@@playPlay">再生</span>
                       } @else {
-                        <span i18n="Pause button label@@playPause">一時停止</span>
+                        <span i18n="Pause button label@@playPause"
+                          >一時停止</span
+                        >
                       }
                     </button>
                     <button
